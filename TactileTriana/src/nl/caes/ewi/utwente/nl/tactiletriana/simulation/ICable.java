@@ -10,8 +10,7 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 
 /**
- *
- * @author Richard
+ * A connection between to nodes
  */
 public interface ICable {
     public ReadOnlyDoubleProperty currentProperty();
@@ -20,12 +19,12 @@ public interface ICable {
     
     /**
      * 
-     * @return one of the nodes this cable connects to
+     * @return the node that is the parent
      */
-    public INode getNodeA();
+    public INode getNodeParent();
     /**
      * 
-     * @return the other node this cable connects to
+     * @return the node that is the child
      */
-    public INode getNodeB();
+    public INode getNodeChild();
 }

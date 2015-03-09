@@ -21,12 +21,12 @@ public class Cable implements ICable {
     // SIMPLE PROPERTIES
     
     @Override
-    public Node getNodeA() {
+    public Node getNodeParent() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Node getNodeB() {
+    public Node getNodeChild() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
