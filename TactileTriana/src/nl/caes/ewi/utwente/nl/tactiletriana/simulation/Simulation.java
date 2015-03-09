@@ -14,7 +14,7 @@ import java.util.List;
 public class Simulation implements ISimulation {
 
     @Override
-    public Transformator getTransformator() {
+    public Transformer getTransformer() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

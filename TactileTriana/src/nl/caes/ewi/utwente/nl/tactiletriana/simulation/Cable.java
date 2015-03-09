@@ -16,23 +16,35 @@ import javafx.beans.property.ReadOnlyDoubleWrapper;
  */
 public class Cable implements ICable {
     //TODO: betere waarde
-    private double maxCurrent = Double.MAX_VALUE;
+    private final double maxCurrent = Double.MAX_VALUE;
+    private final Node parent;
+    private final Node child;
+    
+    /**
+     * Instantiates a new cable connected to two nodes
+     * @param parent    The node in the direction of the transformer
+     * @param child     The node away from the transformer
+     */
+    protected Cable(Node parent, Node child) {
+        this.parent = parent;
+        this.child = child;
+    }
     
     // SIMPLE PROPERTIES
     
     @Override
     public Node getNodeParent() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return parent;
     }
 
     @Override
     public Node getNodeChild() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return child;
     }
     
     // BINDABLE PROPERTIES
     
-    private ReadOnlyBooleanWrapper broken = new ReadOnlyBooleanWrapper(false) {
+    private final ReadOnlyBooleanWrapper broken = new ReadOnlyBooleanWrapper(false) {
         @Override
         public void set(boolean value) {
             if (value) {
@@ -55,10 +67,10 @@ public class Cable implements ICable {
         return broken.getReadOnlyProperty();
     }
     
-    private ReadOnlyDoubleWrapper current = new ReadOnlyDoubleWrapper(0.0) {
+    private final ReadOnlyDoubleWrapper current = new ReadOnlyDoubleWrapper(0.0) {
         @Override
         public void set(double value) {
-            if (value > maxCurrent) {
+            if (Math.abs(value) > maxCurrent) {
                 setBroken(true);
             }
             super.set(value);

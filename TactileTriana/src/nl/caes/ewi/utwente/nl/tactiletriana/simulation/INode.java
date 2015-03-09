@@ -6,6 +6,7 @@
 package nl.caes.ewi.utwente.nl.tactiletriana.simulation;
 
 import java.util.List;
+import java.util.Set;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 
 /**
@@ -20,7 +21,7 @@ public interface INode {
      * 
      * @return a list of cables that connect to this node
      */
-    public List<ICable> getCables();
+    public Set<ICable> getCables();
     
     /**
      * 
