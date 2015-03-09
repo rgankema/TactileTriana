@@ -14,7 +14,10 @@ import javafx.beans.property.ReadOnlyDoubleWrapper;
  *
  * @author Richard
  */
-public class Cable implements ICable {    
+public class Cable implements ICable {
+    //TODO: betere waarde
+    private double maxCurrent = Double.MAX_VALUE;
+    
     // SIMPLE PROPERTIES
     
     @Override
@@ -29,48 +32,50 @@ public class Cable implements ICable {
     
     // BINDABLE PROPERTIES
     
-    private ReadOnlyBooleanWrapper broken;
+    private ReadOnlyBooleanWrapper broken = new ReadOnlyBooleanWrapper(false) {
+        @Override
+        public void set(boolean value) {
+            if (value) {
+                setCurrent(0);
+            }
+            super.set(value);
+        }
+    };
     
     public boolean isBroken() {
-        return privateBrokenProperty().get();
+        return broken.get();
     }
     
-    private void setBroken(boolean broken) {
-        privateBrokenProperty().set(broken);
-    }
-    
-    private ReadOnlyBooleanWrapper privateBrokenProperty() {
-        if (broken == null) {
-            broken = new ReadOnlyBooleanWrapper(false);
-        }
-        return broken;
+    private void setBroken(boolean value) {
+        broken.set(value);
     }
     
     @Override
     public ReadOnlyBooleanProperty brokenProperty() {
-        return privateBrokenProperty().getReadOnlyProperty();
+        return broken.getReadOnlyProperty();
     }
     
-    private ReadOnlyDoubleWrapper current;
+    private ReadOnlyDoubleWrapper current = new ReadOnlyDoubleWrapper(0.0) {
+        @Override
+        public void set(double value) {
+            if (value > maxCurrent) {
+                setBroken(true);
+            }
+            super.set(value);
+        }
+    };
 
     public double getCurrent() {
-        return privateCurrentProperty().get();
+        return current.get();
     }
     
-    private void setCurrent(double current) {
-        privateCurrentProperty().set(current);
-    }
-    
-    private ReadOnlyDoubleWrapper privateCurrentProperty() {
-        if (current == null) {
-            current = new ReadOnlyDoubleWrapper();
-        }
-        return current;
+    private void setCurrent(double value) {
+        current.set(value);
     }
     
     @Override
     public ReadOnlyDoubleProperty currentProperty() {
-        return privateCurrentProperty().getReadOnlyProperty();
+        return current.getReadOnlyProperty();
     }
 
 }
