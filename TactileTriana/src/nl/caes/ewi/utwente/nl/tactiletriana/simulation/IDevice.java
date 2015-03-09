@@ -5,12 +5,19 @@
  */
 package nl.caes.ewi.utwente.nl.tactiletriana.simulation;
 
+import javafx.beans.property.ReadOnlyDoubleProperty;
+
 /**
  *
  * @author Richard
  */
 public interface IDevice {
-    public void readyTick();
+    public ReadOnlyDoubleProperty currentConsumptionProperty();
     
-    public void tick();
+    /**
+     * Called by the simulation for every tick. The Device calculates its consumption
+     * for that tick, and updates it.
+     * @param time  the amount of time that passed since the last tick
+     */
+    public void tick(double time);
 }

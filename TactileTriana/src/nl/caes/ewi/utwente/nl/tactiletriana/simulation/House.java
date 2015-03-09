@@ -5,10 +5,17 @@
  */
 package nl.caes.ewi.utwente.nl.tactiletriana.simulation;
 
+import javafx.collections.ObservableList;
+
 /**
  *
  * @author Richard
  */
 public class House implements IHouse {
+
+    @Override
+    public ObservableList<IDevice> getDevices() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }

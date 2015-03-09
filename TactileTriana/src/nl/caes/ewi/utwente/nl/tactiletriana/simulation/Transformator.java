@@ -10,5 +10,9 @@ package nl.caes.ewi.utwente.nl.tactiletriana.simulation;
  * @author Richard
  */
 public class Transformator extends Node {
-    
+    public void initiateForwardBackwardSweep() {
+        for (ICable c : getCables()) {
+            // do forward backward sweep on cables
+        }
+    }
 }

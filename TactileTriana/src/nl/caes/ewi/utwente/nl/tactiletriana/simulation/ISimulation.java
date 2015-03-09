@@ -5,10 +5,26 @@
  */
 package nl.caes.ewi.utwente.nl.tactiletriana.simulation;
 
+import java.util.List;
+
 /**
  *
  * @author Richard
  */
 public interface ISimulation {
+    /**
+     * 
+     * @return the rootnode of the network
+     */
+    public Transformator getTransformator();
     
+    /**
+     * Starts the simulation
+     */
+    public void start();
+    
+    /**
+     * Pauses the simulation
+     */
+    public void stop();
 }
