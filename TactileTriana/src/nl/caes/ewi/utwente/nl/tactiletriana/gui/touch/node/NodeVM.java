@@ -25,14 +25,14 @@ public class NodeVM {
     public NodeVM(INode model) {
         this.model = model;
         this.model.voltageProperty().addListener(x -> {
-            double difference = Math.abs(230 - this.model.voltageProperty().get());
+            double difference = Math.abs(230 - this.model.getVoltage());
             setVoltageError(Math.min(1.0, difference/23.0)); 
         });
     }
     
     /**
-     * Defines how far off the voltage is in the node from a scale of 0.0 to 1.0.
-     * 0.0 means the voltage is at 230, 1.0 means it's off with at least 10%.
+     * Defines how far off the voltage is in the node on a scale of 0 to 1.
+     * 0 means the voltage is at 230, 1 means it's off with at least 10%.
      */    
     private final DoubleProperty voltageErrorProperty = new SimpleDoubleProperty(0);
     
