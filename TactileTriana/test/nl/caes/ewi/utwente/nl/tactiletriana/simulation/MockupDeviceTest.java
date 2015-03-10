@@ -6,6 +6,7 @@
 package nl.caes.ewi.utwente.nl.tactiletriana.simulation;
 
 import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.property.ReadOnlyDoubleWrapper;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -41,16 +42,6 @@ public class MockupDeviceTest {
     /**
      * Test of currentConsumptionProperty method, of class MockupDevice.
      */
-    @Test
-    public void testCurrentConsumptionProperty() {
-        System.out.println("currentConsumptionProperty");
-        MockupDevice instance = new MockupDevice();
-        ReadOnlyDoubleProperty expResult = null;
-        ReadOnlyDoubleProperty result = instance.currentConsumptionProperty();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
 
     /**
      * Test of getCurrentConsumption method, of class MockupDevice.
@@ -59,11 +50,12 @@ public class MockupDeviceTest {
     public void testGetCurrentConsumption() {
         System.out.println("getCurrentConsumption");
         MockupDevice instance = new MockupDevice();
-        double expResult = 0.0;
+        
+        instance.tick(5);
+        
+        double expResult = 300.0;
         double result = instance.getCurrentConsumption();
         assertEquals(expResult, result, 0.0);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -75,8 +67,6 @@ public class MockupDeviceTest {
         double time = 0.0;
         MockupDevice instance = new MockupDevice();
         instance.tick(time);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
     
 }
