@@ -17,7 +17,7 @@ public class Transformer extends Node {
     }
     
     public void initiateForwardBackwardSweep() {
-        for (ICable c : getCables()) {
+        for (CableBase c : getCables()) {
             // do forward backward sweep on cables
         }
         throw new UnsupportedOperationException("Not supported yet.");
@@ -31,7 +31,7 @@ public class Transformer extends Node {
     @Override
     public String toString(){
         String output = "(Transformer:U="+this.getVoltage()+")\n";
-        for (ICable c: this.getCables()){
+        for (CableBase c: this.getCables()){
             output += "->";
             output += c.toString();
             

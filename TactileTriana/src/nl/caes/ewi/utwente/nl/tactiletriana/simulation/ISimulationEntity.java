@@ -5,16 +5,12 @@
  */
 package nl.caes.ewi.utwente.nl.tactiletriana.simulation;
 
-import javafx.collections.ObservableList;
-
 /**
  *
- * @author Richard
+ * @author jd
  */
-public interface IHouse {
-    /**
-     * 
-     * @return a list of the devices that are connected to this house
-     */
-    public ObservableList<DeviceBase> getDevices();
+public interface ISimulationEntity {
+    
+    public double doForwardBackwardSweep(ISimulationEntity from, double v); 
+    
 }

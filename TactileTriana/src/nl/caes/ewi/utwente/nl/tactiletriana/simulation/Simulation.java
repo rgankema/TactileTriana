@@ -5,8 +5,6 @@
  */
 package nl.caes.ewi.utwente.nl.tactiletriana.simulation;
 
-import java.util.Set;
-
 /**
  *
  * @author Richard
@@ -18,7 +16,8 @@ public class Simulation implements ISimulation {
      
     private static Simulation instance = null;
     private Transformer transformer;
-    //Time between ticks of the simulation (in milliseconds)
+    //Time between ticks of the simulation (in milliseconds) 
+    //Richard hier: dit klopt niet. De tick moet de tijd zijn die in de simulatie voorbij gaat in minuten. Verander plx
    
     
     public static Simulation getInstance() {
@@ -41,12 +40,12 @@ public class Simulation implements ISimulation {
             nodes[i] = new Node(houses[i]);
             
             if (i == 0){
-                cables[i] = new Cable(transformer, nodes[i]);
-                transformer.addCable(cables[i]);
+                cables[i] = new Cable(nodes[i]);
+                transformer.getCables().add(cables[i]);
             }
             else{
-                cables[i] = new Cable(nodes[i-1], nodes[i]);
-                nodes[i-1].addCable(cables[i]);
+                cables[i] = new Cable(nodes[i]);
+                nodes[i-1].getCables().add(cables[i]);
             }
         }
     }

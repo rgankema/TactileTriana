@@ -14,7 +14,7 @@ import javafx.collections.ObservableList;
 public class House implements IHouse {
 
     @Override
-    public ObservableList<IDevice> getDevices() {
+    public ObservableList<DeviceBase> getDevices() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

@@ -14,26 +14,23 @@ import javafx.beans.property.ReadOnlyDoubleWrapper;
  *
  * @author Richard
  */
-public class Cable implements ICable,ISimulationObject {
-    private final Node parent;
+public class Cable extends CableBase implements ISimulationEntity {
     private final Node child;
+    private final double resistance;
     
-    private int resistance;
     /**
      * Instantiates a new cable connected to two nodes
-     * @param parent    The node in the direction of the transformer
      * @param child     The node away from the transformer
      */
-    public Cable(Node parent, Node child) {
-        this.parent = parent;
+    public Cable(Node child) {
         this.child = child;
+        this.resistance = 0.00005;
     }
     
     // SIMPLE PROPERTIES
-    
 
     @Override
-    public Node getNodeChild() {
+    public Node getChildNode() {
         return child;
     }
     
@@ -48,10 +45,6 @@ public class Cable implements ICable,ISimulationObject {
             super.set(value);
         }
     };
-    
-    public boolean isBroken() {
-        return broken.get();
-    }
     
     private void setBroken(boolean value) {
         broken.set(value);
@@ -71,11 +64,6 @@ public class Cable implements ICable,ISimulationObject {
             super.set(value);
         }
     };
-
-    @Override
-    public double getCurrent() {
-        return current.get();
-    }
     
     private void setCurrent(double value) {
         current.set(value);
@@ -89,28 +77,20 @@ public class Cable implements ICable,ISimulationObject {
     private final ReadOnlyDoubleWrapper maximumCurrent = new ReadOnlyDoubleWrapper(Double.MAX_VALUE);   //TODO: betere waarde verzinnen
     
     @Override
-    public double getMaximumCurrent() {
-        return maximumCurrent.get();
-    }
-    
-    @Override
     public ReadOnlyDoubleProperty maximumCurrentProperty() {
         return maximumCurrent;
     }
     
+    // METHODS
+    
     //stub
-    public double doForwardBackwardSweep(ISimulationObject from, double v) {
+    public double doForwardBackwardSweep(ISimulationEntity from, double v) {
         return 10;
-    }
-
-    @Override
-    public double getResistance() {
-        return this.resistance;
     }
     
     @Override
     public String toString(){
-        return "(Cable:R="+ this.getResistance() +  ",I="+ this.getCurrent() + ") -> " + this.getNodeChild().toString();
+        return "(Cable:R="+ resistance +  ",I="+ this.getCurrent() + ") -> " + this.getChildNode().toString();
     }
     
 }

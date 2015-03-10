@@ -13,8 +13,8 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
  *
  * @author Richard
  */
-public class Node implements INode,ISimulationObject {
-    private final Set<ICable> cables;
+public class Node extends NodeBase implements ISimulationEntity {
+    private final Set<CableBase> cables;
     private final House house;
     
     public Node(House house) {
@@ -25,7 +25,7 @@ public class Node implements INode,ISimulationObject {
 
     
     @Override
-    public Set<ICable> getCables() {
+    public Set<CableBase> getCables() {
         return this.cables;
     }
 
@@ -38,34 +38,20 @@ public class Node implements INode,ISimulationObject {
     public ReadOnlyDoubleProperty voltageProperty() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
-    @Override
-    public double getVoltage() {
-        //TODO: implement
-        return 20;
-    }
     
     //stub
-    public double doForwardBackwardSweep(ISimulationObject from, double v) {
+    @Override
+    public double doForwardBackwardSweep(ISimulationEntity from, double v) {
         //TODO: impelement
         return 10;
-    }
-
-    @Override
-    /*
-    Let op een node weet alleen de outgoing cables!
-    */
-    public void addCable(ICable c) {
-        this.cables.add(c);
     }
     
     @Override
     public String toString(){
         String output =  "(Node:U="+ getVoltage() + ") -> " + getHouse().toString() + "\n";
-        for (ICable c: this.getCables()){
+        for (CableBase c: this.getCables()){
             output += "->";
             output += c.toString();
-            
         }
         return output;
     }
