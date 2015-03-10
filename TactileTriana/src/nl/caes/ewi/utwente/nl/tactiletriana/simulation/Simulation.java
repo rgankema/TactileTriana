@@ -31,9 +31,9 @@ public class Simulation implements ISimulation {
     private Simulation() {
         // de tree maken
         transformer = new Transformer();
-        Node[] nodes = new Node[6];
-        Cable[] cables = new Cable[6];
-        House[] houses = new House[6];
+        Node[] nodes = new Node[NUMBER_OF_HOUSES];
+        Cable[] cables = new Cable[NUMBER_OF_HOUSES];
+        House[] houses = new House[NUMBER_OF_HOUSES];
         
         // maak huizen aan met cables en dat soort grappen
         for(int i = 0; i <= NUMBER_OF_HOUSES-1; i ++){
