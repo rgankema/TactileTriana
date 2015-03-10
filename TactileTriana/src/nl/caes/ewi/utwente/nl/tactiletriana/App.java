@@ -9,7 +9,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.TouchPresenter;
-import nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.TouchViewFactory;
+import nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.TouchPresenterFactory;
 
 /**
  *
@@ -19,8 +19,8 @@ public class App extends Application {
     
     @Override
     public void start(Stage stage) throws Exception {
-        TouchViewFactory factory = new TouchViewFactory();
-        TouchPresenter presenter = factory.getTouchPresenter(null);
+        TouchPresenterFactory factory = new TouchPresenterFactory();
+        TouchPresenter presenter = factory.buildTouchPresenter(null);
         
         Scene scene = new Scene(presenter.getView());
         
