@@ -8,4 +8,4 @@
 <?import javafx.scene.layout.*?>
 
 
-<Rectangle fx:id="root" height="30.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="2.0" width="30.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.node.NodePresenter" />
+<Rectangle fx:id="root" fill="WHITE" height="40.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="2.0" width="40.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.node.NodeController" />
