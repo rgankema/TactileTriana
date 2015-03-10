@@ -31,7 +31,7 @@ public class App extends Application {
         NodePresenterFactory f2 = new NodePresenterFactory();
         
         presenter.getView().getChildren().add(f2.buildNodePresenter(new NodeVM(new MockNode())).getView());
-        
+ 
         Scene scene = new Scene(presenter.getView());
         
         stage.setScene(scene);
