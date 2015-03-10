@@ -75,6 +75,7 @@ public class Cable implements ICable {
         }
     };
 
+    @Override
     public double getCurrent() {
         return current.get();
     }
@@ -90,6 +91,7 @@ public class Cable implements ICable {
     
     private final ReadOnlyDoubleWrapper maximumCurrent = new ReadOnlyDoubleWrapper(Double.MAX_VALUE);   //TODO: betere waarde verzinnen
     
+    @Override
     public double getMaximumCurrent() {
         return maximumCurrent.get();
     }

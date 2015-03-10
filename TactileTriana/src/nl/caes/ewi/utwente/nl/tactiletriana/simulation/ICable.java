@@ -17,24 +17,29 @@ public interface ICable {
      * @return the current flowing through the cable
      */
     public ReadOnlyDoubleProperty currentProperty();
+    public double getCurrent();
+    
     
     /**
      * 
      * @return the absolute maximum current that can flow through the cable before it breaks
      */
     public ReadOnlyDoubleProperty maximumCurrentProperty();
+    public double getMaximumCurrent();
     
     /**
      * 
      * @return whether the cable is broken or not
      */
     public ReadOnlyBooleanProperty brokenProperty();
+    public boolean isBroken();
     
     /**
      * 
      * @return the node that is the parent
      */
     public INode getNodeParent();
+    
     /**
      * 
      * @return the node that is the child
