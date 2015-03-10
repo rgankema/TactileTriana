@@ -15,6 +15,7 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
 public interface INode {
 
     public ReadOnlyDoubleProperty voltageProperty();
+    public double getVoltage();
     
     /**
      * 

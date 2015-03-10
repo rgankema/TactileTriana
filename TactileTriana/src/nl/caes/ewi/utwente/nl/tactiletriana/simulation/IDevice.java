@@ -13,6 +13,7 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
  */
 public interface IDevice {
     public ReadOnlyDoubleProperty currentConsumptionProperty();
+    public double getCurrentConsumption();
     
     /**
      * Called by the simulation for every tick. The Device calculates its consumption
