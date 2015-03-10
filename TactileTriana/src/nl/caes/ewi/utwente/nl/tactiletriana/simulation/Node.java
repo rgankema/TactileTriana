@@ -13,7 +13,7 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
  *
  * @author Richard
  */
-public class Node implements INode {
+public class Node implements INode,IFBSweep {
     private final Set<ICable> cables;
     private final House house;
     
@@ -40,6 +40,11 @@ public class Node implements INode {
     @Override
     public double getVoltage() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    //stub
+    public double doForwardBackwardSweep(IFBSweep from, double v) {
+        return 10;
     }
     
 }

@@ -14,7 +14,7 @@ import javafx.beans.property.ReadOnlyDoubleWrapper;
  *
  * @author Richard
  */
-public class Cable implements ICable {
+public class Cable implements ICable,IFBSweep {
     private final Node parent;
     private final Node child;
     
@@ -100,5 +100,10 @@ public class Cable implements ICable {
     public ReadOnlyDoubleProperty maximumCurrentProperty() {
         return maximumCurrent;
     }
-
+    
+    //stub
+    public double doForwardBackwardSweep(IFBSweep from, double v) {
+        return 10;
+    }
+    
 }
