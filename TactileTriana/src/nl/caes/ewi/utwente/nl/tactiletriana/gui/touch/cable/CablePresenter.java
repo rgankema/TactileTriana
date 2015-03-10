@@ -7,7 +7,11 @@ package nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.cable;
 
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -20,7 +24,6 @@ import javafx.scene.shape.Line;
 public class CablePresenter {
     @FXML private Pane root;
     @FXML private Line line;
-    @FXML private Pane directionOverlay;
     
     private CableVM viewModel;
     
@@ -31,10 +34,14 @@ public class CablePresenter {
     protected void setViewModel(CableVM viewModel) {
         this.viewModel = viewModel;
         
-        // Bind load to color in view
+        // Bind load and broken in viewmodel to color in view
         line.strokeProperty().bind(Bindings.createObjectBinding(() -> {
-            double error = viewModel.getLoad();
-            return new Color(error, 1.0 - error, 0, 1.0);
-        }, viewModel.loadProperty()));
+            if (viewModel.isBroken()) {
+                return Color.BLACK;
+            }
+            
+            double load = viewModel.getLoad();
+            return new Color(load, 1.0 - load, 0, 1.0);
+        }, viewModel.loadProperty(), viewModel.brokenProperty()));
     }
 }
