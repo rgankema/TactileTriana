@@ -8,8 +8,12 @@ package nl.caes.ewi.utwente.nl.tactiletriana;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import nl.caes.ewi.utwente.nl.tactiletriana.gui.mock.MockNode;
 import nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.TouchPresenter;
 import nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.TouchPresenterFactory;
+import nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.node.NodePresenter;
+import nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.node.NodePresenterFactory;
+import nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.node.NodeVM;
 
 /**
  *
@@ -21,6 +25,10 @@ public class App extends Application {
     public void start(Stage stage) throws Exception {
         TouchPresenterFactory factory = new TouchPresenterFactory();
         TouchPresenter presenter = factory.buildTouchPresenter(null);
+        
+        NodePresenterFactory f2 = new NodePresenterFactory();
+        
+        presenter.getView().getChildren().add(f2.buildNodePresenter(new NodeVM(new MockNode())).getView());
         
         Scene scene = new Scene(presenter.getView());
         

@@ -9,16 +9,16 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
-import nl.caes.ewi.utwente.nl.tactiletriana.simulation.ICable;
+import nl.caes.ewi.utwente.nl.tactiletriana.simulation.CableBase;
 
 /**
  *
  * @author Richard
  */
 public class CableVM {
-    private ICable model;
+    private CableBase model;
     
-    public CableVM(ICable model) {
+    public CableVM(CableBase model) {
         this.model = model;
        
         Bindings.createDoubleBinding(() -> { return Math.min(1.0, Math.abs(model.getCurrent()) / model.getMaximumCurrent()); }, model.currentProperty(), model.maximumCurrentProperty());

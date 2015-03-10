@@ -5,7 +5,7 @@
  */
 package nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.node;
 
-import javafx.beans.property.DoubleProperty;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -20,10 +20,11 @@ public class NodeVM {
     
     public NodeVM(NodeBase model) {
         this.model = model;
-        this.model.voltageProperty().addListener(x -> {
+        
+        voltageErrorProperty.bind(Bindings.createDoubleBinding(() -> {
             double difference = Math.abs(230 - this.model.getVoltage());
-            setVoltageError(Math.min(1.0, difference/23.0)); 
-        });
+            return Math.min(1.0, difference/23.0);
+        }, model.voltageProperty()));
     }
     
     /**
@@ -34,10 +35,6 @@ public class NodeVM {
     
     public double getVoltageError() {
         return voltageErrorProperty.get();
-    }
-    
-    private void setVoltageError(double value) {
-        voltageErrorProperty.set(value);
     }
     
     public ReadOnlyDoubleProperty voltageErrorProperty() {

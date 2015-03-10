@@ -5,6 +5,7 @@
  */
 package nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.node;
 
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
@@ -27,12 +28,10 @@ public class NodePresenter {
         this.viewModel = viewModel;
         
         // Bind voltage error to color in view
-        viewModel.voltageErrorProperty().addListener(x -> {
+        root.fillProperty().bind(Bindings.createObjectBinding(() -> {
             double error = viewModel.getVoltageError();
-            root.setFill(new Color(error, 1.0 - error, 0, 1.0));
-        });
-        double error = viewModel.getVoltageError();
-        root.setFill(new Color(error, 1.0 - error, 0, 1.0));
+            return new Color(error, 1.0 - error, 0, 1.0);
+        }, viewModel.voltageErrorProperty()));
     }
     
 }
