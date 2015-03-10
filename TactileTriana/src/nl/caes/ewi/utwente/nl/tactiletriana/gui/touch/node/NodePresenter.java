@@ -24,7 +24,6 @@ public class NodePresenter {
         return root;
     }
     
-
     /**
      * Only to be called by factory
      * @param viewModel 
