@@ -24,6 +24,10 @@ public class NodePresenter {
         return root;
     }
     
+    /**
+     * Only to be called by factory
+     * @param viewModel 
+     */
     protected void setViewModel(NodeVM viewModel) {
         this.viewModel = viewModel;
         
