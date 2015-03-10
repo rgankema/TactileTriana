@@ -15,8 +15,6 @@ import javafx.beans.property.ReadOnlyDoubleWrapper;
  * @author Richard
  */
 public class Cable implements ICable {
-    //TODO: betere waarde
-    private final double maxCurrent = Double.MAX_VALUE;
     private final Node parent;
     private final Node child;
     
@@ -70,7 +68,7 @@ public class Cable implements ICable {
     private final ReadOnlyDoubleWrapper current = new ReadOnlyDoubleWrapper(0.0) {
         @Override
         public void set(double value) {
-            if (Math.abs(value) > maxCurrent) {
+            if (Math.abs(value) > getMaximumCurrent()) {
                 setBroken(true);
             }
             super.set(value);
@@ -88,6 +86,17 @@ public class Cable implements ICable {
     @Override
     public ReadOnlyDoubleProperty currentProperty() {
         return current.getReadOnlyProperty();
+    }
+    
+    private final ReadOnlyDoubleWrapper maximumCurrent = new ReadOnlyDoubleWrapper(Double.MAX_VALUE);   //TODO: betere waarde verzinnen
+    
+    public double getMaximumCurrent() {
+        return maximumCurrent.get();
+    }
+    
+    @Override
+    public ReadOnlyDoubleProperty maximumCurrentProperty() {
+        return maximumCurrent;
     }
 
 }

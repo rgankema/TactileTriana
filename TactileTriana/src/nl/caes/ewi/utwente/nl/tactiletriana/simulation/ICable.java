@@ -12,8 +12,22 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
  * A connection between to nodes
  */
 public interface ICable {
+    /**
+     * 
+     * @return the current flowing through the cable
+     */
     public ReadOnlyDoubleProperty currentProperty();
     
+    /**
+     * 
+     * @return the absolute maximum current that can flow through the cable before it breaks
+     */
+    public ReadOnlyDoubleProperty maximumCurrentProperty();
+    
+    /**
+     * 
+     * @return whether the cable is broken or not
+     */
     public ReadOnlyBooleanProperty brokenProperty();
     
     /**
