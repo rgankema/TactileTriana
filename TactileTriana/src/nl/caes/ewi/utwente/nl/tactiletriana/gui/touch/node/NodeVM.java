@@ -5,16 +5,9 @@
  */
 package nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.node;
 
-<<<<<<< HEAD
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
-=======
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ReadOnlyDoubleProperty;
-import javafx.beans.property.ReadOnlyDoubleWrapper;
-import javafx.beans.property.SimpleDoubleProperty;
->>>>>>> Eerste poging tot View + ViewModel + Controller
 import nl.caes.ewi.utwente.nl.tactiletriana.simulation.INode;
 
 /**
@@ -26,10 +19,11 @@ public class NodeVM {
     
     public NodeVM(INode model) {
         this.model = model;
-        this.model.voltageProperty().addListener(x -> {
+        
+        voltageErrorProperty.bind(Bindings.createDoubleBinding(() -> {
             double difference = Math.abs(230 - this.model.getVoltage());
-            setVoltageError(Math.min(1.0, difference/23.0)); 
-        });
+            return Math.min(1.0, difference/23.0);
+        }, model.voltageProperty()));
     }
     
     /**
@@ -40,11 +34,6 @@ public class NodeVM {
     
     public double getVoltageError() {
         return voltageErrorProperty.get();
-    }
-    
-
-    private void setVoltageError(double value) {
-        voltageErrorProperty.set(value);
     }
     
     public ReadOnlyDoubleProperty voltageErrorProperty() {
