@@ -23,6 +23,8 @@ public interface INode {
      */
     public Set<ICable> getCables();
     
+    public void addCable(ICable c);
+    
     /**
      * 
      * @return the house this Node is connected to, may be null

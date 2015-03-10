@@ -26,7 +26,27 @@ public class Simulation implements ISimulation {
     }
     
     private Simulation() {
+        
+        // de tree maken
         transformer = new Transformer();
+        Node[] nodes = new Node[6];
+        Cable[] cables = new Cable[6];
+        House[] houses = new House[6];
+        
+        // maak huizen aan met cables en dat soort grappen
+        for(int i = 0; i <= 5; i ++){
+            houses[i] = new House();
+            nodes[i] = new Node(houses[i]);
+            
+            if (i == 0){
+                cables[i] = new Cable(transformer, nodes[i]);
+                transformer.addCable(cables[i]);
+            }
+            else{
+                cables[i] = new Cable(nodes[i-1], nodes[i]);
+                nodes[i-1].addCable(cables[i]);
+            }
+        }
     }
     
     public Transformer getTransformer() {

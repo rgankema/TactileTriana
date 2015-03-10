@@ -22,6 +22,8 @@ public class Node implements INode,IFBSweep {
         this.house = house;
     }
     
+
+    
     @Override
     public Set<ICable> getCables() {
         return this.cables;
@@ -45,6 +47,14 @@ public class Node implements INode,IFBSweep {
     //stub
     public double doForwardBackwardSweep(IFBSweep from, double v) {
         return 10;
+    }
+
+    @Override
+    /*
+    Let op een node weet alleen de outgoing cables!
+    */
+    public void addCable(ICable c) {
+        this.cables.add(c);
     }
     
 }
