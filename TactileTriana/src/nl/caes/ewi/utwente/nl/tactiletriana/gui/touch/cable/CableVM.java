@@ -6,6 +6,7 @@
 package nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.cable;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import nl.caes.ewi.utwente.nl.tactiletriana.simulation.CableBase;
@@ -19,8 +20,10 @@ public class CableVM {
     
     public CableVM(CableBase model) {
         this.model = model;
-       
-        Bindings.createDoubleBinding(() -> { return Math.min(1.0, Math.abs(model.getCurrent()) / model.getMaximumCurrent()); }, model.currentProperty(), model.maximumCurrentProperty());
+        
+        load.bind(Bindings.createDoubleBinding(() -> {
+            return Math.min(1.0, Math.abs(model.getCurrent()) / model.getMaximumCurrent()); 
+        }, model.currentProperty(), model.maximumCurrentProperty()));
     }
     
     /**
@@ -34,6 +37,14 @@ public class CableVM {
     
     public ReadOnlyDoubleProperty loadProperty() {
         return load.getReadOnlyProperty();
+    }
+    
+    public boolean isBroken() {
+        return brokenProperty().get();
+    }
+    
+    public ReadOnlyBooleanProperty brokenProperty() {
+        return this.model.brokenProperty();
     }
         
 }
