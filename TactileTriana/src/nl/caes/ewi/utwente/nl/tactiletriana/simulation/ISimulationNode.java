@@ -9,8 +9,8 @@ package nl.caes.ewi.utwente.nl.tactiletriana.simulation;
  *
  * @author jd
  */
-public interface IFBSweep {
+public interface ISimulationNode {
     
-    public double doForwardBackwardSweep(IFBSweep from, double v); 
+    public double doForwardBackwardSweep(ISimulationNode from, double v); 
     
 }
