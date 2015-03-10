@@ -12,11 +12,14 @@ import java.util.Set;
  * @author Richard
  */
 public class Simulation implements ISimulation {
-    
+    // Declare simulation constants
+    public final int NUMBER_OF_HOUSES = 6;
+    public final int TICK_TIME = 200;
+     
     private static Simulation instance = null;
     private Transformer transformer;
     //Time between ticks of the simulation (in milliseconds)
-    private int tickTime = 200;
+   
     
     public static Simulation getInstance() {
         if (instance == null) {
@@ -26,7 +29,6 @@ public class Simulation implements ISimulation {
     }
     
     private Simulation() {
-        
         // de tree maken
         transformer = new Transformer();
         Node[] nodes = new Node[6];
@@ -34,7 +36,7 @@ public class Simulation implements ISimulation {
         House[] houses = new House[6];
         
         // maak huizen aan met cables en dat soort grappen
-        for(int i = 0; i <= 5; i ++){
+        for(int i = 0; i <= NUMBER_OF_HOUSES-1; i ++){
             houses[i] = new House();
             nodes[i] = new Node(houses[i]);
             
@@ -57,7 +59,7 @@ public class Simulation implements ISimulation {
         while(true){
             transformer.initiateForwardBackwardSweep();
             try {
-                Thread.sleep(tickTime);
+                Thread.sleep(TICK_TIME);
             } catch(InterruptedException ex) {
                 Thread.currentThread().interrupt();
             }
