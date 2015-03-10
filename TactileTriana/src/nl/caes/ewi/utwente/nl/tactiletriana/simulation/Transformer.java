@@ -23,9 +23,11 @@ public class Transformer extends Node {
     
     @Override
     public String toString(){
-        String output = "Transformer\n";
-        for(ICable c : getCables()){
+        String output = "(Transformer:U="+this.getVoltage()+")\n";
+        for (ICable c: this.getCables()){
+            output += "->";
             output += c.toString();
+            
         }
         return output;
     }

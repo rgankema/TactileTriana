@@ -110,7 +110,7 @@ public class Cable implements ICable,ISimulationObject {
     
     @Override
     public String toString(){
-        return "Cable:" + this.getCurrent() + " -> " + this.getNodeChild().toString();
+        return "(Cable:R="+ this.getResistance() +  ",I="+ this.getCurrent() + ") -> " + this.getNodeChild().toString();
     }
     
 }

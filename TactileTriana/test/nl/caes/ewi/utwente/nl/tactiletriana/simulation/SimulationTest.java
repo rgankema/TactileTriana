@@ -44,14 +44,12 @@ public class SimulationTest {
      * Test of getTransformer method, of class Simulation.
      */
     @Test
-    public void testGetTransformer() {
-        System.out.println("getTransformer");
-        Simulation instance = null;
-        Transformer expResult = null;
+    public void testToString() {
+        System.out.println("toString");
+        Simulation instance = Simulation.getInstance();
         Transformer result = instance.getTransformer();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        System.out.println(result.toString());
+
     }
 
     /**
@@ -61,7 +59,9 @@ public class SimulationTest {
     public void testStart() {
         System.out.println("start");
         Simulation instance = null;
-        instance.start();
+        
+        
+        
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }

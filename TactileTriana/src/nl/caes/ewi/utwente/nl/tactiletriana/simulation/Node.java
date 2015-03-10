@@ -41,11 +41,13 @@ public class Node implements INode,ISimulationObject {
 
     @Override
     public double getVoltage() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //TODO: implement
+        return 20;
     }
     
     //stub
     public double doForwardBackwardSweep(ISimulationObject from, double v) {
+        //TODO: impelement
         return 10;
     }
 
@@ -59,7 +61,13 @@ public class Node implements INode,ISimulationObject {
     
     @Override
     public String toString(){
-        return "Node";
+        String output =  "(Node:U="+ getVoltage() + ") -> " + getHouse().toString() + "\n";
+        for (ICable c: this.getCables()){
+            output += "->";
+            output += c.toString();
+            
+        }
+        return output;
     }
     
 }
