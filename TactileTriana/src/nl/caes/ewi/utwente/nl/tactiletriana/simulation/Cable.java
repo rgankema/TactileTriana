@@ -14,7 +14,7 @@ import javafx.beans.property.ReadOnlyDoubleWrapper;
  *
  * @author Richard
  */
-public class Cable implements ICable,ISimulationNode {
+public class Cable implements ICable,ISimulationObject {
     private final Node parent;
     private final Node child;
     
@@ -99,7 +99,7 @@ public class Cable implements ICable,ISimulationNode {
     }
     
     //stub
-    public double doForwardBackwardSweep(ISimulationNode from, double v) {
+    public double doForwardBackwardSweep(ISimulationObject from, double v) {
         return 10;
     }
 
