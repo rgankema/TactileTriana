@@ -5,7 +5,6 @@
  */
 package nl.caes.ewi.utwente.nl.tactiletriana.simulation;
 
-import java.util.List;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 

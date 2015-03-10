@@ -5,7 +5,7 @@
  */
 package nl.caes.ewi.utwente.nl.tactiletriana.simulation;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -13,11 +13,24 @@ import java.util.List;
  */
 public class Simulation implements ISimulation {
 
+    private static Simulation instance = null;
+    
+    public static Simulation getInstance() {
+        if (instance == null) {
+            instance = new Simulation();
+        }
+        return instance;
+    }
+    
+    private Simulation() {
+        // Initialize simulation
+    }
+    
     @Override
     public Transformer getTransformer() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
+    
     @Override
     public void start() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

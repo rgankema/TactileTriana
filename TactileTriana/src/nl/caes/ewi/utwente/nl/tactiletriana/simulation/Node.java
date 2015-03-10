@@ -5,9 +5,7 @@
  */
 package nl.caes.ewi.utwente.nl.tactiletriana.simulation;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 
@@ -16,8 +14,8 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
  * @author Richard
  */
 public class Node implements INode {
-    private Set<ICable> cables;
-    private House house;
+    private final Set<ICable> cables;
+    private final House house;
     
     public Node(House house) {
         this.cables = new HashSet<>();

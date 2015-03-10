@@ -25,7 +25,7 @@ public class Cable implements ICable {
      * @param parent    The node in the direction of the transformer
      * @param child     The node away from the transformer
      */
-    protected Cable(Node parent, Node child) {
+    public Cable(Node parent, Node child) {
         this.parent = parent;
         this.child = child;
     }

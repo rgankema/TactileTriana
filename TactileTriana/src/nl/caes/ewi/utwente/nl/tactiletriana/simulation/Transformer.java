@@ -18,5 +18,6 @@ public class Transformer extends Node {
         for (ICable c : getCables()) {
             // do forward backward sweep on cables
         }
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }
