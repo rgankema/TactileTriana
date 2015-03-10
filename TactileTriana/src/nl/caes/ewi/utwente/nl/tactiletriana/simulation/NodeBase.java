@@ -14,11 +14,8 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
  */
 public abstract class NodeBase {
 
-    public abstract ReadOnlyDoubleProperty voltageProperty();
-    
-    public double getVoltage() {
-        return voltageProperty().get();
-    }
+    public ReadOnlyDoubleProperty voltageProperty();
+    public double getVoltage();
     
     /**
      * 

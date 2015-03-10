@@ -11,16 +11,9 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
  *
  * @author Richard
  */
-public abstract class DeviceBase {
-    /**
-     * 
-     * @return the amount of power that the device currently consumes
-     */
-    public abstract ReadOnlyDoubleProperty currentConsumptionProperty();
-    
-    public double getCurrentConsumption() {
-        return currentConsumptionProperty().get();
-    }
+public interface IDevice {
+    public ReadOnlyDoubleProperty currentConsumptionProperty();
+    public double getCurrentConsumption();
     
     /**
      * Called by the simulation for every tick. The Device calculates its consumption

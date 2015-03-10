@@ -21,6 +21,7 @@ public abstract class CableBase {
     public double getCurrent() {
         return currentProperty().get();
     }
+
     
     
     /**
@@ -37,15 +38,18 @@ public abstract class CableBase {
      * 
      * @return whether the cable is broken or not
      */
-    public abstract ReadOnlyBooleanProperty brokenProperty();
-    
-    public boolean isBroken() {
-        return brokenProperty().get();
-    }
+    public ReadOnlyBooleanProperty brokenProperty();
+    public boolean isBroken();
     
     /**
      * 
-     * @return the node that is the child of this cable
+     * @return the node that is the parent
+     */
+    public INode getNodeParent();
+    
+    /**
+     * 
+     * @return the node that is the child
      */
     public abstract INode getChildNode();
 }
