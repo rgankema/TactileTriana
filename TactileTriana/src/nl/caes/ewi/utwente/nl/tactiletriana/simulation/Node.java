@@ -57,4 +57,9 @@ public class Node implements INode,ISimulationNode {
         this.cables.add(c);
     }
     
+    @Override
+    public String toString(){
+        return "Node";
+    }
+    
 }

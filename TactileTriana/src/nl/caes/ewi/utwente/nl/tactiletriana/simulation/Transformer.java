@@ -20,4 +20,13 @@ public class Transformer extends Node {
         }
         throw new UnsupportedOperationException("Not supported yet.");
     }
+    
+    @Override
+    public String toString(){
+        String output = "Transformer\n";
+        for(ICable c : getCables()){
+            output += c.toString();
+        }
+        return output;
+    }
 }

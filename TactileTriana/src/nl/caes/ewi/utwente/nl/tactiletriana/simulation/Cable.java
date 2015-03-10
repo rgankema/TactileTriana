@@ -108,4 +108,9 @@ public class Cable implements ICable,ISimulationNode {
         return this.resistance;
     }
     
+    @Override
+    public String toString(){
+        return "Cable:" + this.getCurrent() + " -> " + this.getNodeChild().toString();
+    }
+    
 }
