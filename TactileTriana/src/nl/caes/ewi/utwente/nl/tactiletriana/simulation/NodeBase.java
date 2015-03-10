@@ -20,7 +20,6 @@ public abstract class NodeBase {
     public final double getVoltage() {
         return voltageProperty().get();
     }
-    
     /**
      * 
      * @return a list of cables that connect to this node

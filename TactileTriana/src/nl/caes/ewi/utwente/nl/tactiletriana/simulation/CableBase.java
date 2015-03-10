@@ -23,7 +23,6 @@ public abstract class CableBase {
     }
 
     
-    
     /**
      * 
      * @return the absolute maximum current that can flow through the cable before it breaks
