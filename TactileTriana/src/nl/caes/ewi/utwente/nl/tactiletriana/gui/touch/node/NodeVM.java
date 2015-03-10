@@ -7,16 +7,16 @@ package nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.node;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import nl.caes.ewi.utwente.nl.tactiletriana.simulation.INode;
+import nl.caes.ewi.utwente.nl.tactiletriana.simulation.NodeBase;
 
 /**
  *
  * @author Richard
  */
 public class NodeVM {
-    private INode model;
+    private NodeBase model;
     
-    public NodeVM(INode model) {
+    public NodeVM(NodeBase model) {
         this.model = model;
         this.model.voltageProperty().addListener(x -> {
             double difference = Math.abs(230 - this.model.voltageProperty().get());
