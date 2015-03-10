@@ -10,15 +10,15 @@ import javafx.animation.AnimationTimer;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import nl.caes.ewi.utwente.nl.tactiletriana.simulation.ICable;
+import nl.caes.ewi.utwente.nl.tactiletriana.simulation.CableBase;
 import nl.caes.ewi.utwente.nl.tactiletriana.simulation.IHouse;
-import nl.caes.ewi.utwente.nl.tactiletriana.simulation.INode;
+import nl.caes.ewi.utwente.nl.tactiletriana.simulation.NodeBase;
 
 /**
  * Mocks an INode, sweeps voltage from 200 to 260 and back
  * @author Richard
  */
-public class MockNode implements INode {
+public class MockNode extends NodeBase {
         
     public MockNode() {
         new AnimationTimer() {
@@ -48,12 +48,7 @@ public class MockNode implements INode {
     }
 
     @Override
-    public double getVoltage() {
-        return voltageProperty.get();
-    }
-
-    @Override
-    public Set<ICable> getCables() {
+    public Set<CableBase> getCables() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
