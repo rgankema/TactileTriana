@@ -12,8 +12,11 @@ import java.util.Set;
  * @author Richard
  */
 public class Simulation implements ISimulation {
-
+    
     private static Simulation instance = null;
+    private Transformer transformer;
+    //Time between ticks of the simulation (in milliseconds)
+    private int tickTime = 200;
     
     public static Simulation getInstance() {
         if (instance == null) {
@@ -23,17 +26,22 @@ public class Simulation implements ISimulation {
     }
     
     private Simulation() {
-        // Initialize simulation
+        transformer = new Transformer();
     }
     
-    @Override
     public Transformer getTransformer() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return transformer;
     }
     
-    @Override
     public void start() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        while(true){
+            transformer.initiateForwardBackwardSweep();
+            try {
+                Thread.sleep(tickTime);
+            } catch(InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            }
+        }
     }
 
     @Override
