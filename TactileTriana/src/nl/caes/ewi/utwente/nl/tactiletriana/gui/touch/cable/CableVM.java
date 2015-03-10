@@ -6,7 +6,6 @@
 package nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.cable;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import nl.caes.ewi.utwente.nl.tactiletriana.simulation.CableBase;

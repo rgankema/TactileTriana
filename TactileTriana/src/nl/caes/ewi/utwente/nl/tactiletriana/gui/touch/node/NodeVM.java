@@ -8,7 +8,6 @@ package nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.node;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
-import javafx.beans.property.SimpleDoubleProperty;
 import nl.caes.ewi.utwente.nl.tactiletriana.simulation.NodeBase;
 
 /**
