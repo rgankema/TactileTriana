@@ -11,7 +11,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import nl.caes.ewi.utwente.nl.tactiletriana.simulation.CableBase;
-import nl.caes.ewi.utwente.nl.tactiletriana.simulation.IHouse;
+import nl.caes.ewi.utwente.nl.tactiletriana.simulation.HouseBase;
 import nl.caes.ewi.utwente.nl.tactiletriana.simulation.NodeBase;
 
 /**
@@ -53,7 +53,7 @@ public class MockNode extends NodeBase {
     }
 
     @Override
-    public IHouse getHouse() {
+    public HouseBase getHouse() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

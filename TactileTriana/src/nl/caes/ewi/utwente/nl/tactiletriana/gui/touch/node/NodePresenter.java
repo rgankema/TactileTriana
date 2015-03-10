@@ -5,10 +5,7 @@
  */
 package nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.node;
 
-<<<<<<< HEAD
 import javafx.beans.binding.Bindings;
-=======
->>>>>>> Om de een of andere reden kan Git niets in een keer goed doen
 import javafx.fxml.FXML;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
