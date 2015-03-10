@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.shape.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.cable.CablePresenter">
-    
-</AnchorPane>
+
+<Line fx:id="root" endX="100.0" startX="-100.0" strokeWidth="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.cable.CablePresenter" />
