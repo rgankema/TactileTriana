@@ -10,6 +10,8 @@ package nl.caes.ewi.utwente.nl.tactiletriana.simulation;
  * @author Richard
  */
 public class Transformer extends Node {
+    public final double TRANSFORMER_CURRENT = 230.0;
+    
     public Transformer() {
         super(null);
     }
@@ -19,6 +21,11 @@ public class Transformer extends Node {
             // do forward backward sweep on cables
         }
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    @Override
+    public double getVoltage(){
+        return TRANSFORMER_CURRENT;
     }
     
     @Override
