@@ -39,4 +39,9 @@ public interface ICable {
      * @return the node that is the child
      */
     public INode getNodeChild();
+    
+    /*
+    * @return the resistance of this cable
+    */
+    public double getResistance();
 }

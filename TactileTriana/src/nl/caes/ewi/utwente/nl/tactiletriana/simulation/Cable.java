@@ -18,6 +18,7 @@ public class Cable implements ICable,ISimulationObject {
     private final Node parent;
     private final Node child;
     
+    private int resistance;
     /**
      * Instantiates a new cable connected to two nodes
      * @param parent    The node in the direction of the transformer
@@ -100,6 +101,11 @@ public class Cable implements ICable,ISimulationObject {
     //stub
     public double doForwardBackwardSweep(ISimulationObject from, double v) {
         return 10;
+    }
+
+    @Override
+    public double getResistance() {
+        return this.resistance;
     }
     
 }
