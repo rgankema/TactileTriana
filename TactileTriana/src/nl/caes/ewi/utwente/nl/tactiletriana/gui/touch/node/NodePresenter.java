@@ -5,7 +5,10 @@
  */
 package nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.node;
 
+<<<<<<< HEAD
 import javafx.beans.binding.Bindings;
+=======
+>>>>>>> Om de een of andere reden kan Git niets in een keer goed doen
 import javafx.fxml.FXML;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
@@ -24,6 +27,11 @@ public class NodePresenter {
         return root;
     }
     
+
+    /**
+     * Only to be called by factory
+     * @param viewModel 
+     */
     protected void setViewModel(NodeVM viewModel) {
         this.viewModel = viewModel;
         
