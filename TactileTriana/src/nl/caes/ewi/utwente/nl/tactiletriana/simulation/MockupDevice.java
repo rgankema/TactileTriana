@@ -3,6 +3,8 @@ package nl.caes.ewi.utwente.nl.tactiletriana.simulation;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 
+import java.util.Random;
+
 /**
  *
  * @author mickvdv
@@ -22,7 +24,8 @@ public class MockupDevice extends DeviceBase {
 
     @Override
     public void tick(double time) {
-        currentConsumption.set(300);
+        Random r = new Random();
+        currentConsumption.set(r.nextDouble()*100 + 200);
     }
     
 }
