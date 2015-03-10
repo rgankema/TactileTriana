@@ -36,12 +36,6 @@ public interface ICable {
     
     /**
      * 
-     * @return the node that is the parent
-     */
-    public INode getNodeParent();
-    
-    /**
-     * 
      * @return the node that is the child
      */
     public INode getNodeChild();

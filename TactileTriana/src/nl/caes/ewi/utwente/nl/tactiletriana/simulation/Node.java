@@ -13,7 +13,7 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
  *
  * @author Richard
  */
-public class Node implements INode,IFBSweep {
+public class Node implements INode,ISimulationNode {
     private final Set<ICable> cables;
     private final House house;
     
@@ -45,7 +45,7 @@ public class Node implements INode,IFBSweep {
     }
     
     //stub
-    public double doForwardBackwardSweep(IFBSweep from, double v) {
+    public double doForwardBackwardSweep(ISimulationNode from, double v) {
         return 10;
     }
 

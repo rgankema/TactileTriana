@@ -14,7 +14,7 @@ import javafx.beans.property.ReadOnlyDoubleWrapper;
  *
  * @author Richard
  */
-public class Cable implements ICable,IFBSweep {
+public class Cable implements ICable,ISimulationNode {
     private final Node parent;
     private final Node child;
     
@@ -30,10 +30,6 @@ public class Cable implements ICable,IFBSweep {
     
     // SIMPLE PROPERTIES
     
-    @Override
-    public Node getNodeParent() {
-        return parent;
-    }
 
     @Override
     public Node getNodeChild() {
@@ -102,7 +98,7 @@ public class Cable implements ICable,IFBSweep {
     }
     
     //stub
-    public double doForwardBackwardSweep(IFBSweep from, double v) {
+    public double doForwardBackwardSweep(ISimulationNode from, double v) {
         return 10;
     }
     
