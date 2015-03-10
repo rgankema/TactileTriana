@@ -11,6 +11,8 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 =======
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.SimpleDoubleProperty;
 >>>>>>> Eerste poging tot View + ViewModel + Controller
 import nl.caes.ewi.utwente.nl.tactiletriana.simulation.INode;
@@ -34,7 +36,7 @@ public class NodeVM {
      * Defines how far off the voltage is in the node on a scale of 0 to 1.
      * 0 means the voltage is at 230, 1 means it's off with at least 10%.
      */    
-    private final DoubleProperty voltageErrorProperty = new SimpleDoubleProperty(0);
+    private final ReadOnlyDoubleWrapper voltageErrorProperty = new ReadOnlyDoubleWrapper(0);
     
     public double getVoltageError() {
         return voltageErrorProperty.get();
@@ -45,7 +47,7 @@ public class NodeVM {
         voltageErrorProperty.set(value);
     }
     
-    public DoubleProperty voltageErrorProperty() {
-        return voltageErrorProperty;
+    public ReadOnlyDoubleProperty voltageErrorProperty() {
+        return voltageErrorProperty.getReadOnlyProperty();
     }
 }

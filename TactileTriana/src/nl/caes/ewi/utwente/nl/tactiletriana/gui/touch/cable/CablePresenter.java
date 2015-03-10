@@ -5,17 +5,12 @@
  */
 package nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.cable;
 
-<<<<<<< HEAD
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
-=======
-import javafx.fxml.FXML;
-import javafx.scene.Node;
->>>>>>> commit zodat ik verder kan op laptop
 
 /**
  * FXML Controller class
