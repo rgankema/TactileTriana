@@ -8,16 +8,16 @@ package nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.node;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
-import nl.caes.ewi.utwente.nl.tactiletriana.simulation.INode;
+import nl.caes.ewi.utwente.nl.tactiletriana.simulation.NodeBase;
 
 /**
  *
  * @author Richard
  */
 public class NodeVM {
-    private INode model;
+    private NodeBase model;
     
-    public NodeVM(INode model) {
+    public NodeVM(NodeBase model) {
         this.model = model;
         
         voltageErrorProperty.bind(Bindings.createDoubleBinding(() -> {
