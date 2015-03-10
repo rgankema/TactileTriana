@@ -14,7 +14,7 @@ import javafx.scene.Node;
  * @author Richard
  */
 public class CablePresenter {
-    private @FXML Node root;
+    @FXML private Node root;
     
     private CableVM viewModel;
     
