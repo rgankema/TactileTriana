@@ -44,7 +44,7 @@ public abstract class CableBase {
     
     /**
      * 
-     * @return the node that is the child of this cable
+     * @return the node that is the child
      */
     public abstract NodeBase getChildNode();
 }
