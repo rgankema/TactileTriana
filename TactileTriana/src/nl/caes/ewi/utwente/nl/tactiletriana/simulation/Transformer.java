@@ -14,6 +14,7 @@ public class Transformer extends Node {
     
     public Transformer() {
         super(null);
+        setVoltage(230);
     }
     
     public void initiateForwardBackwardSweep() {
@@ -21,11 +22,6 @@ public class Transformer extends Node {
             // do forward backward sweep on cables
         }
         throw new UnsupportedOperationException("Not supported yet.");
-    }
-    
-    @Override
-    public double getVoltage(){
-        return TRANSFORMER_CURRENT;
     }
     
     @Override

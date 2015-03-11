@@ -9,7 +9,7 @@ package nl.caes.ewi.utwente.nl.tactiletriana.simulation;
  *
  * @author Richard
  */
-public class Simulation implements ISimulation {
+public class Simulation extends SimulationBase {
     // Declare simulation constants
     public final int NUMBER_OF_HOUSES = 6;
     public final int TICK_TIME = 200;

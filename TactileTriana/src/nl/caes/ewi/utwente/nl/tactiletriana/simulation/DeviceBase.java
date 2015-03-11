@@ -18,7 +18,7 @@ public abstract class DeviceBase {
      */
     public abstract ReadOnlyDoubleProperty currentConsumptionProperty();
     
-    public double getCurrentConsumption() {
+    public final double getCurrentConsumption() {
         return currentConsumptionProperty().get();
     }
     

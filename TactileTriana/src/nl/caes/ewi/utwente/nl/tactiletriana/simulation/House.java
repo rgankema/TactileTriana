@@ -11,7 +11,7 @@ import javafx.collections.ObservableList;
  *
  * @author Richard
  */
-public class House implements IHouse {
+public class House extends HouseBase {
 
     @Override
     public ObservableList<DeviceBase> getDevices() {

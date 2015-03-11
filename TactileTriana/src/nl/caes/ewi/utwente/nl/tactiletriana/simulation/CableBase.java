@@ -18,7 +18,7 @@ public abstract class CableBase {
      */
     public abstract ReadOnlyDoubleProperty currentProperty();
     
-    public double getCurrent() {
+    public final double getCurrent() {
         return currentProperty().get();
     }
     
@@ -29,7 +29,7 @@ public abstract class CableBase {
      */
     public abstract ReadOnlyDoubleProperty maximumCurrentProperty();
     
-    public double getMaximumCurrent() {
+    public final double getMaximumCurrent() {
         return maximumCurrentProperty().get();
     }
     
@@ -39,7 +39,7 @@ public abstract class CableBase {
      */
     public abstract ReadOnlyBooleanProperty brokenProperty();
     
-    public boolean isBroken() {
+    public final boolean isBroken() {
         return brokenProperty().get();
     }
     
@@ -47,5 +47,5 @@ public abstract class CableBase {
      * 
      * @return the node that is the child of this cable
      */
-    public abstract INode getChildNode();
+    public abstract NodeBase getChildNode();
 }
