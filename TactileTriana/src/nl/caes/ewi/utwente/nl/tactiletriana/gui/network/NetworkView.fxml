@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.cable.*?>
+<?import nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.node.*?>
+<?import nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.house.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1920.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <HouseView layoutX="10.0" layoutY="10.0" />
+      <HouseView layoutX="760.0" layoutY="10.0" />
+      <HouseView layoutX="1510.0" layoutY="10.0" />
+      <HouseView layoutX="1510.0" layoutY="870.0" />
+      <HouseView layoutX="760.0" layoutY="870.0" />
+      <HouseView layoutX="10.0" layoutY="870.0" />
+      <NodeView layoutX="195.0" layoutY="195.0" />
+      <NodeView layoutX="945.0" layoutY="195.0" />
+      <NodeView layoutX="1695.0" layoutY="195.0" />
+      <NodeView layoutX="1695.0" layoutY="855.0" />
+      <NodeView layoutX="945.0" layoutY="855.0" />
+      <NodeView layoutX="195.0" layoutY="755.0" />
+      <NodeView layoutX="195.0" layoutY="295.0" />
+      <NodeView layoutX="945.0" layoutY="295.0" />
+      <NodeView layoutX="1695.0" layoutY="295.0" />
+      <NodeView layoutX="1695.0" layoutY="755.0" />
+      <NodeView layoutX="945.0" layoutY="755.0" />
+      <NodeView layoutX="195.0" layoutY="855.0" />
+   </children>
+</Pane>

@@ -6,7 +6,12 @@
 package nl.caes.ewi.utwente.nl.tactiletriana.gui.touch;
 
 import java.io.IOException;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.DoubleProperty;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.layout.AnchorPane;
+import nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.house.HouseView;
 import nl.utwente.cs.caes.tactile.control.TactilePane;
 
 /**
