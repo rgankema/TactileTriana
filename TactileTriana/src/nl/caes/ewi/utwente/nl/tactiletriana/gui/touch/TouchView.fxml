@@ -6,7 +6,18 @@
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.house.*?>
 
- <?scenebuilder-classpath-element "/lib/TactileAPI.jar"?>
-
-<fx:root prefHeight="1080.0" prefWidth="1920.0" type="TactilePane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"/>
+<fx:root type="TactilePane" 
+         xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+    
+    <children>
+        <HouseView layoutX="0" layoutY="0" TactilePane.draggable="false" />
+        <HouseView layoutX="760" layoutY="0" TactilePane.draggable="false" />
+        <HouseView layoutX="1520" layoutY="0" TactilePane.draggable="false" />
+        <HouseView layoutX="1520" layoutY="880" TactilePane.draggable="false" />
+        <HouseView layoutX="760" layoutY="880" TactilePane.draggable="false" />
+        <HouseView layoutX="0" layoutY="880" TactilePane.draggable="false" />
+        
+    </children>
+</fx:root>

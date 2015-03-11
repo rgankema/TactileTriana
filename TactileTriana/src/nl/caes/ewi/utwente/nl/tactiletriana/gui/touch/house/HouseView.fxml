@@ -7,9 +7,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-
 <fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" type="Pane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#cdcdcd" height="300.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="2.0" width="500.0" />
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#cdcdcd" height="200.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="2.0" width="400.0" />
    </children>
 </fx:root>
