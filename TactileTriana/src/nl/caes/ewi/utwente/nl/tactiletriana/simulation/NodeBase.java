@@ -14,8 +14,12 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
  */
 public abstract class NodeBase {
 
-    public ReadOnlyDoubleProperty voltageProperty();
-    public double getVoltage();
+
+    public abstract ReadOnlyDoubleProperty voltageProperty();
+    
+    public final double getVoltage() {
+        return voltageProperty().get();
+    }
     
     /**
      * 
@@ -27,5 +31,5 @@ public abstract class NodeBase {
      * 
      * @return the house this Node is connected to, may be null
      */
-    public abstract IHouse getHouse();
+    public abstract HouseBase getHouse();
 }

@@ -8,6 +8,7 @@ package nl.caes.ewi.utwente.nl.tactiletriana.simulation;
 import java.util.HashSet;
 import java.util.Set;
 import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.property.ReadOnlyDoubleWrapper;
 
 /**
  *
@@ -22,8 +23,6 @@ public class Node extends NodeBase implements ISimulationEntity {
         this.house = house;
     }
     
-
-    
     @Override
     public Set<CableBase> getCables() {
         return this.cables;
@@ -34,9 +33,15 @@ public class Node extends NodeBase implements ISimulationEntity {
         return this.house;
     }
 
+    private final ReadOnlyDoubleWrapper voltage = new ReadOnlyDoubleWrapper(230.0);
+    
+    protected final void setVoltage(double voltage) {
+        this.voltage.set(voltage);
+    }
+    
     @Override
     public ReadOnlyDoubleProperty voltageProperty() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return voltage.getReadOnlyProperty();
     }
 
     @Override
@@ -47,7 +52,7 @@ public class Node extends NodeBase implements ISimulationEntity {
     //stub
     @Override
     public double doForwardBackwardSweep(ISimulationEntity from, double v) {
-        //TODO: impelement
+        //TODO: implement
         return 10;
     }
     

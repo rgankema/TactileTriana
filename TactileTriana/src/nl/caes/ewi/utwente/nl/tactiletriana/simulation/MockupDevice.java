@@ -18,11 +18,6 @@ public class MockupDevice extends DeviceBase {
     }
 
     @Override
-    public double getCurrentConsumption() {
-        return currentConsumption.get();
-    }
-
-    @Override
     public void tick(double time) {
         Random r = new Random();
         currentConsumption.set(r.nextDouble()*100 + 200);
