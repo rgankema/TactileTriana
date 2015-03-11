@@ -56,7 +56,7 @@ public class Simulation extends SimulationBase {
     
     public void start() {
         while(true){
-            transformer.initiateForwardBackwardSweep();
+            initiateForwardBackwardSweep();
             try {
                 Thread.sleep(TICK_TIME);
             } catch(InterruptedException ex) {
@@ -64,7 +64,16 @@ public class Simulation extends SimulationBase {
             }
         }
     }
-
+       
+    public void initiateForwardBackwardSweep() {
+        //First Reset the nodes.
+        transformer.resetEntity(230, 0);
+        //Run the ForwwardBackWardSweep Load-flow calculation 10 times and assume convergence.
+        for(int i = 0; i < 10; i++) {
+            transformer.doForwardBackwardSweep(230);
+        }
+    }
+    
     @Override
     public void stop() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

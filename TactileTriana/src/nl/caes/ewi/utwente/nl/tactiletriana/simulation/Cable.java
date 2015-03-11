@@ -17,6 +17,7 @@ import javafx.beans.property.ReadOnlyDoubleWrapper;
 public class Cable extends CableBase implements ISimulationEntity {
     private final Node child;
     private final double resistance;
+    private final double length;    
     
     /**
      * Instantiates a new cable connected to two nodes
@@ -24,7 +25,9 @@ public class Cable extends CableBase implements ISimulationEntity {
      */
     public Cable(Node child) {
         this.child = child;
+        //TODO provide sane defaults
         this.resistance = 0.00005;
+        this.length = 10;
     }
     
     // SIMPLE PROPERTIES
@@ -84,13 +87,26 @@ public class Cable extends CableBase implements ISimulationEntity {
     // METHODS
     
     //stub
-    public double doForwardBackwardSweep(ISimulationEntity from, double v) {
-        return 10;
+    public double doForwardBackwardSweep(double v) {
+       //update the voltages in the forward sweep
+        double voltage = v - (this.getCurrent() * (resistance*length));
+        
+        
+            this.setCurrent(child.doForwardBackwardSweep(voltage));
+            
+        
+
+        return this.getCurrent();
     }
     
     @Override
     public String toString(){
         return "(Cable:R="+ resistance +  ",I="+ this.getCurrent() + ") -> " + this.getChildNode().toString();
+    }
+
+    @Override
+    public void resetEntity(double voltage, double current) {
+        this.setCurrent(current);
     }
     
 }

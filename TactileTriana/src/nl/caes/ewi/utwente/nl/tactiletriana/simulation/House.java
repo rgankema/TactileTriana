@@ -22,4 +22,11 @@ public class House extends HouseBase {
     public String toString(){
         return "House";
     }
+    
+    
+    //TODO implement
+    public double getConsumption() {
+        return 10;
+    }
+    
 }

@@ -44,12 +44,28 @@ public class Node extends NodeBase implements ISimulationEntity {
         return voltage.getReadOnlyProperty();
     }
     
-    //stub
+    //ForwardBackwardSweep Load-flow algorithm.
+    //The network is build as a tree. The node has references to outgoing (with respect to the root of the tree(transformer)) cables. 
     @Override
-    public double doForwardBackwardSweep(ISimulationEntity from, double v) {
-        //TODO: implement
-        return 10;
+    public double doForwardBackwardSweep(double v) {
+        double current = 0.0;
+        //Forward sweep, update the voltages
+        this.setVoltage(v);
+        
+        for(CableBase c : cables){
+            
+                current += ((Cable)c).doForwardBackwardSweep(this.getVoltage());
+            
+        }
+        if(house != null){
+            current -= (house.getConsumption()/this.getVoltage()); //I = P/U //Apparently this one is inversed?
+            //System.out.println(current);
+        }
+        //System.out.println(voltage);
+        
+        return current;
     }
+    
     
     @Override
     public String toString(){
@@ -59,6 +75,17 @@ public class Node extends NodeBase implements ISimulationEntity {
             output += c.toString();
         }
         return output;
+    }
+
+    @Override
+    public void resetEntity(double voltage, double current) {
+        this.setVoltage(voltage);
+        
+        for(CableBase c : cables){
+            
+                ((Cable)c).resetEntity(voltage, current);
+            
+        }
     }
     
 }

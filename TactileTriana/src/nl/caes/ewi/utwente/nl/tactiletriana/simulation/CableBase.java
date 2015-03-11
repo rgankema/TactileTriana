@@ -11,7 +11,9 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
 /**
  * A connection between to nodes
  */
-public abstract class CableBase {
+
+//TODO check if the ISimulation implements should go here or in the Cable class
+public abstract class CableBase implements ISimulationEntity{
     /**
      * 
      * @return the current flowing through the cable

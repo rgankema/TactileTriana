@@ -9,7 +9,7 @@ package nl.caes.ewi.utwente.nl.tactiletriana.simulation;
  *
  * @author Richard
  */
-public class Transformer extends Node {
+public class Transformer extends Node implements ISimulationEntity {
     public final double TRANSFORMER_CURRENT = 230.0;
     
     public Transformer() {
@@ -17,12 +17,12 @@ public class Transformer extends Node {
         setVoltage(230);
     }
     
-    public void initiateForwardBackwardSweep() {
-        for (CableBase c : getCables()) {
-            // do forward backward sweep on cables
-        }
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+//    public void initiateForwardBackwardSweep() {
+//        for (CableBase c : getCables()) {
+//            // do forward backward sweep on cables
+//        }
+//        throw new UnsupportedOperationException("Not supported yet.");
+//    }
     
     @Override
     public String toString(){
