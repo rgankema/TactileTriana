@@ -37,14 +37,11 @@ public abstract class CableBase {
      * 
      * @return whether the cable is broken or not
      */
-    public ReadOnlyBooleanProperty brokenProperty();
-    public boolean isBroken();
+    public abstract ReadOnlyBooleanProperty brokenProperty();
     
-    /**
-     * 
-     * @return the node that is the parent
-     */
-    public INode getNodeParent();
+    public final boolean isBroken() {
+        return brokenProperty().get();
+    }
     
     /**
      * 

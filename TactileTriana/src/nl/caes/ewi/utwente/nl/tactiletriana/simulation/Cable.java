@@ -64,11 +64,6 @@ public class Cable extends CableBase implements ISimulationEntity {
             super.set(value);
         }
     };
-
-    @Override
-    public double getCurrent() {
-        return current.get();
-    }
     
     private void setCurrent(double value) {
         current.set(value);
@@ -80,12 +75,6 @@ public class Cable extends CableBase implements ISimulationEntity {
     }
     
     private final ReadOnlyDoubleWrapper maximumCurrent = new ReadOnlyDoubleWrapper(Double.MAX_VALUE);   //TODO: betere waarde verzinnen
-    
-
-    @Override
-    public double getMaximumCurrent() {
-        return maximumCurrent.get();
-    }
     
     @Override
     public ReadOnlyDoubleProperty maximumCurrentProperty() {

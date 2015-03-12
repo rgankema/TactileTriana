@@ -43,11 +43,6 @@ public class Node extends NodeBase implements ISimulationEntity {
     public ReadOnlyDoubleProperty voltageProperty() {
         return voltage.getReadOnlyProperty();
     }
-
-    @Override
-    public double getVoltage() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
     
     //stub
     @Override
