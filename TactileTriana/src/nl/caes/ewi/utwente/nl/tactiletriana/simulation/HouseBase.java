@@ -20,5 +20,9 @@ public abstract class HouseBase {
     
     public abstract void addDevice(DeviceBase device);
     
-    public abstract void tick(double time);
+    public void tick(double time) {
+        for (DeviceBase device : getDevices()) {
+            device.tick(time);
+        }
+    }
 }

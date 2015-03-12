@@ -32,5 +32,12 @@ public abstract class NodeBase {
      */
     public abstract HouseBase getHouse();
     
-    public abstract void tick(double time);
+    public void tick(double time) {
+        if (getHouse() != null) {
+            getHouse().tick(time);
+        }
+        for (CableBase cable : getCables()) {
+            cable.tick(time);
+        }
+    }
 }

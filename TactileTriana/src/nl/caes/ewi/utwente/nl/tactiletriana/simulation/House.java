@@ -47,12 +47,4 @@ public class House extends HouseBase {
         }
         return consumption;
     }
-
-    public void tick(double time) {
-        for(DeviceBase d : this.getDevices()){
-            d.tick(time);
-        }
-    }
-
-    
 }

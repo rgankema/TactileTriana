@@ -87,15 +87,5 @@ public class Node extends NodeBase implements ISimulationEntity {
             
         }
     }
-
-    @Override
-    public void tick(double time) {
-        if (this.getHouse() != null){
-            this.getHouse().tick(time);
-        }
-        for (CableBase c : this.getCables()){
-            c.tick(time);
-        }
-    }
     
 }
