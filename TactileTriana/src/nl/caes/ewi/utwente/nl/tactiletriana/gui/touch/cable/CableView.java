@@ -6,7 +6,12 @@
 package nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.cable;
 
 import java.io.IOException;
+import javafx.animation.AnimationTimer;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -14,11 +19,14 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
+import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.util.Duration;
 
 /**
  * FXML Controller class
@@ -27,7 +35,8 @@ import javafx.scene.shape.Line;
  */
 public class CableView extends Group{
     @FXML private Line line;
-    
+    @FXML private DirectionView directionStart;
+    @FXML private DirectionView directionEnd;
     private CableVM viewModel;
     
     public CableView() {
@@ -40,10 +49,26 @@ public class CableView extends Group{
         } catch (IOException e) {
             throw new RuntimeException("Could not load CableView.fxml", e);
         }
+        
+        DoubleBinding angle = Bindings.createDoubleBinding(() -> {
+            double theta = Math.atan2(line.getEndY() - line.getStartY(), line.getEndX() - line.getStartX());
+            double a = Math.toDegrees(theta);
+            a = (a + 90 + 360) % 360;
+            return a;
+        }, line.startXProperty(), line.startYProperty(), line.endXProperty(), line.startYProperty());
+        
+        directionStart.layoutXProperty().bind(line.startXProperty().subtract(30));
+        directionStart.layoutYProperty().bind(line.startYProperty().subtract(30));
+        directionStart.rotateProperty().bind(angle.subtract(180));
+        
+        directionEnd.layoutXProperty().bind(line.endXProperty().subtract(30));
+        directionEnd.layoutYProperty().bind(line.endYProperty().subtract(30));
+        directionEnd.rotateProperty().bind(angle);
     }
     
     public void setViewModel(CableVM viewModel) {
-        line.strokeProperty().unbind();
+        if (this.viewModel != null) throw new IllegalStateException("ViewModel can only be set once");
+        if (viewModel == null) return;
         
         this.viewModel = viewModel;
         // Bind load and broken in viewmodel to color in view
@@ -55,7 +80,14 @@ public class CableView extends Group{
             double load = viewModel.getLoad();
             return new Color(load, 1.0 - load, 0, 1.0);
         }, viewModel.loadProperty(), viewModel.brokenProperty()));
+        
+        // Bind direction in viewmodel to visibility of direction views
+        
+        directionStart.visibleProperty().bind(viewModel.directionProperty().isEqualTo(CableVM.Direction.START));
+        directionEnd.visibleProperty().bind(viewModel.directionProperty().isEqualTo(CableVM.Direction.END));
     }
+    
+    // PROPERTIES
     
     private final ObjectProperty<Node> startNode = new SimpleObjectProperty<Node>(null) {
         @Override
@@ -124,62 +156,4 @@ public class CableView extends Group{
     public ObjectProperty<Node> endNodeProperty() {
         return endNode;
     }
-    
-    /*
-    private final DoubleProperty startX = new SimpleDoubleProperty(0);
-    
-    public double getStartX() {
-        return startX.get();
-    }
-    
-    public void setStartX(double startX) {
-        this.startX.set(startX);
-    }
-    
-    public DoubleProperty startXProperty() {
-        return startX;
-    }
-    
-    private final DoubleProperty startY = new SimpleDoubleProperty(0);
-    
-    public double getStartY() {
-        return startY.get();
-    }
-    
-    public void setStartY(double startY) {
-        this.startY.set(startY);
-    }
-    
-    public DoubleProperty startYProperty() {
-        return startY;
-    }
-    
-    private final DoubleProperty endX = new SimpleDoubleProperty(0);
-    
-    public double getEndX() {
-        return endX.get();
-    }
-    
-    public void setEndX(double endX) {
-        this.endX.set(endX);
-    }
-    
-    public DoubleProperty endXProperty() {
-        return endX;
-    }
-    
-    private final DoubleProperty endY = new SimpleDoubleProperty(0);
-    
-    public double getEndY() {
-        return endY.get();
-    }
-    
-    public void setEndY(double endY) {
-        this.endY.set(endY);
-    }
-    
-    public DoubleProperty endYProperty() {
-        return endY;
-    }
-    */
 }
