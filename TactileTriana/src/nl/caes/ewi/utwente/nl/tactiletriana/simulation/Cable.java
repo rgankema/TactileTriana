@@ -108,5 +108,10 @@ public class Cable extends CableBase implements ISimulationEntity {
     public void resetEntity(double voltage, double current) {
         this.setCurrent(current);
     }
+
+    @Override
+    public void tick(double time) {
+        this.getChildNode().tick(time);
+    }
     
 }

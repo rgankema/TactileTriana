@@ -5,6 +5,9 @@
  */
 package nl.caes.ewi.utwente.nl.tactiletriana.simulation;
 
+import com.sun.javafx.collections.ObservableListWrapper;
+import java.util.ArrayList;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 /**
@@ -12,21 +15,44 @@ import javafx.collections.ObservableList;
  * @author Richard
  */
 public class House extends HouseBase {
-
+    
+    private ObservableList<DeviceBase> devices;
+    
+    public House(){
+        devices = FXCollections.observableArrayList();    
+    }
+    
     @Override
     public ObservableList<DeviceBase> getDevices() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return devices;
+    }
+    
+    @Override
+    public void addDevice(DeviceBase d) {
+        devices.add(d);
     }
     
     @Override
     public String toString(){
-        return "House";
+        return "(House:P="+getConsumption()+")";
     }
     
     
     //TODO implement
     public double getConsumption() {
-        return 10;
+        // sum of all the devices
+        double consumption = 0;
+        for (DeviceBase d : this.getDevices()){
+            consumption += d.getCurrentConsumption();
+        }
+        return consumption;
     }
+
+    public void tick(double time) {
+        for(DeviceBase d : this.getDevices()){
+            d.tick(time);
+        }
+    }
+
     
 }

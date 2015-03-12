@@ -10,7 +10,8 @@ import java.util.Random;
  * @author mickvdv
  */
 public class MockupDevice extends DeviceBase {
-    private final ReadOnlyDoubleWrapper currentConsumption = new ReadOnlyDoubleWrapper(Double.MAX_VALUE);
+    // TODO: wat moet de beginwaarde zijn.
+    private final ReadOnlyDoubleWrapper currentConsumption = new ReadOnlyDoubleWrapper(250);
     
     @Override
     public ReadOnlyDoubleProperty currentConsumptionProperty() {

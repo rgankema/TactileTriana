@@ -37,6 +37,12 @@ public class Simulation extends SimulationBase {
         // maak huizen aan met cables en dat soort grappen
         for(int i = 0; i <= NUMBER_OF_HOUSES-1; i ++){
             houses[i] = new House();
+            
+            //DEBUG:
+            // Add a mockup device to every house.
+            // For testing purposes!
+            houses[i].addDevice(new MockupDevice());
+            
             nodes[i] = new Node(houses[i]);
             
             if (i == 0){
@@ -72,6 +78,10 @@ public class Simulation extends SimulationBase {
         for(int i = 0; i < 10; i++) {
             transformer.doForwardBackwardSweep(230);
         }
+    }
+    
+    public void initiateTick(double time){
+        this.getTransformer().tick(time);
     }
     
     @Override

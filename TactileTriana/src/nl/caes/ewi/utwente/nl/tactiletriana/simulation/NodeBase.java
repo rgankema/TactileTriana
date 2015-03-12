@@ -31,4 +31,6 @@ public abstract class NodeBase {
      * @return the house this Node is connected to, may be null
      */
     public abstract HouseBase getHouse();
+    
+    public abstract void tick(double time);
 }
