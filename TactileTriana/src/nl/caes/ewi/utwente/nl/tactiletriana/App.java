@@ -6,17 +6,26 @@
 package nl.caes.ewi.utwente.nl.tactiletriana;
 
 import javafx.application.Application;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
+import nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.TouchView;
 
 /**
  *
  * @author Richard
  */
 public class App extends Application {
-
+    
     @Override
-    public void start(Stage primaryStage) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void start(Stage stage) throws Exception {
+        TouchView tv = new TouchView();
+        //TestView tv = new TestView();
+        
+        Scene scene = new Scene(tv);
+        
+        stage.setScene(scene);
+        stage.setFullScreen(true);
+        stage.show();
     }
     
     public static void main(String[] args) {

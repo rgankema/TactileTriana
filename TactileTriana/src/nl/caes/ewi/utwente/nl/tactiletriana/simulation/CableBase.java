@@ -24,7 +24,6 @@ public abstract class CableBase implements ISimulationEntity{
         return currentProperty().get();
     }
     
-    
     /**
      * 
      * @return the absolute maximum current that can flow through the cable before it breaks
@@ -47,7 +46,7 @@ public abstract class CableBase implements ISimulationEntity{
     
     /**
      * 
-     * @return the node that is the child of this cable
+     * @return the node that is the child
      */
     public abstract NodeBase getChildNode();
 

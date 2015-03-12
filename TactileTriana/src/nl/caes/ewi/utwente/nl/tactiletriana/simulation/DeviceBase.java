@@ -11,6 +11,7 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
  *
  * @author Richard
  */
+
 public abstract class DeviceBase {
     /**
      * 

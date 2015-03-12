@@ -14,12 +14,12 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
  */
 public abstract class NodeBase {
 
+
     public abstract ReadOnlyDoubleProperty voltageProperty();
     
     public final double getVoltage() {
         return voltageProperty().get();
     }
-    
     /**
      * 
      * @return a list of cables that connect to this node
