@@ -12,6 +12,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.cable.CableView;
+import nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.house.HouseView;
 
 /**
  *
@@ -33,5 +34,11 @@ public class NetworkView extends Pane {
         List<Node> cables = new ArrayList<>();
         getChildren().stream().filter((node) -> (node instanceof CableView)).forEach(cables::add);
         cables.stream().forEach(Node::toBack);
+    }
+    
+    public List<HouseView> getHouseViews() {
+        List<HouseView> result = new ArrayList<>();
+        getChildren().stream().filter(node -> node instanceof HouseView).forEach(node -> result.add((HouseView) node));
+        return result;
     }
 }

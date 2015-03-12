@@ -15,6 +15,6 @@
          xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
     
     <children>
-        <NetworkView TactilePane.draggable="false"  />
+        <NetworkView fx:id="networkView" TactilePane.draggable="false"  />
     </children>
 </fx:root>
