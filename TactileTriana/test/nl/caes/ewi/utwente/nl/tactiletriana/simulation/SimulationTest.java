@@ -46,6 +46,13 @@ public class SimulationTest {
         Simulation instance = Simulation.getInstance();
         Transformer result = instance.getTransformer();
         System.out.println(result.toString());
+        
+        // forward backward sweep
+        result.doForwardBackwardSweep(230);
+        
+        
+        
+        System.out.println(result.toString());
 
     }
 

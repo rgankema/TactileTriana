@@ -28,5 +28,10 @@ public class House extends HouseBase {
     public double getConsumption() {
         return 10;
     }
+
+    @Override
+    public void addDevice(DeviceBase device) {
+        
+    }
     
 }

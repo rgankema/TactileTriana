@@ -17,4 +17,6 @@ public abstract class HouseBase {
      * @return a list of the devices that are connected to this house
      */
     public abstract ObservableList<DeviceBase> getDevices();
+    
+    public abstract void addDevice(DeviceBase device);
 }
