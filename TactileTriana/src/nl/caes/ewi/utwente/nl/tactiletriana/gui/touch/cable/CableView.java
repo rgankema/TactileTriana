@@ -14,6 +14,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -24,7 +25,7 @@ import javafx.scene.shape.Line;
  *
  * @author Richard
  */
-public class CableView extends Pane{
+public class CableView extends Group{
     @FXML private Line line;
     
     private CableVM viewModel;
@@ -39,8 +40,6 @@ public class CableView extends Pane{
         } catch (IOException e) {
             throw new RuntimeException("Could not load CableView.fxml", e);
         }
-        
-        
     }
     
     public void setViewModel(CableVM viewModel) {
