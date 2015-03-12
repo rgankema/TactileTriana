@@ -21,7 +21,6 @@ public abstract class CableBase {
     public final double getCurrent() {
         return currentProperty().get();
     }
-
     
     /**
      * 
