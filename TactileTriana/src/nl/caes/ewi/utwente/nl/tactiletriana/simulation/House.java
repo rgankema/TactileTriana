@@ -12,10 +12,17 @@ import javafx.collections.ObservableList;
  * @author Richard
  */
 public class House extends HouseBase {
-
+    
+    private ObservableList<DeviceBase> devices;
+    
     @Override
     public ObservableList<DeviceBase> getDevices() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    @Override
+    public void addDevice(DeviceBase d) {
+        devices.add(d);
     }
     
     @Override
@@ -29,9 +36,5 @@ public class House extends HouseBase {
         return 10;
     }
 
-    @Override
-    public void addDevice(DeviceBase device) {
-        
-    }
     
 }
