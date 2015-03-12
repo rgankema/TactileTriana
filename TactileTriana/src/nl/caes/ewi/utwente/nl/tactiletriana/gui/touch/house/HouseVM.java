@@ -5,10 +5,16 @@
  */
 package nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.house;
 
+import nl.caes.ewi.utwente.nl.tactiletriana.simulation.House;
+
 /**
  *
  * @author Richard
  */
 public class HouseVM {
+    private House model;
     
+    public HouseVM(House model) {
+        this.model = model;
+    }
 }
