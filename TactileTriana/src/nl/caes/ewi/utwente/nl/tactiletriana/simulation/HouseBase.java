@@ -19,4 +19,6 @@ public abstract class HouseBase {
     public abstract ObservableList<DeviceBase> getDevices();
     
     public abstract void addDevice(DeviceBase device);
+    
+    public abstract void tick(double time);
 }

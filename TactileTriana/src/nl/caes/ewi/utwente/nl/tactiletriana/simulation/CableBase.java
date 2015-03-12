@@ -50,4 +50,6 @@ public abstract class CableBase implements ISimulationEntity{
      * @return the node that is the child of this cable
      */
     public abstract NodeBase getChildNode();
+
+    public abstract void tick(double time);
 }
