@@ -19,6 +19,7 @@ public class App extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         TouchView tv = new TouchView();
+        //TestView tv = new TestView();
         
         Scene scene = new Scene(tv);
         

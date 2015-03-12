@@ -6,14 +6,10 @@
 package nl.caes.ewi.utwente.nl.tactiletriana.gui.touch;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Bounds;
-import javafx.scene.Node;
-import javafx.scene.layout.Pane;
+import nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.device.DeviceVM;
 import nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.device.DeviceView;
 import nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.house.HouseView;
 import nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.network.NetworkView;
@@ -53,6 +49,7 @@ public class TouchView extends TactilePane {
         double y = 1080/2 - 25;
         
         DeviceView device = new DeviceView();
+        device.setViewModel(new DeviceVM(null));
         device.relocate(x, y);
         
         // Add device to pane, in background
@@ -60,7 +57,7 @@ public class TouchView extends TactilePane {
         // Track device
         getActiveNodes().add(device);
         
-        // Make device rotate
+        // Make device rotate       TODO: misschien moet dit in DeviceVM gebeuren?
         device.rotateProperty().bind(Bindings.createDoubleBinding(() -> {
             double rotate = device.getLayoutY() - y;
             if (rotate < -90) rotate = -90.0;
@@ -75,6 +72,8 @@ public class TouchView extends TactilePane {
             } else {
                 if (!TactilePane.getNodesColliding(device).stream().anyMatch(node -> node instanceof HouseView)) {
                     getChildren().remove(device);
+                } else {
+                    device.getViewModel().setConfigIconShown(true); // TODO: TIJDELIJK!!! dit moet uiteindelijk uiteraard automatisch gaan in de VM
                 }
             }
         });

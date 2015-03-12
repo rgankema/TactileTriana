@@ -7,11 +7,9 @@ package nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.node;
 
 import java.io.IOException;
 import javafx.beans.binding.Bindings;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
 
 /**
  * FXML Controller class
