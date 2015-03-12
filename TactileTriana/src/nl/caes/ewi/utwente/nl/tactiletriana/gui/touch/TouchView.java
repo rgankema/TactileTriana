@@ -9,11 +9,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.beans.binding.Bindings;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
+import javafx.scene.layout.Pane;
 import nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.device.DeviceView;
 import nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.house.HouseView;
+import nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.network.NetworkView;
 import nl.utwente.cs.caes.tactile.control.TactilePane;
 
 /**
@@ -22,9 +25,9 @@ import nl.utwente.cs.caes.tactile.control.TactilePane;
  * @author Richard
  */
 public class TouchView extends TactilePane {
+    @FXML private NetworkView networkView;
     
     private TouchVM viewModel;
-    private List<DeviceView> devices;
     
     public TouchView() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("TouchView.fxml"));
@@ -37,28 +40,44 @@ public class TouchView extends TactilePane {
             throw new RuntimeException("Could not load TouchView.fxml", e);
         }
         
-        // Create a stack of (dummy) devices
-        devices = new ArrayList<>();
-        double x = 1920/2 - 25;
-        double y = 1080/2 - 25;
-        for (int i = 0; i < 6; i++) {
-            DeviceView device = new DeviceView();
-            device.relocate(x, y);
-            
-            devices.add(device);
-            getChildren().add(device);
+        // Track houses
+        for (HouseView house : networkView.getHouseViews()) {
+            getActiveNodes().add(house);
         }
         
-        for (Node node : getChildren()) {
-            if (node instanceof DeviceView) {
-                node.rotateProperty().bind(Bindings.createDoubleBinding(() -> {
-                    double rotate = node.getLayoutY() - y;
-                    if (rotate < -90) rotate = -90.0;
-                    if (rotate > 90) rotate = 90.0;
-                    return 90.0 - rotate;
-                }, node.layoutYProperty()));
+        addDeviceToStack();
+    }
+    
+    private void addDeviceToStack() {
+        double x = 1920/2 - 25;
+        double y = 1080/2 - 25;
+        
+        DeviceView device = new DeviceView();
+        device.relocate(x, y);
+        
+        // Add device to pane, in background
+        getChildren().add(1, device);
+        // Track device
+        getActiveNodes().add(device);
+        
+        // Make device rotate
+        device.rotateProperty().bind(Bindings.createDoubleBinding(() -> {
+            double rotate = device.getLayoutY() - y;
+            if (rotate < -90) rotate = -90.0;
+            if (rotate > 90) rotate = 90.0;
+            return 90.0 - rotate;
+        }, device.layoutYProperty()));
+        
+        // Add new device when drag starts, remove device if not on house
+        TactilePane.inUseProperty(device).addListener(obs -> {
+            if (TactilePane.isInUse(device)) {
+                addDeviceToStack();
+            } else {
+                if (!TactilePane.getNodesColliding(device).stream().anyMatch(node -> node instanceof HouseView)) {
+                    getChildren().remove(device);
+                }
             }
-        }
+        });
     }
     
     public void setViewModel(TouchVM viewModel) {
