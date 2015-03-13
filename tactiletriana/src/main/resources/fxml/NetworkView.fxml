@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import nl.utwente.ewi.caes.tactiletriana.gui.touch.transformer.*?>
+<?import nl.utwente.ewi.caes.tactiletriana.gui.touch.cable.*?>
+<?import nl.utwente.ewi.caes.tactiletriana.gui.touch.node.*?>
+<?import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1920.0" type="Pane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <!-- Houses -->
+      <HouseView fx:id="h1" layoutX="10.0" layoutY="10.0" />
+      <HouseView fx:id="h2" layoutX="760.0" layoutY="10.0" />
+      <HouseView fx:id="h3" layoutX="1510.0" layoutY="10.0" />
+      <HouseView fx:id="h4" layoutX="1510.0" layoutY="870.0" />
+      <HouseView fx:id="h5" layoutX="760.0" layoutY="870.0" />
+      <HouseView fx:id="h6" layoutX="10.0" layoutY="870.0" />
+      
+      <!-- Transformer -->
+      <TransformerView fx:id="t" layoutX="170.0" layoutY="500.0" />
+      
+      <!-- Nodes at houses -->
+      <NodeView fx:id="nh1" layoutX="195.0" layoutY="195.0" />
+      <NodeView fx:id="nh2" layoutX="945.0" layoutY="195.0" />
+      <NodeView fx:id="nh3" layoutX="1695.0" layoutY="195.0" />
+      <NodeView fx:id="nh4" layoutX="1695.0" layoutY="855.0" />
+      <NodeView fx:id="nh5" layoutX="945.0" layoutY="855.0" />
+      <NodeView fx:id="nh6" layoutX="195.0" layoutY="855.0" />
+      
+      <!-- Nodes in internal network -->
+      <NodeView fx:id="n1" layoutX="195.0" layoutY="295.0" />
+      <NodeView fx:id="n2" layoutX="945.0" layoutY="295.0" />
+      <NodeView fx:id="n3" layoutX="1695.0" layoutY="295.0" />
+      <NodeView fx:id="n4" layoutX="1695.0" layoutY="755.0" />
+      <NodeView fx:id="n5" layoutX="945.0" layoutY="755.0" />
+      <NodeView fx:id="n6" layoutX="195.0" layoutY="755.0" />
+      
+      <!-- Cables between house nodes and internal nodes -->
+      <CableView endNode="$nh1" startNode="$n1" />
+      <CableView endNode="$nh2" startNode="$n2" />
+      <CableView endNode="$nh3" startNode="$n3" />
+      <CableView endNode="$nh4" startNode="$n4" />
+      <CableView endNode="$nh5" startNode="$n5" />
+      <CableView endNode="$nh6" startNode="$n6" />
+      
+      <!-- Cables between internal nodes -->
+      <CableView endNode="$n1" startNode="$t" />
+      <CableView endNode="$n2" startNode="$n1" />
+      <CableView endNode="$n3" startNode="$n2" />
+      <CableView endNode="$n4" startNode="$n3" />
+      <CableView endNode="$n5" startNode="$n4" />
+      <CableView endNode="$n6" startNode="$n5" />
+
+   </children>
+</fx:root>
