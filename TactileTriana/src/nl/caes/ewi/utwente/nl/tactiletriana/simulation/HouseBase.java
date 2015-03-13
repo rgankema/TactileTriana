@@ -18,8 +18,6 @@ public abstract class HouseBase {
      */
     public abstract ObservableList<DeviceBase> getDevices();
     
-    public abstract void addDevice(DeviceBase device);
-    
     public void tick(double time) {
         for (DeviceBase device : getDevices()) {
             device.tick(time);

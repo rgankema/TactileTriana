@@ -28,11 +28,6 @@ public class House extends HouseBase {
     }
     
     @Override
-    public void addDevice(DeviceBase d) {
-        devices.add(d);
-    }
-    
-    @Override
     public String toString(){
         return "(House:P="+getConsumption()+")";
     }

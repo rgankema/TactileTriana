@@ -41,7 +41,7 @@ public class Simulation extends SimulationBase {
             //DEBUG:
             // Add a mockup device to every house.
             // For testing purposes!
-            houses[i].addDevice(new MockupDevice());
+            houses[i].getDevices().add(new MockupDevice());
             
             nodes[i] = new Node(houses[i]);
             
