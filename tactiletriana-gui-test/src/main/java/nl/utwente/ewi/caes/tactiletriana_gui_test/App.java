@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package nl.utwente.ewi.caes.tactiletriana;
+package nl.utwente.ewi.caes.tactiletriana_gui_test;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import nl.utwente.ewi.caes.tactiletriana.gui.touch.TouchView;
+import nl.utwente.ewi.caes.tactiletriana_gui_test.gui.MainView;
 
 /**
  *
@@ -18,12 +18,11 @@ public class App extends Application {
     
     @Override
     public void start(Stage stage) throws Exception {
-        TouchView tv = new TouchView();
+        MainView tv = new MainView();
         
         Scene scene = new Scene(tv);
         
         stage.setScene(scene);
-        stage.setFullScreen(true);
         stage.show();
     }
     

@@ -6,7 +6,6 @@
 package nl.utwente.ewi.caes.tactiletriana.debug;
 
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
-
 /**
  *
  * @author mickvdv

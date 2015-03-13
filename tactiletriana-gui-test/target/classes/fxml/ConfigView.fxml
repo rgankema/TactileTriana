@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<fx:root type="GridPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Label text="Node Voltage" />
+      <Label text="Cable Current" GridPane.rowIndex="1" />
+      <Label text="Cable Broken" GridPane.rowIndex="3" />
+      <Label text="Cable MaxCurrent" GridPane.rowIndex="2" />
+      <CheckBox fx:id="cableBrokenCheckBox" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+      <Slider fx:id="nodeVoltageSlider" majorTickUnit="30.0" max="260.0" min="200.0" minorTickCount="5" showTickLabels="true" showTickMarks="true" value="230.0" GridPane.columnIndex="1" />
+      <Slider fx:id="cableCurrentSlider" majorTickUnit="10.0" max="10.0" min="-10.0" minorTickCount="5" showTickLabels="true" showTickMarks="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <Slider fx:id="cableMaxCurrentSlider" majorTickUnit="5.0" max="10.0" minorTickCount="5" showTickLabels="true" showTickMarks="true" value="10.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+   </children>
+   <columnConstraints>
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints minHeight="10.0" valignment="TOP" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" valignment="TOP" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" valignment="TOP" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+   </rowConstraints>
+</fx:root>
