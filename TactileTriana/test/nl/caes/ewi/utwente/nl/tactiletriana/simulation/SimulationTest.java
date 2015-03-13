@@ -5,6 +5,8 @@
  */
 package nl.caes.ewi.utwente.nl.tactiletriana.simulation;
 
+import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
+import nl.utwente.ewi.caes.tactiletriana.simulation.Transformer;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

@@ -5,6 +5,7 @@
  */
 package nl.caes.ewi.utwente.nl.tactiletriana.simulation;
 
+import nl.utwente.ewi.caes.tactiletriana.simulation.MockupDevice;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import org.junit.After;
