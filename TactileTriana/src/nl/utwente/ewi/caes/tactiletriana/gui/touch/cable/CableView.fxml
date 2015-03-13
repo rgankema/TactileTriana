@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.cable.*?>
+<?import nl.utwente.ewi.caes.tactiletriana.gui.touch.cable.*?>
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.shape.*?>
 <?import java.lang.*?>

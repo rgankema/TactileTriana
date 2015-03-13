@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.transformer.*?>
-<?import nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.cable.*?>
-<?import nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.node.*?>
-<?import nl.caes.ewi.utwente.nl.tactiletriana.gui.touch.house.*?>
+<?import nl.utwente.ewi.caes.tactiletriana.gui.touch.transformer.*?>
+<?import nl.utwente.ewi.caes.tactiletriana.gui.touch.cable.*?>
+<?import nl.utwente.ewi.caes.tactiletriana.gui.touch.node.*?>
+<?import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
 <?import javafx.scene.*?>
