@@ -10,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
+import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 
 /**
  *
@@ -21,15 +22,7 @@ public class DeviceView extends StackPane {
     private DeviceVM viewModel;
     
     public DeviceView() {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/DeviceView.fxml"));
-        loader.setController(this);
-        loader.setRoot(this);
-        
-        try {
-            loader.load();
-        } catch (IOException e) {
-            throw new RuntimeException("Could not load DeviceView.fxml", e);
-        }
+        ViewLoader.load(this);
     }
     
     public DeviceVM getViewModel() {

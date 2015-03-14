@@ -5,15 +5,14 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.touch;
 
-import java.io.IOException;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.network.NetworkView;
 import nl.utwente.cs.caes.tactile.control.TactilePane;
+import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 
 /**
  * FXML Controller class
@@ -26,15 +25,7 @@ public class TouchView extends TactilePane {
     private TouchVM viewModel;
     
     public TouchView() {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/TouchView.fxml"));
-        loader.setRoot(this);
-        loader.setController(this);
-        
-        try {
-            loader.load();
-        } catch (IOException e) {
-            throw new RuntimeException("Could not load TouchView.fxml", e);
-        }
+        ViewLoader.load(this);
         
         // Track houses
         for (HouseView house : networkView.getHouseViews()) {

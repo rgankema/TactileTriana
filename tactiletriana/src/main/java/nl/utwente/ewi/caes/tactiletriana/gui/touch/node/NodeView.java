@@ -10,6 +10,7 @@ import javafx.beans.binding.Bindings;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 
 /**
  * FXML Controller class
@@ -21,15 +22,7 @@ public class NodeView extends Rectangle {
     private NodeVM viewModel;
     
     public NodeView() {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/NodeView.fxml"));
-        loader.setRoot(this);
-        loader.setController(this);
-        
-        try {
-            loader.load();
-        } catch (IOException e) {
-            throw new RuntimeException("Could not load NodeView.fxml", e);
-        }
+        ViewLoader.load(this);
     }
     
     public void setViewModel(NodeVM viewModel) {

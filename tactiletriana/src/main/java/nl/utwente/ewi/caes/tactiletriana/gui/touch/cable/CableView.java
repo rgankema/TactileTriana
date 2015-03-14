@@ -17,6 +17,7 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 
 /**
  * FXML Controller class
@@ -30,15 +31,7 @@ public class CableView extends Group{
     private CableVM viewModel;
     
     public CableView() {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/CableView.fxml"));
-        loader.setController(this);
-        loader.setRoot(this);
-        
-        try {
-            loader.load();
-        } catch (IOException e) {
-            throw new RuntimeException("Could not load CableView.fxml", e);
-        }
+        ViewLoader.load(this);
         
         // Calculates the angle between two points
         DoubleBinding angle = Bindings.createDoubleBinding(() -> {
@@ -69,8 +62,20 @@ public class CableView extends Group{
             }
             
             double load = viewModel.getLoad();
-            return new Color(load, 1.0 - load, 0, 1.0);
+            return Color.DARKGRAY.interpolate(Color.RED, load);//new Color(load, 1.0 - load, 0, 1.0);
         }, viewModel.loadProperty(), viewModel.brokenProperty()));
+        
+        // Bind load in viewmodel to strokeWidth in view
+        double defaultStrokeWidth = line.getStrokeWidth();
+        line.strokeWidthProperty().bind(Bindings.createDoubleBinding(() -> { 
+            double load = viewModel.getLoad();
+            double extraStrokeWidth = 0.0;
+            double threshold = 0.7;
+            if (load > threshold) {
+                extraStrokeWidth = (load - threshold) * 2.0;
+            }
+            return defaultStrokeWidth + extraStrokeWidth;
+        }, viewModel.loadProperty()));
         
         directionStart.visibleProperty().bind(viewModel.directionProperty().isEqualTo(CableVM.Direction.START));
         directionEnd.visibleProperty().bind(viewModel.directionProperty().isEqualTo(CableVM.Direction.END));

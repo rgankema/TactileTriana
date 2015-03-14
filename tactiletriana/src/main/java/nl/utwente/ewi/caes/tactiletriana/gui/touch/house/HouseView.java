@@ -8,6 +8,7 @@ package nl.utwente.ewi.caes.tactiletriana.gui.touch.house;
 import java.io.IOException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.Pane;
+import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 
 /**
  *
@@ -17,15 +18,7 @@ public class HouseView extends Pane {
     private HouseVM viewModel;
     
     public HouseView() {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/HouseView.fxml"));
-        loader.setRoot(this);
-        loader.setController(this);
-        
-        try {
-            loader.load();
-        } catch (IOException e) {
-            throw new RuntimeException("Could not load HouseView.fxml", e);
-        }
+        ViewLoader.load(this);
     }
     
     public void setViewModel(HouseVM viewModel) {

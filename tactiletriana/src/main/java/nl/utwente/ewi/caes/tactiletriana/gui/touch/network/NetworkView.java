@@ -11,6 +11,7 @@ import java.util.List;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
+import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.cable.CableView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseView;
 
@@ -20,15 +21,7 @@ import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseView;
  */
 public class NetworkView extends Pane {
     public NetworkView() {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/NetworkView.fxml"));
-        loader.setRoot(this);
-        loader.setController(this);
-        
-        try {
-            loader.load();
-        } catch (IOException e) {
-            throw new RuntimeException("Could not load NetworkView.fxml", e);
-        }
+        ViewLoader.load(this);
         
         // Move all cables to the background (they're just in the foreground at first because that works better with scene builder)
         List<Node> cables = new ArrayList<>();
