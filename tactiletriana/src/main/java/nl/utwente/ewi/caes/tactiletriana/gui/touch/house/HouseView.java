@@ -5,8 +5,6 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.touch.house;
 
-import java.io.IOException;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.Pane;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 

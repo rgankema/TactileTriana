@@ -7,6 +7,7 @@ package nl.utwente.ewi.caes.tactiletriana.gui.touch;
 
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
+import javafx.scene.Group;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseView;
@@ -41,28 +42,31 @@ public class TouchView extends TactilePane {
         
         DeviceView device = new DeviceView();
         device.setViewModel(new DeviceVM(null));
-        device.relocate(x, y);
+        
+        // Add device to group to fix drag bug
+        Group group = new Group(device);
+        group.relocate(x, y);
         
         // Add device to pane, in background
-        getChildren().add(1, device);
+        getChildren().add(1, group);
         // Track device
-        getActiveNodes().add(device);
+        getActiveNodes().add(group);
         
         // Make device rotate       TODO: misschien moet dit in DeviceVM gebeuren?
         device.rotateProperty().bind(Bindings.createDoubleBinding(() -> {
-            double rotate = device.getLayoutY() - y;
+            double rotate = group.getLayoutY() - y;
             if (rotate < -90) rotate = -90.0;
             if (rotate > 90) rotate = 90.0;
             return 90.0 - rotate;
-        }, device.layoutYProperty()));
+        }, group.layoutYProperty()));
         
         // Add new device when drag starts, remove device if not on house
-        TactilePane.inUseProperty(device).addListener(obs -> {
-            if (TactilePane.isInUse(device)) {
+        TactilePane.inUseProperty(group).addListener(obs -> {
+            if (TactilePane.isInUse(group)) {
                 addDeviceToStack();
             } else {
-                if (!TactilePane.getNodesColliding(device).stream().anyMatch(node -> node instanceof HouseView)) {
-                    getChildren().remove(device);
+                if (!TactilePane.getNodesColliding(group).stream().anyMatch(node -> node instanceof HouseView)) {
+                    getChildren().remove(group);
                 } else {
                     device.getViewModel().setConfigIconShown(true); // TODO: TIJDELIJK!!! dit moet uiteindelijk uiteraard automatisch gaan in de VM
                 }
