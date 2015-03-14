@@ -5,14 +5,12 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.touch.cable;
 
-import java.util.concurrent.Callable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.value.ObservableValue;
 import nl.utwente.ewi.caes.tactiletriana.simulation.CableBase;
 
 /**
@@ -27,7 +25,7 @@ public class CableVM {
         
         load.bind(Bindings.createDoubleBinding(() -> {
             return Math.min(1.0, Math.abs(model.getCurrent()) / model.getMaximumCurrent()); 
-        }, model.currentProperty(), model.maximumCurrentProperty()));
+        }, model.currentProperty(), model.maximumCurrentProperty(), model.brokenProperty()));
         
         direction.bind(Bindings.createObjectBinding(() -> { 
             if (!model.isBroken()) {

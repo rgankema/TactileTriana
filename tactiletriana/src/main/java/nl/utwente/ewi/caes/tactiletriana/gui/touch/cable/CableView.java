@@ -6,27 +6,17 @@
 package nl.utwente.ewi.caes.tactiletriana.gui.touch.cable;
 
 import java.io.IOException;
-import javafx.animation.AnimationTimer;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
-import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
-import javafx.util.Duration;
 
 /**
  * FXML Controller class
@@ -50,6 +40,7 @@ public class CableView extends Group{
             throw new RuntimeException("Could not load CableView.fxml", e);
         }
         
+        // Calculates the angle between two points
         DoubleBinding angle = Bindings.createDoubleBinding(() -> {
             double theta = Math.atan2(line.getEndY() - line.getStartY(), line.getEndX() - line.getStartX());
             double a = Math.toDegrees(theta);
@@ -80,8 +71,6 @@ public class CableView extends Group{
             double load = viewModel.getLoad();
             return new Color(load, 1.0 - load, 0, 1.0);
         }, viewModel.loadProperty(), viewModel.brokenProperty()));
-        
-        // Bind direction in viewmodel to visibility of direction views
         
         directionStart.visibleProperty().bind(viewModel.directionProperty().isEqualTo(CableVM.Direction.START));
         directionEnd.visibleProperty().bind(viewModel.directionProperty().isEqualTo(CableVM.Direction.END));

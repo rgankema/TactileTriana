@@ -87,15 +87,13 @@ public class Cable extends CableBase implements ISimulationEntity {
     // METHODS
     
     //stub
+    @Override
     public double doForwardBackwardSweep(double v) {
        //update the voltages in the forward sweep
         double voltage = v - (this.getCurrent() * (resistance*length));
-        
-        
-            this.setCurrent(child.doForwardBackwardSweep(voltage));
-            
-        
 
+        this.setCurrent(child.doForwardBackwardSweep(voltage));
+        
         return this.getCurrent();
     }
     

@@ -7,6 +7,9 @@ package nl.utwente.ewi.caes.tactiletriana.simulation;
 
 import com.sun.javafx.collections.ObservableListWrapper;
 import java.util.ArrayList;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -19,7 +22,15 @@ public class House extends HouseBase {
     private ObservableList<DeviceBase> devices;
     
     public House(){
-        devices = FXCollections.observableArrayList();    
+        devices = FXCollections.observableArrayList();
+        
+        currentConsumption.bind(Bindings.createDoubleBinding(() -> { 
+            double sum = 0.0;
+            for (DeviceBase device : devices) {
+                sum += device.getCurrentConsumption();
+            }
+            return sum;
+        }, devices));
     }
     
     @Override
@@ -29,17 +40,13 @@ public class House extends HouseBase {
     
     @Override
     public String toString(){
-        return "(House:P="+getConsumption()+")";
+        return "(House:P="+getCurrentConsumption()+")";
     }
     
+    private final ReadOnlyDoubleWrapper currentConsumption = new ReadOnlyDoubleWrapper(0.0);
     
-    //TODO implement
-    public double getConsumption() {
-        // sum of all the devices
-        double consumption = 0;
-        for (DeviceBase d : this.getDevices()){
-            consumption += d.getCurrentConsumption();
-        }
-        return consumption;
+    @Override
+    public ReadOnlyDoubleProperty currentConsumptionProperty() {
+        return currentConsumption.getReadOnlyProperty();
     }
 }

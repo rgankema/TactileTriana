@@ -5,6 +5,8 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
+import nl.utwente.ewi.caes.tactiletriana.simulation.devices.MockupDevice;
+
 /**
  *
  * @author Richard
@@ -45,11 +47,11 @@ public class Simulation extends SimulationBase {
             
             nodes[i] = new Node(houses[i]);
             
-            if (i == 0){
+            if (i == 0) {
                 cables[i] = new Cable(nodes[i]);
                 transformer.getCables().add(cables[i]);
             }
-            else{
+            else {
                 cables[i] = new Cable(nodes[i]);
                 nodes[i-1].getCables().add(cables[i]);
             }
@@ -71,7 +73,7 @@ public class Simulation extends SimulationBase {
         }
     }
        
-    public void initiateForwardBackwardSweep() {
+    private void initiateForwardBackwardSweep() {
         //First Reset the nodes.
         transformer.resetEntity(230, 0);
         //Run the ForwwardBackWardSweep Load-flow calculation 10 times and assume convergence.
@@ -80,7 +82,7 @@ public class Simulation extends SimulationBase {
         }
     }
     
-    public void initiateTick(double time){
+    private void initiateTick(double time){
         this.getTransformer().tick(time);
     }
     

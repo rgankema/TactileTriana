@@ -13,7 +13,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 public class Main {
     public static void main(String[] args) {
         Simulation s = Simulation.getInstance();
-        
+        /*
         s.initiateForwardBackwardSweep();
         System.out.println(s.getTransformer().toString());
         
@@ -22,7 +22,7 @@ public class Main {
         
         s.initiateForwardBackwardSweep();
         System.out.println(s.getTransformer().toString());
-        
+        */
     }
     
 }
