@@ -11,6 +11,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
  * @author mickvdv
  */
 public class Main {
+    
     public static void main(String[] args) {
         Simulation s = Simulation.getInstance();
         /*
@@ -24,5 +25,4 @@ public class Main {
         System.out.println(s.getTransformer().toString());
         */
     }
-    
 }
