@@ -13,8 +13,8 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.devices.MockupDevice;
  */
 public class Simulation extends SimulationBase {
     // Declare simulation constants
-    public final int NUMBER_OF_HOUSES = 6;
-    public final int TICK_TIME = 200;
+    public static final int NUMBER_OF_HOUSES = 6;
+    public static final int TICK_TIME = 200;
      
     private static Simulation instance = null;
     private Transformer transformer;
@@ -32,7 +32,8 @@ public class Simulation extends SimulationBase {
     private Simulation() {
         // de tree maken
         transformer = new Transformer();
-        Node[] nodes = new Node[NUMBER_OF_HOUSES];
+        Node[] internalNodes = new Node[NUMBER_OF_HOUSES];
+        Node[] houseNodes = new Node[NUMBER_OF_HOUSES];
         Cable[] cables = new Cable[NUMBER_OF_HOUSES];
         House[] houses = new House[NUMBER_OF_HOUSES];
         
@@ -45,23 +46,27 @@ public class Simulation extends SimulationBase {
             // For testing purposes!
             houses[i].getDevices().add(new MockupDevice());
             
-            nodes[i] = new Node(houses[i]);
+            houseNodes[i] = new Node(houses[i]);
+            internalNodes[i] = new Node(null);
+            Cable houseCable = new Cable(houseNodes[i]);
+            internalNodes[i].getCables().add(houseCable);
             
+            cables[i] = new Cable(internalNodes[i]);
             if (i == 0) {
-                cables[i] = new Cable(nodes[i]);
                 transformer.getCables().add(cables[i]);
             }
             else {
-                cables[i] = new Cable(nodes[i]);
-                nodes[i-1].getCables().add(cables[i]);
+                internalNodes[i-1].getCables().add(cables[i]);
             }
         }
     }
     
+    @Override
     public Transformer getTransformer() {
         return transformer;
     }
     
+    @Override
     public void start() {
         while(true){
             initiateForwardBackwardSweep();
