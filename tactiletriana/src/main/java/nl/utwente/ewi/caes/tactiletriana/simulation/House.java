@@ -5,9 +5,8 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
-import com.sun.javafx.collections.ObservableListWrapper;
-import java.util.ArrayList;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.collections.FXCollections;
@@ -48,5 +47,20 @@ public class House extends HouseBase {
     @Override
     public ReadOnlyDoubleProperty currentConsumptionProperty() {
         return currentConsumption.getReadOnlyProperty();
+    }
+
+    @Override
+    public ReadOnlyDoubleProperty maximumConsumptionProperty() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public ReadOnlyBooleanProperty fuseBlownProperty() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void repairFuse() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

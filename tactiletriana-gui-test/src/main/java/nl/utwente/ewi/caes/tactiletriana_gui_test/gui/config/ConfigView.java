@@ -29,6 +29,9 @@ public class ConfigView extends GridPane {
     @FXML private Slider cableCurrentSlider;
     @FXML private Slider cableMaxCurrentSlider;
     @FXML private CheckBox cableBrokenCheckBox;
+    @FXML private Slider houseConsumptionSlider;
+    @FXML private Slider houseMaxConsumptionSlider;
+    @FXML private CheckBox houseFuseBlownCheckBox;
     
     public ConfigView() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ConfigView.fxml"));
@@ -45,10 +48,16 @@ public class ConfigView extends GridPane {
         cableCurrent.bind(cableCurrentSlider.valueProperty());
         cableMaxCurrent.bind(cableMaxCurrentSlider.valueProperty());
         cableBroken.bind(cableBrokenCheckBox.selectedProperty());
+        houseConsumption.bind(houseConsumptionSlider.valueProperty());
+        houseMaxConsumption.bind(houseMaxConsumptionSlider.valueProperty());
+        houseFuseBlown.bind(houseFuseBlownCheckBox.selectedProperty());
     }
     
     public final DoubleProperty nodeVoltage = new SimpleDoubleProperty();
     public final DoubleProperty cableCurrent = new SimpleDoubleProperty();
     public final DoubleProperty cableMaxCurrent = new SimpleDoubleProperty();
     public final BooleanProperty cableBroken = new SimpleBooleanProperty();
+    public final DoubleProperty houseConsumption = new SimpleDoubleProperty();
+    public final DoubleProperty houseMaxConsumption = new SimpleDoubleProperty();
+    public final BooleanProperty houseFuseBlown = new SimpleBooleanProperty();
 }
