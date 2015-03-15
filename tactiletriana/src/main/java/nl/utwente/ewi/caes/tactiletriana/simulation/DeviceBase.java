@@ -5,6 +5,7 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
+import java.lang.reflect.Method;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 
 /**

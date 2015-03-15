@@ -20,7 +20,7 @@ public class DeviceVM {
         this.model = model;
     }
     
-    private BooleanProperty configIconShown = new SimpleBooleanProperty(false);
+    private final BooleanProperty configIconShown = new SimpleBooleanProperty(false);
     
     public boolean isConfigIconShown() {
         return configIconShown.get();

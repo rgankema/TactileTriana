@@ -5,7 +5,7 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
-import nl.utwente.ewi.caes.tactiletriana.simulation.devices.MockupDevice;
+import nl.utwente.ewi.caes.tactiletriana.simulation.devices.MockDevice;
 
 /**
  *
@@ -17,7 +17,7 @@ public class Simulation extends SimulationBase {
     public static final int TICK_TIME = 200;
      
     private static Simulation instance = null;
-    private Transformer transformer;
+    private final Transformer transformer;
     //Time between ticks of the simulation (in milliseconds) 
     //Richard hier: dit klopt niet. De tick moet de tijd zijn die in de simulatie voorbij gaat in minuten. Verander plx
    
@@ -44,7 +44,7 @@ public class Simulation extends SimulationBase {
             //DEBUG:
             // Add a mockup device to every house.
             // For testing purposes!
-            houses[i].getDevices().add(new MockupDevice());
+            houses[i].getDevices().add(new MockDevice());
             
             houseNodes[i] = new Node(houses[i]);
             internalNodes[i] = new Node(null);

@@ -5,10 +5,16 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.touch;
 
+import nl.utwente.ewi.caes.tactiletriana.simulation.SimulationBase;
+
 /**
  *
  * @author Richard
  */
 public class TouchVM {
+    private SimulationBase model;
     
+    public TouchVM(SimulationBase model) {
+        this.model = model;
+    }
 }
