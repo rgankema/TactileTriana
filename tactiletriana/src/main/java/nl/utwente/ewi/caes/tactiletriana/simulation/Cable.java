@@ -43,9 +43,8 @@ public class Cable extends CableBase implements ISimulationEntity {
     private final ReadOnlyBooleanWrapper broken = new ReadOnlyBooleanWrapper(false) {
         @Override
         public void set(boolean value) {
-            if (value) {
+            if (value) { // isBroken(). In tick() this is propageted throught the entire tree
                 setCurrent(0);
-                // TODO: cut off rest of network
             }
             super.set(value);
         }
