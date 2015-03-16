@@ -72,10 +72,10 @@ public abstract class DeviceBase {
      * @return the amount of power that the device currently consumes
      */
     public ReadOnlyDoubleProperty currentConsumptionProperty(){
-        return currentConsumptionWrapper;
+        return currentConsumption;
     }
     
-    private ReadOnlyDoubleWrapper currentConsumptionWrapper = new ReadOnlyDoubleWrapper(0.0){
+    private ReadOnlyDoubleWrapper currentConsumption = new ReadOnlyDoubleWrapper(0.0){
         @Override
         public void set(double value) {
             // als hij disconnected is is hij altijd 0
@@ -91,7 +91,7 @@ public abstract class DeviceBase {
     }
     
     public final void setCurrentConsumption(double value){
-        currentConsumptionWrapper.set(value);
+        currentConsumption.set(value);
     }
     
     /**
