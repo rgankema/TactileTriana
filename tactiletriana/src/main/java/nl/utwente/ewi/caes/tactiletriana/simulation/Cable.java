@@ -44,6 +44,7 @@ public class Cable extends CableBase implements ISimulationEntity {
         public void set(boolean value) {
             if (value) {
                 setCurrent(0);
+                // TODO: cut off rest of network
             }
             super.set(value);
         }
@@ -77,7 +78,7 @@ public class Cable extends CableBase implements ISimulationEntity {
         return current.getReadOnlyProperty();
     }
     
-    private final ReadOnlyDoubleWrapper maximumCurrent = new ReadOnlyDoubleWrapper(Double.MAX_VALUE);   //TODO: betere waarde verzinnen
+    private final ReadOnlyDoubleWrapper maximumCurrent = new ReadOnlyDoubleWrapper(100.0);   //TODO: betere waarde verzinnen
     
     @Override
     public ReadOnlyDoubleProperty maximumCurrentProperty() {
@@ -90,11 +91,11 @@ public class Cable extends CableBase implements ISimulationEntity {
     @Override
     public double doForwardBackwardSweep(double v) {
        //update the voltages in the forward sweep
-        double voltage = v - (this.getCurrent() * (resistance*length));
+        double voltage = v - (getCurrent() * (resistance*length));
 
-        this.setCurrent(child.doForwardBackwardSweep(voltage));
+        setCurrent(child.doForwardBackwardSweep(voltage));
         
-        return this.getCurrent();
+        return getCurrent();
     }
     
     @Override

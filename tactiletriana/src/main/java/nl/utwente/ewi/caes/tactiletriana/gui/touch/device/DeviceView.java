@@ -5,12 +5,14 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.touch.device;
 
-import java.io.IOException;
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
+import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceVM.State;
 
 /**
  *
@@ -18,6 +20,7 @@ import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
  */
 public class DeviceView extends StackPane {
     @FXML private Node configIcon;
+    @FXML private Rectangle rectangle;
     
     private DeviceVM viewModel;
     
@@ -30,10 +33,19 @@ public class DeviceView extends StackPane {
     }
     
     public void setViewModel(DeviceVM viewModel) {
-        configIcon.visibleProperty().unbind();
+        if (this.viewModel != null) throw new IllegalStateException("ViewModel already set");
         
         this.viewModel = viewModel;
         
         configIcon.visibleProperty().bind(viewModel.configIconShownProperty());
+        rectangle.strokeProperty().bind(Bindings.createObjectBinding(() -> { 
+            Color color = null;
+            if (viewModel.getState() == State.CONSUMING) {
+                color = Color.DARKGREY.interpolate(Color.RED, viewModel.getLoad());
+            } else if (viewModel.getState() == State.PRODUCING) {
+                color = Color.DARKGREY.interpolate(Color.GREEN, viewModel.getLoad());
+            }
+            return color; 
+        }, viewModel.loadProperty(), viewModel.stateProperty()));
     }
 }

@@ -14,6 +14,7 @@ import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.network.NetworkView;
 import nl.utwente.cs.caes.tactile.control.TactilePane;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
+import nl.utwente.ewi.caes.tactiletriana.simulation.devices.MockDevice;
 
 /**
  * FXML Controller class
@@ -41,7 +42,7 @@ public class TouchView extends TactilePane {
         double y = 1080/2 - 25;
         
         DeviceView device = new DeviceView();
-        device.setViewModel(new DeviceVM(null));
+        device.setViewModel(new DeviceVM(new MockDevice()));
         
         // Add device to group to fix drag bug
         Group group = new Group(device);

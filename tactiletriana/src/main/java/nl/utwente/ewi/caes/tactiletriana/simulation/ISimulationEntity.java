@@ -17,6 +17,6 @@ public interface ISimulationEntity {
     public double doForwardBackwardSweep(double v);
     
     //Reset the Simulation Entity to the default state and prepare the node for a new Load-flow calculation. Child SimulationEntities should be updated recursively.
-    public void resetEntity(double voltage, double current);
+    public void resetEntity(double voltage, double current);    // Zou het hele idee van een reset niet moeten zijn dat je GEEN parameters mee geeft?
     
 }
