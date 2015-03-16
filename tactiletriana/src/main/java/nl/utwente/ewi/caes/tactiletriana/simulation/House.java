@@ -10,6 +10,7 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 /**
@@ -30,6 +31,15 @@ public class House extends HouseBase {
             }
             return sum;
         }, devices));
+        
+        devices.addListener((ListChangeListener.Change<? extends DeviceBase> c) -> {
+            for (DeviceBase d : c.getAddedSubList()) {
+                d.setState(DeviceBase.State.CONNECTED);
+            }
+            for (DeviceBase d : c.getRemoved()) {
+                d.setState(DeviceBase.State.NOT_IN_HOUSE);
+            }
+        });
     }
     
     @Override

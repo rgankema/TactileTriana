@@ -36,7 +36,7 @@ public class DeviceVM {
         }, model.currentConsumptionProperty()));
         
         state.bind(Bindings.createObjectBinding(() -> {
-            if (model.getState() == DeviceBase.State.DISCONNECTED)
+            if (model.getState() == DeviceBase.State.NOT_IN_HOUSE)
                 return State.DISCONNECTED;
             if (model.getCurrentConsumption() < 0)
                 return State.PRODUCING;

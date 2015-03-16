@@ -58,7 +58,7 @@ public class Node extends NodeBase implements ISimulationEntity {
             
         }
         if(house != null){
-            current -= (house.getCurrentConsumption()/this.getVoltage()); //I = P/U //Apparently this one is inversed?
+            current += (house.getCurrentConsumption()/this.getVoltage()); //I = P/U //Apparently this one is inversed?
             //System.out.println(current);
         }
         //System.out.println(voltage);

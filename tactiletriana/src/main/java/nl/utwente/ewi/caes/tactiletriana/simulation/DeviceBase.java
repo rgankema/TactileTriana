@@ -9,7 +9,6 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
-import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
 /**
@@ -25,7 +24,7 @@ public abstract class DeviceBase {
         /**
          * The device is not connected to a house
          */
-        DISCONNECTED,
+        NOT_IN_HOUSE,
         /**
          * The device is connected to a house
          */
@@ -33,7 +32,7 @@ public abstract class DeviceBase {
         /**
          * The device is connected to a house, but can't draw power
          */
-        CONNECTED_NO_POWER,
+        DISCONNECTED,
     }
     
     /**
@@ -72,14 +71,14 @@ public abstract class DeviceBase {
      * @return the amount of power that the device currently consumes
      */
     public ReadOnlyDoubleProperty currentConsumptionProperty(){
-        return currentConsumptionWrapper;
+        return currentConsumption;
     }
     
-    private ReadOnlyDoubleWrapper currentConsumptionWrapper = new ReadOnlyDoubleWrapper(0.0){
+    private ReadOnlyDoubleWrapper currentConsumption = new ReadOnlyDoubleWrapper(0.0){
         @Override
         public void set(double value) {
             // als hij disconnected is is hij altijd 0
-            if (getState() == DeviceBase.State.DISCONNECTED) {
+            if (!(getState() == DeviceBase.State.CONNECTED)) {
                 value = 0;
             }
             super.set(value);
@@ -91,7 +90,7 @@ public abstract class DeviceBase {
     }
     
     public final void setCurrentConsumption(double value){
-        currentConsumptionWrapper.set(value);
+        currentConsumption.set(value);
     }
     
     /**
@@ -101,7 +100,7 @@ public abstract class DeviceBase {
     private final ObjectProperty<State> state = new SimpleObjectProperty<State>(){
         @Override
         public void set(State value){
-            if (value == DeviceBase.State.DISCONNECTED){
+            if (!(value == DeviceBase.State.CONNECTED)){
                 setCurrentConsumption(0);
             }
             super.set(value);

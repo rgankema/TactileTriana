@@ -11,6 +11,7 @@ package nl.utwente.ewi.caes.tactiletriana.simulation;
  */
 public class SimpleTest {
     public static void main(String args[]) {
+        //Build a simulation
         Simulation simulation = Simulation.getInstance();
         simulation.initiateForwardBackwardSweep();
         System.out.println(simulation.getTransformer().toString());
