@@ -81,7 +81,7 @@ public class Simulation extends SimulationBase {
         }
     }
        
-    private void initiateForwardBackwardSweep() {
+    public void initiateForwardBackwardSweep() {
         //First reset the nodes.
         transformer.resetEntity(230, 0);
         //Run the ForwardBackwardSweep Load-flow calculation 10 times and assume convergence.
