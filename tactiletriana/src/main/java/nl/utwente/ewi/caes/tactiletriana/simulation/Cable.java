@@ -5,6 +5,7 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
+import java.util.ArrayList;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyDoubleProperty;
@@ -106,5 +107,9 @@ public class Cable extends CableBase implements ISimulationEntity {
     @Override
     public void resetEntity(double voltage, double current) {
         this.setCurrent(current);
+    }
+    
+    public void getNodes(ArrayList<Node> nodes) {
+        child.getNodes(nodes);
     }
 }

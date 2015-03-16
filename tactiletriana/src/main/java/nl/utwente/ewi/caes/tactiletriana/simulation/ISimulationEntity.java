@@ -5,6 +5,8 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author jd
@@ -19,4 +21,6 @@ public interface ISimulationEntity {
     //Reset the Simulation Entity to the default state and prepare the node for a new Load-flow calculation. Child SimulationEntities should be updated recursively.
     public void resetEntity(double voltage, double current);    // Zou het hele idee van een reset niet moeten zijn dat je GEEN parameters mee geeft?
     
+    //Return the nodes in the network
+    public void getNodes(ArrayList<Node> nodes);
 }
