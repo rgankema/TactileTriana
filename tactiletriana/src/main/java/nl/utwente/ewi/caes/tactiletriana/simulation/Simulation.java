@@ -79,6 +79,8 @@ public class Simulation extends SimulationBase {
             if (time == 24){
                 time = 0;
             }
+            //Debug lines:
+            System.out.println("time: "+time);
             System.out.println(transformer.toString());
             try {
                 Thread.sleep(TICK_TIME);
@@ -108,7 +110,6 @@ public class Simulation extends SimulationBase {
     
     public static void main(String[] args){
         Simulation s = new Simulation();
-        s.start();
-        
+        s.start();        
     }
 }
