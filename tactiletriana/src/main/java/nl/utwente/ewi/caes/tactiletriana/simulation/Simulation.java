@@ -15,6 +15,8 @@ public class Simulation extends SimulationBase {
     // Declare simulation constants
     public static final int NUMBER_OF_HOUSES = 6;
     public static final int TICK_TIME = 200;
+    
+    private boolean simulationRunning = false;
      
     private static Simulation instance = null;
     private final Transformer transformer;
@@ -68,7 +70,8 @@ public class Simulation extends SimulationBase {
     
     @Override
     public void start() {
-        while(true){
+        simulationRunning = true;
+        while(simulationRunning){
             initiateForwardBackwardSweep();
             try {
                 Thread.sleep(TICK_TIME);
@@ -79,11 +82,11 @@ public class Simulation extends SimulationBase {
     }
        
     private void initiateForwardBackwardSweep() {
-        //First Reset the nodes.
+        //First reset the nodes.
         transformer.resetEntity(230, 0);
-        //Run the ForwwardBackWardSweep Load-flow calculation 10 times and assume convergence.
+        //Run the ForwardBackwardSweep Load-flow calculation 10 times and assume convergence.
         for(int i = 0; i < 10; i++) {
-            transformer.doForwardBackwardSweep(230);
+            transformer.doForwardBackwardSweep(230); // this runs recursivly down the tree
         }
     }
     
@@ -93,6 +96,6 @@ public class Simulation extends SimulationBase {
     
     @Override
     public void stop() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        simulationRunning = false; // this stops the simulation (see start()).
     }
 }
