@@ -50,10 +50,11 @@ public abstract class CableBase implements ISimulationEntity {
      */
     public abstract NodeBase getChildNode();
 
-    public void tick(double time) {
-        // if this cable is broken, the network behind it shouldn't do anything
-        if (!isBroken()) {
-            getChildNode().tick(time);
+    public void tick(double time, boolean connected) {
+        // if this cable is broken, the network behind it shouldn't do anything so the disconnected value is propagated
+        if (this.isBroken()){
+            connected = false;
         }
+        getChildNode().tick(time, connected);
     }
 }

@@ -7,11 +7,12 @@ package nl.utwente.ewi.caes.tactiletriana.gui.touch.device;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.SimpleBooleanProperty;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 
 /**
@@ -19,6 +20,12 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
  * @author Richard
  */
 public class DeviceVM {
+    public enum State {
+        DISCONNECTED,
+        PRODUCING,
+        CONSUMING
+    }
+    
     private DeviceBase model;
     
     public DeviceVM(DeviceBase model) {
@@ -29,11 +36,17 @@ public class DeviceVM {
         }, model.currentConsumptionProperty()));
         
         state.bind(Bindings.createObjectBinding(() -> {
+            if (model.getState() == DeviceBase.State.DISCONNECTED)
+                return State.DISCONNECTED;
             if (model.getCurrentConsumption() < 0)
                 return State.PRODUCING;
             else
                 return State.CONSUMING;
         }, model.currentConsumptionProperty()));
+        
+        configIconShown.bind(Bindings.createBooleanBinding(() -> { 
+            return getState() != State.DISCONNECTED;
+        }, model.stateProperty()));
     }
     
     private final ReadOnlyDoubleWrapper load = new ReadOnlyDoubleWrapper();
@@ -52,27 +65,37 @@ public class DeviceVM {
         return state.getReadOnlyProperty();
     }
     
-    public State getState() {
+    public final State getState() {
         return state.get();
     }
     
-    private final BooleanProperty configIconShown = new SimpleBooleanProperty(false);
+    private final ReadOnlyBooleanWrapper configIconShown = new ReadOnlyBooleanWrapper(false);
     
-    public BooleanProperty configIconShownProperty() {
-        return configIconShown;
+    public ReadOnlyBooleanProperty configIconShownProperty() {
+        return configIconShown.getReadOnlyProperty();
     }
     
-    public boolean isConfigIconShown() {
+    public final boolean isConfigIconShown() {
         return configIconShown.get();
     }
     
-    public void setConfigIconShown(boolean configIconShown) {
-        this.configIconShown.set(configIconShown);
+    private final ReadOnlyBooleanWrapper configPanelShown = new ReadOnlyBooleanWrapper(false);
+    
+    public ReadOnlyBooleanProperty configPanelShownProperty() {
+        return configPanelShown.getReadOnlyProperty();
     }
     
-    public enum State {
-        DISCONNECTED,
-        PRODUCING,
-        CONSUMING
+    public boolean isConfigPanelShown() {
+        return configPanelShown.get();
+    }
+    
+    private void setConfigPanelShown(boolean configPanelShown) {
+        this.configPanelShown.set(configPanelShown);
+    }
+    
+    // EVENT HANDLING
+    
+    public void configIconClicked() {
+        setConfigPanelShown(!isConfigPanelShown());
     }
 }
