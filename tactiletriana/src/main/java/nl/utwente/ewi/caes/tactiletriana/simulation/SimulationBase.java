@@ -25,4 +25,5 @@ public abstract class SimulationBase {
      * Pauses the simulation
      */
     public abstract void stop();
+    
 }
