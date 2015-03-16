@@ -74,7 +74,7 @@ public abstract class DeviceBase {
         return currentConsumption;
     }
     
-    private ReadOnlyDoubleWrapper currentConsumption = new ReadOnlyDoubleWrapper(0.0){
+    private ReadOnlyDoubleWrapper currentConsumption = new ReadOnlyDoubleWrapper(10.0){
         @Override
         public void set(double value) {
             // als hij disconnected is is hij altijd 0

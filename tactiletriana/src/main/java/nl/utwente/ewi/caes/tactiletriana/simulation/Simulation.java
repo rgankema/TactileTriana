@@ -81,9 +81,10 @@ public class Simulation extends SimulationBase implements Runnable {
     public void initiateForwardBackwardSweep() {
         //First reset the nodes.
         transformer.resetEntity(230, 0);
-        //Run the ForwardBackwardSweep Load-flow calculation until converged.
-        while(!calculateFBSConvergence(0.000001)) {
+        //Run the ForwardBackwardSweep Load-flow calculation until converged or the iteration limit is reached
+        for(int i = 0; (i < 20) && !calculateFBSConvergence(0.000001); i++) {
             transformer.doForwardBackwardSweep(230); // this runs recursivly down the tree
+            System.out.println("Iteration" + i);
         }
     }
     
@@ -94,7 +95,7 @@ public class Simulation extends SimulationBase implements Runnable {
         //If the difference between the previous and current voltage is smaller than the given error, the result is true
         ArrayList<Node> nodes = new ArrayList<Node>();
         transformer.getNodes(nodes);
-        for(int i = 0; i < nodes.size(); i++) {
+        for(int i = 0; (i < nodes.size()) && !result; i++) {
             if(Math.abs(nodes.get(i).getPreviousVoltage() - nodes.get(i).getVoltage()) > error) {
                 result = false;
             }

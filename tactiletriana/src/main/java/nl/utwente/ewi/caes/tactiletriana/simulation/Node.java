@@ -24,6 +24,7 @@ public class Node extends NodeBase implements ISimulationEntity {
     public Node(House house) {
         this.cables = new HashSet<>();
         this.house = house;
+        this.previousVoltage = 0;
     }
     
     @Override
