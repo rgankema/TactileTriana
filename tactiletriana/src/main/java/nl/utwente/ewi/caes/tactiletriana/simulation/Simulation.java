@@ -104,9 +104,5 @@ public class Simulation extends SimulationBase {
     public void stop() {
         simulationRunning = false; // this stops the simulation (see start()).
     }
-    
-    public static void main(String[] args){
-        Simulation s = new Simulation();
-        s.start();        
-    }
+
 }
