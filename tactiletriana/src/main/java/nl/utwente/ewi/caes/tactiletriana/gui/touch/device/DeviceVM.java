@@ -104,7 +104,7 @@ public class DeviceVM {
         
         this.house = house;
         
-        if (model != null) {
+        if (house != null) {
             house.addDevice(model);
         }
     }

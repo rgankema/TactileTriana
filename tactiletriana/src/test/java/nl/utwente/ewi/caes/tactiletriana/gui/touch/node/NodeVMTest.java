@@ -7,7 +7,7 @@ package nl.utwente.ewi.caes.tactiletriana.gui.touch.node;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import nl.utwente.ewi.caes.tactiletriana.simulation.NodeBase;
+import nl.utwente.ewi.caes.tactiletriana.simulation.Node;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -18,12 +18,12 @@ import static org.mockito.Mockito.*;
  * @author Richard
  */
 public class NodeVMTest {
-    private NodeBase mockedNode;
+    private Node mockedNode;
     private DoubleProperty nodeVoltage;
     
     @Before
     public void setUp() {
-        mockedNode = mock(NodeBase.class);
+        mockedNode = mock(Node.class);
         nodeVoltage = new SimpleDoubleProperty();
         when(mockedNode.voltageProperty()).thenReturn(nodeVoltage);
     }

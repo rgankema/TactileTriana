@@ -12,7 +12,7 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import nl.utwente.ewi.caes.tactiletriana.simulation.CableBase;
+import nl.utwente.ewi.caes.tactiletriana.simulation.Cable;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.*;
  * @author Richard
  */
 public class CableVMTest {
-    private CableBase mockedCable;
+    private Cable mockedCable;
     private DoubleProperty cableCurrent;
     private DoubleProperty cableMaxCurrent;
     private BooleanProperty cableBroken;
@@ -44,7 +44,7 @@ public class CableVMTest {
     
     @Before
     public void setUp() {
-        mockedCable = mock(CableBase.class);
+        mockedCable = mock(Cable.class);
         cableCurrent = new SimpleDoubleProperty();
         cableMaxCurrent = new SimpleDoubleProperty();
         cableBroken = new SimpleBooleanProperty();

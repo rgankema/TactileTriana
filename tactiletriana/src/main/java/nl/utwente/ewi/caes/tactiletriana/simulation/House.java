@@ -5,7 +5,6 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyDoubleProperty;
@@ -18,8 +17,7 @@ import javafx.collections.ObservableList;
  *
  * @author Richard
  */
-public class House extends HouseBase {
-    
+public class House {
     private final ObservableList<DeviceBase> devices;
     
     public House(){
@@ -28,7 +26,7 @@ public class House extends HouseBase {
         devices.addListener((ListChangeListener.Change<? extends DeviceBase> c) -> {
             while(c.next()) {
                 for (DeviceBase d : c.getAddedSubList()) {
-                    d.setState(DeviceBase.State.CONNECTED);
+                    //d.setState(DeviceBase.State.CONNECTED);
                 }
                 for (DeviceBase d : c.getRemoved()) {
                     d.setState(DeviceBase.State.NOT_IN_HOUSE);
@@ -37,9 +35,71 @@ public class House extends HouseBase {
         });
     }
     
-    @Override
+    /**
+     * @return The devices that are connected to the network.
+     */
     public ObservableList<DeviceBase> getDevices() {
         return devices;
+    }
+    
+    /*
+     * The amount of power the house currently consumes. A negative number means
+     * the house is producing energy.
+     */
+    private ReadOnlyDoubleWrapper currentConsumption = new ReadOnlyDoubleWrapper(0.0);
+    
+    public ReadOnlyDoubleProperty currentConsumptionProperty() {
+        return currentConsumption.getReadOnlyProperty();
+    }
+    
+    public final double getCurrentConsumption() {
+        return currentConsumptionProperty().get();
+    }
+    
+    /**
+     * The absolute maximum of power the house can consume/produce. When more than
+     * this is consumed, the fuse in the house will blow.
+     */
+    private final ReadOnlyDoubleWrapper maximumConsumption = new ReadOnlyDoubleWrapper(230*100);
+    
+    public ReadOnlyDoubleProperty maximumConsumptionProperty() {
+        return maximumConsumption;
+    }
+    
+    public final double getMaximumConsumption() {
+        return maximumConsumptionProperty().get();
+    }
+    
+    /**
+     * Whether the fuse is blown or not.
+     */
+    private final ReadOnlyBooleanWrapper fuseBlown = new ReadOnlyBooleanWrapper(false);
+            
+    public ReadOnlyBooleanProperty fuseBlownProperty() {
+        return fuseBlown.getReadOnlyProperty();
+    }
+    
+    public final boolean isFuseBlown() {
+        return fuseBlownProperty().get();
+    }
+    
+    /**
+     * Repairs the fuse. If more power than the maximum is still produced/consumed,
+     * the fuse will blow again immediately.
+     */
+    public void repairFuse() {
+        fuseBlown.set(false);
+    }
+    
+    /**
+     * Propagates a tick to all its devices
+     * @param time the amount of time that passed since the last tick
+     */
+    public void tick(double time, boolean connected) {
+        for (DeviceBase device : getDevices()) {
+            device.tick(time, connected);
+        }
+        currentConsumption.set(devices.stream().mapToDouble(DeviceBase::getCurrentConsumption).sum());
     }
     
     public String toString(int indentation){
@@ -52,37 +112,5 @@ public class House extends HouseBase {
         output += "(House:P="+getCurrentConsumption()+")";
         
         return output;
-    }
-    
-    private final ReadOnlyDoubleWrapper currentConsumption = new ReadOnlyDoubleWrapper(0.0);
-    
-    @Override
-    public ReadOnlyDoubleProperty currentConsumptionProperty() {
-        return currentConsumption.getReadOnlyProperty();
-    }
-
-    private final ReadOnlyDoubleWrapper maximumConsumption = new ReadOnlyDoubleWrapper(100 * 230);
-    
-    @Override
-    public ReadOnlyDoubleProperty maximumConsumptionProperty() {
-        return maximumConsumption;
-    }
-
-    private final ReadOnlyBooleanWrapper fuseBlown = new ReadOnlyBooleanWrapper(false); //TODO: als deze blown raakt moeten alle devices erachter disconnected zijn
-    
-    @Override
-    public ReadOnlyBooleanProperty fuseBlownProperty() {
-        return fuseBlown;
-    }
-
-    @Override
-    public void repairFuse() {
-        fuseBlown.set(false);
-    }
-    
-    @Override
-    public void tick(double time, boolean connected) {
-        super.tick(time, connected);
-        currentConsumption.set(devices.stream().mapToDouble(DeviceBase::getCurrentConsumption).sum());
     }
 }

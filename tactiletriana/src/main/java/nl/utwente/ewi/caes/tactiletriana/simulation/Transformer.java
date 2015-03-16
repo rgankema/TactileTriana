@@ -19,13 +19,6 @@ public class Transformer extends Node implements ISimulationEntity {
         setVoltage(230);
     }
     
-//    public void initiateForwardBackwardSweep() {
-//        for (CableBase c : getCables()) {
-//            // do forward backward sweep on cables
-//        }
-//        throw new UnsupportedOperationException("Not supported yet.");
-//    }
-    
     @Override
     public String toString(){
         return toString(0);
@@ -39,7 +32,7 @@ public class Transformer extends Node implements ISimulationEntity {
         output += "|-";
         
         output = "(Transformer:U="+this.getVoltage()+")\n";
-        for (CableBase c: this.getCables()){
+        for (Cable c: this.getCables()){
             output += c.toString(indentation+1);
         }
         return output;

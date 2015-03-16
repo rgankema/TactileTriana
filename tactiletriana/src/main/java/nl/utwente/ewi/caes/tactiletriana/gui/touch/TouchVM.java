@@ -9,17 +9,17 @@ import nl.utwente.ewi.caes.tactiletriana.gui.touch.cable.CableVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.node.NodeVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.transformer.TransformerVM;
-import nl.utwente.ewi.caes.tactiletriana.simulation.CableBase;
+import nl.utwente.ewi.caes.tactiletriana.simulation.Cable;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Node;
-import nl.utwente.ewi.caes.tactiletriana.simulation.NodeBase;
-import nl.utwente.ewi.caes.tactiletriana.simulation.SimulationBase;
+import nl.utwente.ewi.caes.tactiletriana.simulation.Node;
+import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 
 /**
  *
  * @author Richard
  */
 public class TouchVM {
-    private final SimulationBase model;
+    private final Simulation model;
     
     private final TransformerVM transformer;
     private final NodeVM internalNodes[];
@@ -28,7 +28,7 @@ public class TouchVM {
     private final CableVM houseCables[];
     private final HouseVM houses[];
     
-    public TouchVM(SimulationBase model) {
+    public TouchVM(Simulation model) {
         this.model = model;
         
         this.transformer = new TransformerVM(model.getTransformer());
@@ -39,11 +39,11 @@ public class TouchVM {
         this.houses = new HouseVM[6];
         
         internalCables[0] = new CableVM(model.getTransformer().getCables().get(0));
-        NodeBase node = model.getTransformer().getCables().get(0).getChildNode();
+        Node node = model.getTransformer().getCables().get(0).getChildNode();
         for (int i = 0; i < 6; i++) {
             internalNodes[i] = new NodeVM(node);
-            for (CableBase cable: node.getCables()) {
-                NodeBase childNode = cable.getChildNode();
+            for (Cable cable: node.getCables()) {
+                Node childNode = cable.getChildNode();
                 if (childNode.getHouse() != null) {
                     houseNodes[i] = new NodeVM(childNode);
                     houseCables[i] = new CableVM(cable);

@@ -11,16 +11,16 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import nl.utwente.ewi.caes.tactiletriana.simulation.CableBase;
+import nl.utwente.ewi.caes.tactiletriana.simulation.Cable;
 
 /**
  *
  * @author Richard
  */
 public class CableVM {
-    private CableBase model;
+    private Cable model;
     
-    public CableVM(CableBase model) {
+    public CableVM(Cable model) {
         this.model = model;
         
         load.bind(Bindings.createDoubleBinding(() -> {

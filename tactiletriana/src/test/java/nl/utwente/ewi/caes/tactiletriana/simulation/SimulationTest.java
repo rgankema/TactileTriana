@@ -52,9 +52,9 @@ public class SimulationTest {
         assertEquals(1, transformer.getCables().size());
         
         // Loop over all internal nodes but the last
-        NodeBase internalNode = transformer.getCables().stream().findAny().get().getChildNode();
+        Node internalNode = transformer.getCables().stream().findAny().get().getChildNode();
         for (int i = 0; i < Simulation.NUMBER_OF_HOUSES - 1; i++) {
-            List<CableBase> cables = internalNode.getCables();
+            List<Cable> cables = internalNode.getCables();
             // Every internal node except the last has two outgoing cables
             assertEquals(2, cables.size());
             
@@ -62,7 +62,7 @@ public class SimulationTest {
             assertTrue(cables.stream().anyMatch(c -> c.getChildNode().getHouse() != null && c.getChildNode().getCables().isEmpty()));
             // ... and it has a node that has no house but at least one outgoing cable
             assertTrue(cables.stream().anyMatch(c -> c.getChildNode().getCables().size() > 0));
-            for (CableBase c: cables) {
+            for (Cable c: cables) {
                 if (c.getChildNode().getCables().size() > 0) {
                     assertNull(c.getChildNode().getHouse());
                     internalNode = c.getChildNode();

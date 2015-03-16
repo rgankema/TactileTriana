@@ -37,7 +37,7 @@ public abstract class DeviceBase {
     /**
      * The describes the parameters that can be set for this device
      */
-    public static class Parameter {
+    public static final class Parameter {
         /**
          * The display name of the parameter
          */
@@ -61,19 +61,12 @@ public abstract class DeviceBase {
             this.minValue = minValue;
             this.maxValue = maxValue;
         }
-        
-        
     }
     
     /**
-     * 
-     * @return the amount of power that the device currently consumes
+     * The amount of power that the device currently consumes
      */
-    public ReadOnlyDoubleProperty currentConsumptionProperty(){
-        return currentConsumption;
-    }
-    
-    private ReadOnlyDoubleWrapper currentConsumption = new ReadOnlyDoubleWrapper(10.0){
+    private final ReadOnlyDoubleWrapper currentConsumption = new ReadOnlyDoubleWrapper(10.0){
         @Override
         public void set(double value) {
             // als hij disconnected is is hij altijd 0
@@ -84,11 +77,15 @@ public abstract class DeviceBase {
         }
     };
     
+    public ReadOnlyDoubleProperty currentConsumptionProperty(){
+        return currentConsumption.getReadOnlyProperty();
+    }
+    
     public final double getCurrentConsumption() {
         return currentConsumptionProperty().get();
     }
     
-    public final void setCurrentConsumption(double value){
+    protected final void setCurrentConsumption(double value){
         currentConsumption.set(value);
     }
     
@@ -105,6 +102,7 @@ public abstract class DeviceBase {
             super.set(value);
         }
     };
+    
     public ObjectProperty<State> stateProperty() {
         return this.state;
     }
@@ -113,7 +111,7 @@ public abstract class DeviceBase {
         return stateProperty().get();
     }
     
-    public final void setState(State s){
+    protected final void setState(State s){
         this.stateProperty().set(s);
     }
     
@@ -131,7 +129,9 @@ public abstract class DeviceBase {
      */
     public void tick(double time, boolean connected){
         if(!connected){
-            this.setState(DeviceBase.State.DISCONNECTED);
+            setState(DeviceBase.State.DISCONNECTED);
+        } else {
+            setState(DeviceBase.State.CONNECTED);
         }
     }
 }

@@ -10,16 +10,16 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
-import nl.utwente.ewi.caes.tactiletriana.simulation.HouseBase;
+import nl.utwente.ewi.caes.tactiletriana.simulation.House;
 
 /**
  *
  * @author Richard
  */
 public class HouseVM {
-    private HouseBase model;
+    private House model;
     
-    public HouseVM(HouseBase model) {
+    public HouseVM(House model) {
         this.model = model;
         this.load.bind(Bindings.createDoubleBinding(() -> {
             return Math.min(1.0, Math.abs(model.getCurrentConsumption()) / model.getMaximumConsumption());
@@ -64,7 +64,9 @@ public class HouseVM {
      * @param device the device to be added
      */
     public void addDevice(DeviceBase device) {
-        this.model.getDevices().add(device);
+        if (!this.model.getDevices().contains(device)) {
+            this.model.getDevices().add(device);
+        }
     }
     
     /**

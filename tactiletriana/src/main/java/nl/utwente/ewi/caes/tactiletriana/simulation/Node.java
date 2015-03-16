@@ -14,38 +14,55 @@ import javafx.beans.property.ReadOnlyDoubleWrapper;
  *
  * @author Richard
  */
-public class Node extends NodeBase implements ISimulationEntity {
-    private final List<CableBase> cables;
+public class Node implements ISimulationEntity{
+    private final List<Cable> cables;
     private final House house;
-    private double previousVoltage;
-    
     
     public Node(House house) {
         this.cables = new ArrayList<>();
         this.house = house;
-        this.previousVoltage = 0;
-    }
-    
-    @Override
-    public List<CableBase> getCables() {
-        return this.cables;
     }
 
-    @Override
-    public House getHouse() {
-        return this.house;
-    }
-
-    
+    /**
+     * The voltage measured on this node
+     */
     private final ReadOnlyDoubleWrapper voltage = new ReadOnlyDoubleWrapper(230.0);
     
-    protected final void setVoltage(double voltage) {
+    public ReadOnlyDoubleProperty voltageProperty() {
+        return voltage.getReadOnlyProperty();
+    }
+    
+    public final double getVoltage() {
+        return voltageProperty().get();
+    }
+    
+    protected void setVoltage(double voltage) {
         this.voltage.set(voltage);
     }
     
-    @Override
-    public ReadOnlyDoubleProperty voltageProperty() {
-        return voltage.getReadOnlyProperty();
+    /**
+     * 
+     * @return a list of cables that connect to this node
+     */
+    public List<Cable> getCables() {
+        return this.cables;
+    }
+    
+    /**
+     * 
+     * @return the house this Node is connected to, may be null
+     */
+    public House getHouse() {
+        return this.house;
+    }
+    
+    public void tick(double time, boolean connected) {
+        if (getHouse() != null) {
+            getHouse().tick(time, connected);
+        }
+        for (Cable cable : getCables()) {
+            cable.tick(time, connected);
+        }
     }
     
     //ForwardBackwardSweep Load-flow algorithm.
@@ -54,33 +71,27 @@ public class Node extends NodeBase implements ISimulationEntity {
     public double doForwardBackwardSweep(double v) {
         double current = 0.0;
         
-        //Save the previous voltage for the convergence calculations
-        previousVoltage = getVoltage();
         //Forward sweep, update the voltages
         this.setVoltage(v);
         
-        for(CableBase c : cables){
-            
-                current += ((Cable)c).doForwardBackwardSweep(this.getVoltage());
-            
+        for(Cable c : cables){
+            current += c.doForwardBackwardSweep(this.getVoltage());
         }
         if(house != null){
-            try {
-                current += (house.getCurrentConsumption()/this.getVoltage()); //I = P/U //Apparently this one is inversed?
-            } catch (ArithmeticException e) {
-                //Catch a division by zero error.
-                //Nothing needs to be done because no current needs to be added when the voltage is 0.
-                
+            if (this.getVoltage() != 0) {
+                current += (house.getCurrentConsumption() / this.getVoltage()); //I = P/U //Apparently this one is inversed?
             }
         }
-        
-        
         return current;
     }
     
-    
-    public double getPreviousVoltage() {
-        return previousVoltage;
+    @Override
+    public void reset() {
+        this.setVoltage(230d);
+        
+        for(Cable c : cables){
+            c.reset();
+        }
     }
     
     public String toString(int indentation){
@@ -95,32 +106,9 @@ public class Node extends NodeBase implements ISimulationEntity {
         } else {
             output =  "(Node:U="+ getVoltage() + ") -> " + "\n";
         }
-        for (CableBase c: this.getCables()){
+        for (Cable c: this.getCables()){
             output += c.toString(indentation+1);
         }
         return output;
     }
-    
-
-    @Override
-    public void resetEntity(double voltage, double current) {
-        this.setVoltage(voltage);
-        
-        for(CableBase c : cables){
-            ((Cable)c).resetEntity(voltage, current);
-        }
-    }
-    
-    public ArrayList<Node> getNodes() {
-        ArrayList<Node> nodes = new ArrayList<Node>();
-        for(CableBase c : cables) {
-            nodes.addAll(c.getNodes());
-            
-            
-        }
-        
-        nodes.add(this);
-        return nodes;
-    }
-    
 }

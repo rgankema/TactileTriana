@@ -12,53 +12,27 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 
 /**
- *
- * @author Richard
+ * A connection between to nodes
  */
-public class Cable extends CableBase implements ISimulationEntity {
-    private final Node child;
+public class Cable implements ISimulationEntity {
+    private final Node childNode;
     private final double resistance;
     private final double length;    
     
     /**
      * Instantiates a new cable connected to two nodes
-     * @param child     The node away from the transformer
+     * @param childNode The node away from the transformer
      */
-    public Cable(Node child) {
-        this.child = child;
-        //TODO provide sane defaults
+    public Cable(Node childNode) {
+        this.childNode = childNode;
+        
         this.resistance = 0.00005;
         this.length = 10;
     }
     
-    // SIMPLE PROPERTIES
-
-    @Override
-    public Node getChildNode() {
-        return child;
-    }
-    
-    // BINDABLE PROPERTIES
-    
-    private final ReadOnlyBooleanWrapper broken = new ReadOnlyBooleanWrapper(false) {
-        @Override
-        public void set(boolean value) {
-            if (value) { // isBroken(). In tick() this is propageted throught the entire tree
-                setCurrent(0);
-            }
-            super.set(value);
-        }
-    };
-    
-    private void setBroken(boolean value) {
-        broken.set(value);
-    }
-    
-    @Override
-    public ReadOnlyBooleanProperty brokenProperty() {
-        return broken.getReadOnlyProperty();
-    }
-    
+    /**
+     * The current that flows through the current measured in ampere.
+     */
     private final ReadOnlyDoubleWrapper current = new ReadOnlyDoubleWrapper(0.0) {
         @Override
         public void set(double value) {
@@ -68,34 +42,90 @@ public class Cable extends CableBase implements ISimulationEntity {
             super.set(value);
         }
     };
+
+    public ReadOnlyDoubleProperty currentProperty() {
+        return current.getReadOnlyProperty();
+    }
+    
+    public final double getCurrent() {
+        return currentProperty().get();
+    }
     
     private void setCurrent(double value) {
         current.set(value);
     }
     
-    @Override
-    public ReadOnlyDoubleProperty currentProperty() {
-        return current.getReadOnlyProperty();
-    }
+    /**
+     * The absolute maximum current that can flow through the cable before it breaks;
+     */
+    private ReadOnlyDoubleWrapper maximumCurrent = new ReadOnlyDoubleWrapper(100d);
     
-    private final ReadOnlyDoubleWrapper maximumCurrent = new ReadOnlyDoubleWrapper(100.0);   //TODO: betere waarde verzinnen
-    
-    @Override
     public ReadOnlyDoubleProperty maximumCurrentProperty() {
-        return maximumCurrent;
+        return maximumCurrent.getReadOnlyProperty();
     }
     
-    // METHODS
+    public final double getMaximumCurrent() {
+        return maximumCurrentProperty().get();
+    }
     
-    //stub
+    private void setMaximumCurrent(double maximumCurrent) {
+        this.maximumCurrent.set(maximumCurrent);
+    }
+     
+    /**
+     * Whether the cable is broken or not
+     */
+    private ReadOnlyBooleanWrapper broken = new ReadOnlyBooleanWrapper(false) {
+        @Override
+        public void set(boolean value) {
+            if (value) { // isBroken(). In tick() this is propageted throught the entire tree
+                setCurrent(0);
+            }
+            super.set(value);
+        }
+    };
+    
+    public ReadOnlyBooleanProperty brokenProperty() {
+        return broken;
+    }
+    
+    public final boolean isBroken() {
+        return brokenProperty().get();
+    }
+    
+    private void setBroken(boolean value) {
+        broken.set(value);
+    }
+    
+    /**
+     * 
+     * @return the node that is the child
+     */
+    public Node getChildNode() {
+        return this.childNode;
+    }
+
+    public void tick(double time, boolean connected) {
+        // if this cable is broken, the network behind it shouldn't do anything so the disconnected value is propagated
+        if (this.isBroken()){
+            connected = false;
+        }
+        getChildNode().tick(time, connected);
+    }
+    
     @Override
     public double doForwardBackwardSweep(double v) {
        //update the voltages in the forward sweep
-        double voltage = v - (getCurrent() * (resistance*length));
+        double voltage = v - (getCurrent() * (resistance * length));
 
-        setCurrent(child.doForwardBackwardSweep(voltage));
+        setCurrent(getChildNode().doForwardBackwardSweep(voltage));
         
         return getCurrent();
+    }
+
+    @Override
+    public void reset() {
+        this.setCurrent(0d);
     }
     
     public String toString(int indentation){
@@ -107,14 +137,5 @@ public class Cable extends CableBase implements ISimulationEntity {
         
         output += "(Cable:R="+ resistance +  ",I="+ this.getCurrent() + ") -> " + this.getChildNode().toString(indentation);
         return output;
-    }
-
-    @Override
-    public void resetEntity(double voltage, double current) {
-        this.setCurrent(current);
-    }
-    
-    public ArrayList<Node> getNodes() {
-        return child.getNodes();
     }
 }

@@ -11,7 +11,7 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import nl.utwente.ewi.caes.tactiletriana.simulation.HouseBase;
+import nl.utwente.ewi.caes.tactiletriana.simulation.House;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.*;
  */
 public class HouseVMTest {
     
-    private HouseBase mockedHouse;
+    private House mockedHouse;
     private DoubleProperty houseCurrentConsumption;
     private DoubleProperty houseMaxConsumption;
     private BooleanProperty fuseBlown;
@@ -44,7 +44,7 @@ public class HouseVMTest {
     
     @Before
     public void setUp() {
-        mockedHouse = mock(HouseBase.class);
+        mockedHouse = mock(House.class);
         
         houseCurrentConsumption = new SimpleDoubleProperty(10);
         houseMaxConsumption = new SimpleDoubleProperty(100);

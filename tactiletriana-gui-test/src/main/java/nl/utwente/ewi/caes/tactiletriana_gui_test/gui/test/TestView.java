@@ -12,9 +12,9 @@ import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.node.NodeVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.node.NodeView;
-import nl.utwente.ewi.caes.tactiletriana.simulation.CableBase;
-import nl.utwente.ewi.caes.tactiletriana.simulation.HouseBase;
-import nl.utwente.ewi.caes.tactiletriana.simulation.NodeBase;
+import nl.utwente.ewi.caes.tactiletriana.simulation.Cable;
+import nl.utwente.ewi.caes.tactiletriana.simulation.House;
+import nl.utwente.ewi.caes.tactiletriana.simulation.Node;
 import nl.utwente.ewi.caes.tactiletriana_gui_test.gui.config.ConfigView;
 import static org.mockito.Mockito.*;
 
@@ -29,18 +29,18 @@ public class TestView extends TactilePane {
         
         // Mock models
         
-        NodeBase mockedNode1 = mock(NodeBase.class);
+        Node mockedNode1 = mock(Node.class);
         when(mockedNode1.voltageProperty()).thenReturn(configView.nodeVoltage);
         
-        NodeBase mockedNode2 = mock(NodeBase.class);
+        Node mockedNode2 = mock(Node.class);
         when(mockedNode2.voltageProperty()).thenReturn(configView.nodeVoltage);
         
-        CableBase mockedCable = mock(CableBase.class);
+        Cable mockedCable = mock(Cable.class);
         when(mockedCable.currentProperty()).thenReturn(configView.cableCurrent);
         when(mockedCable.maximumCurrentProperty()).thenReturn(configView.cableMaxCurrent);
         when(mockedCable.brokenProperty()).thenReturn(configView.cableBroken);
         
-        HouseBase mockedHouse = mock(HouseBase.class);
+        House mockedHouse = mock(House.class);
         when(mockedHouse.currentConsumptionProperty()).thenReturn(configView.houseConsumption);
         when(mockedHouse.maximumConsumptionProperty()).thenReturn(configView.houseMaxConsumption);
         when(mockedHouse.fuseBlownProperty()).thenReturn(configView.houseFuseBlown);
