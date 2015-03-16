@@ -8,7 +8,9 @@ package nl.utwente.ewi.caes.tactiletriana;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import nl.utwente.ewi.caes.tactiletriana.gui.touch.TouchVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.TouchView;
+import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 
 /**
  *
@@ -18,13 +20,17 @@ public class App extends Application {
     
     @Override
     public void start(Stage stage) throws Exception {
+        TouchVM tvm = new TouchVM(Simulation.getInstance());
         TouchView tv = new TouchView();
+        tv.setViewModel(tvm);
         
         Scene scene = new Scene(tv);
         
         stage.setScene(scene);
         stage.setFullScreen(true);
         stage.show();
+        
+        Simulation.getInstance().start();
     }
     
     public static void main(String[] args) {

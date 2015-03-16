@@ -5,6 +5,7 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
+import java.util.List;
 import java.util.Set;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 
@@ -24,7 +25,7 @@ public abstract class NodeBase {
      * 
      * @return a list of cables that connect to this node
      */
-    public abstract Set<CableBase> getCables();
+    public abstract List<CableBase> getCables();
     
     /**
      * 

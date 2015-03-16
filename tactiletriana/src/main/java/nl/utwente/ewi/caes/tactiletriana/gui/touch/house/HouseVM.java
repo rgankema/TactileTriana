@@ -6,13 +6,10 @@
 package nl.utwente.ewi.caes.tactiletriana.gui.touch.house;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
-import javafx.beans.property.SimpleBooleanProperty;
-import nl.utwente.ewi.caes.tactiletriana.simulation.House;
+import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.HouseBase;
 
 /**
@@ -60,5 +57,21 @@ public class HouseVM {
      */
     public void repairFuse() {
         this.model.repairFuse();
+    }
+    
+    /**
+     * Adds a device to the house
+     * @param device the device to be added
+     */
+    public void addDevice(DeviceBase device) {
+        this.model.getDevices().add(device);
+    }
+    
+    /**
+     * Removes a device from the house
+     * @param device the device to be removed
+     */
+    public void removeDevice(DeviceBase device) {
+        this.model.getDevices().remove(device);
     }
 }

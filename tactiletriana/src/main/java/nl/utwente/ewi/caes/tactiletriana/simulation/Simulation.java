@@ -50,8 +50,6 @@ public class Simulation extends SimulationBase implements Runnable {
         for(int i = 0; i <= NUMBER_OF_HOUSES-1; i ++){
             houses[i] = new House();
             
-            houses[i].getDevices().add(new MockDevice());
-            
             houseNodes[i] = new Node(houses[i]);
             internalNodes[i] = new Node(null);
             Cable houseCable = new Cable(houseNodes[i]);

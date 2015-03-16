@@ -15,7 +15,6 @@ import javafx.beans.property.SimpleObjectProperty;
  *
  * @author Richard
  */
-
 public abstract class DeviceBase {
     /**
      * Describes the state of a device
@@ -78,7 +77,7 @@ public abstract class DeviceBase {
         @Override
         public void set(double value) {
             // als hij disconnected is is hij altijd 0
-            if (!(getState() == DeviceBase.State.CONNECTED)) {
+            if (getState() != DeviceBase.State.CONNECTED) {
                 value = 0;
             }
             super.set(value);
@@ -100,7 +99,7 @@ public abstract class DeviceBase {
     private final ObjectProperty<State> state = new SimpleObjectProperty<State>(){
         @Override
         public void set(State value){
-            if (!(value == DeviceBase.State.CONNECTED)){
+            if (value != DeviceBase.State.CONNECTED){
                 setCurrentConsumption(0);
             }
             super.set(value);
