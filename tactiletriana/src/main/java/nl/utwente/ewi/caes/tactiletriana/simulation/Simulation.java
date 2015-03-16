@@ -5,6 +5,8 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
+import java.sql.Time;
+import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -17,8 +19,8 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.devices.MockDevice;
 public class Simulation extends SimulationBase implements Runnable {
     // Declare simulation constants
     public static final int NUMBER_OF_HOUSES = 6;
-    //Time between ticks of the simulation (in milliseconds) 
-    public static final int TICK_TIME = 200;
+    //Time between ticks of the simulation (in seconds) 
+    public static final int TICK_TIME = 1;
     
     private boolean simulationRunning = false;
      
@@ -72,16 +74,31 @@ public class Simulation extends SimulationBase implements Runnable {
     
     @Override
     public void start() {
-        scheduler.scheduleAtFixedRate(this, 1, 1, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(this, TICK_TIME, TICK_TIME, TimeUnit.SECONDS);
     }
        
     public void initiateForwardBackwardSweep() {
         //First reset the nodes.
         transformer.resetEntity(230, 0);
-        //Run the ForwardBackwardSweep Load-flow calculation 10 times and assume convergence.
-        for(int i = 0; i < 10; i++) {
+        //Run the ForwardBackwardSweep Load-flow calculation until converged.
+        while(!calculateFBSConvergence(0.000001)) {
             transformer.doForwardBackwardSweep(230); // this runs recursivly down the tree
         }
+    }
+    
+    //Calculate if the FBS algorithm has converged. 
+    private boolean calculateFBSConvergence(double error) {
+        boolean result = true;
+        //Loop through the network-tree and compare the previous voltage from each with the current voltage.
+        //If the difference between the previous and current voltage is smaller than the given error, the result is true
+        ArrayList<Node> nodes = new ArrayList<Node>();
+        transformer.getNodes(nodes);
+        for(int i = 0; i < nodes.size(); i++) {
+            if(Math.abs(nodes.get(i).getPreviousVoltage() - nodes.get(i).getVoltage()) > error) {
+                result = false;
+            }
+        }
+        return result;
     }
     
     private void initiateTick(double time){
@@ -107,7 +124,7 @@ public class Simulation extends SimulationBase implements Runnable {
     }
     
     
-    //For testing
+    //TODO: remove this
     public static void main(String args[]){
         Simulation s = new Simulation();
         s.start();

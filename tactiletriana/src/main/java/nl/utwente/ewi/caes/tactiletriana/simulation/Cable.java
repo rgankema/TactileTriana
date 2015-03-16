@@ -5,6 +5,7 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
+import java.util.ArrayList;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyDoubleProperty;
@@ -42,9 +43,8 @@ public class Cable extends CableBase implements ISimulationEntity {
     private final ReadOnlyBooleanWrapper broken = new ReadOnlyBooleanWrapper(false) {
         @Override
         public void set(boolean value) {
-            if (value) {
+            if (value) { // isBroken(). In tick() this is propageted throught the entire tree
                 setCurrent(0);
-                // TODO: cut off rest of network
             }
             super.set(value);
         }
@@ -112,5 +112,9 @@ public class Cable extends CableBase implements ISimulationEntity {
     @Override
     public void resetEntity(double voltage, double current) {
         this.setCurrent(current);
+    }
+    
+    public void getNodes(ArrayList<Node> nodes) {
+        child.getNodes(nodes);
     }
 }
