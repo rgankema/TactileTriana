@@ -17,8 +17,8 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.devices.MockDevice;
 public class Simulation extends SimulationBase implements Runnable {
     // Declare simulation constants
     public static final int NUMBER_OF_HOUSES = 6;
-    //Time between ticks of the simulation (in milliseconds) 
-    public static final int TICK_TIME = 200;
+    //Time between ticks of the simulation (in seconds) 
+    public static final int TICK_TIME = 1;
     
     private boolean simulationRunning = false;
      
@@ -74,7 +74,7 @@ public class Simulation extends SimulationBase implements Runnable {
     
     @Override
     public void start() {
-        scheduler.scheduleAtFixedRate(this, 1, 1, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(this, 1, 1, TICK_TIME);
     }
        
     public void initiateForwardBackwardSweep() {
@@ -109,7 +109,7 @@ public class Simulation extends SimulationBase implements Runnable {
     }
     
     
-    //For testing
+    //TODO: remove this
     public static void main(String args[]){
         Simulation s = new Simulation();
         s.start();
