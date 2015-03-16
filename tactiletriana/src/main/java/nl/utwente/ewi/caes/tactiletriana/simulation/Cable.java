@@ -99,9 +99,15 @@ public class Cable extends CableBase implements ISimulationEntity {
         return getCurrent();
     }
     
-    @Override
-    public String toString(){
-        return "(Cable:R="+ resistance +  ",I="+ this.getCurrent() + ") -> " + this.getChildNode().toString();
+    public String toString(int indentation){
+        String output = "";
+        for (int i = 0; i < indentation; i++){
+            output += "\t";
+        }
+        output += "|-";
+        
+        output += "(Cable:R="+ resistance +  ",I="+ this.getCurrent() + ") -> " + this.getChildNode().toString(indentation);
+        return output;
     }
 
     @Override

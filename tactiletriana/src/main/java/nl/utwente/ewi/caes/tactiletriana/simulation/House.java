@@ -47,9 +47,16 @@ public class House extends HouseBase {
         return devices;
     }
     
-    @Override
-    public String toString(){
-        return "(House:P="+getCurrentConsumption()+")";
+    public String toString(int indentation){
+        String output = "";
+        for (int i = 0; i < indentation; i++){
+            output += "\t";
+        }
+        output += "|-";
+        
+        output += "(House:P="+getCurrentConsumption()+")";
+        
+        return output;
     }
     
     private final ReadOnlyDoubleWrapper currentConsumption = new ReadOnlyDoubleWrapper(0.0);

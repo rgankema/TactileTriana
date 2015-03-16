@@ -83,22 +83,24 @@ public class Node extends NodeBase implements ISimulationEntity {
         return previousVoltage;
     }
     
-    @Override
-    public String toString(){
+    public String toString(int indentation){
         String output = "";
+        for (int i = 0; i < indentation; i++){
+            output += "\t";
+        }
+        output += "|-";
+        
         if (getHouse() != null) {
-            output =  "(Node:U="+ getVoltage() + ") -> " + getHouse().toString() + "\n";
+            output =  "(Node:U="+ getVoltage() + ")\n" + getHouse().toString(indentation+1) + "\n";
         } else {
             output =  "(Node:U="+ getVoltage() + ") -> " + "\n";
         }
         for (CableBase c: this.getCables()){
-            output += "->";
-            output += c.toString();
+            output += c.toString(indentation+1);
         }
-            
-        
         return output;
     }
+    
 
     @Override
     public void resetEntity(double voltage, double current) {

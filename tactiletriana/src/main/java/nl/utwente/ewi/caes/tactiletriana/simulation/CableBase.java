@@ -57,4 +57,6 @@ public abstract class CableBase implements ISimulationEntity {
         }
         getChildNode().tick(time, connected);
     }
+    
+    public abstract String toString(int indentation);
 }

@@ -26,11 +26,19 @@ public class Transformer extends Node implements ISimulationEntity {
     
     @Override
     public String toString(){
-        String output = "(Transformer:U="+this.getVoltage()+")\n";
+        return toString(0);
+    }
+    
+    public String toString(int indentation){
+        String output = "";
+        for (int i = 0; i < indentation; i++){
+            output += "\t";
+        }
+        output += "|-";
+        
+        output = "(Transformer:U="+this.getVoltage()+")\n";
         for (CableBase c: this.getCables()){
-            output += "->";
-            output += c.toString();
-            
+            output += c.toString(indentation+1);
         }
         return output;
     }
