@@ -84,8 +84,8 @@ public class Simulation extends SimulationBase implements Runnable {
         transformer.resetEntity(230, 0);
         //Run the ForwardBackwardSweep Load-flow calculation until converged or the iteration limit is reached
         for(int i = 0; (i < 20) && !calculateFBSConvergence(0.000001); i++) {
-            transformer.doForwardBackwardSweep(230); // this runs recursivly down the tree
             System.out.println("Iteration" + i);
+            transformer.doForwardBackwardSweep(230); // this runs recursivly down the tree
         }
     }
     
