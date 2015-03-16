@@ -5,6 +5,8 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author Richard
@@ -42,4 +44,5 @@ public class Transformer extends Node implements ISimulationEntity {
         }
         return output;
     }
+    
 }
