@@ -88,7 +88,7 @@ public class Simulation extends SimulationBase {
     }
     
     private void initiateTick(double time){
-        this.getTransformer().tick(time);
+        this.getTransformer().tick(time, true);
     }
     
     @Override

@@ -17,13 +17,13 @@ public class MockDevice extends DeviceBase {
     private static final double MIN_CONSUMPTION = -3700d;
     private static final double MAX_CONSUMPTION = 3700d;
     private final Parameter[] PARAMETERS = new Parameter[] {
-        new Parameter("Consumption", consumptionProperty(), MIN_CONSUMPTION, MAX_CONSUMPTION)
+        new Parameter("Consumption", mockDeviceUsageProperty(), MIN_CONSUMPTION, MAX_CONSUMPTION)
     };
     
     /**
      * The amount of power the device will consume when turned on
      */
-    private final DoubleProperty consumption = new SimpleDoubleProperty() {
+    private final DoubleProperty mockDeviceUsage = new SimpleDoubleProperty() {
         @Override
         public void set(double value) {
             if (get() == value) return;
@@ -34,27 +34,22 @@ public class MockDevice extends DeviceBase {
         }
     };
     
-    public double getConsumption() {
-        return consumption.get();
+    public double getMockDeviceUsage() {
+        return mockDeviceUsage.get();
     }
     
-    public void setConsumption(double consumption) {
-        this.consumption.set(consumption);
+    public void setMockDeviceUsage(double consumption) {
+        this.mockDeviceUsage.set(consumption);
     }
     
-    public DoubleProperty consumptionProperty() {
-        return consumption;
+    public DoubleProperty mockDeviceUsageProperty() {
+        return mockDeviceUsage;
     }
     
     /**
      * The amount of power the device currently consumes
      */
-    private final ReadOnlyDoubleWrapper currentConsumption = new ReadOnlyDoubleWrapper(0.0);
     
-    @Override
-    public ReadOnlyDoubleProperty currentConsumptionProperty() {
-        return currentConsumption;
-    }
     
     @Override
     public Parameter[] getParameters() {
@@ -62,7 +57,9 @@ public class MockDevice extends DeviceBase {
     }
 
     @Override
-    public void tick(double time) {
-        currentConsumption.set(getConsumption());
+    public void tick(double time, boolean connected) {
+        super.tick(time, connected);
+        setCurrentConsumption(getMockDeviceUsage());
+        
     }
 }

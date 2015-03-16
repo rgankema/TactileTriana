@@ -58,9 +58,9 @@ public abstract class HouseBase {
      * Propagates a tick to all its devices
      * @param time the amount of time that passed since the last tick
      */
-    public void tick(double time) {
+    public void tick(double time, boolean connected) {
         for (DeviceBase device : getDevices()) {
-            device.tick(time);
+            device.tick(time, connected);
         }
     }
 }
