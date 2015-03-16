@@ -23,7 +23,7 @@ public class MockDevice extends DeviceBase {
     /**
      * The amount of power the device will consume when turned on
      */
-    private final DoubleProperty mockDeviceUsage = new SimpleDoubleProperty() {
+    private final DoubleProperty mockDeviceUsage = new SimpleDoubleProperty(20) {
         @Override
         public void set(double value) {
             if (get() == value) return;
