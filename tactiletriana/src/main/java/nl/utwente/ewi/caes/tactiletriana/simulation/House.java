@@ -7,6 +7,7 @@ package nl.utwente.ewi.caes.tactiletriana.simulation;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.collections.FXCollections;
@@ -19,25 +20,19 @@ import javafx.collections.ObservableList;
  */
 public class House extends HouseBase {
     
-    private ObservableList<DeviceBase> devices;
+    private final ObservableList<DeviceBase> devices;
     
     public House(){
         devices = FXCollections.observableArrayList();
         
-        currentConsumption.bind(Bindings.createDoubleBinding(() -> { 
-            double sum = 0.0;
-            for (DeviceBase device : devices) {
-                sum += device.getCurrentConsumption();
-            }
-            return sum;
-        }, devices));
-        
         devices.addListener((ListChangeListener.Change<? extends DeviceBase> c) -> {
-            for (DeviceBase d : c.getAddedSubList()) {
-                d.setState(DeviceBase.State.CONNECTED);
-            }
-            for (DeviceBase d : c.getRemoved()) {
-                d.setState(DeviceBase.State.NOT_IN_HOUSE);
+            while(c.next()) {
+                for (DeviceBase d : c.getAddedSubList()) {
+                    d.setState(DeviceBase.State.CONNECTED);
+                }
+                for (DeviceBase d : c.getRemoved()) {
+                    d.setState(DeviceBase.State.NOT_IN_HOUSE);
+                }
             }
         });
     }
@@ -66,18 +61,28 @@ public class House extends HouseBase {
         return currentConsumption.getReadOnlyProperty();
     }
 
+    private final ReadOnlyDoubleWrapper maximumConsumption = new ReadOnlyDoubleWrapper(100 * 230);
+    
     @Override
     public ReadOnlyDoubleProperty maximumConsumptionProperty() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return maximumConsumption;
     }
 
+    private final ReadOnlyBooleanWrapper fuseBlown = new ReadOnlyBooleanWrapper(false); //TODO: als deze blown raakt moeten alle devices erachter disconnected zijn
+    
     @Override
     public ReadOnlyBooleanProperty fuseBlownProperty() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return fuseBlown;
     }
 
     @Override
     public void repairFuse() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        fuseBlown.set(false);
+    }
+    
+    @Override
+    public void tick(double time, boolean connected) {
+        super.tick(time, connected);
+        currentConsumption.set(devices.stream().mapToDouble(DeviceBase::getCurrentConsumption).sum());
     }
 }

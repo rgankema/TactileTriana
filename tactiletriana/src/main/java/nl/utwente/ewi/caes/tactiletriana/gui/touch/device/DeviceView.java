@@ -48,6 +48,6 @@ public class DeviceView extends StackPane {
             return color; 
         }, viewModel.loadProperty(), viewModel.stateProperty()));
         
-        configIcon.setOnMousePressed(e -> { viewModel.configIconClicked(); });
+        configIcon.setOnMousePressed(e -> { viewModel.openConfigPanel(); });
     }
 }

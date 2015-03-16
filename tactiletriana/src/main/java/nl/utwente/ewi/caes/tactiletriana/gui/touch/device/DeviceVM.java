@@ -13,6 +13,7 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseVM;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 
 /**
@@ -27,6 +28,7 @@ public class DeviceVM {
     }
     
     private DeviceBase model;
+    private HouseVM house;
     
     public DeviceVM(DeviceBase model) {
         this.model = model;
@@ -93,9 +95,21 @@ public class DeviceVM {
         this.configPanelShown.set(configPanelShown);
     }
     
-    // EVENT HANDLING
+    // METHODS
     
-    public void configIconClicked() {
+    public void connectToHouse(HouseVM house) {
+        if (this.house != null) {
+            this.house.removeDevice(model);
+        }
+        
+        this.house = house;
+        
+        if (model != null) {
+            house.addDevice(model);
+        }
+    }
+    
+    public void openConfigPanel() {
         setConfigPanelShown(!isConfigPanelShown());
     }
 }

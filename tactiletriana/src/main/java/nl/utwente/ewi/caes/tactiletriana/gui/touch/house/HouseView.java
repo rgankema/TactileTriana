@@ -25,6 +25,10 @@ public class HouseView extends Pane {
         ViewLoader.load(this);
     }
     
+    public HouseVM getViewModel() {
+        return viewModel;
+    }
+    
     public void setViewModel(HouseVM viewModel) {
         if (this.viewModel != null) throw new IllegalStateException("ViewModel can only be set once");
         

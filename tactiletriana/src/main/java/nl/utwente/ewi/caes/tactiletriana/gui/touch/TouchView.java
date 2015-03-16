@@ -5,15 +5,18 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.touch;
 
+import java.util.Arrays;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.network.NetworkView;
 import nl.utwente.cs.caes.tactile.control.TactilePane;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
+import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.MockDevice;
 
 /**
@@ -30,7 +33,7 @@ public class TouchView extends TactilePane {
         ViewLoader.load(this);
         
         // Track houses
-        for (HouseView house : networkView.getHouseViews()) {
+        for (HouseView house : networkView.getHouses()) {
             getActiveNodes().add(house);
         }
         
@@ -42,7 +45,8 @@ public class TouchView extends TactilePane {
         double y = 1080/2 - 25;
         
         DeviceView device = new DeviceView();
-        device.setViewModel(new DeviceVM(new MockDevice()));
+        DeviceVM deviceVM = new DeviceVM(new MockDevice());
+        device.setViewModel(deviceVM);
         
         // Add device to group to fix drag bug
         Group group = new Group(device);
@@ -63,18 +67,36 @@ public class TouchView extends TactilePane {
         
         // Add new device when drag starts, remove device if not on house
         TactilePane.inUseProperty(group).addListener(obs -> {
-            if (TactilePane.isInUse(group)) {
+            if (TactilePane.isInUse(group)) { 
                 addDeviceToStack();
             } else {
                 if (!TactilePane.getNodesColliding(group).stream().anyMatch(node -> node instanceof HouseView)) {
                     getChildren().remove(group);
+                    deviceVM.connectToHouse(null);
+                } else {
+                    for (Node node : TactilePane.getNodesColliding(group)) {
+                        if (node instanceof HouseView) {
+                            deviceVM.connectToHouse(((HouseView) node).getViewModel());
+                            break;
+                        }
+                    }
                 }
             }
         });
     }
     
     public void setViewModel(TouchVM viewModel) {
+        if (this.viewModel != null) throw new IllegalStateException("ViewModel already set");
+        
         this.viewModel = viewModel;
+        networkView.getTransformer().setViewModel(viewModel.getTransformer());
+        for (int i = 0; i < 6; i++) {
+            networkView.getInternalNodes()[i].setViewModel(viewModel.getInternalNodes()[i]);
+            networkView.getInternalCables()[i].setViewModel(viewModel.getInternalCables()[i]);
+            networkView.getHouseNodes()[i].setViewModel(viewModel.getHouseNodes()[i]);
+            networkView.getHouseCables()[i].setViewModel(viewModel.getHouseCables()[i]);
+            networkView.getHouses()[i].setViewModel(viewModel.getHouses()[i]);
+        }
     }
     
 }

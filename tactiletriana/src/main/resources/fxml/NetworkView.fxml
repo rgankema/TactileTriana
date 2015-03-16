@@ -32,28 +32,28 @@
       <NodeView fx:id="nh6" layoutX="195.0" layoutY="855.0" />
       
       <!-- Nodes in internal network -->
-      <NodeView fx:id="n1" layoutX="195.0" layoutY="295.0" />
-      <NodeView fx:id="n2" layoutX="945.0" layoutY="295.0" />
-      <NodeView fx:id="n3" layoutX="1695.0" layoutY="295.0" />
-      <NodeView fx:id="n4" layoutX="1695.0" layoutY="755.0" />
-      <NodeView fx:id="n5" layoutX="945.0" layoutY="755.0" />
-      <NodeView fx:id="n6" layoutX="195.0" layoutY="755.0" />
+      <NodeView fx:id="ni1" layoutX="195.0" layoutY="295.0" />
+      <NodeView fx:id="ni2" layoutX="945.0" layoutY="295.0" />
+      <NodeView fx:id="ni3" layoutX="1695.0" layoutY="295.0" />
+      <NodeView fx:id="ni4" layoutX="1695.0" layoutY="755.0" />
+      <NodeView fx:id="ni5" layoutX="945.0" layoutY="755.0" />
+      <NodeView fx:id="ni6" layoutX="195.0" layoutY="755.0" />
       
       <!-- Cables between house nodes and internal nodes -->
-      <CableView endNode="$nh1" startNode="$n1" />
-      <CableView endNode="$nh2" startNode="$n2" />
-      <CableView endNode="$nh3" startNode="$n3" />
-      <CableView endNode="$nh4" startNode="$n4" />
-      <CableView endNode="$nh5" startNode="$n5" />
-      <CableView endNode="$nh6" startNode="$n6" />
+      <CableView fx:id="ni1_nh1" endNode="$nh1" startNode="$ni1" />
+      <CableView fx:id="ni2_nh2" endNode="$nh2" startNode="$ni2" />
+      <CableView fx:id="ni3_nh3" endNode="$nh3" startNode="$ni3" />
+      <CableView fx:id="ni4_nh4" endNode="$nh4" startNode="$ni4" />
+      <CableView fx:id="ni5_nh5" endNode="$nh5" startNode="$ni5" />
+      <CableView fx:id="ni6_nh6" endNode="$nh6" startNode="$ni6" />
       
       <!-- Cables between internal nodes -->
-      <CableView endNode="$n1" startNode="$t" />
-      <CableView endNode="$n2" startNode="$n1" />
-      <CableView endNode="$n3" startNode="$n2" />
-      <CableView endNode="$n4" startNode="$n3" />
-      <CableView endNode="$n5" startNode="$n4" />
-      <CableView endNode="$n6" startNode="$n5" />
+      <CableView fx:id="t_ni1" endNode="$ni1" startNode="$t" />
+      <CableView fx:id="ni1_ni2" endNode="$ni2" startNode="$ni1" />
+      <CableView fx:id="ni2_ni3" endNode="$ni3" startNode="$ni2" />
+      <CableView fx:id="ni3_ni4" endNode="$ni4" startNode="$ni3" />
+      <CableView fx:id="ni4_ni5" endNode="$ni5" startNode="$ni4" />
+      <CableView fx:id="ni5_ni6" endNode="$ni6" startNode="$ni5" />
 
    </children>
 </fx:root>
