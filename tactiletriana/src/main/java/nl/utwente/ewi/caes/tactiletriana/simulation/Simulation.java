@@ -5,6 +5,7 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -75,7 +76,7 @@ public class Simulation extends SimulationBase implements Runnable {
     
     @Override
     public void start() {
-        scheduler.scheduleAtFixedRate(this, 1, 1, TICK_TIME);
+        scheduler.scheduleAtFixedRate(this, TICK_TIME, TICK_TIME, TimeUnit.SECONDS);
     }
        
     public void initiateForwardBackwardSweep() {
