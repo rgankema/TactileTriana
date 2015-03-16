@@ -39,15 +39,18 @@ public class DeviceView extends StackPane {
         
         configIcon.visibleProperty().bind(viewModel.configIconShownProperty());
         rectangle.strokeProperty().bind(Bindings.createObjectBinding(() -> { 
-            Color color = null;
+            Color color = Color.DARKGREY;
             if (viewModel.getState() == State.CONSUMING) {
-                color = Color.DARKGREY.interpolate(Color.RED, viewModel.getLoad());
+                color = color.interpolate(Color.RED, viewModel.getLoad());
             } else if (viewModel.getState() == State.PRODUCING) {
-                color = Color.DARKGREY.interpolate(Color.GREEN, viewModel.getLoad());
+                color = color.interpolate(Color.GREEN, viewModel.getLoad());
             }
             return color; 
         }, viewModel.loadProperty(), viewModel.stateProperty()));
         
-        configIcon.setOnMousePressed(e -> { viewModel.openConfigPanel(); });
+        configIcon.setOnMousePressed(e -> { 
+            viewModel.openConfigPanel();
+            e.consume();
+        });
     }
 }

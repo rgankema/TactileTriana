@@ -7,9 +7,11 @@ package nl.utwente.ewi.caes.tactiletriana.gui.touch.device;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -27,6 +29,7 @@ public class DeviceVMTest {
     private DeviceVM instance;
     private DeviceBase mockedDevice;
     private DoubleProperty deviceConsumption;
+    private ObjectProperty<DeviceBase.State> deviceState;
     
     public DeviceVMTest() {
     }
@@ -43,7 +46,10 @@ public class DeviceVMTest {
     public void setUp() {
         mockedDevice = mock(DeviceBase.class);
         deviceConsumption = new SimpleDoubleProperty(500d);
+        deviceState = new SimpleObjectProperty(DeviceBase.State.CONNECTED);
+        
         when(mockedDevice.currentConsumptionProperty()).thenReturn(deviceConsumption);
+        when(mockedDevice.stateProperty()).thenReturn(deviceState);
         
         instance = new DeviceVM(mockedDevice);
     }

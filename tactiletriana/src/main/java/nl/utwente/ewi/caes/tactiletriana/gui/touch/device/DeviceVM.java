@@ -38,13 +38,13 @@ public class DeviceVM {
         }, model.currentConsumptionProperty()));
         
         state.bind(Bindings.createObjectBinding(() -> {
-            if (model.getState() == DeviceBase.State.NOT_IN_HOUSE)
+            if (model.getState() != DeviceBase.State.CONNECTED)
                 return State.DISCONNECTED;
             if (model.getCurrentConsumption() < 0)
                 return State.PRODUCING;
             else
                 return State.CONSUMING;
-        }, model.currentConsumptionProperty()));
+        }, model.currentConsumptionProperty(), model.stateProperty()));
         
         configIconShown.bind(Bindings.createBooleanBinding(() -> { 
             return getState() != State.DISCONNECTED;
@@ -98,6 +98,8 @@ public class DeviceVM {
     // METHODS
     
     public void connectToHouse(HouseVM house) {
+        if (this.house == house) return;
+        
         if (this.house != null) {
             this.house.removeDevice(model);
         }

@@ -93,7 +93,7 @@ public abstract class DeviceBase {
      * 
      * @return the state of this device
      */
-    private final ObjectProperty<State> state = new SimpleObjectProperty<State>(){
+    private final ObjectProperty<State> state = new SimpleObjectProperty<State>(DeviceBase.State.DISCONNECTED){
         @Override
         public void set(State value){
             if (value != DeviceBase.State.CONNECTED){
