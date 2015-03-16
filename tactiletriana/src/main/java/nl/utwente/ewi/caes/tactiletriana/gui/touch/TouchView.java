@@ -68,8 +68,6 @@ public class TouchView extends TactilePane {
             } else {
                 if (!TactilePane.getNodesColliding(group).stream().anyMatch(node -> node instanceof HouseView)) {
                     getChildren().remove(group);
-                } else {
-                    device.getViewModel().setConfigIconShown(true); // TODO: TIJDELIJK!!! dit moet uiteindelijk uiteraard automatisch gaan in de VM
                 }
             }
         });
