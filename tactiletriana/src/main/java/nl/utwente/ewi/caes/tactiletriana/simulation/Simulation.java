@@ -92,9 +92,10 @@ public class Simulation extends SimulationBase implements Runnable {
         boolean result = true;
         //Loop through the network-tree and compare the previous voltage from each with the current voltage.
         //If the difference between the previous and current voltage is smaller than the given error, the result is true
-        ArrayList<Node> nodes = new ArrayList<Node>();
-        transformer.getNodes(nodes);
-        for(int i = 0; (i < nodes.size()) && !result; i++) {
+        ArrayList<Node> nodes = transformer.getNodes();
+        
+        for(int i = 0; (i < nodes.size()) && result; i++) {
+            System.out.println("FWBWS Iteratie: " + i);
             if(Math.abs(nodes.get(i).getPreviousVoltage() - nodes.get(i).getVoltage()) > error) {
                 result = false;
             }

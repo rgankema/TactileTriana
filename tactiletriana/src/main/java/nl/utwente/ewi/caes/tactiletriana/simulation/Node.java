@@ -111,12 +111,16 @@ public class Node extends NodeBase implements ISimulationEntity {
         }
     }
     
-    public void getNodes(ArrayList<Node> nodes) {
-        nodes.add(this);
-        for(CableBase c : cables){
-            c.getNodes(nodes);
+    public ArrayList<Node> getNodes() {
+        ArrayList<Node> nodes = new ArrayList<Node>();
+        for(CableBase c : cables) {
+            nodes.addAll(c.getNodes());
+            
+            
         }
         
+        nodes.add(this);
+        return nodes;
     }
     
 }

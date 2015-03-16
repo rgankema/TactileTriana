@@ -22,5 +22,5 @@ public interface ISimulationEntity {
     public void resetEntity(double voltage, double current);    // Zou het hele idee van een reset niet moeten zijn dat je GEEN parameters mee geeft?
     
     //Return the nodes in the network
-    public void getNodes(ArrayList<Node> nodes);
+    public ArrayList<Node> getNodes();
 }

@@ -114,7 +114,7 @@ public class Cable extends CableBase implements ISimulationEntity {
         this.setCurrent(current);
     }
     
-    public void getNodes(ArrayList<Node> nodes) {
-        child.getNodes(nodes);
+    public ArrayList<Node> getNodes() {
+        return child.getNodes();
     }
 }
