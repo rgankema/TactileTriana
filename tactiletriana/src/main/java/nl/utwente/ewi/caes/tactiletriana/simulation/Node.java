@@ -69,11 +69,18 @@ public class Node extends NodeBase implements ISimulationEntity {
     
     @Override
     public String toString(){
-        String output =  "(Node:U="+ getVoltage() + ") -> " + getHouse().toString() + "\n";
+        String output = "";
+        if (getHouse() != null) {
+            output =  "(Node:U="+ getVoltage() + ") -> " + getHouse().toString() + "\n";
+        } else {
+            output =  "(Node:U="+ getVoltage() + ") -> " + "\n";
+        }
         for (CableBase c: this.getCables()){
             output += "->";
             output += c.toString();
         }
+            
+        
         return output;
     }
 
