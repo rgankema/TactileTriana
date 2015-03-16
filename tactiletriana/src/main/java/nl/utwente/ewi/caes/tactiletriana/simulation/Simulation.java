@@ -71,8 +71,15 @@ public class Simulation extends SimulationBase {
     @Override
     public void start() {
         simulationRunning = true;
+        double time = 0;
         while(simulationRunning){
             initiateForwardBackwardSweep();
+            initiateTick(time);
+            time = time + 0.25;
+            if (time == 24){
+                time = 0;
+            }
+            System.out.println(transformer.toString());
             try {
                 Thread.sleep(TICK_TIME);
             } catch(InterruptedException ex) {
@@ -97,5 +104,11 @@ public class Simulation extends SimulationBase {
     @Override
     public void stop() {
         simulationRunning = false; // this stops the simulation (see start()).
+    }
+    
+    public static void main(String[] args){
+        Simulation s = new Simulation();
+        s.start();
+        
     }
 }
