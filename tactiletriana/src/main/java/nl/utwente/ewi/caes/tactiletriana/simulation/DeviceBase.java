@@ -25,7 +25,7 @@ public abstract class DeviceBase {
         /**
          * The device is not connected to a house
          */
-        DISCONNECTED,
+        NOT_IN_HOUSE,
         /**
          * The device is connected to a house
          */
@@ -33,7 +33,7 @@ public abstract class DeviceBase {
         /**
          * The device is connected to a house, but can't draw power
          */
-        CONNECTED_NO_POWER,
+        DISCONNECTED,
     }
     
     /**
@@ -79,7 +79,7 @@ public abstract class DeviceBase {
         @Override
         public void set(double value) {
             // als hij disconnected is is hij altijd 0
-            if (getState() == DeviceBase.State.DISCONNECTED) {
+            if (!(getState() == DeviceBase.State.CONNECTED)) {
                 value = 0;
             }
             super.set(value);
@@ -101,7 +101,7 @@ public abstract class DeviceBase {
     private final ObjectProperty<State> state = new SimpleObjectProperty<State>(){
         @Override
         public void set(State value){
-            if (value == DeviceBase.State.DISCONNECTED){
+            if (!(value == DeviceBase.State.CONNECTED)){
                 setCurrentConsumption(0);
             }
             super.set(value);

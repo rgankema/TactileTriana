@@ -37,7 +37,7 @@ public class House extends HouseBase {
                 d.setState(DeviceBase.State.CONNECTED);
             }
             for (DeviceBase d : c.getRemoved()) {
-                d.setState(DeviceBase.State.DISCONNECTED);
+                d.setState(DeviceBase.State.NOT_IN_HOUSE);
             }
         });
     }
