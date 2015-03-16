@@ -5,24 +5,31 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.MockDevice;
 
 /**
  *
  * @author Richard
  */
-public class Simulation extends SimulationBase {
+public class Simulation extends SimulationBase implements Runnable {
     // Declare simulation constants
     public static final int NUMBER_OF_HOUSES = 6;
+    //Time between ticks of the simulation (in milliseconds) 
     public static final int TICK_TIME = 200;
     
     private boolean simulationRunning = false;
      
     private static Simulation instance = null;
     private final Transformer transformer;
-    //Time between ticks of the simulation (in milliseconds) 
-    //Richard hier: dit klopt niet. De tick moet de tijd zijn die in de simulatie voorbij gaat in minuten. Verander plx
-   
+    
+    private double time = 0;
+    
+    private final ScheduledExecutorService scheduler =
+     Executors.newScheduledThreadPool(1);
+       
     
     public static Simulation getInstance() {
         if (instance == null) {
@@ -67,24 +74,7 @@ public class Simulation extends SimulationBase {
     
     @Override
     public void start() {
-        simulationRunning = true;
-        double time = 0;
-        while(simulationRunning){
-            initiateForwardBackwardSweep();
-            initiateTick(time);
-            time = time + 0.25;
-            if (time == 24){
-                time = 0;
-            }
-            //Debug lines:
-            System.out.println("time: "+time);
-            System.out.println(transformer.toString());
-            try {
-                Thread.sleep(TICK_TIME);
-            } catch(InterruptedException ex) {
-                Thread.currentThread().interrupt();
-            }
-        }
+        scheduler.scheduleAtFixedRate(this, 1, 1, TimeUnit.SECONDS);
     }
        
     public void initiateForwardBackwardSweep() {
@@ -102,7 +92,27 @@ public class Simulation extends SimulationBase {
     
     @Override
     public void stop() {
-        simulationRunning = false; // this stops the simulation (see start()).
+        scheduler.shutdown();
+    }
+
+    public void run() {
+        simulationRunning = true;
+        initiateForwardBackwardSweep();
+        initiateTick(time);
+        time = time + 0.25;
+        if (time == 24){
+            time = 0;
+        }
+        //Debug lines:
+        System.out.println("time: "+time);
+        System.out.println(transformer.toString());
+    }
+    
+    
+    //For testing
+    public static void main(String args[]){
+        Simulation s = new Simulation();
+        s.start();
     }
 
 }
