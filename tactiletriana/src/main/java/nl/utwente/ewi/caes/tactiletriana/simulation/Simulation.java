@@ -26,7 +26,7 @@ public class Simulation {
     private final Map<Node, Double> lastVoltageByNode;
     
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-    private double time;
+    private double time;    // time in the simulation in minutes
     
     public static Simulation getInstance() {
         if (instance == null) {
@@ -83,8 +83,8 @@ public class Simulation {
         scheduler.scheduleAtFixedRate(() -> {
             getTransformer().tick(time, true);
             initiateForwardBackwardSweep();
-            time += 1d/60d; // een minuut per tick voor nu
-            if (time == 24){
+            time += 1; // een minuut per tick voor nu
+            if (time == 24 * 60){
                 time = 0;
             }
         }, TICK_TIME, TICK_TIME, TimeUnit.MILLISECONDS);

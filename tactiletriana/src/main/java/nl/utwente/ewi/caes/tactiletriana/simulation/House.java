@@ -91,8 +91,11 @@ public class House {
     /**
      * Propagates a tick to all its devices
      * @param time the amount of time that passed since the last tick
+     * @param connected whether the house is connected to the transformer
      */
     public void tick(double time, boolean connected) {
+        if (isFuseBlown()) connected = false;
+        
         for (DeviceBase device : getDevices()) {
             device.tick(time, connected);
         }

@@ -154,6 +154,32 @@ public class DeviceVMTest {
         
         assertEquals(DeviceVM.State.PRODUCING, instance.getState());
     }
+    
+    /**
+     * Test of stateProperty method, of class DeviceVM.
+     */
+    @Test
+    public void testStatePropertyDisconnectedNotInHouse() {
+        System.out.println("statePropertyConsumption");
+        
+        deviceState.set(DeviceBase.State.NOT_IN_HOUSE);
+        deviceConsumption.set(-5d);
+        
+        assertEquals(DeviceVM.State.DISCONNECTED, instance.getState());
+    }
+    
+        /**
+     * Test of stateProperty method, of class DeviceVM.
+     */
+    @Test
+    public void testStatePropertyDisconnectedNoPower() {
+        System.out.println("statePropertyConsumption");
+        
+        deviceState.set(DeviceBase.State.DISCONNECTED);
+        deviceConsumption.set(-5d);
+        
+        assertEquals(DeviceVM.State.DISCONNECTED, instance.getState());
+    }
 
     /**
      * Test of getState method, of class DeviceVM.
