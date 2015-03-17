@@ -25,9 +25,6 @@ public class House {
         
         devices.addListener((ListChangeListener.Change<? extends DeviceBase> c) -> {
             while(c.next()) {
-                for (DeviceBase d : c.getAddedSubList()) {
-                    //d.setState(DeviceBase.State.CONNECTED);
-                }
                 for (DeviceBase d : c.getRemoved()) {
                     d.setState(DeviceBase.State.NOT_IN_HOUSE);
                 }

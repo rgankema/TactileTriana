@@ -5,8 +5,6 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
-import java.util.ArrayList;
-
 /**
  *
  * @author Richard
@@ -24,6 +22,7 @@ public class Transformer extends Node implements ISimulationEntity {
         return toString(0);
     }
     
+    @Override
     public String toString(int indentation){
         String output = "";
         for (int i = 0; i < indentation; i++){

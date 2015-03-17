@@ -33,6 +33,11 @@ public class App extends Application {
         Simulation.getInstance().start();
     }
     
+    @Override
+    public void stop() {
+        Simulation.getInstance().stop();
+    }
+    
     public static void main(String[] args) {
         launch(args);
     }

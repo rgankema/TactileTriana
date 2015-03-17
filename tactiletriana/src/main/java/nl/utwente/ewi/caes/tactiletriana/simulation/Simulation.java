@@ -12,26 +12,21 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import nl.utwente.ewi.caes.tactiletriana.simulation.devices.MockDevice;
 
 /**
  *
  * @author Richard
  */
-public class Simulation implements Runnable {
-    // Declare simulation constants
-    public static final int NUMBER_OF_HOUSES = 6;
-    //Time between ticks of the simulation (in ms) 
-    public static final int TICK_TIME = 100;
+public class Simulation {
+    public static final int NUMBER_OF_HOUSES = 6;   // number of houses
+    public static final int TICK_TIME = 100;        // time between ticks in ms
      
     private static Simulation instance = null;
     private final Transformer transformer;
     private final Map<Node, Double> lastVoltageByNode;
     
-    private double time = 0;
-    
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-       
+    private double time;
     
     public static Simulation getInstance() {
         if (instance == null) {
@@ -72,35 +67,54 @@ public class Simulation implements Runnable {
             lastVoltageByNode.put(houseNodes[i], 230d);
         }
         
-        
+        // initialise time
+        this.time = 0;
     }
+    
+    // PROPERTIES
     
     public Transformer getTransformer() {
         return transformer;
     }
     
+    // PUBLIC METHODS
+    
     public void start() {
-        scheduler.scheduleAtFixedRate(this, TICK_TIME, TICK_TIME, TimeUnit.MILLISECONDS);
+        scheduler.scheduleAtFixedRate(() -> {
+            getTransformer().tick(time, true);
+            initiateForwardBackwardSweep();
+            time += 1d/60d; // een minuut per tick voor nu
+            if (time == 24){
+                time = 0;
+            }
+        }, TICK_TIME, TICK_TIME, TimeUnit.MILLISECONDS);
     }
-       
-    public void initiateForwardBackwardSweep() {
-        //First reset the nodes.
+    
+    public void stop() {
+        scheduler.shutdown();
+    }
+    
+    // FORWARD BACKWARD SWEEP METHODS
+
+    // Start the forward backward sweep algorithm
+    private void initiateForwardBackwardSweep() {
+        // First reset the nodes.
         transformer.reset();
-        //Run the ForwardBackwardSweep Load-flow calculation until converged or the iteration limit is reached
+        // Run the ForwardBackwardSweep Load-flow calculation until converged or the iteration limit is reached
         for(int i = 0; i < 20; i++) {
             transformer.doForwardBackwardSweep(230); // this runs recursivly down the tree
             
-            if (isFBSConverged(0.0001)) break;
+            if (hasFBSConverged(0.0001)) break;
             
-            // Store last voltage
+            // Store last voltage to check for convergence
             for (Node node : this.lastVoltageByNode.keySet()) {
                 lastVoltageByNode.put(node, node.getVoltage());
             }
         }
     }
     
-    //Calculate if the FBS algorithm has converged. 
-    private boolean isFBSConverged(double error) {
+    // Calculate if the FBS algorithm has converged. 
+    private boolean hasFBSConverged(double error) {
         boolean result = true;
         
         //Loop through the network-tree and compare the previous voltage from each with the current voltage.
@@ -111,25 +125,4 @@ public class Simulation implements Runnable {
         }
         return result;
     }
-    
-    private void initiateTick(double time){
-        this.getTransformer().tick(time, true);
-    }
-    
-    public void stop() {
-        scheduler.shutdown();
-    }
-
-    public void run() {
-        initiateTick(time);
-        initiateForwardBackwardSweep();
-        time += 1d/60d; // een minuut per tick voor nu
-        if (time == 24){
-            time = 0;
-        }
-        //Debug lines:
-        //System.out.println("time: "+time);
-        //System.out.println(transformer.toString());
-    }
-
 }
