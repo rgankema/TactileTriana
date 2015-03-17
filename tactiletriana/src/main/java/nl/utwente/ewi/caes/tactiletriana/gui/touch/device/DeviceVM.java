@@ -5,33 +5,53 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.touch.device;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import nl.utwente.ewi.caes.tactiletriana.gui.touch.deviceconfig.DeviceConfigVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseVM;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
+import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase.Parameter;
 
 /**
  *
  * @author Richard
  */
 public class DeviceVM {
+    /**
+     * The different states of the model that the view should reflect
+     */
     public enum State {
+        /**
+         * The device is not connected
+         */
         DISCONNECTED,
+        /**
+         * The device is producing power
+         */
         PRODUCING,
+        /**
+         * The device is consuming power
+         */
         CONSUMING
     }
     
     private DeviceBase model;
     private HouseVM house;
+    private DeviceConfigVM deviceConfig;
     
     public DeviceVM(DeviceBase model) {
         this.model = model;
+        if (model.getParameters() != null && model.getParameters().length > 0) {
+            this.deviceConfig = new DeviceConfigVM(model.getParameters());
+        }
         
         load.bind(Bindings.createDoubleBinding(() -> { 
             return Math.min(1.0, Math.abs(model.getCurrentConsumption()) / 3700d); // TODO: zeker dat 3700 goed is? gewoon van Gerwin overgenomen
@@ -51,6 +71,11 @@ public class DeviceVM {
         }, model.stateProperty()));
     }
     
+    /**
+     * The load of the device on a scale from 0 to 1. Computed as device consumption
+     * divided by 3700, which is assumed to be the maximum any single device will ever
+     * consume/produce.
+     */
     private final ReadOnlyDoubleWrapper load = new ReadOnlyDoubleWrapper();
     
     public ReadOnlyDoubleProperty loadProperty() {
@@ -61,6 +86,9 @@ public class DeviceVM {
         return load.get();
     }
     
+    /**
+     * The current state of the view
+     */
     private final ReadOnlyObjectWrapper<State> state = new ReadOnlyObjectWrapper<>();
     
     public ReadOnlyObjectProperty<State> stateProperty() {
@@ -71,6 +99,9 @@ public class DeviceVM {
         return state.get();
     }
     
+    /**
+     * Whether the configuration icon should be shown
+     */
     private final ReadOnlyBooleanWrapper configIconShown = new ReadOnlyBooleanWrapper(false);
     
     public ReadOnlyBooleanProperty configIconShownProperty() {
@@ -81,6 +112,9 @@ public class DeviceVM {
         return configIconShown.get();
     }
     
+    /**
+     * Whether the configuration panel should be shown
+     */
     private final ReadOnlyBooleanWrapper configPanelShown = new ReadOnlyBooleanWrapper(false);
     
     public ReadOnlyBooleanProperty configPanelShownProperty() {
@@ -95,9 +129,20 @@ public class DeviceVM {
         this.configPanelShown.set(configPanelShown);
     }
     
+    /**
+     * @return the viewmodel for the device configuration
+     */
+    public DeviceConfigVM getDeviceConfig() {
+        return deviceConfig;
+    }
+    
     // METHODS
     
-    public void connectToHouse(HouseVM house) {
+    /**
+     * Called when the device view is dropped on a house
+     * @param house the HouseVM associated with the HouseView that the device was dropped on
+     */
+    public void droppedOnHouse(HouseVM house) {
         if (this.house == house) return;
         
         if (this.house != null) {
@@ -111,7 +156,12 @@ public class DeviceVM {
         }
     }
     
+    /**
+     * Opens the configuration panel for this device, if there is one
+     */
     public void openConfigPanel() {
-        setConfigPanelShown(!isConfigPanelShown());
+        if (getDeviceConfig() != null) {
+            setConfigPanelShown(isConfigPanelShown());
+        }
     }
 }

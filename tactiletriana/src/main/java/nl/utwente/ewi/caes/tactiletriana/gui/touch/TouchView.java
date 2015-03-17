@@ -72,11 +72,11 @@ public class TouchView extends TactilePane {
             } else {
                 if (!TactilePane.getNodesColliding(group).stream().anyMatch(node -> node instanceof HouseView)) {
                     getChildren().remove(group);
-                    deviceVM.connectToHouse(null);
+                    deviceVM.droppedOnHouse(null);
                 } else {
                     for (Node node : TactilePane.getNodesColliding(group)) {
                         if (node instanceof HouseView) {
-                            deviceVM.connectToHouse(((HouseView) node).getViewModel());
+                            deviceVM.droppedOnHouse(((HouseView) node).getViewModel());
                             break;
                         }
                     }
