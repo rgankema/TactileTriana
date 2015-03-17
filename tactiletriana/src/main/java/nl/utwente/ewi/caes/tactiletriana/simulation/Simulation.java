@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import javafx.application.Platform;
 
 /**
  *
@@ -81,8 +82,13 @@ public class Simulation {
     
     public void start() {
         scheduler.scheduleAtFixedRate(() -> {
-            getTransformer().tick(time, true);
-            initiateForwardBackwardSweep();
+            // Todo: optimize dit, dit is slechts een hotfix
+            // Uiteraard nogal idioot om de hele meuk op de JavaFX thread te draaien
+            Platform.runLater(() -> { 
+                getTransformer().tick(time, true);
+                initiateForwardBackwardSweep();
+            });
+            
             time += 1; // een minuut per tick voor nu
             if (time == 24 * 60){
                 time = 0;
