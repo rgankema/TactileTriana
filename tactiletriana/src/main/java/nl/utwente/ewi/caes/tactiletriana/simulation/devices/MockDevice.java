@@ -12,12 +12,9 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 public class MockDevice extends DeviceBase {
     private static final double MIN_CONSUMPTION = -3700d;
     private static final double MAX_CONSUMPTION = 3700d;
-    private final Parameter[] PARAMETERS;
     
     public MockDevice() {
-        PARAMETERS = new Parameter[] {
-            new Parameter("Consumption", mockDeviceUsage, MIN_CONSUMPTION, MAX_CONSUMPTION)
-        };
+        addParameter(new Parameter("Consumption", mockDeviceUsage, MIN_CONSUMPTION, MAX_CONSUMPTION));
     }
     
     /**
@@ -44,11 +41,6 @@ public class MockDevice extends DeviceBase {
     
     public DoubleProperty mockDeviceUsageProperty() {
         return mockDeviceUsage;
-    }
-    
-    @Override
-    public Parameter[] getParameters() {
-        return PARAMETERS;
     }
 
     @Override

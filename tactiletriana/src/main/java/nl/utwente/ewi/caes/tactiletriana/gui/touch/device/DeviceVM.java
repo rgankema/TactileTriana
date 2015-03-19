@@ -45,7 +45,7 @@ public class DeviceVM {
     
     public DeviceVM(DeviceBase model) {
         this.model = model;
-        if (model.getParameters() != null && model.getParameters().length > 0) {
+        if (!model.getParameters().isEmpty()) {
             this.deviceConfig = new DeviceConfigVM(model.getParameters());
         }
         

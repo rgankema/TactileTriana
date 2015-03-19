@@ -5,6 +5,9 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
@@ -16,52 +19,15 @@ import javafx.beans.property.SimpleObjectProperty;
  * @author Richard
  */
 public abstract class DeviceBase {
-    /**
-     * Describes the state of a device
-     */
-    public enum State {
-        /**
-         * The device is not connected to a house
-         */
-        NOT_IN_HOUSE,
-        /**
-         * The device is connected to a house
-         */
-        CONNECTED,
-        /**
-         * The device is connected to a house, but can't draw power
-         */
-        DISCONNECTED,
+    private final List<Parameter> parameters;
+    private final List<Parameter> parametersUnmodifiable;
+    
+    public DeviceBase() {
+        parameters = new ArrayList<>();
+        parametersUnmodifiable = Collections.unmodifiableList(parameters);
     }
     
-    /**
-     * The describes the parameters that can be set for this device
-     */
-    public static final class Parameter {
-        /**
-         * The display name of the parameter
-         */
-        public final String displayName;
-        /**
-         * The property that the parameter binds to
-         */
-        public final DoubleProperty property;
-        /**
-         * The minimum value of the property
-         */
-        public final double minValue;
-        /**
-         * The maximum value of the property
-         */
-        public final double maxValue;
-        
-        public Parameter(String displayName, DoubleProperty property, double minValue, double maxValue) {
-            this.displayName = displayName;
-            this.property = property;
-            this.minValue = minValue;
-            this.maxValue = maxValue;
-        }
-    }
+    // PROPERTIES
     
     /**
      * The amount of power that the device currently consumes
@@ -116,10 +82,23 @@ public abstract class DeviceBase {
     }
     
     /**
-     * 
+     * Returns the parameters of this device. This list is unmodifiable, never null,
+     * and its elements are never null.
      * @return the parameters of this device
      */
-    public abstract Parameter[] getParameters();
+    public List<Parameter> getParameters() {
+        return parametersUnmodifiable;
+    }
+    
+    /**
+     * Adds a parameter to the list of parameters
+     * @param parameter 
+     */
+    protected final void addParameter(Parameter parameter) {
+        if (parameter != null) {
+            parameters.add(parameter);
+        }
+    }
     
     /**
      * Called by the simulation for every tick. The Device calculates its consumption
@@ -132,6 +111,55 @@ public abstract class DeviceBase {
             setState(DeviceBase.State.DISCONNECTED);
         } else {
             setState(DeviceBase.State.CONNECTED);
+        }
+    }
+    
+    // ENUMS AND NESTED CLASSES
+    
+    /**
+     * Describes the state of a device
+     */
+    public enum State {
+        /**
+         * The device is not connected to a house
+         */
+        NOT_IN_HOUSE,
+        /**
+         * The device is connected to a house
+         */
+        CONNECTED,
+        /**
+         * The device is connected to a house, but can't draw power
+         */
+        DISCONNECTED,
+    }
+    
+    /**
+     * The describes the parameters that can be set for this device
+     */
+    public static final class Parameter {
+        /**
+         * The display name of the parameter
+         */
+        public final String displayName;
+        /**
+         * The property that the parameter binds to
+         */
+        public final DoubleProperty property;
+        /**
+         * The minimum value of the property
+         */
+        public final double minValue;
+        /**
+         * The maximum value of the property
+         */
+        public final double maxValue;
+        
+        public Parameter(String displayName, DoubleProperty property, double minValue, double maxValue) {
+            this.displayName = displayName;
+            this.property = property;
+            this.minValue = minValue;
+            this.maxValue = maxValue;
         }
     }
 }

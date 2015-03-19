@@ -5,8 +5,6 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.touch.deviceconfig;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase.Parameter;
 
@@ -17,8 +15,8 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase.Parameter;
 public class DeviceConfigVM {
     private final List parameters;
     
-    public DeviceConfigVM(Parameter[] deviceParameters) {
-        this.parameters = Collections.unmodifiableList(Arrays.asList(deviceParameters));
+    public DeviceConfigVM(List<Parameter> deviceParameters) {
+        this.parameters = deviceParameters;
     }
     
     /**
