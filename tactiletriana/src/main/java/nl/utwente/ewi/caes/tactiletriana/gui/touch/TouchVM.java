@@ -8,9 +8,7 @@ package nl.utwente.ewi.caes.tactiletriana.gui.touch;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.cable.CableVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.node.NodeVM;
-import nl.utwente.ewi.caes.tactiletriana.gui.touch.transformer.TransformerVM;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Cable;
-import nl.utwente.ewi.caes.tactiletriana.simulation.Node;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Node;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 
@@ -21,7 +19,6 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 public class TouchVM {
     private final Simulation model;
     
-    private final TransformerVM transformer;
     private final NodeVM internalNodes[];
     private final NodeVM houseNodes[];
     private final CableVM internalCables[];
@@ -31,7 +28,6 @@ public class TouchVM {
     public TouchVM(Simulation model) {
         this.model = model;
         
-        this.transformer = new TransformerVM(model.getTransformer());
         this.internalNodes = new NodeVM[6];
         this.houseNodes = new NodeVM[6];
         this.internalCables = new CableVM[6];
@@ -56,10 +52,6 @@ public class TouchVM {
                 }
             }
         }
-    }
-    
-    public TransformerVM getTransformer() {
-        return transformer;
     }
     
     public NodeVM[] getInternalNodes() {

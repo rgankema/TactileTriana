@@ -21,7 +21,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceVM.State;
-import nl.utwente.ewi.caes.tactiletriana.gui.touch.deviceconfig.DeviceConfigView;
 
 /**
  *
@@ -29,12 +28,11 @@ import nl.utwente.ewi.caes.tactiletriana.gui.touch.deviceconfig.DeviceConfigView
  */
 public class DeviceView extends StackPane {
     @FXML private Node configIcon;
-    private Node deviceIcon;
+    private final Node deviceIcon;
     private DeviceConfigView configPanel;
     
     private DeviceVM viewModel;
-    
-    
+
     public DeviceView(Node deviceIcon) {
         ViewLoader.load(this);
         
@@ -45,16 +43,15 @@ public class DeviceView extends StackPane {
         this.setBorder(buildBorder(Color.DARKGREY));
     }
     
-    public DeviceVM getViewModel() {
-        return this.viewModel;
-    }
-    
     public void setViewModel(DeviceVM viewModel) {
         if (this.viewModel != null) throw new IllegalStateException("ViewModel already set");
         
         this.viewModel = viewModel;
         
+        // Bind config icon visibility to viewmodel
         configIcon.visibleProperty().bind(viewModel.configIconShownProperty());
+        
+        // Bind bordercolor to state
         this.borderProperty().bind(Bindings.createObjectBinding(() -> { 
             Color color = Color.DARKGREY;
             if (viewModel.getState() == State.CONSUMING) {
@@ -65,16 +62,17 @@ public class DeviceView extends StackPane {
             return buildBorder(color); 
         }, viewModel.loadProperty(), viewModel.stateProperty()));
         
+        // Handle touch events on config icon
         configIcon.setOnMousePressed(e -> { 
             viewModel.configIconPressed();
             e.consume();
         });
         
+        // Show/hide config panel when necessary
         viewModel.configPanelShownProperty().addListener(obs -> { 
             if (viewModel.isConfigPanelShown()) {
                 if (configPanel == null) {
-                    configPanel = new DeviceConfigView();
-                    configPanel.setViewModel(viewModel.getDeviceConfig());
+                    configPanel = new DeviceConfigView(viewModel.getParameters());
                 }
                 getChildren().remove(deviceIcon);
                 getChildren().add(0, configPanel);
@@ -85,6 +83,9 @@ public class DeviceView extends StackPane {
         });
     }
     
+    // HELPER METHODS
+    
+    // Returns a Border for a given color
     private Border buildBorder(Paint color) {
         return new Border(new BorderStroke(color, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(5)));
     }

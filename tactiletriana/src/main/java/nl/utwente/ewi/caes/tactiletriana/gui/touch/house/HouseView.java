@@ -34,6 +34,7 @@ public class HouseView extends Pane {
         
         this.viewModel = viewModel;
         
+        // Binds the load and whether the fuse is blown to the border color
         rectangle.strokeProperty().bind(Bindings.createObjectBinding(() -> { 
             if (viewModel.isFuseBlown()) {
                 return Color.BLACK;
@@ -43,6 +44,7 @@ public class HouseView extends Pane {
             return Color.DARKGRAY.interpolate(Color.RED, load);
         }, viewModel.loadProperty(), viewModel.fuseBlownProperty()));
         
+        // Repair fuse when house receives touch event
         this.setOnMousePressed(e -> viewModel.repairFuse());
     }
 }

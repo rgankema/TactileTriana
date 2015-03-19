@@ -39,6 +39,19 @@ public class TouchView extends TactilePane {
         addDeviceToStack();
     }
     
+    public void setViewModel(TouchVM viewModel) {
+        if (this.viewModel != null) throw new IllegalStateException("ViewModel already set");
+        
+        this.viewModel = viewModel;
+        for (int i = 0; i < 6; i++) {
+            networkView.getInternalNodes()[i].setViewModel(viewModel.getInternalNodes()[i]);
+            networkView.getInternalCables()[i].setViewModel(viewModel.getInternalCables()[i]);
+            networkView.getHouseNodes()[i].setViewModel(viewModel.getHouseNodes()[i]);
+            networkView.getHouseCables()[i].setViewModel(viewModel.getHouseCables()[i]);
+            networkView.getHouses()[i].setViewModel(viewModel.getHouses()[i]);
+        }
+    }
+    
     private void addDeviceToStack() {
         double x = 1920/2 - 25;
         double y = 1080/2 - 25;
@@ -83,19 +96,4 @@ public class TouchView extends TactilePane {
             }
         });
     }
-    
-    public void setViewModel(TouchVM viewModel) {
-        if (this.viewModel != null) throw new IllegalStateException("ViewModel already set");
-        
-        this.viewModel = viewModel;
-        networkView.getTransformer().setViewModel(viewModel.getTransformer());
-        for (int i = 0; i < 6; i++) {
-            networkView.getInternalNodes()[i].setViewModel(viewModel.getInternalNodes()[i]);
-            networkView.getInternalCables()[i].setViewModel(viewModel.getInternalCables()[i]);
-            networkView.getHouseNodes()[i].setViewModel(viewModel.getHouseNodes()[i]);
-            networkView.getHouseCables()[i].setViewModel(viewModel.getHouseCables()[i]);
-            networkView.getHouses()[i].setViewModel(viewModel.getHouses()[i]);
-        }
-    }
-    
 }

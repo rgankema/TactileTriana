@@ -35,7 +35,7 @@ public abstract class DeviceBase {
     private final ReadOnlyDoubleWrapper currentConsumption = new ReadOnlyDoubleWrapper(10.0){
         @Override
         public void set(double value) {
-            // als hij disconnected is is hij altijd 0
+            // consumption is always zero if not connected to the grid
             if (getState() != DeviceBase.State.CONNECTED) {
                 value = 0;
             }
@@ -59,10 +59,11 @@ public abstract class DeviceBase {
      * 
      * @return the state of this device
      */
-    private final ObjectProperty<State> state = new SimpleObjectProperty<State>(DeviceBase.State.DISCONNECTED){
+    private final ObjectProperty<State> state = new SimpleObjectProperty<State>(DeviceBase.State.NOT_IN_HOUSE){
         @Override
         public void set(State value){
             if (value != DeviceBase.State.CONNECTED){
+                // when not connected, no consumption
                 setCurrentConsumption(0);
             }
             super.set(value);

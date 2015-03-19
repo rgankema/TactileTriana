@@ -26,8 +26,8 @@ import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
  */
 public class CableView extends Group{
     @FXML private Line line;
-    @FXML private DirectionView directionStart;
-    @FXML private DirectionView directionEnd;
+    @FXML private CableDirectionView directionStart;
+    @FXML private CableDirectionView directionEnd;
     private CableVM viewModel;
     
     public CableView() {
@@ -50,6 +50,10 @@ public class CableView extends Group{
         directionEnd.rotateProperty().bind(angle);
     }
     
+    /**
+     * Sets the ViewModel of this CableView. It can only be set once.
+     * @param viewModel The CableVM that models this view
+     */
     public void setViewModel(CableVM viewModel) {
         if (this.viewModel != null) throw new IllegalStateException("ViewModel can only be set once");
         if (viewModel == null) return;
@@ -108,6 +112,9 @@ public class CableView extends Group{
     
     // PROPERTIES
     
+    /**
+     * The JavaFX Node that defines where the cable starts.
+     */
     private final ObjectProperty<Node> startNode = new SimpleObjectProperty<Node>(null) {
         @Override
         public void set(Node value) {
@@ -142,6 +149,9 @@ public class CableView extends Group{
         return startNode;
     }
     
+    /**
+     * The JavaFX Node that defines where the cable ends.
+     */
     private final ObjectProperty<Node> endNode = new SimpleObjectProperty<Node>(null) {
         @Override
         public void set(Node value) {

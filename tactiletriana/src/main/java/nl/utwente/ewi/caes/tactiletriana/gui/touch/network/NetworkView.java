@@ -5,11 +5,9 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.touch.network;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
@@ -19,7 +17,8 @@ import nl.utwente.ewi.caes.tactiletriana.gui.touch.node.NodeView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.transformer.TransformerView;
 
 /**
- *
+ * Pane that lays out all (static) views that form the network. Has methods for
+ * retrieving the various views so that their ViewModels can be set.
  * @author Richard
  */
 public class NetworkView extends Pane {
