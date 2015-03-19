@@ -5,12 +5,9 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.touch.deviceconfig;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase.Parameter;
 
 /**
@@ -22,23 +19,6 @@ public class DeviceConfigVM {
     
     public DeviceConfigVM(Parameter[] deviceParameters) {
         this.parameters = Collections.unmodifiableList(Arrays.asList(deviceParameters));
-    }
-    
-    /**
-     * Whether the DeviceConfigView is visible
-     */
-    private final BooleanProperty visible = new SimpleBooleanProperty(false);
-    
-    public BooleanProperty visibleProperty() {
-        return visible;
-    }
-    
-    public boolean isVisible() {
-        return visible.get();
-    }
-    
-    public void setVisible(boolean visible) {
-        this.visible.set(visible);
     }
     
     /**

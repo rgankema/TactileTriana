@@ -6,11 +6,15 @@
 package nl.utwente.ewi.caes.tactiletriana.gui.touch.cable;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.ReadOnlyStringWrapper;
+import nl.utwente.ewi.caes.tactiletriana.App;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Cable;
 
 /**
@@ -34,7 +38,15 @@ public class CableVM {
             }
             return Direction.NONE;
         }, model.brokenProperty(), model.currentProperty()));
+        
+        if (App.DEBUG) {
+            debugString.bind(Bindings.createStringBinding(() -> { 
+                return String.format("I: %.3f, max: %.1f, length: %.2f", model.getCurrent(), model.getMaximumCurrent(), model.getLength());
+            }, model.currentProperty(), model.maximumCurrentProperty(), model.lengthProperty()));
+        }
     }
+    
+    // PROPERTIES
     
     /**
      * The load on the cable on a scale from 0 to 1.
@@ -58,6 +70,17 @@ public class CableVM {
     }
     
     /**
+     * The maximum current the cable can handle
+     */
+    public ReadOnlyDoubleProperty maximumCurrentProperty() {
+        return model.maximumCurrentProperty();
+    }
+    
+    public double getMaximumCurrent() {
+        return model.getMaximumCurrent();
+    }
+    
+    /**
      * The direction of the current
      */
     private final ReadOnlyObjectWrapper<Direction> direction = new ReadOnlyObjectWrapper<>(Direction.NONE);
@@ -69,6 +92,31 @@ public class CableVM {
     public ReadOnlyObjectProperty<Direction> directionProperty() {
         return direction.getReadOnlyProperty();
     }
+    
+    /**
+     * Debug information
+     */
+    private final ReadOnlyStringWrapper debugString = new ReadOnlyStringWrapper();
+
+    public ReadOnlyStringProperty debugStringProperty() {
+        return debugString.getReadOnlyProperty();
+    }
+    
+    // METHODS
+    
+    public void cablePressed() {
+        model.repair();
+    }
+    
+    /**
+     * To be used by the CableView to bind the model's cable length to some double binding
+     * @param length A double binding that the cable model will bind to
+     */
+    public void bindCableLength(DoubleBinding length) {
+        model.lengthProperty().bind(length);
+    }
+    
+    // ENUMS
     
     /**
      * Describes the direction of current in a cable

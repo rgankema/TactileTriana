@@ -17,6 +17,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
  * @author Richard
  */
 public class App extends Application {
+    public static final boolean DEBUG = true;
     
     @Override
     public void start(Stage stage) throws Exception {

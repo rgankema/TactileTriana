@@ -43,7 +43,16 @@ public class House {
      * The amount of power the house currently consumes. A negative number means
      * the house is producing energy.
      */
-    private ReadOnlyDoubleWrapper currentConsumption = new ReadOnlyDoubleWrapper(0.0);
+    private final ReadOnlyDoubleWrapper currentConsumption = new ReadOnlyDoubleWrapper(0.0) {
+        @Override
+        public void set(double value) {
+            if (value > getMaximumConsumption()) {
+                setFuseBlown(true);
+                value = 0;
+            }
+            super.set(value);
+        }
+    };
     
     public ReadOnlyDoubleProperty currentConsumptionProperty() {
         return currentConsumption.getReadOnlyProperty();
@@ -78,6 +87,10 @@ public class House {
     
     public final boolean isFuseBlown() {
         return fuseBlownProperty().get();
+    }
+    
+    private void setFuseBlown(boolean fuseBlown) {
+        this.fuseBlown.set(fuseBlown);
     }
     
     /**

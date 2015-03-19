@@ -5,9 +5,6 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.touch.device;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
@@ -18,7 +15,6 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.deviceconfig.DeviceConfigVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseVM;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
-import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase.Parameter;
 
 /**
  *
@@ -157,11 +153,11 @@ public class DeviceVM {
     }
     
     /**
-     * Opens the configuration panel for this device, if there is one
+     * Opens or closes the configuration panel for this device, if there is one
      */
-    public void openConfigPanel() {
+    public void configIconPressed() {
         if (getDeviceConfig() != null) {
-            setConfigPanelShown(isConfigPanelShown());
+            setConfigPanelShown(!isConfigPanelShown());
         }
     }
 }

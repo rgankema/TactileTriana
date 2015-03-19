@@ -5,18 +5,18 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.touch.cable;
 
-import java.io.IOException;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import nl.utwente.ewi.caes.tactiletriana.App;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 
 /**
@@ -55,7 +55,14 @@ public class CableView extends Group{
         if (viewModel == null) return;
         
         this.viewModel = viewModel;
-        // Bind load and broken in viewmodel to color in view
+        // Bind model length to view length
+        viewModel.bindCableLength(Bindings.createDoubleBinding(() -> { 
+            double a = line.getStartX() - line.getEndX();
+            double b = line.getStartY() - line.getEndY();
+            return Math.sqrt(a*a + b*b);
+        }, line.startXProperty(), line.startYProperty(), line.endXProperty(), line.endYProperty()));
+        
+        // Bind color in view to load and broken in viewmodel
         line.strokeProperty().bind(Bindings.createObjectBinding(() -> {
             if (viewModel.isBroken()) {
                 return Color.BLACK;
@@ -65,20 +72,38 @@ public class CableView extends Group{
             return Color.DARKGRAY.interpolate(Color.RED, load);//new Color(load, 1.0 - load, 0, 1.0);
         }, viewModel.loadProperty(), viewModel.brokenProperty()));
         
-        // Bind load in viewmodel to strokeWidth in view
-        double defaultStrokeWidth = line.getStrokeWidth();
-        line.strokeWidthProperty().bind(Bindings.createDoubleBinding(() -> { 
-            double load = viewModel.getLoad();
-            double extraStrokeWidth = 0.0;
-            double threshold = 0.7;
-            if (load > threshold) {
-                extraStrokeWidth = (load - threshold) * 2.0;
-            }
-            return defaultStrokeWidth + extraStrokeWidth;
-        }, viewModel.loadProperty()));
+        // Bind diameter of cables to direction in viewmodel
+        DoubleBinding diameterBinding = Bindings.createDoubleBinding(() -> { 
+            double current = viewModel.getMaximumCurrent();
+            // Ik ga er voor het gemak vanuit dat de maximum current zich 1 op 1 verhoudt met de diameter van de kabel, later checken of dat klopt
+            double diameter = 2 * Math.sqrt(current / Math.PI);
+            return diameter;
+        }, viewModel.loadProperty());
         
+        /*
+        line.strokeWidthProperty().bind(diameterBinding.divide(1.5));
+        directionStart.scaleXProperty().bind(diameterBinding.divide(15d));
+        directionStart.scaleYProperty().bind(diameterBinding.divide(15d));
+        directionEnd.scaleXProperty().bind(diameterBinding.divide(15d));
+        directionEnd.scaleYProperty().bind(diameterBinding.divide(15d));
+        */
+        
+        // Bind visibility of direction views to direction in viewmodel
         directionStart.visibleProperty().bind(viewModel.directionProperty().isEqualTo(CableVM.Direction.START));
         directionEnd.visibleProperty().bind(viewModel.directionProperty().isEqualTo(CableVM.Direction.END));
+        
+        // Handle events for cable
+        line.setOnMousePressed(e-> {
+            viewModel.cablePressed();
+        });
+        
+        if (App.DEBUG) {
+            Label label = new Label();
+            label.textProperty().bind(viewModel.debugStringProperty());
+            getChildren().add(label);
+            label.layoutXProperty().bind(line.endXProperty().add(line.startXProperty()).divide(2d));
+            label.layoutYProperty().bind(line.endYProperty().add(line.startYProperty()).divide(2d));
+        }
     }
     
     // PROPERTIES

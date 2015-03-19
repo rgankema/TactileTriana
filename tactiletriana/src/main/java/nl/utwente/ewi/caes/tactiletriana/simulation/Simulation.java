@@ -5,8 +5,6 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
-import java.sql.Time;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -53,10 +51,10 @@ public class Simulation {
             
             houseNodes[i] = new Node(houses[i]);
             internalNodes[i] = new Node(null);
-            Cable houseCable = new Cable(houseNodes[i]);
+            Cable houseCable = new Cable(houseNodes[i], 110);
             internalNodes[i].getCables().add(houseCable);
             
-            cables[i] = new Cable(internalNodes[i]);
+            cables[i] = new Cable(internalNodes[i], 110 + (NUMBER_OF_HOUSES - i) * 60);
             if (i == 0) {
                 transformer.getCables().add(cables[i]);
             }

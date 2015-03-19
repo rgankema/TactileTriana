@@ -5,29 +5,57 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
-import java.util.ArrayList;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
+import javafx.beans.property.SimpleDoubleProperty;
 
 /**
  * A connection between to nodes
  */
 public class Cable implements ISimulationEntity {
     private final Node childNode;
-    private final double resistance;
-    private final double length;    
+    private final double resistance;  
     
     /**
      * Instantiates a new cable connected to two nodes
      * @param childNode The node away from the transformer
+     * @param maxCurrent The maximum current that can flow through the cable
      */
-    public Cable(Node childNode) {
+    public Cable(Node childNode, double maxCurrent) {
         this.childNode = childNode;
         
         this.resistance = 0.00005;
-        this.length = 10;
+        
+        setMaximumCurrent(maxCurrent);
+    }
+    
+    // PROPERTIES
+    
+    /**
+     * The length of the cable
+     */
+    private final DoubleProperty length = new SimpleDoubleProperty(10) {
+        @Override
+        public void set(double value) {
+            if (value <= 0) throw new IllegalArgumentException("Length must be a positive value");
+            
+            super.set(value);
+        }
+    };
+    
+    public DoubleProperty lengthProperty() {
+        return length;
+    }
+    
+    public final double getLength() {
+        return length.get();
+    }
+    
+    public final void setLength(double length) {
+        this.length.set(length);
     }
     
     /**
@@ -58,7 +86,7 @@ public class Cable implements ISimulationEntity {
     /**
      * The absolute maximum current that can flow through the cable before it breaks;
      */
-    private ReadOnlyDoubleWrapper maximumCurrent = new ReadOnlyDoubleWrapper(100d);
+    private final ReadOnlyDoubleWrapper maximumCurrent = new ReadOnlyDoubleWrapper(100d);
     
     public ReadOnlyDoubleProperty maximumCurrentProperty() {
         return maximumCurrent.getReadOnlyProperty();
@@ -75,7 +103,7 @@ public class Cable implements ISimulationEntity {
     /**
      * Whether the cable is broken or not
      */
-    private ReadOnlyBooleanWrapper broken = new ReadOnlyBooleanWrapper(false) {
+    private final ReadOnlyBooleanWrapper broken = new ReadOnlyBooleanWrapper(false) {
         @Override
         public void set(boolean value) {
             if (value) { // isBroken(). In tick() this is propageted throught the entire tree
@@ -105,6 +133,8 @@ public class Cable implements ISimulationEntity {
         return this.childNode;
     }
 
+    // METHODS
+    
     public void tick(double time, boolean connected) {
         // if this cable is broken, the network behind it shouldn't do anything so the disconnected value is propagated
         if (this.isBroken()){
@@ -113,10 +143,19 @@ public class Cable implements ISimulationEntity {
         getChildNode().tick(time, connected);
     }
     
+    /**
+     * Repairs a broken cable. Does nothing if the cable is not broken.
+     */
+    public void repair() {
+        setBroken(false);
+    }
+    
+    // FORWARD BACKWARD SWEEP
+    
     @Override
     public double doForwardBackwardSweep(double v) {
        //update the voltages in the forward sweep
-        double voltage = v - (getCurrent() * (resistance * length));
+        double voltage = v - (getCurrent() * (resistance * getLength()));
 
         setCurrent(getChildNode().doForwardBackwardSweep(voltage));
         

@@ -8,6 +8,9 @@ package nl.utwente.ewi.caes.tactiletriana.gui.touch.node;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
+import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.ReadOnlyStringWrapper;
+import nl.utwente.ewi.caes.tactiletriana.App;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Node;
 
 /**
@@ -24,6 +27,12 @@ public class NodeVM {
             double difference = Math.abs(230 - this.model.getVoltage());
             return Math.min(1.0, difference/23.0);
         }, model.voltageProperty()));
+        
+        if (App.DEBUG) {
+            debugString.bind(Bindings.createStringBinding(() -> {
+                return String.format("V: %.3f", model.getVoltage()); 
+            }, model.voltageProperty()));
+        }
     }
     
     /**
@@ -38,5 +47,14 @@ public class NodeVM {
     
     public ReadOnlyDoubleProperty voltageErrorProperty() {
         return voltageErrorProperty.getReadOnlyProperty();
+    }
+    
+    /**
+     * Debug string
+     */
+    private final ReadOnlyStringWrapper debugString = new ReadOnlyStringWrapper();
+    
+    public ReadOnlyStringProperty debugStringProperty() {
+        return debugString.getReadOnlyProperty();
     }
 }

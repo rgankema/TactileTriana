@@ -42,5 +42,7 @@ public class HouseView extends Pane {
             double load = viewModel.getLoad();
             return Color.DARKGRAY.interpolate(Color.RED, load);
         }, viewModel.loadProperty(), viewModel.fuseBlownProperty()));
+        
+        this.setOnMousePressed(e -> viewModel.repairFuse());
     }
 }

@@ -5,18 +5,17 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.touch;
 
-import java.util.Arrays;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.shape.Polygon;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.network.NetworkView;
 import nl.utwente.cs.caes.tactile.control.TactilePane;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
-import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.MockDevice;
 
 /**
@@ -44,7 +43,7 @@ public class TouchView extends TactilePane {
         double x = 1920/2 - 25;
         double y = 1080/2 - 25;
         
-        DeviceView device = new DeviceView();
+        DeviceView device = new DeviceView(new Polygon(new double[] { 0d, 50d, 25d, 0d, 50d, 50d }));
         DeviceVM deviceVM = new DeviceVM(new MockDevice());
         device.setViewModel(deviceVM);
         
