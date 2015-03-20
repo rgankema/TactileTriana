@@ -84,13 +84,13 @@ public class CableView extends Group{
             return diameter;
         }, viewModel.loadProperty());
         
-        /*
+        
         line.strokeWidthProperty().bind(diameterBinding.divide(1.5));
         directionStart.scaleXProperty().bind(diameterBinding.divide(15d));
         directionStart.scaleYProperty().bind(diameterBinding.divide(15d));
         directionEnd.scaleXProperty().bind(diameterBinding.divide(15d));
         directionEnd.scaleYProperty().bind(diameterBinding.divide(15d));
-        */
+        
         
         // Bind visibility of direction views to direction in viewmodel
         directionStart.visibleProperty().bind(viewModel.directionProperty().isEqualTo(CableVM.Direction.START));

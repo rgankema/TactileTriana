@@ -27,6 +27,9 @@ public class Simulation {
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private double time;    // time in the simulation in minutes
     
+    /**
+     * @return singleton instance of Simulation
+     */
     public static Simulation getInstance() {
         if (instance == null) {
             instance = new Simulation();
@@ -40,6 +43,7 @@ public class Simulation {
         
         // de tree maken
         transformer = new Transformer();
+        
         Node[] internalNodes = new Node[NUMBER_OF_HOUSES];
         Node[] houseNodes = new Node[NUMBER_OF_HOUSES];
         Cable[] cables = new Cable[NUMBER_OF_HOUSES];

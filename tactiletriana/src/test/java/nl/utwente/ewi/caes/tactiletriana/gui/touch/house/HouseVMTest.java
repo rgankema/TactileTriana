@@ -44,6 +44,7 @@ public class HouseVMTest {
     
     @Before
     public void setUp() {
+        /* Mock het huis en geef hem standaard 'antwoord'. */
         mockedHouse = mock(House.class);
         
         houseCurrentConsumption = new SimpleDoubleProperty(10);
