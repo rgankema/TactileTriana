@@ -101,13 +101,7 @@ public abstract class DeviceBase {
         }
     }
     
-    /**
-     * Called by the simulation for every tick. The Device calculates its consumption
-     * for that tick, and updates it.
-     * @param time  the amount of time that passed since the last tick
-     * @param connected device is connected to the main network. (False in case of a broken cable)
-     */
-    public void tick(double time, boolean connected){
+    public void tick(Simulation simulation, boolean connected){
         if(!connected){
             setState(DeviceBase.State.DISCONNECTED);
         } else {

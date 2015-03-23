@@ -6,7 +6,6 @@
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
 import java.util.List;
-import java.util.Set;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -45,7 +44,8 @@ public class SimulationTest {
     @Test
     public void testNetworkInitialization() {
         System.out.println("networkInitialization");
-        Transformer transformer = Simulation.getInstance().getTransformer();
+        Simulation simulation = new Simulation();
+        Transformer transformer = simulation.getTransformer();
         
         // There's a transformer with one outgoing cable
         assertNotNull(transformer);
@@ -72,8 +72,8 @@ public class SimulationTest {
         
         // The last internal node has one outgoing cable, which leads to a node with a house and no cables
         assertEquals(1, internalNode.getCables().size());
-        assertTrue(internalNode.getCables().stream().findAny().get().getChildNode().getHouse() != null);
-        assertTrue(internalNode.getCables().stream().findAny().get().getChildNode().getCables().isEmpty());
+        assertTrue(internalNode.getCables().get(0).getChildNode().getHouse() != null);
+        assertTrue(internalNode.getCables().get(0).getChildNode().getCables().isEmpty());
     }
     
 }

@@ -11,6 +11,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 
 /**
  *
@@ -19,25 +21,15 @@ import javafx.application.Platform;
 public class Simulation {
     public static final int NUMBER_OF_HOUSES = 6;   // number of houses
     public static final int TICK_TIME = 100;        // time between ticks in ms
-     
-    private static Simulation instance = null;
+    
     private final Transformer transformer;
     private final Map<Node, Double> lastVoltageByNode;
     
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-    private double time;    // time in the simulation in minutes
     
-    /**
-     * @return singleton instance of Simulation
-     */
-    public static Simulation getInstance() {
-        if (instance == null) {
-            instance = new Simulation();
-        }
-        return instance;
-    }
+    private IController controller;
     
-    private Simulation() {
+    public Simulation() {
         // keep an array of nodes for later reference
         this.lastVoltageByNode = new HashMap<>();
         
@@ -71,11 +63,44 @@ public class Simulation {
         }
         
         // initialise time
-        this.time = 0;
+        setCurrentTime(0);
     }
     
     // PROPERTIES
     
+    /**
+     * The current time in the simulation.
+     */
+    private final DoubleProperty currentTime = new SimpleDoubleProperty(0d);
+    
+    public DoubleProperty currentTimeProperty() {
+        return currentTime;
+    }
+    
+    public double getCurrentTime() {
+        return currentTimeProperty().get();
+    }
+    
+    private void setCurrentTime(double time) {
+        currentTimeProperty().set(time);
+    }
+    
+    /**
+     * The Controller that controls the devices in this simulation. May be null.
+     * @return 
+     */
+    public IController getController() {
+        return controller;
+    }
+    
+    public void setController(IController controller) {
+        this.controller = controller;
+    }
+    
+    /**
+     * The root of the network.
+     * @return 
+     */
     public Transformer getTransformer() {
         return transformer;
     }
@@ -87,14 +112,11 @@ public class Simulation {
             // Todo: optimize dit, dit is slechts een hotfix
             // Uiteraard nogal idioot om de hele meuk op de JavaFX thread te draaien
             Platform.runLater(() -> { 
-                getTransformer().tick(time, true);
+                getTransformer().tick(this, true);
                 initiateForwardBackwardSweep();
             });
             
-            time += 1; // een minuut per tick voor nu
-            if (time == 24 * 60){
-                time = 0;
-            }
+            setCurrentTime((getCurrentTime() + 1) % (24 * 60)); // een minuut per tick voor nu
         }, TICK_TIME, TICK_TIME, TimeUnit.MILLISECONDS);
     }
     

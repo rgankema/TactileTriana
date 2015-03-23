@@ -106,7 +106,7 @@ public class Cable implements ISimulationEntity {
     private final ReadOnlyBooleanWrapper broken = new ReadOnlyBooleanWrapper(false) {
         @Override
         public void set(boolean value) {
-            if (value) { // isBroken(). In tick() this is propageted throught the entire tree
+            if (value) {
                 setCurrent(0);
             }
             super.set(value);
@@ -135,12 +135,12 @@ public class Cable implements ISimulationEntity {
 
     // METHODS
     
-    public void tick(double time, boolean connected) {
-        // if this cable is broken, the network behind it shouldn't do anything so the disconnected value is propagated
-        if (this.isBroken()){
+    public void tick(Simulation simulation, boolean connected) {
+        if (isBroken()) {
             connected = false;
         }
-        getChildNode().tick(time, connected);
+        
+        getChildNode().tick(simulation, connected);
     }
     
     /**

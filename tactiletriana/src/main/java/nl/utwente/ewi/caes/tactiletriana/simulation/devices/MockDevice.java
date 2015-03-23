@@ -4,6 +4,7 @@ package nl.utwente.ewi.caes.tactiletriana.simulation.devices;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
+import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 
 /**
  *
@@ -44,9 +45,16 @@ public class MockDevice extends DeviceBase {
     }
 
     @Override
-    public void tick(double time, boolean connected) {
-        super.tick(time, connected);
+    public void tick(Simulation simulation, boolean connected) {
+        super.tick(simulation, connected);
         
-        setCurrentConsumption(getMockDeviceUsage());
+        if (simulation.getController() == null) {
+            // do whatever device wants to do
+            setCurrentConsumption(getMockDeviceUsage());
+        } else {
+            // do what controller wants device to do
+            Double plannedConsumption = simulation.getController().getPlannedConsumption(this, simulation.getCurrentTime());
+            setCurrentConsumption(getMockDeviceUsage());
+        }
     }
 }

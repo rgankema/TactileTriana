@@ -5,6 +5,8 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyDoubleProperty;
@@ -19,14 +21,30 @@ import javafx.collections.ObservableList;
  */
 public class House {
     private final ObservableList<DeviceBase> devices;
+    private DoubleBinding deviceConsumptionSum;
     
     public House(){
         devices = FXCollections.observableArrayList();
         
+        deviceConsumptionSum = Bindings.createDoubleBinding(() -> 0d);
+        currentConsumption.bind(deviceConsumptionSum);
+        
+        // Update current consumption when devices get added/removed
         devices.addListener((ListChangeListener.Change<? extends DeviceBase> c) -> {
             while(c.next()) {
-                for (DeviceBase d : c.getRemoved()) {
-                    d.setState(DeviceBase.State.NOT_IN_HOUSE);
+                for (DeviceBase addedDevice : c.getAddedSubList()) {
+                    deviceConsumptionSum = deviceConsumptionSum.add(addedDevice.currentConsumptionProperty());
+                    currentConsumption.unbind();
+                    currentConsumption.bind(deviceConsumptionSum);
+                }
+                for (DeviceBase removedDevice : c.getRemoved()) {
+                    removedDevice.setState(DeviceBase.State.NOT_IN_HOUSE);
+                    deviceConsumptionSum = Bindings.createDoubleBinding(() -> 0d);
+                    for (DeviceBase device : devices) {
+                        deviceConsumptionSum = deviceConsumptionSum.add(device.currentConsumptionProperty());
+                    }
+                    currentConsumption.unbind();
+                    currentConsumption.bind(deviceConsumptionSum);
                 }
             }
         });
@@ -101,18 +119,14 @@ public class House {
         fuseBlown.set(false);
     }
     
-    /**
-     * Propagates a tick to all its devices
-     * @param time the amount of time that passed since the last tick
-     * @param connected whether the house is connected to the transformer
-     */
-    public void tick(double time, boolean connected) {
-        if (isFuseBlown()) connected = false;
+    public void tick(Simulation simulation, boolean connected) {
+        if (isFuseBlown()) {
+            connected = false;
+        }
         
         for (DeviceBase device : getDevices()) {
-            device.tick(time, connected);
+            device.tick(simulation, connected);
         }
-        currentConsumption.set(devices.stream().mapToDouble(DeviceBase::getCurrentConsumption).sum());
     }
     
     public String toString(int indentation){

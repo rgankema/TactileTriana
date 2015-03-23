@@ -7,7 +7,6 @@ package nl.utwente.ewi.caes.tactiletriana.simulation;
 
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -37,16 +36,22 @@ public class HouseTest {
     @Test
     public void testCurrentConsumptionPropertyMultipleDevices() {
         System.out.println("currentConsumptionPropertyMultipleDevices");
+        
+        // Mock simulation
+        Simulation simulation = mock(Simulation.class);
+        when(simulation.currentTimeProperty()).thenReturn(new SimpleDoubleProperty(0d));
+        
         House instance = new House();
         int nDevices = 5;
         double deviceConsumption = 50.0;
         for (int i = 0; i < nDevices; i++) {
+            // Mock devices
             DeviceBase device = mock(DeviceBase.class);
             when(device.currentConsumptionProperty()).thenReturn(new SimpleDoubleProperty(deviceConsumption));
             instance.getDevices().add(device);
         }
         
-        instance.tick(50, true);
+        instance.tick(simulation, true);
         ReadOnlyDoubleProperty result = instance.currentConsumptionProperty();
         
         assertEquals(nDevices * deviceConsumption, result.get(), 0.01);

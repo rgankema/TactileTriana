@@ -17,11 +17,13 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
  * @author Richard
  */
 public class App extends Application {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
+    private Simulation simulation;
     
     @Override
     public void start(Stage stage) throws Exception {
-        TouchVM tvm = new TouchVM(Simulation.getInstance());
+        simulation = new Simulation();
+        TouchVM tvm = new TouchVM(simulation);
         TouchView tv = new TouchView();
         tv.setViewModel(tvm);
         
@@ -31,12 +33,12 @@ public class App extends Application {
         stage.setFullScreen(true);
         stage.show();
         
-        Simulation.getInstance().start();
+        simulation.start();
     }
     
     @Override
     public void stop() {
-        Simulation.getInstance().stop();
+        simulation.stop();
     }
     
     public static void main(String[] args) {

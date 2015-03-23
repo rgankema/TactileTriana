@@ -56,12 +56,12 @@ public class Node implements ISimulationEntity{
         return this.house;
     }
     
-    public void tick(double time, boolean connected) {
+    public void tick(Simulation simulation, boolean connected) {
         if (getHouse() != null) {
-            getHouse().tick(time, connected);
+            getHouse().tick(simulation, connected);
         }
         for (Cable cable : getCables()) {
-            cable.tick(time, connected);
+            cable.tick(simulation, connected);
         }
     }
     
