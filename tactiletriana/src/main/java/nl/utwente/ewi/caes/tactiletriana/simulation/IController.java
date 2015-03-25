@@ -5,6 +5,8 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
+import java.time.LocalDateTime;
+
 /**
  *
  * @author Richard
@@ -21,5 +23,5 @@ public interface IController {
      * @return The amount of power the device may consume. <code> null
      * </code> if there is no planning available.
      */
-    public Double getPlannedConsumption(DeviceBase device, double time);
+    public Double getPlannedConsumption(DeviceBase device, LocalDateTime time);
 }

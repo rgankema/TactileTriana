@@ -5,6 +5,8 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -12,7 +14,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
 
 /**
  *
@@ -63,7 +67,7 @@ public class Simulation {
         }
         
         // initialise time
-        setCurrentTime(0);
+        setCurrentTime(LocalDateTime.of(2014, 0, 0, 0, 0));
     }
     
     // PROPERTIES
@@ -71,17 +75,17 @@ public class Simulation {
     /**
      * The current time in the simulation.
      */
-    private final DoubleProperty currentTime = new SimpleDoubleProperty(0d);
+    private final ObjectProperty<LocalDateTime> currentTime = new SimpleObjectProperty<>();
     
-    public DoubleProperty currentTimeProperty() {
+    public ObjectProperty<LocalDateTime> currentTimeProperty() {
         return currentTime;
     }
     
-    public double getCurrentTime() {
+    public LocalDateTime getCurrentTime() {
         return currentTimeProperty().get();
     }
     
-    private void setCurrentTime(double time) {
+    private void setCurrentTime(LocalDateTime time) {
         currentTimeProperty().set(time);
     }
     
@@ -116,7 +120,7 @@ public class Simulation {
                 initiateForwardBackwardSweep();
             });
             
-            setCurrentTime((getCurrentTime() + 1) % (24 * 60)); // een minuut per tick voor nu
+            setCurrentTime((getCurrentTime().plusMinutes(1)));
         }, TICK_TIME, TICK_TIME, TimeUnit.MILLISECONDS);
     }
     

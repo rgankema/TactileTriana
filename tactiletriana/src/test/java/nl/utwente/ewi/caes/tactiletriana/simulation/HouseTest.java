@@ -5,8 +5,11 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -39,7 +42,7 @@ public class HouseTest {
         
         // Mock simulation
         Simulation simulation = mock(Simulation.class);
-        when(simulation.currentTimeProperty()).thenReturn(new SimpleDoubleProperty(0d));
+        when(simulation.currentTimeProperty()).thenReturn(new SimpleObjectProperty<>(LocalDateTime.of(2014, 0, 0, 0, 0)));
         
         House instance = new House();
         int nDevices = 5;
