@@ -5,6 +5,11 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
+import java.net.URI;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashMap;
@@ -12,6 +17,7 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
@@ -24,10 +30,15 @@ import javafx.beans.property.SimpleObjectProperty;
  */
 public class Simulation {
     public static final int NUMBER_OF_HOUSES = 6;   // number of houses
-    public static final int TICK_TIME = 100;        // time between ticks in ms
+    public static final int TICK_TIME = 200;        // time between ticks in ms
+    
+    public static final double LONGITUDE = 6.897;
+    public static final double LATITUDE = 52.237;
     
     private final Transformer transformer;
     private final Map<Node, Double> lastVoltageByNode;
+    private final Map<LocalDateTime, Double> temperatureByTime;
+    private final Map<LocalDateTime, Double> radianceByTime;
     
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     
@@ -67,7 +78,34 @@ public class Simulation {
         }
         
         // initialise time
-        setCurrentTime(LocalDateTime.of(2014, 0, 0, 0, 0));
+        setCurrentTime(LocalDateTime.of(2014, 1, 1, 0, 0));
+        
+        // load KNMI data
+        temperatureByTime = new HashMap<>();
+        radianceByTime = new HashMap<>();
+        
+        try {
+            Stream<String> dataset = Files.lines(Paths.get("src/main/resources/datasets/KNMI_dataset.txt"));
+            dataset.filter(line -> !line.startsWith("#"))
+                   .forEachOrdered(line -> { 
+                       String[] tokens = line.split(",");
+                       // tokens[1] = YYYYMMDD, tokens[2] = hour, tokens[3] = temperature, tokens[4] = radiance
+                       int year = Integer.valueOf(tokens[1].trim().substring(0, 4));
+                       int month = Integer.valueOf(tokens[1].trim().substring(4, 6));
+                       int day = Integer.valueOf(tokens[1].trim().substring(6));
+                       int hour = Integer.valueOf(tokens[2].trim());
+                       double temperature = Double.valueOf(tokens[3].trim());
+                       double radiance = Double.valueOf(tokens[4].trim());
+                       
+                       LocalDateTime date = LocalDateTime.of(year, month, day, hour - 1, 0, 0);
+                       
+                       temperatureByTime.put(date, temperature);
+                       radianceByTime.put(date, radiance);
+                   });
+        } catch (Exception e) {
+            throw new RuntimeException("Could not load KNMI dataset", e);
+        }
+        
     }
     
     // PROPERTIES
@@ -87,6 +125,36 @@ public class Simulation {
     
     private void setCurrentTime(LocalDateTime time) {
         currentTimeProperty().set(time);
+    }
+    
+    /**
+     * 
+     * @return the temperature right now, in degrees Celsius
+     */
+    public double getTemperature() {
+        LocalDateTime currentTime = getCurrentTime();
+        LocalDateTime prevHour, nextHour;
+        int minutes = currentTime.getMinute();
+        prevHour = currentTime.minusMinutes(minutes);
+        nextHour = currentTime.plusMinutes(60 - minutes);
+        double prevHourWeight = ((double)(60 - minutes)) / 60d;
+        double nextHourWeight = ((double)minutes) / 60d;
+        return prevHourWeight*(temperatureByTime.get(prevHour) / 10d) + nextHourWeight*(temperatureByTime.get(nextHour) / 10d);
+    }
+    
+    /**
+     * 
+     * @return the radiance right now, in J/cm^2
+     */
+    public double getRadiance() {
+        LocalDateTime currentTime = getCurrentTime();
+        LocalDateTime prevHour, nextHour;
+        int minutes = currentTime.getMinute();
+        prevHour = currentTime.minusMinutes(minutes);
+        nextHour = currentTime.plusMinutes(60 - minutes);
+        double prevHourWeight = ((double)(60 - minutes)) / 60d;
+        double nextHourWeight = ((double)minutes) / 60d;
+        return prevHourWeight*radianceByTime.get(prevHour) + nextHourWeight*radianceByTime.get(nextHour);
     }
     
     /**
@@ -120,7 +188,9 @@ public class Simulation {
                 initiateForwardBackwardSweep();
             });
             
-            setCurrentTime((getCurrentTime().plusMinutes(1)));
+            setCurrentTime((getCurrentTime().plusMinutes(5)));
+            
+            System.out.println(String.format("time: %s, temp: %f, radiance: %f", getCurrentTime(), getTemperature(), getRadiance()));
         }, TICK_TIME, TICK_TIME, TimeUnit.MILLISECONDS);
     }
     
