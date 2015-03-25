@@ -42,7 +42,7 @@ public class HouseTest {
         
         // Mock simulation
         Simulation simulation = mock(Simulation.class);
-        when(simulation.currentTimeProperty()).thenReturn(new SimpleObjectProperty<>(LocalDateTime.of(2014, 0, 0, 0, 0)));
+        when(simulation.currentTimeProperty()).thenReturn(new SimpleObjectProperty<>(LocalDateTime.of(2014, 1, 1, 0, 0)));
         
         House instance = new House();
         int nDevices = 5;

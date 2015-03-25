@@ -189,8 +189,6 @@ public class Simulation {
             });
             
             setCurrentTime((getCurrentTime().plusMinutes(5)));
-            
-            System.out.println(String.format("time: %s, temp: %f, radiance: %f", getCurrentTime(), getTemperature(), getRadiance()));
         }, TICK_TIME, TICK_TIME, TimeUnit.MILLISECONDS);
     }
     

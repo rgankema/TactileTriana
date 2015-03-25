@@ -8,7 +8,10 @@ package nl.utwente.ewi.caes.tactiletriana.gui.touch.device;
 import java.util.List;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TouchEvent;
 import javafx.scene.layout.GridPane;
+import nl.utwente.cs.caes.tactile.control.TactilePane;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase.Parameter;
 
 /**
@@ -22,8 +25,13 @@ class DeviceConfigView extends GridPane {
         int row = 0;
         for (Parameter p : parameters) {
             this.add(new Label(p.displayName), 0, row);
-            System.out.println(p.property);
+            
             Slider s = new Slider(p.minValue, p.maxValue, p.property.get());
+            
+            // consume touch events so that the deviceview can't be dragged while using the slider
+            // todo: fix TactilePane so that this isn't necessary anymore
+            s.addEventFilter(TouchEvent.ANY, e -> e.consume());
+            
             p.property.bindBidirectional(s.valueProperty());
             this.add(s, 1, row);
             row++;
