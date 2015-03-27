@@ -5,6 +5,7 @@
  */
 package nl.utwente.ewi.caes.tactiletriana_gui_test.gui.test;
 
+import javafx.beans.property.SimpleDoubleProperty;
 import nl.utwente.cs.caes.tactile.control.TactilePane;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.cable.CableVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.cable.CableView;
@@ -39,6 +40,7 @@ public class TestView extends TactilePane {
         when(mockedCable.currentProperty()).thenReturn(configView.cableCurrent);
         when(mockedCable.maximumCurrentProperty()).thenReturn(configView.cableMaxCurrent);
         when(mockedCable.brokenProperty()).thenReturn(configView.cableBroken);
+        when(mockedCable.lengthProperty()).thenReturn(new SimpleDoubleProperty());
         
         House mockedHouse = mock(House.class);
         when(mockedHouse.currentConsumptionProperty()).thenReturn(configView.houseConsumption);
