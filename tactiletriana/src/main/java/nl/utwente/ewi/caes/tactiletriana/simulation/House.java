@@ -33,11 +33,13 @@ public class House {
         devices.addListener((ListChangeListener.Change<? extends DeviceBase> c) -> {
             while(c.next()) {
                 for (DeviceBase addedDevice : c.getAddedSubList()) {
+                    // Acties voor alle devices die toegevoegd zijn
                     deviceConsumptionSum = deviceConsumptionSum.add(addedDevice.currentConsumptionProperty());
                     currentConsumption.unbind();
                     currentConsumption.bind(deviceConsumptionSum);
                 }
                 for (DeviceBase removedDevice : c.getRemoved()) {
+                    // Acties voor alle devices die verwijderd zijn
                     removedDevice.setState(DeviceBase.State.NOT_IN_HOUSE);
                     deviceConsumptionSum = Bindings.createDoubleBinding(() -> 0d);
                     for (DeviceBase device : devices) {
