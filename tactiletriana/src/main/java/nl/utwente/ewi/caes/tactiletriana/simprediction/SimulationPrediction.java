@@ -5,6 +5,8 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simprediction;
 
+import java.util.ArrayList;
+import nl.utwente.ewi.caes.tactiletriana.App;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 
 /**
@@ -13,18 +15,26 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
  */
 public class SimulationPrediction extends Simulation {
     private static SimulationPrediction instance;
+    private Simulation mainSimulation;
     
-    protected SimulationPrediction(){
+    
+    ArrayList<HousePrediction> housePredictors;
+    public SimulationPrediction(Simulation mainSimulation){
         super();
+        this.mainSimulation = mainSimulation;
         
         // Koppelhuizen maken
+        housePredictors = new ArrayList<>();
+        
+        
     }
     
+    /*
     public static SimulationPrediction getInstance() {
       if(instance == null) {
          instance = new SimulationPrediction();
       }
       return instance;
-   }
+   }*/
     
 }
