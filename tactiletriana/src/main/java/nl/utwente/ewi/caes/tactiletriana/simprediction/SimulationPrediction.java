@@ -18,15 +18,23 @@ public class SimulationPrediction extends Simulation {
     private Simulation mainSimulation;
     
     
-    ArrayList<HousePrediction> housePredictors;
+    ArrayList<HousePredictor> housePredictors;
     public SimulationPrediction(Simulation mainSimulation){
         super();
         this.mainSimulation = mainSimulation;
         
-        // Koppelhuizen maken
+        // this() koppelen aan mainSimulation via HousePredictor()
         housePredictors = new ArrayList<>();
-        
-        
+        for (int iN = 0; iN < mainSimulation.getHouseNodes().length; iN++){
+            HousePredictor h = new HousePredictor(mainSimulation.getHouses()[iN]);
+            housePredictors.add(h);
+            
+            // vervang alle houses in this().houseNodes[] door HousePredictors gekoppeld aan houses van de mainSimulation.
+            this.getHouseNodes()[iN].setHouse(h);
+            
+            // vervang alle houses in this().houses[] 
+            this.getHouses()[iN] = h;
+        }       
     }
     
     /*

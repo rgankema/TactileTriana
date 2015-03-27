@@ -11,6 +11,15 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.House;
  *
  * @author mickvdv
  */
-public class HousePrediction extends House {
+public class HousePredictor extends House {
+    House linkedHouse;
+    
+    /**
+     * 
+     * @param linkedHouse House waar deze HousePrediciton aan gekoppeld is.
+     */
+    public HousePredictor(House linkedHouse){
+        this.linkedHouse = linkedHouse;
+    }
     
 }

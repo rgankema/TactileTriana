@@ -16,13 +16,16 @@ import javafx.beans.property.ReadOnlyDoubleWrapper;
  */
 public class Node implements ISimulationEntity{
     private final List<Cable> cables;
-    private final House house;
+    private House house;
     
     public Node(House house) {
         this.cables = new ArrayList<>();
         this.house = house;
     }
 
+    public void setHouse(House house){
+        this.house = house;
+    }
     /**
      * The voltage measured on this node
      */
