@@ -6,6 +6,8 @@
 package nl.utwente.ewi.caes.tactiletriana.simulation.devices;
 
 import java.time.LocalDateTime;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import nl.utwente.ewi.caes.tactiletriana.simulation.*;
 
 /**
@@ -13,36 +15,70 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.*;
  * @author niels
  */
 public class SolarPanel extends DeviceBase {
-    //FIXME: Add these constants to the constructor
+    //FIXME: Make these constants editable
     //Area of the panel in m2
-    private double area = 2;
+    private double area = 1;
     //Elevation of the panel in degrees
-    private int elevation = 45;
+    private double elevation = 45;
     //Azimuth orientation of the panel in degrees, 0 = south, 90 = west, 180 = north & 270 = east
-    private int azimuth = 180;
+    private double azimuth = 0;
     //Effiency of the solar panel in percentage
-    private int efficiency = 50;
+    private double efficiency = 21.5;
     //Efficiency degradation due to temperature increase of the solar panel. Percentage degradation for maximum power per degree celcius [percent]
-    private int temperatureEfficiency = 80;
+    private double temperatureEfficiency = 0.3;
+    //Max and min values for the area
+    private static final double MIN_AREA = 0.5;
+    private static final double MAX_AREA = 10;
+    
     
     public SolarPanel(){
-        
+        addParameter(new Parameter("Area of solarpanel (in m2)", solarPanelArea, MIN_AREA, MAX_AREA));
     }   
+    
+        /**
+     * The amount of power the device will consume when turned on
+     */
+    private final DoubleProperty solarPanelArea = new SimpleDoubleProperty(1000d) {
+        @Override
+        public void set(double value) {
+            if (get() == value) return;
+            if (value < MIN_AREA) value = MIN_AREA;
+            if (value > MAX_AREA) value = MAX_AREA;
+            
+            super.set(value);
+        }
+    };
+    
+    public double getSolarPanelArea() {
+        return solarPanelArea.get();
+    }
+    
+    public void setSolarPanelArea(double consumption) {
+        this.solarPanelArea.set(consumption);
+    }
+    
+    public DoubleProperty solarPanelAreaProperty() {
+        return solarPanelArea;
+    }
     
     
     @Override
     public void tick(Simulation simulation, boolean connected) {
         super.tick(simulation, connected);
         
-        //Set the consumption according to temperature and radiation
-        setCurrentConsumption(  calculateProduction(simulation.getTemperature(),simulation.getRadiance(),
+        //Set the current consumption according to current temperature, radiation and time
+        //The value is multiplicated by -1 because the solarpanel produces and doesn't consume
+        setCurrentConsumption(  -1*calculateProduction(simulation.getTemperature(),simulation.getRadiance(),
                                 Simulation.LONGITUDE, Simulation.LATITUDE, simulation.getCurrentTime()));
     }
     
     
-    //Returns 
+    //Returns the W/m2
     public double calculateProduction(double temperature, double radiance, double longitude, double latitude, LocalDateTime time){
-       
+        
+        //Do it like they do it in the C code
+        temperature = temperature*area;
+        
         double PI = 3.14159265359;
         
         double longitudeRadian = longitude*(PI/180);
@@ -84,7 +120,7 @@ public class SolarPanel extends DeviceBase {
 		I_d = radiance*(0.9511-0.1604*k_T+4.388*Math.pow(k_T,2)-16.638*Math.pow(k_T,3)+12.336*(Math.pow(k_T, 4)));
 	}
 
-	//Calcualte the direct beam
+	//Calculate the direct beam
 	double I_b = radiance-I_d;
 	double I = Math.min(I_0,I_b / Math.sin(h));
 	if(h < 0.001){
@@ -111,12 +147,12 @@ public class SolarPanel extends DeviceBase {
 	//Return the W/m2 (coming from J/cm2 for a whole hour)
 	return powerSquareMeter * actualEfficiency;
     }
+        
     
     public static void main(String[] args){
         SolarPanel p = new SolarPanel();
         
-        System.out.println(p.calculateProduction(30, 30, 50, 50, LocalDateTime.now()));
-        
+        System.out.println(p.calculateProduction(77,72,6.48,5.72,LocalDateTime.now()));
     }
     
 }
