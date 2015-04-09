@@ -17,7 +17,7 @@ import javafx.beans.property.ReadOnlyDoubleWrapper;
  */
 public class Node extends Entity implements IFWBWSweepEntity{
     private final List<Cable> cables;
-    private final House house;
+    private House house;
     
     public Node(House house) {
         this.cables = new ArrayList<>();
@@ -25,6 +25,9 @@ public class Node extends Entity implements IFWBWSweepEntity{
         this.characteristic = CharacteristicType.VOLTAGE;
     }
 
+    public void setHouse(House house){
+        this.house = house;
+    }
     /**
      * The voltage measured on this node
      */

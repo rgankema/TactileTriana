@@ -56,17 +56,22 @@ public class Simulation extends Entity {
         return (instance != null);
     }
     
-    protected Simulation() {
+    private Node[] internalNodes;
+    private Node[] houseNodes;
+    private Cable[] cables;
+    private House[] houses;
+    
+    public Simulation() {
         // keep an array of nodes for later reference
         this.lastVoltageByNode = new HashMap<>();
         
         // de tree maken
         transformer = new Transformer();
         
-        Node[] internalNodes = new Node[NUMBER_OF_HOUSES];
-        Node[] houseNodes = new Node[NUMBER_OF_HOUSES];
-        Cable[] cables = new Cable[NUMBER_OF_HOUSES];
-        House[] houses = new House[NUMBER_OF_HOUSES];
+        this.internalNodes = new Node[NUMBER_OF_HOUSES];
+        this.houseNodes = new Node[NUMBER_OF_HOUSES];
+        this.cables = new Cable[NUMBER_OF_HOUSES];
+        this.houses = new House[NUMBER_OF_HOUSES];
         
         // maak huizen aan met cables en dat soort grappen
         for(int i = 0; i <= NUMBER_OF_HOUSES-1; i ++){
@@ -239,5 +244,21 @@ public class Simulation extends Entity {
             result = (Math.abs(lastVoltageByNode.get(node) - node.getVoltage()) < error);
         }
         return result;
+    }
+    
+    /**
+     * 
+     * @return all houses in this simulation
+     */
+    public House[] getHouses(){
+        return this.houses;
+    }
+    
+    /**
+     * 
+     * @return all nodes directly connected to houses
+     */
+    public Node[] getHouseNodes(){
+        return this.houseNodes;
     }
 }
