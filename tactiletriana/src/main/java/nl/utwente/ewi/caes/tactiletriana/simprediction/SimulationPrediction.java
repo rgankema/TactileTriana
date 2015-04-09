@@ -20,7 +20,7 @@ public class SimulationPrediction extends Simulation {
         // Koppelhuizen maken
     }
     
-    public static SimulationPrediction getInstance() {
+    public static SimulationPrediction getPredictionInstance() {
       if(instance == null) {
          instance = new SimulationPrediction();
       }

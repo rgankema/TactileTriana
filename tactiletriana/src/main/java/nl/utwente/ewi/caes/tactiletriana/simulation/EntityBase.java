@@ -28,5 +28,4 @@ public abstract class EntityBase {
     public Map<LocalDateTime, Double> getCharacteristicMap(){
         return this.characteristicMap;
     }
-    
 }
