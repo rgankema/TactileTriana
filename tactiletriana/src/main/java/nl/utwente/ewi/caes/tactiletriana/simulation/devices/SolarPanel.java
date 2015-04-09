@@ -17,7 +17,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.*;
 public class SolarPanel extends DeviceBase {
     //FIXME: Make these constants editable
     //Area of the panel in m2
-    private double area = 1;
+    //private double area = 1;
     //Elevation of the panel in degrees
     private double elevation = 45;
     //Azimuth orientation of the panel in degrees, 0 = south, 90 = west, 180 = north & 270 = east
@@ -28,7 +28,7 @@ public class SolarPanel extends DeviceBase {
     private double temperatureEfficiency = 0.3;
     //Max and min values for the area
     private static final double MIN_AREA = 0.5;
-    private static final double MAX_AREA = 10;
+    private static final double MAX_AREA = 50;
     
     
     public SolarPanel(){
@@ -77,7 +77,7 @@ public class SolarPanel extends DeviceBase {
     public double calculateProduction(double temperature, double radiance, double longitude, double latitude, LocalDateTime time){
         
         //Do it like they do it in the C code
-        temperature = temperature*area;
+        temperature = temperature*getSolarPanelArea();
         
         double PI = 3.14159265359;
         
@@ -144,15 +144,8 @@ public class SolarPanel extends DeviceBase {
 	double temperaturePV = temperature + (50*powerSquareMeter/1367); //Formula not based on anything or whatsover, this part can be improved
 	double actualEfficiency = (efficiency * (1 - ((temperaturePV - 25) * temperatureEfficiency)/100)) / 100;
 
-	//Return the W/m2 (coming from J/cm2 for a whole hour)
-	return powerSquareMeter * actualEfficiency;
-    }
-        
-    
-    public static void main(String[] args){
-        SolarPanel p = new SolarPanel();
-        
-        System.out.println(p.calculateProduction(77,72,6.48,5.72,LocalDateTime.now()));
+	//Return the production in W (coming from J/cm2 for a whole hour)
+	return getSolarPanelArea() * powerSquareMeter * actualEfficiency;
     }
     
 }
