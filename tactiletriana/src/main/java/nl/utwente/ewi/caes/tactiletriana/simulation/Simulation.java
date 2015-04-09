@@ -34,6 +34,7 @@ public class Simulation extends EntityBase {
     
     public static final double LONGITUDE = 6.897;
     public static final double LATITUDE = 52.237;
+
     
     private final Transformer transformer;
     private final Map<Node, Double> lastVoltageByNode;
@@ -43,12 +44,16 @@ public class Simulation extends EntityBase {
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     
     private IController controller;
-    private static Simulation instance;
+    
+    protected static Simulation instance;
     public static Simulation getInstance(){
         if (instance == null){
             instance = new Simulation();
         }
         return instance;
+    }
+    public static boolean isInstance(){
+        return instance != null;
     }
     
     protected Simulation() {

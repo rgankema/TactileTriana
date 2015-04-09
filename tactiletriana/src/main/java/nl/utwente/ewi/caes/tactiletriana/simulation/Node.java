@@ -30,7 +30,9 @@ public class Node extends EntityBase implements IFWBWSweepEntity{
     private final ReadOnlyDoubleWrapper voltage = new ReadOnlyDoubleWrapper(230.0){
         @Override
         public void set(double value) {
-            characteristicMap.put(Simulation.getInstance().getCurrentTime(), value);
+            if (Simulation.isInstance()){
+                characteristicMap.put(Simulation.getInstance().getCurrentTime(), value);
+            }
             super.set(value);
         }
     };

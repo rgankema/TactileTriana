@@ -40,7 +40,9 @@ public abstract class DeviceBase extends EntityBase {
             if (getState() != DeviceBase.State.CONNECTED) {
                 value = 0;
             }
-            characteristicMap.put(Simulation.getInstance().getCurrentTime(), value);
+            if (Simulation.isInstance()){
+                characteristicMap.put(Simulation.getInstance().getCurrentTime(), value);
+            }
             super.set(value);
         }
     };

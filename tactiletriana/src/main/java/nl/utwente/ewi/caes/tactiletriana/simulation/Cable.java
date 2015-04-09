@@ -67,7 +67,10 @@ public class Cable extends EntityBase implements IFWBWSweepEntity {
             if (Math.abs(value) > getMaximumCurrent()) {
                 setBroken(true);
             }
-            characteristicMap.put(Simulation.getInstance().getCurrentTime(), value);
+            if (Simulation.isInstance()){
+                characteristicMap.put(Simulation.getInstance().getCurrentTime(), value);
+            }
+            
             super.set(value);
         }
     };
