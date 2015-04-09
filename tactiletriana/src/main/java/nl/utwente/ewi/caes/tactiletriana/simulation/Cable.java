@@ -98,6 +98,7 @@ public class Cable extends EntityBase implements IFWBWSweepEntity {
     }
     
     private void setMaximumCurrent(double maximumCurrent) {
+        this.characteristicAbsMax = Math.abs(maximumCurrent);
         this.maximumCurrent.set(maximumCurrent);
     }
      

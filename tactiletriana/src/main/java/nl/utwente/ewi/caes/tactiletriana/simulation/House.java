@@ -25,7 +25,7 @@ public class House extends EntityBase {
     
     public House(){
         devices = FXCollections.observableArrayList();
-        
+        this.characteristic = CharacteristicType.Consumption;
         deviceConsumptionSum = Bindings.createDoubleBinding(() -> 0d);
         currentConsumption.bind(deviceConsumptionSum);
         
@@ -87,7 +87,15 @@ public class House extends EntityBase {
      * The absolute maximum of power the house can consume/produce. When more than
      * this is consumed, the fuse in the house will blow.
      */
-    private final ReadOnlyDoubleWrapper maximumConsumption = new ReadOnlyDoubleWrapper(230*100);
+    //this.characteristicAbsMax = Math.abs(maximumCurrent);
+    private final ReadOnlyDoubleWrapper maximumConsumption = new ReadOnlyDoubleWrapper(230*100){
+        @Override
+        public void set(double value) {
+            characteristicAbsMax = Math.abs(value);
+            super.set(value);
+        }
+    };
+    
     
     public ReadOnlyDoubleProperty maximumConsumptionProperty() {
         return maximumConsumption;
