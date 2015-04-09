@@ -19,7 +19,7 @@ import javafx.collections.ObservableList;
  *
  * @author Richard
  */
-public class House {
+public class House extends EntityBase {
     private final ObservableList<DeviceBase> devices;
     private DoubleBinding deviceConsumptionSum;
     
@@ -70,6 +70,7 @@ public class House {
                 setFuseBlown(true);
                 value = 0;
             }
+            characteristicMap.put(Simulation.getInstance().getCurrentTime(), value);
             super.set(value);
         }
     };
