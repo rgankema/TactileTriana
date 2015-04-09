@@ -7,6 +7,7 @@ package nl.utwente.ewi.caes.tactiletriana;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.TouchVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.TouchView;
@@ -30,7 +31,12 @@ public class App extends Application {
         Scene scene = new Scene(tv);
         
         stage.setScene(scene);
-        stage.setFullScreen(true);
+        
+        scene.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.F) {
+                stage.setFullScreen(!stage.isFullScreen());
+            }
+        });
         stage.show();
         
         simulation.start();
