@@ -186,9 +186,10 @@ public class Simulation {
             Platform.runLater(() -> { 
                 getTransformer().tick(this, true);
                 initiateForwardBackwardSweep();
+                setCurrentTime((getCurrentTime().plusMinutes(5)));
             });
             
-            setCurrentTime((getCurrentTime().plusMinutes(5)));
+            
         }, TICK_TIME, TICK_TIME, TimeUnit.MILLISECONDS);
     }
     
