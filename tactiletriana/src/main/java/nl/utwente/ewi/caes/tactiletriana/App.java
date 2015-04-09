@@ -6,8 +6,6 @@
 package nl.utwente.ewi.caes.tactiletriana;
 
 import javafx.application.Application;
-import javafx.scene.Group;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;

@@ -25,8 +25,9 @@ public class Cable extends Entity implements IFWBWSweepEntity {
      * @param maxCurrent The maximum current that can flow through the cable
      */
     public Cable(Node childNode, double maxCurrent) {
+        super(CharacteristicType.CURRENT);
+        
         this.childNode = childNode;
-        this.characteristic = CharacteristicType.CURRENT;
         this.resistance = 0.00005;
         
         setMaximumCurrent(maxCurrent);
@@ -67,8 +68,8 @@ public class Cable extends Entity implements IFWBWSweepEntity {
             if (Math.abs(value) > getMaximumCurrent()) {
                 setBroken(true);
             }
-            if (Simulation.isInstance()){
-                characteristicMap.put(Simulation.getInstance().getCurrentTime(), value);
+            if (Simulation.isInitialized()){
+                getCharacteristicMap().put(Simulation.getInstance().getCurrentTime(), value);
             }
             
             super.set(value);

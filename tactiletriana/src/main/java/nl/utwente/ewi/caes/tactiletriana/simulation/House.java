@@ -24,8 +24,9 @@ public class House extends Entity {
     private DoubleBinding deviceConsumptionSum;
     
     public House(){
+        super(CharacteristicType.POWER);
+        
         devices = FXCollections.observableArrayList();
-        this.characteristic = CharacteristicType.POWER;
         deviceConsumptionSum = Bindings.createDoubleBinding(() -> 0d);
         currentConsumption.bind(deviceConsumptionSum);
         
@@ -70,8 +71,8 @@ public class House extends Entity {
                 setFuseBlown(true);
                 value = 0;
             }
-            if (Simulation.isInstance()){
-                characteristicMap.put(Simulation.getInstance().getCurrentTime(), value);
+            if (Simulation.isInitialized()){
+                getCharacteristicMap().put(Simulation.getInstance().getCurrentTime(), value);
             }
             super.set(value);
         }

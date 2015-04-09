@@ -10,35 +10,35 @@
 <?import nl.utwente.ewi.caes.tactiletriana.gui.detail.datetime.*?>
 <?import nl.utwente.ewi.caes.tactiletriana.gui.detail.chart.*?>
 
-
 <fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080" prefWidth="1920" type="GridPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
     <columnConstraints>
-        <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" />
+        <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" percentWidth="100.0" />
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints valignment="CENTER"/>
-        <RowConstraints valignment="CENTER"/>
+        <RowConstraints valignment="CENTER" />
+      <RowConstraints maxHeight="0.0" minHeight="0.0" percentHeight="100.0" prefHeight="0.0" valignment="CENTER" />
     </rowConstraints>
   
-    <StackPane >
-        
-        <!-- placeholder voor logo -->
-        <Rectangle width="150" height="150" StackPane.alignment="CENTER_LEFT">
-            <StackPane.margin>
-                <Insets bottom="5" left="5" top="5" />   
-            </StackPane.margin>
-        </Rectangle>
-        
-        <DateTimeView fx:id="dateTimeView" StackPane.alignment="CENTER" />
-        
-        <!-- placeholder voor weer -->
-        <Rectangle width="150" height="150" StackPane.alignment="CENTER_RIGHT">
-            <StackPane.margin>
-                <Insets bottom="5" right="5" top="5" />   
-            </StackPane.margin>
-        </Rectangle>
+    <StackPane>
+        <children>
+            <!-- placeholder voor logo -->
+            <Rectangle height="150" width="150" StackPane.alignment="CENTER_LEFT">
+                <StackPane.margin>
+                    <Insets bottom="5" left="5" top="5" />   
+                </StackPane.margin>
+            </Rectangle>
+           
+            <DateTimeView fx:id="dateTimeView" StackPane.alignment="CENTER" />
+           
+            <!-- placeholder voor weer -->
+            <Rectangle height="150" width="150" StackPane.alignment="CENTER_RIGHT">
+                <StackPane.margin>
+                    <Insets bottom="5" right="5" top="5" />   
+                </StackPane.margin>
+            </Rectangle>
+        </children>
     </StackPane>
     
-    <ChartView GridPane.rowIndex="1" GridPane.hgrow="ALWAYS" />
+    <ChartView fx:id="chartView" GridPane.rowIndex="1" />
     
 </fx:root>

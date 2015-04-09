@@ -7,36 +7,42 @@ package nl.utwente.ewi.caes.tactiletriana.simulation;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.SortedMap;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableMap;
 
 /**
  *
  * @author mickvdv
  */
 public class Entity {
+    private final CharacteristicType type;
+    private final ObservableMap<LocalDateTime, Double> characteristicMap;
+    
     protected double characteristicAbsMax = Double.POSITIVE_INFINITY;
-    protected CharacteristicType characteristic;
     
-    public Entity(){
-        characteristicMap = new HashMap<>();
+    public Entity(CharacteristicType type){
+        this.type = type;
+        
+        characteristicMap = FXCollections.observableMap(new HashMap<>());
     }
     
-    public static enum CharacteristicType {
-        CURRENT, POWER, VOLTAGE
-    }
+    // PROPERTIES
     
     public double getCharacteristicAbsMax(){
         return this.characteristicAbsMax;
     }
     
     public CharacteristicType getCharacteristic(){
-        return this.characteristic;
+        return this.type;
     }
     
-    protected Map<LocalDateTime, Double> characteristicMap;
-    
-    public Map<LocalDateTime, Double> getCharacteristicMap(){
+    public ObservableMap<LocalDateTime, Double> getCharacteristicMap(){
         return this.characteristicMap;
+    }
+    
+    // ENUMS
+    
+    public static enum CharacteristicType {
+        CURRENT, POWER, VOLTAGE
     }
 }

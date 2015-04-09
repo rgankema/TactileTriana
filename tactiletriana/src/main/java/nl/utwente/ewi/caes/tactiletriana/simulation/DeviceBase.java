@@ -23,7 +23,8 @@ public abstract class DeviceBase extends Entity {
     private final List<Parameter> parametersUnmodifiable;
     
     public DeviceBase() {
-        this.characteristic = CharacteristicType.POWER;
+        super(CharacteristicType.POWER);
+
         parameters = new ArrayList<>();
         parametersUnmodifiable = Collections.unmodifiableList(parameters);
     }
@@ -40,8 +41,8 @@ public abstract class DeviceBase extends Entity {
             if (getState() != DeviceBase.State.CONNECTED) {
                 value = 0;
             }
-            if (Simulation.isInstance()){
-                characteristicMap.put(Simulation.getInstance().getCurrentTime(), value);
+            if (Simulation.isInitialized()){
+                getCharacteristicMap().put(Simulation.getInstance().getCurrentTime(), value);
             }
             super.set(value);
         }

@@ -5,13 +5,9 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
-import java.net.URI;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -19,9 +15,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 import javafx.application.Platform;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
 /**
@@ -46,17 +40,17 @@ public class Simulation extends Entity {
     private IController controller;
     
     protected static Simulation instance;
+    
     public static Simulation getInstance(){
         if (instance == null){
             instance = new Simulation();
         }
         return instance;
     }
-    public static boolean isInstance(){
-        return (instance != null);
-    }
     
     protected Simulation() {
+        super(CharacteristicType.POWER);
+        
         // keep an array of nodes for later reference
         this.lastVoltageByNode = new HashMap<>();
         
@@ -121,6 +115,13 @@ public class Simulation extends Entity {
     }
     
     // PROPERTIES
+    
+    /**
+     * @return whether the simulation has been initialized
+     */
+    public static boolean isInitialized(){
+        return (instance != null);
+    }
     
     /**
      * The current time in the simulation.
@@ -198,6 +199,11 @@ public class Simulation extends Entity {
             Platform.runLater(() -> { 
                 getTransformer().tick(this, true);
                 initiateForwardBackwardSweep();
+                
+                // Log total power consumption in network
+                getCharacteristicMap().put(getCurrentTime(), transformer.getCables().get(0).getCurrent() * 230d);
+                
+                // Increment time
                 setCurrentTime((getCurrentTime().plusMinutes(5)));
             });
             

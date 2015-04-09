@@ -20,9 +20,10 @@ public class Node extends Entity implements IFWBWSweepEntity{
     private final House house;
     
     public Node(House house) {
+        super(CharacteristicType.VOLTAGE);
+        
         this.cables = new ArrayList<>();
         this.house = house;
-        this.characteristic = CharacteristicType.VOLTAGE;
     }
 
     /**
@@ -31,9 +32,9 @@ public class Node extends Entity implements IFWBWSweepEntity{
     private final ReadOnlyDoubleWrapper voltage = new ReadOnlyDoubleWrapper(230.0){
         @Override
         public void set(double value) {
-            if (Simulation.isInstance()){
+            if (Simulation.isInitialized()){
                 LocalDateTime time = Simulation.getInstance().getCurrentTime();
-                characteristicMap.put(time, value);
+                getCharacteristicMap().put(time, value);
             }
             super.set(value);
         }
