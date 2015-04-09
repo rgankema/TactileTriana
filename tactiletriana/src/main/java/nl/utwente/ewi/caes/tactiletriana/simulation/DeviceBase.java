@@ -23,7 +23,7 @@ public abstract class DeviceBase extends Entity {
     private final List<Parameter> parametersUnmodifiable;
     
     public DeviceBase() {
-        this.characteristic = CharacteristicType.Consumption;
+        this.characteristic = CharacteristicType.POWER;
         parameters = new ArrayList<>();
         parametersUnmodifiable = Collections.unmodifiableList(parameters);
     }

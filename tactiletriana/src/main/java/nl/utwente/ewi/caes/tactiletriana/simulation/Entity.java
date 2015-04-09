@@ -15,20 +15,21 @@ import java.util.SortedMap;
  * @author mickvdv
  */
 public class Entity {
+    protected double characteristicAbsMax = Double.POSITIVE_INFINITY;
+    protected CharacteristicType characteristic;
+    
     public Entity(){
-        characteristicMap = new HashMap<LocalDateTime, Double>();
+        characteristicMap = new HashMap<>();
     }
     
     public static enum CharacteristicType {
-        Current, Consumption, Voltage
+        CURRENT, POWER, VOLTAGE
     }
     
-    protected double characteristicAbsMax = Double.POSITIVE_INFINITY;
     public double getCharacteristicAbsMax(){
         return this.characteristicAbsMax;
     }
     
-    protected CharacteristicType characteristic;
     public CharacteristicType getCharacteristic(){
         return this.characteristic;
     }

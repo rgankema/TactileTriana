@@ -8,6 +8,8 @@ package nl.utwente.ewi.caes.tactiletriana.gui.detail;
 import javafx.fxml.FXML;
 import javafx.scene.layout.GridPane;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
+import nl.utwente.ewi.caes.tactiletriana.gui.detail.chart.ChartVM;
+import nl.utwente.ewi.caes.tactiletriana.gui.detail.chart.ChartView;
 import nl.utwente.ewi.caes.tactiletriana.gui.detail.datetime.DateTimeView;
 
 /**
@@ -16,6 +18,7 @@ import nl.utwente.ewi.caes.tactiletriana.gui.detail.datetime.DateTimeView;
  */
 public class DetailView extends GridPane {
     @FXML private DateTimeView dateTimeView;
+    @FXML private ChartView chartView;
     
     private DetailVM viewModel;
     

@@ -25,7 +25,7 @@ public class House extends Entity {
     
     public House(){
         devices = FXCollections.observableArrayList();
-        this.characteristic = CharacteristicType.Consumption;
+        this.characteristic = CharacteristicType.POWER;
         deviceConsumptionSum = Bindings.createDoubleBinding(() -> 0d);
         currentConsumption.bind(deviceConsumptionSum);
         
