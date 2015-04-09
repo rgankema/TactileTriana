@@ -5,6 +5,7 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.beans.property.ReadOnlyDoubleProperty;
@@ -31,7 +32,8 @@ public class Node extends EntityBase implements IFWBWSweepEntity{
         @Override
         public void set(double value) {
             if (Simulation.isInstance()){
-                characteristicMap.put(Simulation.getInstance().getCurrentTime(), value);
+                LocalDateTime time = Simulation.getInstance().getCurrentTime();
+                characteristicMap.put(time, value);
             }
             super.set(value);
         }

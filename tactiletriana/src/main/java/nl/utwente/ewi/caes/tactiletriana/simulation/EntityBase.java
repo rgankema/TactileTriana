@@ -6,6 +6,7 @@
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedMap;
 
@@ -13,7 +14,11 @@ import java.util.SortedMap;
  *
  * @author mickvdv
  */
-public abstract class EntityBase {
+public class EntityBase {
+    public EntityBase(){
+        characteristicMap = new HashMap<LocalDateTime, Double>();
+    }
+    
     public static enum CharacteristicType {
         Current, Consumption, Voltage
     }
@@ -28,7 +33,7 @@ public abstract class EntityBase {
         return this.characteristic;
     }
     
-    protected SortedMap<LocalDateTime, Double> characteristicMap;
+    protected Map<LocalDateTime, Double> characteristicMap;
     
     public Map<LocalDateTime, Double> getCharacteristicMap(){
         return this.characteristicMap;

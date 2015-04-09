@@ -53,7 +53,7 @@ public class Simulation extends EntityBase {
         return instance;
     }
     public static boolean isInstance(){
-        return instance != null;
+        return (instance != null);
     }
     
     protected Simulation() {
