@@ -43,7 +43,7 @@ public class Simulation extends EntityBase {
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     
     private IController controller;
-    private Simulation instance;
+    private static Simulation instance;
     public static Simulation getInstance(){
         if (instance == null){
             instance = new Simulation();
