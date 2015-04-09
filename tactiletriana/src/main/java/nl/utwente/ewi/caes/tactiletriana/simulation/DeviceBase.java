@@ -18,7 +18,7 @@ import javafx.beans.property.SimpleObjectProperty;
  *
  * @author Richard
  */
-public abstract class DeviceBase extends EntityBase {
+public abstract class DeviceBase extends Entity {
     private final List<Parameter> parameters;
     private final List<Parameter> parametersUnmodifiable;
     

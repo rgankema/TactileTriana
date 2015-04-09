@@ -15,7 +15,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 /**
  * A connection between to nodes
  */
-public class Cable extends EntityBase implements IFWBWSweepEntity {
+public class Cable extends Entity implements IFWBWSweepEntity {
     private final Node childNode;
     private final double resistance;  
     

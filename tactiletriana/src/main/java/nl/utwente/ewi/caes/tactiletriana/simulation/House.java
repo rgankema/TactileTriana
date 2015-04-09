@@ -19,7 +19,7 @@ import javafx.collections.ObservableList;
  *
  * @author Richard
  */
-public class House extends EntityBase {
+public class House extends Entity {
     private final ObservableList<DeviceBase> devices;
     private DoubleBinding deviceConsumptionSum;
     

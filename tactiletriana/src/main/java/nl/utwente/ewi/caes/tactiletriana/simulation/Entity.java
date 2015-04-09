@@ -14,8 +14,8 @@ import java.util.SortedMap;
  *
  * @author mickvdv
  */
-public class EntityBase {
-    public EntityBase(){
+public class Entity {
+    public Entity(){
         characteristicMap = new HashMap<LocalDateTime, Double>();
     }
     
