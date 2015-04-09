@@ -22,7 +22,7 @@ public class Node extends Entity implements IFWBWSweepEntity{
     public Node(House house) {
         this.cables = new ArrayList<>();
         this.house = house;
-        this.characteristic = CharacteristicType.Voltage;
+        this.characteristic = CharacteristicType.VOLTAGE;
     }
 
     /**

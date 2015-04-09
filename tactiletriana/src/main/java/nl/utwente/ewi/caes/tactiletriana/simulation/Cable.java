@@ -26,7 +26,7 @@ public class Cable extends Entity implements IFWBWSweepEntity {
      */
     public Cable(Node childNode, double maxCurrent) {
         this.childNode = childNode;
-        this.characteristic = CharacteristicType.Current;
+        this.characteristic = CharacteristicType.CURRENT;
         this.resistance = 0.00005;
         
         setMaximumCurrent(maxCurrent);

@@ -11,6 +11,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Random;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
@@ -21,22 +22,46 @@ import org.apache.commons.csv.*;
  * @author jd
  */
 public class UncontrollableDevices extends DeviceBase {
-    private static final double MIN_CONSUMPTION = -3700d;
-    private static final double MAX_CONSUMPTION = 3700d;
     
     //Power consumption per minute for a complete year(365 days)
-    private static ArrayList<Double> profile = new ArrayList<Double>();
+    private ArrayList<Double> profile = new ArrayList<Double>();
     
     //TODO improve error handling
     public UncontrollableDevices() {
         super();
-        //Load the profile data into an array from the CSV file containing power consumptions for 6 houses
+        //Load the profile data into an array from the CSV file containing power consumptions for 6 houses. 
+        //For each new instance one of the 6 houses is randomly selected as the source for the data.
         try {
             File csvData = new File("src/main/resources/datasets/watt_house_profiles_year.csv");
             CSVParser parser = CSVParser.parse(csvData, Charset.defaultCharset(), CSVFormat.DEFAULT);
+            Random rand = new Random();
+            int randint = rand.nextInt(6);
             for (CSVRecord csvRecord : parser) {
-                //String[] value = csvRecord.get(0).split(";");
-                profile.add(Double.parseDouble(csvRecord.get(0).split(";")[0]));
+                
+                profile.add(Double.parseDouble(csvRecord.get(0).split(";")[randint]));
+            }
+        } catch (IOException e) {
+            //profile = new int[5256000];
+            throw new RuntimeException();
+        }
+    }
+    
+    /**
+     * 
+     * @param profilenr - A number between 0 and 5 (inclusive) which selects the profile data on which this instance is based 
+     */
+    public UncontrollableDevices(int profilenr) {
+        super();
+        //Load the profile data into an array from the CSV file containing power consumptions for 6 houses. 
+        //For each new instance one of the 6 houses is randomly selected as the source for the data.
+        try {
+            File csvData = new File("src/main/resources/datasets/watt_house_profiles_year.csv");
+            CSVParser parser = CSVParser.parse(csvData, Charset.defaultCharset(), CSVFormat.DEFAULT);
+            //Make sure the profile number is between 0 and 5 
+            profilenr = Math.abs(profilenr % 5);
+            for (CSVRecord csvRecord : parser) {
+                
+                profile.add(Double.parseDouble(csvRecord.get(0).split(";")[profilenr]));
             }
         } catch (IOException e) {
             //profile = new int[5256000];
