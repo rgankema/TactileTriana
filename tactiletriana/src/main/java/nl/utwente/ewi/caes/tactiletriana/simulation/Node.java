@@ -14,7 +14,7 @@ import javafx.beans.property.ReadOnlyDoubleWrapper;
  *
  * @author Richard
  */
-public class Node implements ISimulationEntity{
+public class Node implements IFWBWSweepEntity{
     private final List<Cable> cables;
     private final House house;
     

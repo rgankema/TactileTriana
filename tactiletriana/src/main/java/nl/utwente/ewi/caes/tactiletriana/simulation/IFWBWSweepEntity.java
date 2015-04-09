@@ -9,7 +9,7 @@ package nl.utwente.ewi.caes.tactiletriana.simulation;
  *
  * @author jd
  */
-public interface ISimulationEntity {
+public interface IFWBWSweepEntity {
     
     //Implement the ForwardBackwardSweep Load-flow algorithm 
     //The network is assumed to be structured as a tree. 
