@@ -28,7 +28,7 @@ import javafx.beans.property.SimpleObjectProperty;
  *
  * @author Richard
  */
-public class Simulation extends EntityBase {
+public class Simulation extends Entity {
     public static final int NUMBER_OF_HOUSES = 6;   // number of houses
     public static final int TICK_TIME = 200;        // time between ticks in ms
     
@@ -198,9 +198,10 @@ public class Simulation extends EntityBase {
             Platform.runLater(() -> { 
                 getTransformer().tick(this, true);
                 initiateForwardBackwardSweep();
+                setCurrentTime((getCurrentTime().plusMinutes(5)));
             });
             
-            setCurrentTime((getCurrentTime().plusMinutes(5)));
+            
         }, TICK_TIME, TICK_TIME, TimeUnit.MILLISECONDS);
     }
     

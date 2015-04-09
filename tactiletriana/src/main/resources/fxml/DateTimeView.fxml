@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" type="GridPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+  <columnConstraints>
+    <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" minWidth="10.0" />
+  </columnConstraints>
+  <rowConstraints>
+    <RowConstraints />
+    <RowConstraints />
+  </rowConstraints>
+   <children>
+      <Label fx:id="timeLabel" alignment="CENTER" text="13:45" textAlignment="CENTER">
+         <font>
+            <Font size="72.0" />
+         </font></Label>
+      <Label fx:id="dateLabel" alignment="CENTER" text="31-12-2014" textAlignment="CENTER" GridPane.rowIndex="1">
+         <font>
+            <Font size="31.0" />
+         </font></Label>
+   </children>
+</fx:root>

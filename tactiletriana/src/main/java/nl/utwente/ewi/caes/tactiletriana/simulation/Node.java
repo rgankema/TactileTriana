@@ -15,7 +15,7 @@ import javafx.beans.property.ReadOnlyDoubleWrapper;
  *
  * @author Richard
  */
-public class Node extends EntityBase implements IFWBWSweepEntity{
+public class Node extends Entity implements IFWBWSweepEntity{
     private final List<Cable> cables;
     private final House house;
     
