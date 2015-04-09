@@ -28,12 +28,13 @@ import javafx.beans.property.SimpleObjectProperty;
  *
  * @author Richard
  */
-public class Simulation {
+public class Simulation extends Entity {
     public static final int NUMBER_OF_HOUSES = 6;   // number of houses
     public static final int TICK_TIME = 200;        // time between ticks in ms
     
     public static final double LONGITUDE = 6.897;
     public static final double LATITUDE = 52.237;
+
     
     private final Transformer transformer;
     private final Map<Node, Double> lastVoltageByNode;
@@ -44,7 +45,18 @@ public class Simulation {
     
     private IController controller;
     
-    public Simulation() {
+    protected static Simulation instance;
+    public static Simulation getInstance(){
+        if (instance == null){
+            instance = new Simulation();
+        }
+        return instance;
+    }
+    public static boolean isInstance(){
+        return (instance != null);
+    }
+    
+    protected Simulation() {
         // keep an array of nodes for later reference
         this.lastVoltageByNode = new HashMap<>();
         

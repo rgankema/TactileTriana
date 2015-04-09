@@ -15,7 +15,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 /**
  * A connection between to nodes
  */
-public class Cable implements IFWBWSweepEntity {
+public class Cable extends Entity implements IFWBWSweepEntity {
     private final Node childNode;
     private final double resistance;  
     
@@ -26,7 +26,7 @@ public class Cable implements IFWBWSweepEntity {
      */
     public Cable(Node childNode, double maxCurrent) {
         this.childNode = childNode;
-        
+        this.characteristic = CharacteristicType.Current;
         this.resistance = 0.00005;
         
         setMaximumCurrent(maxCurrent);
@@ -67,6 +67,10 @@ public class Cable implements IFWBWSweepEntity {
             if (Math.abs(value) > getMaximumCurrent()) {
                 setBroken(true);
             }
+            if (Simulation.isInstance()){
+                characteristicMap.put(Simulation.getInstance().getCurrentTime(), value);
+            }
+            
             super.set(value);
         }
     };
@@ -97,6 +101,7 @@ public class Cable implements IFWBWSweepEntity {
     }
     
     private void setMaximumCurrent(double maximumCurrent) {
+        this.characteristicAbsMax = Math.abs(maximumCurrent);
         this.maximumCurrent.set(maximumCurrent);
     }
      

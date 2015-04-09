@@ -18,11 +18,12 @@ import javafx.beans.property.SimpleObjectProperty;
  *
  * @author Richard
  */
-public abstract class DeviceBase extends EntityBase {
+public abstract class DeviceBase extends Entity {
     private final List<Parameter> parameters;
     private final List<Parameter> parametersUnmodifiable;
     
     public DeviceBase() {
+        this.characteristic = CharacteristicType.Consumption;
         parameters = new ArrayList<>();
         parametersUnmodifiable = Collections.unmodifiableList(parameters);
     }
@@ -38,6 +39,9 @@ public abstract class DeviceBase extends EntityBase {
             // consumption is always zero if not connected to the grid
             if (getState() != DeviceBase.State.CONNECTED) {
                 value = 0;
+            }
+            if (Simulation.isInstance()){
+                characteristicMap.put(Simulation.getInstance().getCurrentTime(), value);
             }
             super.set(value);
         }

@@ -27,7 +27,7 @@ public class App extends Application {
     
     @Override
     public void start(Stage touchStage) throws Exception {
-        simulation = new Simulation();
+        simulation = Simulation.getInstance();
         
         // Touch scherm bouwen
         TouchVM tvm = new TouchVM(simulation);
