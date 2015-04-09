@@ -28,7 +28,7 @@ import javafx.beans.property.SimpleObjectProperty;
  *
  * @author Richard
  */
-public class Simulation {
+public class Simulation extends EntityBase {
     public static final int NUMBER_OF_HOUSES = 6;   // number of houses
     public static final int TICK_TIME = 200;        // time between ticks in ms
     
@@ -43,8 +43,15 @@ public class Simulation {
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     
     private IController controller;
+    private static Simulation instance;
+    public static Simulation getInstance(){
+        if (instance == null){
+            instance = new Simulation();
+        }
+        return instance;
+    }
     
-    public Simulation() {
+    protected Simulation() {
         // keep an array of nodes for later reference
         this.lastVoltageByNode = new HashMap<>();
         

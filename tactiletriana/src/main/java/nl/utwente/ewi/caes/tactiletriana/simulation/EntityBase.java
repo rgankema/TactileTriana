@@ -18,15 +18,19 @@ public abstract class EntityBase {
         Current, Consumption, Voltage
     }
     
+    protected double characteristicAbsMax = Double.POSITIVE_INFINITY;
+    public double getCharacteristicAbsMax(){
+        return this.characteristicAbsMax;
+    }
+    
     protected CharacteristicType characteristic;
     public CharacteristicType getCharacteristic(){
         return this.characteristic;
     }
     
-    SortedMap<LocalDateTime, Double> characteristicMap;
+    protected SortedMap<LocalDateTime, Double> characteristicMap;
     
     public Map<LocalDateTime, Double> getCharacteristicMap(){
         return this.characteristicMap;
     }
-    
 }

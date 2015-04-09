@@ -23,7 +23,7 @@ public class App extends Application {
     
     @Override
     public void start(Stage stage) throws Exception {
-        simulation = new Simulation();
+        simulation = Simulation.getInstance();
         TouchVM tvm = new TouchVM(simulation);
         TouchView tv = new TouchView();
         tv.setViewModel(tvm);

@@ -14,19 +14,26 @@ import javafx.beans.property.ReadOnlyDoubleWrapper;
  *
  * @author Richard
  */
-public class Node implements IFWBWSweepEntity{
+public class Node extends EntityBase implements IFWBWSweepEntity{
     private final List<Cable> cables;
     private final House house;
     
     public Node(House house) {
         this.cables = new ArrayList<>();
         this.house = house;
+        this.characteristic = CharacteristicType.Voltage;
     }
 
     /**
      * The voltage measured on this node
      */
-    private final ReadOnlyDoubleWrapper voltage = new ReadOnlyDoubleWrapper(230.0);
+    private final ReadOnlyDoubleWrapper voltage = new ReadOnlyDoubleWrapper(230.0){
+        @Override
+        public void set(double value) {
+            characteristicMap.put(Simulation.getInstance().getCurrentTime(), value);
+            super.set(value);
+        }
+    };
     
     public ReadOnlyDoubleProperty voltageProperty() {
         return voltage.getReadOnlyProperty();
