@@ -15,9 +15,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.*;
  * @author niels
  */
 public class SolarPanel extends DeviceBase {
-    //FIXME: Make these constants editable
-    //Area of the panel in m2
-    //private double area = 1;
+    //FIXME: Make these (all?) constants editable
     //Elevation of the panel in degrees
     private double elevation = 45;
     //Azimuth orientation of the panel in degrees, 0 = south, 90 = west, 180 = north & 270 = east
@@ -33,6 +31,7 @@ public class SolarPanel extends DeviceBase {
     
     public SolarPanel(){
         addParameter(new Parameter("Area of solarpanel (in m2)", solarPanelArea, MIN_AREA, MAX_AREA));
+        setSolarPanelArea((MIN_AREA+MAX_AREA)/2);
     }   
     
         /**
@@ -68,7 +67,7 @@ public class SolarPanel extends DeviceBase {
         
         //Set the current consumption according to current temperature, radiation and time
         //The value is multiplicated by -1 because the solarpanel produces and doesn't consume
-        setCurrentConsumption(  -1*calculateProduction(simulation.getTemperature(),simulation.getRadiance(),
+        setCurrentConsumption(  calculateProduction(simulation.getTemperature(),simulation.getRadiance(),
                                 Simulation.LONGITUDE, Simulation.LATITUDE, simulation.getCurrentTime()));
     }
     

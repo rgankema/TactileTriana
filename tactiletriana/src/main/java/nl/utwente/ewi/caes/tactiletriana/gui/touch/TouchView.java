@@ -16,7 +16,7 @@ import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.network.NetworkView;
 import nl.utwente.cs.caes.tactile.control.TactilePane;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
-import nl.utwente.ewi.caes.tactiletriana.simulation.devices.MockDevice;
+import nl.utwente.ewi.caes.tactiletriana.simulation.devices.*;
 
 /**
  * FXML Controller class
@@ -36,7 +36,14 @@ public class TouchView extends TactilePane {
             getActiveNodes().add(house);
         }
         
-        addDeviceToStack();
+        DeviceView device = new DeviceView(new Polygon(new double[] { 0d, 50d, 25d, 0d, 50d, 50d }));
+        DeviceVM deviceVM = new DeviceVM(new MockDevice());
+        
+        DeviceView solar = new DeviceView(new Polygon(new double[] { 0d, 50d, 40d, 0d, 40d, 50d }));
+        DeviceVM solarVM = new DeviceVM(new SolarPanel());
+        
+        addDeviceToStack((1920/2 - 40),(1080/2 - 25),device,deviceVM);
+        addDeviceToStack((1920/2 + 40),(1080/2 - 25),solar,solarVM);
     }
     
     public void setViewModel(TouchVM viewModel) {
@@ -52,12 +59,8 @@ public class TouchView extends TactilePane {
         }
     }
     
-    private void addDeviceToStack() {
-        double x = 1920/2 - 25;
-        double y = 1080/2 - 25;
+    private void addDeviceToStack(int x,int y,DeviceView device,DeviceVM deviceVM) {
         
-        DeviceView device = new DeviceView(new Polygon(new double[] { 0d, 50d, 25d, 0d, 50d, 50d }));
-        DeviceVM deviceVM = new DeviceVM(new MockDevice());
         device.setViewModel(deviceVM);
         
         // Add device to group to fix drag bug
@@ -80,7 +83,7 @@ public class TouchView extends TactilePane {
         // Add new device when drag starts, remove device if not on house
         TactilePane.inUseProperty(group).addListener(obs -> {
             if (TactilePane.isInUse(group)) { 
-                addDeviceToStack();
+                addDeviceToStack(x,y,device,deviceVM);
             } else {
                 if (!TactilePane.getNodesColliding(group).stream().anyMatch(node -> node instanceof HouseView)) {
                     getChildren().remove(group);
