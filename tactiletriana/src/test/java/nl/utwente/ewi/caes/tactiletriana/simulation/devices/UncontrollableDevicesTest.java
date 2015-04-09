@@ -29,8 +29,13 @@ public class UncontrollableDevicesTest {
         UncontrollableDevices uc = new UncontrollableDevices();
        
         ArrayList<Double> profile = uc.getProfile();
-        assertEquals(profile.get(0), 168d, 0.01);
-            
+        double value = profile.get(0);
+        assertTrue(value ==  168d || value ==  146d || value ==  240d || value ==  161d || value ==  230d || value ==  224d);
+        
+        UncontrollableDevices uc2 = new UncontrollableDevices(3);
+        double value2 = uc2.getProfile().get(0);
+        assertEquals(161d, value2, 0.01);
+        
     }
     
     public void testUncontrollableDevices() {
