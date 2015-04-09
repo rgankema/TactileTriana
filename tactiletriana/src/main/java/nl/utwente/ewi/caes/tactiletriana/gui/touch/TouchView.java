@@ -59,8 +59,10 @@ public class TouchView extends TactilePane {
         }
     }
     
+    
+    
     private void addDeviceToStack(int x,int y,DeviceView device,DeviceVM deviceVM) {
-        
+               
         device.setViewModel(deviceVM);
         
         // Add device to group to fix drag bug
@@ -82,8 +84,16 @@ public class TouchView extends TactilePane {
         
         // Add new device when drag starts, remove device if not on house
         TactilePane.inUseProperty(group).addListener(obs -> {
-            if (TactilePane.isInUse(group)) { 
-                addDeviceToStack(x,y,device,deviceVM);
+            if (TactilePane.isInUse(group)) {
+                if (deviceVM.getModel() instanceof MockDevice){
+                    DeviceView device2 = new DeviceView(new Polygon(new double[] { 0d, 50d, 25d, 0d, 50d, 50d }));
+                    DeviceVM deviceVM2 = new DeviceVM(new MockDevice());
+                    addDeviceToStack(x,y,device2,deviceVM2);
+                } else if (deviceVM.getModel() instanceof SolarPanel){
+                    DeviceView solar = new DeviceView(new Polygon(new double[] { 0d, 50d, 40d, 0d, 40d, 50d }));
+                    DeviceVM solarVM = new DeviceVM(new SolarPanel());
+                    addDeviceToStack(x,y,solar,solarVM);
+                }
             } else {
                 if (!TactilePane.getNodesColliding(group).stream().anyMatch(node -> node instanceof HouseView)) {
                     getChildren().remove(group);
