@@ -25,6 +25,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
  * @author Richard
  */
 public class LauncherVM {
+    // TODO: hele screen ding zou naar StageController mogen
     private ObservableList<Integer> screenIndexList;
     private List<Screen> screens;
     public LauncherVM() {
@@ -144,8 +145,11 @@ public class LauncherVM {
      * @param index the screen index
      * @return the Screen associated with the index as shown in the ComboBoxes
      */
-    public Screen getScreenByIndex(int index) {
-        return this.screens.get(index - 1);
+    public Screen getScreenByIndex(Integer index) {
+        if (index == null || index <= 0) 
+            return Screen.getPrimary();
+        else
+            return this.screens.get(index - 1);
     }
     
     public void start() {
