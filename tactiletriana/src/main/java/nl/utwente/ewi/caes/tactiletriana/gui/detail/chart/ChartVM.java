@@ -15,42 +15,45 @@ import javafx.collections.FXCollections;
 import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
-import nl.utwente.ewi.caes.tactiletriana.simulation.Entity;
+import nl.utwente.ewi.caes.tactiletriana.simulation.LoggingEntity;
 
 /**
  *
  * @author Richard
  */
 public class ChartVM {
-    private final Entity entity;
+    private final LoggingEntity entity;
     private final ObservableList<XYChart.Data<Number, Number>> seriesData;
     
-    public ChartVM(Entity entity) {
+    public ChartVM(LoggingEntity entity) {
         this.entity = entity;
         
         // Set label of series
-        switch (entity.getCharacteristic()) {
+        switch (entity.getLoggedValueType()) {
             case POWER: 
-                seriesName.set("Power Consumption");
+                seriesName.set("Power Consumption (W)");
                 break;
             case VOLTAGE:
-                seriesName.set("Voltage");
+                seriesName.set("Voltage (V)");
                 break;
             case CURRENT:
-                seriesName.set("Current");
+                seriesName.set("Current (A)");
                 break;
         }
+        
+        // Set label of chart
+        chartTitle.set(entity.getDisplayName() + " " + seriesName.get());
         
         xAxisUpperBound.bind(xAxisLowerBound.add(60*12));
         
-        if (entity.getCharacteristicAbsMax() != Double.POSITIVE_INFINITY) {
-            yAxisAbsBound.set(entity.getCharacteristicAbsMax());
+        if (entity.getAbsoluteMaximum() != Double.POSITIVE_INFINITY) {
+            yAxisAbsBound.set(entity.getAbsoluteMaximum());
         }
         
         seriesData = FXCollections.observableList(new ArrayList<XYChart.Data<Number, Number>>());
-        entity.getCharacteristicMap().addListener((MapChangeListener.Change<? extends LocalDateTime, ? extends Double> c) -> {
+        entity.getLog().addListener((MapChangeListener.Change<? extends LocalDateTime, ? extends Double> c) -> {
             LocalDateTime time = c.getKey();
-            int minuteOfYear = (time.getDayOfYear() - 1) * 60 * 60 + time.getHour() * 60 + time.getMinute();
+            int minuteOfYear = (time.getDayOfYear() - 1) * 24 * 60 + time.getHour() * 60 + time.getMinute();
             
             if (c.wasRemoved()) {
                 int i = 0;
@@ -86,30 +89,57 @@ public class ChartVM {
         });
     }
     
+    // BINDABLE PROPERTIES
+    
+    /**
+     * The name of the chart
+     */
+    private ReadOnlyStringWrapper chartTitle = new ReadOnlyStringWrapper();
+    
+    public ReadOnlyStringProperty chartTitleProperty() {
+        return chartTitle.getReadOnlyProperty();
+    }
+    
+    /**
+     * The name of the series
+     */
     private ReadOnlyStringWrapper seriesName = new ReadOnlyStringWrapper();
     
     public ReadOnlyStringProperty seriesNameProperty() {
         return seriesName.getReadOnlyProperty();
     }
     
+    /**
+     * The absolute y value within which the series is bounded
+     */
     private ReadOnlyDoubleWrapper yAxisAbsBound = new ReadOnlyDoubleWrapper();
     
     public ReadOnlyDoubleProperty yAxisAbsBoundProperty() {
         return yAxisAbsBound.getReadOnlyProperty();
     }
     
+    /**
+     * The lower bound of the x axis
+     */
     private ReadOnlyDoubleWrapper xAxisLowerBound = new ReadOnlyDoubleWrapper();
     
     public ReadOnlyDoubleProperty xAxisLowerBoundProperty() {
         return xAxisLowerBound.getReadOnlyProperty();
     }
     
+    /**
+     * The upper bound of the x axis
+     */
     private ReadOnlyDoubleWrapper xAxisUpperBound = new ReadOnlyDoubleWrapper();
     
     public ReadOnlyDoubleProperty xAxisUpperBoundProperty() {
         return xAxisUpperBound.getReadOnlyProperty();
     }
     
+    /**
+     * 
+     * @return the data for the series
+     */
     public ObservableList<XYChart.Data<Number, Number>> getSeriesData() {
         return seriesData;
     }

@@ -9,7 +9,7 @@ package nl.utwente.ewi.caes.tactiletriana.simulation;
  *
  * @author Richard
  */
-public class Transformer extends Node implements IFWBWSweepEntity {
+public class Transformer extends Node implements IFWBWSEntity {
     public final double TRANSFORMER_CURRENT = 230.0;
     
     public Transformer() {

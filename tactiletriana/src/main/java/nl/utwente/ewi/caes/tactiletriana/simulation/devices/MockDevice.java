@@ -15,6 +15,7 @@ public class MockDevice extends DeviceBase {
     private static final double MAX_CONSUMPTION = 3700d;
     
     public MockDevice() {
+        super("Mock Device");
         addParameter(new Parameter("Consumption", mockDeviceUsage, MIN_CONSUMPTION, MAX_CONSUMPTION));
     }
     

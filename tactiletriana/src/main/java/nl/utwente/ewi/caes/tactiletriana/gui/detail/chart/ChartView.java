@@ -8,7 +8,7 @@ package nl.utwente.ewi.caes.tactiletriana.gui.detail.chart;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
-import javafx.scene.chart.AreaChart;
+import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Series;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
@@ -18,7 +18,7 @@ import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
  * @author Richard
  */
 public class ChartView extends Group {
-    @FXML private AreaChart chart;
+    @FXML private LineChart chart;
     @FXML private NumberAxis xAxis;
     @FXML private NumberAxis yAxis;
     
@@ -39,7 +39,6 @@ public class ChartView extends Group {
         series.nameProperty().bind(viewModel.seriesNameProperty());
         Bindings.bindContent(series.getData(), viewModel.getSeriesData());
         
-        
         yAxis.lowerBoundProperty().bind(viewModel.yAxisAbsBoundProperty().negate());
         yAxis.upperBoundProperty().bind(viewModel.yAxisAbsBoundProperty());
         yAxis.tickUnitProperty().bind(viewModel.yAxisAbsBoundProperty().divide(5));
@@ -48,6 +47,7 @@ public class ChartView extends Group {
         xAxis.lowerBoundProperty().bind(viewModel.xAxisLowerBoundProperty());
         xAxis.upperBoundProperty().bind(viewModel.xAxisUpperBoundProperty());
         
+        chart.titleProperty().bind(viewModel.chartTitleProperty());
         chart.getData().add(series);
     }
 }

@@ -22,9 +22,10 @@ import javafx.beans.property.SimpleObjectProperty;
  *
  * @author Richard
  */
-public class Simulation extends Entity {
+public class Simulation extends LoggingEntity {
     public static final int NUMBER_OF_HOUSES = 6;   // number of houses
-    public static final int TICK_TIME = 200;        // time between ticks in ms
+    public static final int SYSTEM_TICK_TIME = 200;        // time between ticks in ms
+    public static final int SIMULATION_TICK_TIME = 5;   // time in minutes that passes in the simulation with each tick
     
     public static final double LONGITUDE = 6.897;
     public static final double LATITUDE = 52.237;
@@ -49,7 +50,9 @@ public class Simulation extends Entity {
     }
     
     protected Simulation() {
-        super(CharacteristicType.POWER);
+        super(LoggedValueType.POWER, "Network");
+        
+        setAbsoluteMaximum(250 * 500);
         
         // keep an array of nodes for later reference
         this.lastVoltageByNode = new HashMap<>();
@@ -201,14 +204,14 @@ public class Simulation extends Entity {
                 initiateForwardBackwardSweep();
                 
                 // Log total power consumption in network
-                getCharacteristicMap().put(getCurrentTime(), transformer.getCables().get(0).getCurrent() * 230d);
+                log(getCurrentTime(), transformer.getCables().get(0).getCurrent() * 230d);
                 
                 // Increment time
-                setCurrentTime((getCurrentTime().plusMinutes(5)));
+                setCurrentTime((getCurrentTime().plusMinutes(SIMULATION_TICK_TIME)));
             });
             
             
-        }, TICK_TIME, TICK_TIME, TimeUnit.MILLISECONDS);
+        }, SYSTEM_TICK_TIME, SYSTEM_TICK_TIME, TimeUnit.MILLISECONDS);
     }
     
     public void stop() {
