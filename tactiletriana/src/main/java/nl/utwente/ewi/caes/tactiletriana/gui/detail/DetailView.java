@@ -10,6 +10,7 @@ import javafx.scene.layout.GridPane;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 import nl.utwente.ewi.caes.tactiletriana.gui.detail.chart.ChartView;
 import nl.utwente.ewi.caes.tactiletriana.gui.detail.datetime.DateTimeView;
+import nl.utwente.ewi.caes.tactiletriana.gui.detail.weather.WeatherView;
 
 /**
  *
@@ -18,6 +19,7 @@ import nl.utwente.ewi.caes.tactiletriana.gui.detail.datetime.DateTimeView;
 public class DetailView extends GridPane {
     @FXML private DateTimeView dateTimeView;
     @FXML private ChartView chartView;
+    @FXML private WeatherView weatherView;
     
     private DetailVM viewModel;
     
@@ -32,5 +34,6 @@ public class DetailView extends GridPane {
         
         dateTimeView.setViewModel(viewModel.getDateTimeVM());
         chartView.setViewModel(viewModel.getChartVM());
+        weatherView.setViewModel(viewModel.getWeatherVM());
     }
 }

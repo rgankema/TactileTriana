@@ -87,7 +87,7 @@ public class Simulation extends LoggingEntity {
         }
         
         // initialise time
-        setCurrentTime(LocalDateTime.of(2014, 1, 1, 0, 0));
+        setCurrentTime(LocalDateTime.of(2014, 7, 1, 0, 0));
         
         // load KNMI data
         temperatureByTime = new HashMap<>();
