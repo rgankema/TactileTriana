@@ -48,6 +48,8 @@ public final class StageController {
     private Stage detailStage;
     private List<Stage> screenIndexWindows;
     
+    private LauncherVM launcherVM;
+    
     private boolean mainStagesFullScreen;
     private int touchScreenIndex;
     private int detailScreenIndex;
@@ -59,16 +61,16 @@ public final class StageController {
         this.launcherStage = launcherStage;
         
         LauncherView lv = new LauncherView();
-        LauncherVM lvm = new LauncherVM();
-        lv.setViewModel(lvm);
+        launcherVM = new LauncherVM();
+        lv.setViewModel(launcherVM);
         
         launcherStage.setScene(new Scene(lv));
         launcherStage.setOnCloseRequest(e -> closeAllStages());
         
         // Build screen index stages
         screenIndexWindows = new ArrayList<>();
-        for (Integer i : lvm.getScreenIndexList()) {
-            Screen screen = lvm.getScreenByIndex(i);
+        for (Integer i : launcherVM.getScreenIndexList()) {
+            Screen screen = launcherVM.getScreenByIndex(i);
             
             Scene scene = new Scene(new ScreenIndexView(i));
             Stage stage = new Stage(StageStyle.TRANSPARENT);
@@ -121,6 +123,9 @@ public final class StageController {
             touchStage.setScene(new Scene(tv));
             touchStage.setOnCloseRequest(e -> closeAllStages());
             
+            touchStage.setX(launcherVM.getScreenByIndex(touchScreenIndex).getVisualBounds().getMinX());
+            touchStage.setY(launcherVM.getScreenByIndex(touchScreenIndex).getVisualBounds().getMinY());
+            
             // Build detail screen stage
             detailStage = new Stage();
         
@@ -130,11 +135,14 @@ public final class StageController {
 
             detailStage.setScene(new Scene(dv));
             detailStage.setOnCloseRequest(e -> closeAllStages());
+            
+            detailStage.setX(launcherVM.getScreenByIndex(detailScreenIndex).getVisualBounds().getMinX());
+            detailStage.setY(launcherVM.getScreenByIndex(detailScreenIndex).getVisualBounds().getMinY());
         }
         
         if (visible) {
-            touchStage.show();
             detailStage.show();
+            touchStage.show();
         } else {
             touchStage.hide();
             detailStage.hide();
