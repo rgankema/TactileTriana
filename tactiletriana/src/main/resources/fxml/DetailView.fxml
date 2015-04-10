@@ -22,8 +22,6 @@
       <RowConstraints maxHeight="0.0" minHeight="0.0" percentHeight="100.0" prefHeight="0.0" valignment="CENTER" />
     </rowConstraints>
   
-    
-        
     <!-- placeholder voor logo -->
     <Rectangle height="150" width="150" GridPane.columnIndex="0">
         <StackPane.margin>
