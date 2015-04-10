@@ -99,15 +99,7 @@ public class LauncherVM {
     /**
      * The screen number that is chosen for the touch screen, null if none is chosen yet
      */
-    private final ObjectProperty touchScreenSelection = new SimpleObjectProperty(null) {
-        @Override
-        public void set(Object value) {
-            if (value instanceof Integer) {
-                StageController.getInstance().setTouchScreenIndex((Integer)value);
-            }
-            super.set(value);
-        }
-    };
+    private final ObjectProperty touchScreenSelection = new SimpleObjectProperty(null);
     
     public ObjectProperty touchScreenSelectionProperty() {
         return this.touchScreenSelection;
@@ -116,15 +108,7 @@ public class LauncherVM {
     /**
      * The screen number that is chosen for the detail screen, null if none is chosen yet
      */
-    private final ObjectProperty detailScreenSelection = new SimpleObjectProperty(null) {
-        @Override
-        public void set(Object value) {
-            if (value instanceof Integer) {
-                StageController.getInstance().setDetailScreenIndex((Integer)value);
-            }
-            super.set(value);
-        }
-    };
+    private final ObjectProperty detailScreenSelection = new SimpleObjectProperty(null);
     
     public ObjectProperty detailScreenSelectionProperty() {
         return this.detailScreenSelection;
