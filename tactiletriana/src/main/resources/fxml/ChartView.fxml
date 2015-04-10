@@ -11,10 +11,10 @@
    <children>
       <AreaChart fx:id="chart" prefHeight="600.0" prefWidth="1800.0" title="Chart Title">
         <xAxis>
-          <CategoryAxis autoRanging="true" side="BOTTOM" fx:id="xAxis" />
+          <NumberAxis autoRanging="false" minorTickVisible="false" side="BOTTOM" tickMarkVisible="false" tickUnit="60.0" fx:id="xAxis" />
         </xAxis>
         <yAxis>
-          <NumberAxis fx:id="yAxis" autoRanging="false" forceZeroInRange="false" minorTickCount="0" minorTickLength="0.0" minorTickVisible="false" side="LEFT" />
+          <NumberAxis fx:id="yAxis" autoRanging="false" minorTickCount="0" minorTickLength="0.0" minorTickVisible="false" side="LEFT" tickMarkVisible="false" />
         </yAxis>
       </AreaChart>
    </children>

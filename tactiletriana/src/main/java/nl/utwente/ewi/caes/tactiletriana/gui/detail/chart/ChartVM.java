@@ -23,7 +23,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Entity;
  */
 public class ChartVM {
     private final Entity entity;
-    private final ObservableList<XYChart.Data<String, Number>> seriesData;
+    private final ObservableList<XYChart.Data<Number, Number>> seriesData;
     
     public ChartVM(Entity entity) {
         this.entity = entity;
@@ -41,25 +41,46 @@ public class ChartVM {
                 break;
         }
         
-        seriesAbsMax.set(entity.getCharacteristicAbsMax());
+        xAxisUpperBound.bind(xAxisLowerBound.add(60*12));
         
-        seriesData = FXCollections.observableList(new ArrayList<XYChart.Data<String, Number>>());
+        if (entity.getCharacteristicAbsMax() != Double.POSITIVE_INFINITY) {
+            yAxisAbsBound.set(entity.getCharacteristicAbsMax());
+        }
+        
+        seriesData = FXCollections.observableList(new ArrayList<XYChart.Data<Number, Number>>());
         entity.getCharacteristicMap().addListener((MapChangeListener.Change<? extends LocalDateTime, ? extends Double> c) -> {
             LocalDateTime time = c.getKey();
-            String timeString = String.format("%02d:%02d", time.getHour(), time.getMinute());
+            int minuteOfYear = (time.getDayOfYear() - 1) * 60 * 60 + time.getHour() * 60 + time.getMinute();
             
             if (c.wasRemoved()) {
-                seriesData.removeIf(data -> data.getXValue().equals(timeString) && data.getYValue() == c.getValueRemoved());
+                int i = 0;
+                for (; i < seriesData.size(); i++) {
+                    XYChart.Data data = seriesData.get(i);
+                    if (data.getXValue().equals(minuteOfYear) && data.getYValue() == c.getValueRemoved()) {
+                        break;
+                    }
+                }
+                seriesData.remove(i);
+                if (i > 0) seriesData.remove(i - 1);
             }
             if (c.wasAdded()) {
+                // Add datapoint with previous value to obtain horizontal lines
                 if (seriesData.size() > 0 ) {
-                    seriesData.add(new XYChart.Data<>(timeString, seriesData.get(seriesData.size() - 1).getYValue()));
+                    seriesData.add(new XYChart.Data<>(minuteOfYear, seriesData.get(seriesData.size() - 1).getYValue()));
+                }
+                seriesData.add(new XYChart.Data<>(minuteOfYear, c.getValueAdded()));
+                
+                // Range x axis
+                if (seriesData.size() < 288) {
+                    xAxisLowerBound.set((Integer)seriesData.get(0).getXValue());
+                } 
+                else {
+                    xAxisLowerBound.set((Integer)seriesData.get(seriesData.size() - 288).getXValue());
                 }
                 
-                seriesData.add(new XYChart.Data<>(timeString, c.getValueAdded()));
-                
-                if (seriesData.size() > 288) { // 288 keer 5 minuten in een dag
-                    seriesData.remove(0);
+                // Range y axis
+                if (Math.abs(c.getValueAdded()) > yAxisAbsBound.get()) {
+                    yAxisAbsBound.set(c.getValueAdded());
                 }
             }
         });
@@ -68,18 +89,28 @@ public class ChartVM {
     private ReadOnlyStringWrapper seriesName = new ReadOnlyStringWrapper();
     
     public ReadOnlyStringProperty seriesNameProperty() {
-        return seriesName;
+        return seriesName.getReadOnlyProperty();
     }
     
-    private ReadOnlyDoubleWrapper seriesAbsMax = new ReadOnlyDoubleWrapper();
+    private ReadOnlyDoubleWrapper yAxisAbsBound = new ReadOnlyDoubleWrapper();
     
-    public ReadOnlyDoubleProperty seriesAbsMaxProperty() {
-        return seriesAbsMax;
+    public ReadOnlyDoubleProperty yAxisAbsBoundProperty() {
+        return yAxisAbsBound.getReadOnlyProperty();
     }
     
-    public ObservableList<XYChart.Data<String, Number>> getSeriesData() {
+    private ReadOnlyDoubleWrapper xAxisLowerBound = new ReadOnlyDoubleWrapper();
+    
+    public ReadOnlyDoubleProperty xAxisLowerBoundProperty() {
+        return xAxisLowerBound.getReadOnlyProperty();
+    }
+    
+    private ReadOnlyDoubleWrapper xAxisUpperBound = new ReadOnlyDoubleWrapper();
+    
+    public ReadOnlyDoubleProperty xAxisUpperBoundProperty() {
+        return xAxisUpperBound.getReadOnlyProperty();
+    }
+    
+    public ObservableList<XYChart.Data<Number, Number>> getSeriesData() {
         return seriesData;
     }
-    
-    
 }

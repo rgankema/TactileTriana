@@ -9,7 +9,6 @@ import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
 import javafx.scene.chart.AreaChart;
-import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Series;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
@@ -20,10 +19,10 @@ import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
  */
 public class ChartView extends Group {
     @FXML private AreaChart chart;
-    @FXML private CategoryAxis xAxis;
+    @FXML private NumberAxis xAxis;
     @FXML private NumberAxis yAxis;
     
-    private Series<String, Number> series;
+    private Series<Number, Number> series;
     
     private ChartVM viewModel;
     
@@ -40,15 +39,14 @@ public class ChartView extends Group {
         series.nameProperty().bind(viewModel.seriesNameProperty());
         Bindings.bindContent(series.getData(), viewModel.getSeriesData());
         
-        if (viewModel.seriesAbsMaxProperty().get() != Double.POSITIVE_INFINITY) {
-            yAxis.lowerBoundProperty().bind(viewModel.seriesAbsMaxProperty().negate());
-            yAxis.upperBoundProperty().bind(viewModel.seriesAbsMaxProperty());
-            yAxis.tickUnitProperty().bind(viewModel.seriesAbsMaxProperty().divide(5));
-        } else {
-            yAxis.setAutoRanging(true);
-        }
         
+        yAxis.lowerBoundProperty().bind(viewModel.yAxisAbsBoundProperty().negate());
+        yAxis.upperBoundProperty().bind(viewModel.yAxisAbsBoundProperty());
+        yAxis.tickUnitProperty().bind(viewModel.yAxisAbsBoundProperty().divide(5));
         yAxis.labelProperty().bind(viewModel.seriesNameProperty());
+        
+        xAxis.lowerBoundProperty().bind(viewModel.xAxisLowerBoundProperty());
+        xAxis.upperBoundProperty().bind(viewModel.xAxisUpperBoundProperty());
         
         chart.getData().add(series);
     }
