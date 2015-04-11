@@ -8,14 +8,16 @@ package nl.utwente.ewi.caes.tactiletriana.gui;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import nl.utwente.ewi.caes.tactiletriana.gui.detail.DetailVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.detail.DetailView;
-import nl.utwente.ewi.caes.tactiletriana.gui.launcher.LauncherVM;
-import nl.utwente.ewi.caes.tactiletriana.gui.launcher.LauncherView;
-import nl.utwente.ewi.caes.tactiletriana.gui.launcher.ScreenIndexView;
+import nl.utwente.ewi.caes.tactiletriana.gui.configuration.ConfigurationVM;
+import nl.utwente.ewi.caes.tactiletriana.gui.configuration.ConfigurationView;
+import nl.utwente.ewi.caes.tactiletriana.gui.configuration.ScreenIndexView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.TouchVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.TouchView;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
@@ -48,7 +50,7 @@ public final class StageController {
     private Stage detailStage;
     private List<Stage> screenIndexWindows;
     
-    private LauncherVM launcherVM;
+    private ConfigurationVM launcherVM;
     
     // CONSTRUCTOR
     
@@ -56,12 +58,14 @@ public final class StageController {
         // Build launcher stage
         this.launcherStage = launcherStage;
         
-        LauncherView lv = new LauncherView();
-        launcherVM = new LauncherVM();
+        ConfigurationView lv = new ConfigurationView();
+        launcherVM = new ConfigurationVM();
         lv.setViewModel(launcherVM);
         
         launcherStage.setScene(new Scene(lv));
         launcherStage.setOnCloseRequest(e -> closeAllStages());
+        launcherStage.getIcons().add(new Image("images/triana.png"));
+        launcherStage.setTitle("TactileTriana");
         
         // Build screen index stages
         screenIndexWindows = new ArrayList<>();
@@ -87,14 +91,10 @@ public final class StageController {
             launcherStage.show();
         else
             launcherStage.hide();
-        
-        setScreenIndexStagesVisible(visible);
     }
     
     public void setMainStagesVisible(boolean visible) {
         if (touchStage == null) {
-            // TODO: fullscreen aan en uit regelen
-            
             // Build touch screen stage
             touchStage = new Stage();
 
@@ -102,7 +102,15 @@ public final class StageController {
             TouchView tv = new TouchView();
             tv.setViewModel(tvm);
 
-            touchStage.setScene(new Scene(tv));
+            Scene touchScene = new Scene(tv);
+            touchScene.setOnKeyPressed(e -> { 
+                if (e.getCode() == KeyCode.ESCAPE) {
+                    Simulation.getInstance().pause();
+                    setLauncherStageVisible(true);
+                }
+            });
+            
+            touchStage.setScene(touchScene);
             touchStage.setOnCloseRequest(e -> closeAllStages());
             
             if (launcherVM.fullScreenCheckedProperty().get()) {
@@ -155,7 +163,9 @@ public final class StageController {
         for (Stage stage : screenIndexWindows) {
             stage.close();
         }
-        touchStage.close();
-        detailStage.close();
+        if (touchStage != null) {
+            touchStage.close();
+            detailStage.close();
+        }
     }
 }

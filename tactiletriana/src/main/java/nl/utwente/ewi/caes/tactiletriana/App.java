@@ -21,6 +21,7 @@ public class App extends Application {
     public void start(Stage stage) throws Exception {
         StageController.initialize(stage);
         StageController.getInstance().setLauncherStageVisible(true);
+        StageController.getInstance().setScreenIndexStagesVisible(true);
     }
     
     @Override

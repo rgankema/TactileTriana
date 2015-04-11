@@ -16,6 +16,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 
 /**
@@ -26,6 +28,7 @@ public class Simulation extends LoggingEntity {
     public static final int NUMBER_OF_HOUSES = 6;   // number of houses
     public static final int SYSTEM_TICK_TIME = 200;        // time between ticks in ms
     public static final int SIMULATION_TICK_TIME = 5;   // time in minutes that passes in the simulation with each tick
+    public static final LocalDateTime DEFAULT_TIME = LocalDateTime.of(2014, 7, 1, 0, 0);
     
     public static final double LONGITUDE = 6.897;
     public static final double LATITUDE = 52.237;
@@ -35,8 +38,11 @@ public class Simulation extends LoggingEntity {
     private final Map<Node, Double> lastVoltageByNode;
     private final Map<LocalDateTime, Double> temperatureByTime;
     private final Map<LocalDateTime, Double> radianceByTime;
+    private final House[] houses;
+    private final Node[] internalNodes;
+    private final Node[] houseNodes;
     
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     
     private IController controller;
     
@@ -60,10 +66,10 @@ public class Simulation extends LoggingEntity {
         // de tree maken
         transformer = new Transformer();
         
-        Node[] internalNodes = new Node[NUMBER_OF_HOUSES];
-        Node[] houseNodes = new Node[NUMBER_OF_HOUSES];
+        internalNodes = new Node[NUMBER_OF_HOUSES];
+        houseNodes = new Node[NUMBER_OF_HOUSES];
         Cable[] cables = new Cable[NUMBER_OF_HOUSES];
-        House[] houses = new House[NUMBER_OF_HOUSES];
+        houses = new House[NUMBER_OF_HOUSES];
         
         // maak huizen aan met cables en dat soort grappen
         for(int i = 0; i <= NUMBER_OF_HOUSES-1; i ++){
@@ -87,7 +93,7 @@ public class Simulation extends LoggingEntity {
         }
         
         // initialise time
-        setCurrentTime(LocalDateTime.of(2014, 7, 1, 0, 0));
+        setCurrentTime(DEFAULT_TIME);
         
         // load KNMI data
         temperatureByTime = new HashMap<>();
@@ -124,6 +130,41 @@ public class Simulation extends LoggingEntity {
      */
     public static boolean isInitialized(){
         return (instance != null);
+    }
+    
+    /**
+     * Whether the Simulation has been started. This can be true even when the Simulation
+     * is not running. Resetting the Simulation will revert it to false.
+     */
+    private final ReadOnlyBooleanWrapper started = new ReadOnlyBooleanWrapper(false);
+    
+    public boolean isStarted() {
+        return startedProperty().get();
+    }
+    
+    private void setStarted(boolean started) {
+        this.started.set(started);
+    }
+    
+    public ReadOnlyBooleanProperty startedProperty() {
+        return started.getReadOnlyProperty();
+    }
+    
+    /**
+     * Whether the Simulation is currently running
+     */
+    private final ReadOnlyBooleanWrapper running = new ReadOnlyBooleanWrapper(false);
+    
+    public boolean isRunning() {
+        return runningProperty().get();
+    }
+    
+    private void setRunning(boolean running) {
+        this.running.set(running);
+    }
+    
+    public ReadOnlyBooleanProperty runningProperty() {
+        return running.getReadOnlyProperty();
     }
     
     /**
@@ -195,27 +236,66 @@ public class Simulation extends LoggingEntity {
     
     // PUBLIC METHODS
     
+    // start, pause en reset kan ongetwijfeld allemaal veel mooier.
+    
     public void start() {
-        scheduler.scheduleAtFixedRate(() -> {
-            // Todo: optimize dit, dit is slechts een hotfix
-            // Uiteraard nogal idioot om de hele meuk op de JavaFX thread te draaien
-            Platform.runLater(() -> { 
-                getTransformer().tick(this, true);
-                initiateForwardBackwardSweep();
-                
-                // Log total power consumption in network
-                log(getCurrentTime(), transformer.getCables().get(0).getCurrent() * 230d);
-                
-                // Increment time
-                setCurrentTime((getCurrentTime().plusMinutes(SIMULATION_TICK_TIME)));
-            });
-            
-            
-        }, SYSTEM_TICK_TIME, SYSTEM_TICK_TIME, TimeUnit.MILLISECONDS);
+        if (!isStarted()) {
+            scheduler.scheduleAtFixedRate(() -> {
+                // Todo: optimize dit, dit is slechts een hotfix
+                // Uiteraard nogal idioot om de hele meuk op de JavaFX thread te draaien
+                Platform.runLater(() -> { 
+                    if (!isRunning()) return;
+                    
+                    getTransformer().tick(this, true);
+                    initiateForwardBackwardSweep();
+
+                    // Log total power consumption in network
+                    log(getCurrentTime(), transformer.getCables().get(0).getCurrent() * 230d);
+
+                    // Increment time
+                    setCurrentTime((getCurrentTime().plusMinutes(SIMULATION_TICK_TIME)));
+                });
+
+            }, SYSTEM_TICK_TIME, SYSTEM_TICK_TIME, TimeUnit.MILLISECONDS);
+        }
+        
+        setRunning(true);
+        setStarted(true);
+    }
+    
+    public void pause() {
+        setRunning(false);
     }
     
     public void stop() {
         scheduler.shutdown();
+    }
+    
+    public void reset() {
+        setRunning(false);
+        
+        scheduler.shutdownNow();
+        scheduler = Executors.newScheduledThreadPool(1);
+        
+        for (House house : houses) {
+            house.getDevices().clear();
+            house.getLog().clear();
+        }
+        for (Node node : internalNodes) {
+            node.getLog().clear();
+            for (Cable cable : node.getCables()) {
+                cable.getLog().clear();
+            }
+        }
+        for (Node node : houseNodes) {
+            node.getLog().clear();
+        }
+        transformer.getLog().clear();
+        
+        setCurrentTime(DEFAULT_TIME);
+        getLog().clear();
+        
+        setStarted(false);
     }
     
     // FORWARD BACKWARD SWEEP METHODS

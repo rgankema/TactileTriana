@@ -16,6 +16,7 @@ import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.network.NetworkView;
 import nl.utwente.cs.caes.tactile.control.TactilePane;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
+import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.*;
 
 /**
@@ -44,12 +45,26 @@ public class TouchView extends TactilePane {
         
         addDeviceToStack((1920/2 - 40),(1080/2 - 25),device,deviceVM);
         addDeviceToStack((1920/2 + 40),(1080/2 - 25),solar,solarVM);
+        
+        // Lelijke hack om devices te verwijderen na reset. moet allemaal ooit mooier
+        Simulation.getInstance().startedProperty().addListener(i -> { 
+            if (!Simulation.getInstance().isStarted()) {
+                getChildren().removeIf(n -> n instanceof Group && ((Group)n).getChildren().get(0) instanceof DeviceView);
+                
+                DeviceVM deviceVM2 = new DeviceVM(new MockDevice());
+                DeviceVM solarVM2 = new DeviceVM(new SolarPanel());
+                
+                addDeviceToStack((1920/2 - 40),(1080/2 - 25),new DeviceView(new Polygon(new double[] { 0d, 50d, 25d, 0d, 50d, 50d })), deviceVM2);
+                addDeviceToStack((1920/2 + 40),(1080/2 - 25),new DeviceView(new Polygon(new double[] { 0d, 50d, 40d, 0d, 40d, 50d })), solarVM2);
+            }
+        });
     }
     
     public void setViewModel(TouchVM viewModel) {
         if (this.viewModel != null) throw new IllegalStateException("ViewModel already set");
         
         this.viewModel = viewModel;
+        
         for (int i = 0; i < 6; i++) {
             networkView.getInternalNodes()[i].setViewModel(viewModel.getInternalNodes()[i]);
             networkView.getInternalCables()[i].setViewModel(viewModel.getInternalCables()[i]);
@@ -58,8 +73,6 @@ public class TouchView extends TactilePane {
             networkView.getHouses()[i].setViewModel(viewModel.getHouses()[i]);
         }
     }
-    
-    
     
     private void addDeviceToStack(int x,int y,DeviceView device,DeviceVM deviceVM) {
                
