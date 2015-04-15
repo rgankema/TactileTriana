@@ -30,6 +30,7 @@ public class Simulation extends LoggingEntity {
     public static final int SYSTEM_TICK_TIME = 200;        // time between ticks in ms
     public static final int SIMULATION_TICK_TIME = 5;   // time in minutes that passes in the simulation with each tick
     public static final LocalDateTime DEFAULT_TIME = LocalDateTime.of(2014, 1, 1, 0, 0);
+    public static final boolean UNCONTROLABLE_LOAD_ENABLED = true; // staat de uncontrolable load aan?
     
     public static final double LONGITUDE = 6.897;
     public static final double LATITUDE = 52.237;
@@ -69,7 +70,11 @@ public class Simulation extends LoggingEntity {
         // maak huizen aan met cables en dat soort grappen
         for(int i = 0; i <= NUMBER_OF_HOUSES-1; i ++){
             this.houses[i] = new House(this);
-            this.houses[i].getDevices().add(new UncontrollableLoad(i, simulation));
+
+            if (UNCONTROLABLE_LOAD_ENABLED){
+                houses[i].getDevices().add(new UncontrollableLoad(i, this.simulation));
+            }
+
             
             this.houseNodes[i] = new Node(houses[i], this);
             this.internalNodes[i] = new Node(null, this);
