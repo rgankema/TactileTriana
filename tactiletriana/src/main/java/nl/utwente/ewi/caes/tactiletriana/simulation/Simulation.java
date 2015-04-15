@@ -173,7 +173,7 @@ public class Simulation extends LoggingEntity {
         return currentTimeProperty().get();
     }
 
-    private void setCurrentTime(LocalDateTime time) {
+    protected void setCurrentTime(LocalDateTime time) {
         currentTimeProperty().set(time);
     }
 

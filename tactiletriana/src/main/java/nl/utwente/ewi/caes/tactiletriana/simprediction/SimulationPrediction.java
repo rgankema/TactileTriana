@@ -14,6 +14,7 @@ import nl.utwente.ewi.caes.tactiletriana.App;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.UncontrollableLoad;
 
+
 /**
  *
  * @author mickvdv
@@ -22,7 +23,7 @@ public class SimulationPrediction extends Simulation {
     public final static int RUN_AHEAD = 6; // aantal uren dat de prediction voorloopt
     private static SimulationPrediction instance;
     private Simulation mainSimulation;
-
+    private boolean mainSimulationChanged = false;
     ArrayList<HousePredictor> housePredictors;
 
     public SimulationPrediction(Simulation mainSimulation) {
@@ -50,13 +51,23 @@ public class SimulationPrediction extends Simulation {
         this.mainSimulation.currentTimeProperty().addListener(new ChangeListener<LocalDateTime>() {
             @Override
             public void changed(ObservableValue<? extends LocalDateTime> observable, LocalDateTime oldValue, LocalDateTime newValue) {
+                                
+                // er is iets veranderd. Run de simulation vanaf het huidige punt vooruit
+                if (mainSimulationChanged){
+                    mainSimulationChanged = false;
+                    setCurrentTime(newValue);
+                }
+                
                 // Zo lang hij achterloopt -> doe een tick()
-                while (getCurrentTime().plusHours(RUN_AHEAD).isBefore(newValue)) {
+                while (getCurrentTime().isBefore(newValue.plusHours(RUN_AHEAD))) {
                     simulateTick();
                 }
             }
 
         });
 
+    }
+    public void setMainSimulationChanged(){
+        this.mainSimulationChanged = true;
     }
 }
