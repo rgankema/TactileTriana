@@ -47,7 +47,7 @@ public final class StageController {
 
     // INSTANCE FIELDS
     
-    private final Stage launcherStage;
+    private final Stage configurationStage;
     private Stage touchStage;
     private Stage detailStage;
     private final List<Stage> screenIndexStages;
@@ -55,19 +55,19 @@ public final class StageController {
     private final ConfigurationVM configurationVM;
     private TouchVM touchVM;
     private DetailVM detailVM;
-    private List<Stage> screenIndexWindows;
 
-    private ConfigurationVM launcherVM;
-    private Simulation simulation;
-    private SimulationPrediction simulationprediction;
+    private final Simulation simulation;
+    private final SimulationPrediction simulationprediction;
     
     // CONSTRUCTOR
     
     private StageController(Stage configurationStage) {
-        // Build launcher stage
-        this.launcherStage = configurationStage;
         this.simulation = new Simulation();
         this.simulationprediction = new SimulationPrediction(simulation);
+
+        // Build configuration stage
+        this.configurationStage = configurationStage;
+        
 
         ConfigurationView lv = new ConfigurationView();
         configurationVM = new ConfigurationVM(this.simulation);
@@ -98,9 +98,9 @@ public final class StageController {
     
     public void setLauncherStageVisible(boolean visible) {
         if (visible) {
-            launcherStage.show();
+            configurationStage.show();
         } else {
-            launcherStage.hide();
+            configurationStage.hide();
         }
     }
 
@@ -174,7 +174,7 @@ public final class StageController {
     }
 
     public void closeAllStages() {
-        launcherStage.close();
+        configurationStage.close();
         for (Stage stage : screenIndexStages) {
             stage.close();
         }
