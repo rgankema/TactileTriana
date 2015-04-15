@@ -17,54 +17,56 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.House;
  * @author Richard
  */
 public class HouseVM {
+
     private House model;
-    
+
     public HouseVM(House model) {
         this.model = model;
         this.load.bind(Bindings.createDoubleBinding(() -> {
             return Math.min(1.0, Math.abs(model.getCurrentConsumption()) / model.getMaximumConsumption());
         }, model.currentConsumptionProperty(), model.maximumConsumptionProperty()));
     }
-    
+
     public House getModel() {
         return model;
     }
-    
+
     /**
-     * The load of the house on a scale of 0 to 1. The load is the absolute amount
-     * of consumption of the house, divided by the maximum consumption. When this
-     * is higher than 1, load will still return 1.
+     * The load of the house on a scale of 0 to 1. The load is the absolute
+     * amount of consumption of the house, divided by the maximum consumption.
+     * When this is higher than 1, load will still return 1.
      */
     private final ReadOnlyDoubleWrapper load = new ReadOnlyDoubleWrapper(0.0);
-    
+
     public ReadOnlyDoubleProperty loadProperty() {
         return load;
     }
-    
+
     public double getLoad() {
         return loadProperty().get();
     }
-    
+
     /**
      * @return Whether the house's fuse is blown or not.
      */
     public ReadOnlyBooleanProperty fuseBlownProperty() {
         return model.fuseBlownProperty();
     }
-    
+
     public boolean isFuseBlown() {
         return fuseBlownProperty().get();
     }
-    
+
     /**
      * Repairs a blown fuse. If the fuse is not blown, nothing happens
      */
     public void repairFuse() {
         this.model.repairFuse();
     }
-    
+
     /**
      * Adds a device to the house
+     *
      * @param device the device to be added
      */
     public void addDevice(DeviceBase device) {
@@ -72,9 +74,10 @@ public class HouseVM {
             this.model.getDevices().add(device);
         }
     }
-    
+
     /**
      * Removes a device from the house
+     *
      * @param device the device to be removed
      */
     public void removeDevice(DeviceBase device) {

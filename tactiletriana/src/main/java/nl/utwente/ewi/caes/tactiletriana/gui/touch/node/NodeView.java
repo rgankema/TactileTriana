@@ -20,30 +20,34 @@ import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
  * @author Richard
  */
 public class NodeView extends StackPane {
-    @FXML private Rectangle rectangle;
-    
+
+    @FXML
+    private Rectangle rectangle;
+
     private NodeVM viewModel;
-    
+
     public NodeView() {
         ViewLoader.load(this);
     }
-    
+
     public void setViewModel(NodeVM viewModel) {
-        if (this.viewModel != null) throw new IllegalStateException("ViewModel already set");
-        
+        if (this.viewModel != null) {
+            throw new IllegalStateException("ViewModel already set");
+        }
+
         this.viewModel = viewModel;
-        
+
         // Bind voltage error to color in view
         rectangle.fillProperty().bind(Bindings.createObjectBinding(() -> {
             double error = viewModel.getVoltageError();
             return new Color(error, 1.0 - error, 0, 1.0);
         }, viewModel.voltageErrorProperty()));
-        
+
         if (App.DEBUG) {
             Label label = new Label();
             label.textProperty().bind(viewModel.debugStringProperty());
             getChildren().add(label);
         }
     }
-    
+
 }

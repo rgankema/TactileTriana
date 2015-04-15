@@ -22,77 +22,81 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Cable;
  * @author Richard
  */
 public class CableVM {
+
     private Cable model;
-    
+
     public CableVM(Cable model) {
         this.model = model;
-        
+
         load.bind(Bindings.createDoubleBinding(() -> {
-            return Math.min(1.0, Math.abs(model.getCurrent()) / model.getMaximumCurrent()); 
+            return Math.min(1.0, Math.abs(model.getCurrent()) / model.getMaximumCurrent());
         }, model.currentProperty(), model.maximumCurrentProperty(), model.brokenProperty()));
-        
-        direction.bind(Bindings.createObjectBinding(() -> { 
+
+        direction.bind(Bindings.createObjectBinding(() -> {
             if (!model.isBroken()) {
-               if (model.getCurrent() < 0) return Direction.START;
-               if (model.getCurrent() > 0) return Direction.END;
+                if (model.getCurrent() < 0) {
+                    return Direction.START;
+                }
+                if (model.getCurrent() > 0) {
+                    return Direction.END;
+                }
             }
             return Direction.NONE;
         }, model.brokenProperty(), model.currentProperty()));
-        
+
         if (App.DEBUG) {
-            debugString.bind(Bindings.createStringBinding(() -> { 
+            debugString.bind(Bindings.createStringBinding(() -> {
                 return String.format("I: %.3f, max: %.1f, length: %.2f", model.getCurrent(), model.getMaximumCurrent(), model.getLength());
             }, model.currentProperty(), model.maximumCurrentProperty(), model.lengthProperty()));
         }
     }
-    
+
     // PROPERTIES
-    
     /**
      * The load on the cable on a scale from 0 to 1.
      */
     private final ReadOnlyDoubleWrapper load = new ReadOnlyDoubleWrapper(0);
-    
+
     public double getLoad() {
         return load.get();
     }
-    
+
     public ReadOnlyDoubleProperty loadProperty() {
         return load.getReadOnlyProperty();
     }
-    
+
     public boolean isBroken() {
         return brokenProperty().get();
     }
-    
+
     public ReadOnlyBooleanProperty brokenProperty() {
         return this.model.brokenProperty();
     }
-    
+
     /**
      * The maximum current the cable can handle
      */
     public ReadOnlyDoubleProperty maximumCurrentProperty() {
         return model.maximumCurrentProperty();
     }
-    
+
     public double getMaximumCurrent() {
         return model.getMaximumCurrent();
     }
-    
+
     /**
      * The direction of the current
      */
     private final ReadOnlyObjectWrapper<Direction> direction = new ReadOnlyObjectWrapper<>(Direction.NONE);
-    
+
     public Direction getDirection() {
         return direction.get();
     }
-    
+
     public ReadOnlyObjectProperty<Direction> directionProperty() {
         return direction.getReadOnlyProperty();
     }
-    
+
     /**
      * Debug information
      */
@@ -101,27 +105,28 @@ public class CableVM {
     public ReadOnlyStringProperty debugStringProperty() {
         return debugString.getReadOnlyProperty();
     }
-    
+
     // METHODS
-    
     public void cablePressed() {
         model.repair();
     }
-    
+
     /**
-     * To be used by the CableView to bind the model's cable length to some double binding
+     * To be used by the CableView to bind the model's cable length to some
+     * double binding
+     *
      * @param length A double binding that the cable model will bind to
      */
     public void bindCableLength(DoubleBinding length) {
         model.lengthProperty().bind(length);
     }
-    
+
     // ENUMS
-    
     /**
      * Describes the direction of current in a cable
      */
-    public enum Direction { 
+    public enum Direction {
+
         /**
          * The current goes towards the start node
          */
@@ -129,12 +134,11 @@ public class CableVM {
         /**
          * The current goes towards the end node
          */
-        END, 
+        END,
         /**
          * There's no current flowing
          */
-        NONE 
-    };      
-        
-        
+        NONE
+    };
+
 }

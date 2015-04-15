@@ -55,9 +55,8 @@ public class HousePredictor extends House {
                         }
                         for (DeviceBase item : c.getAddedSubList()) {
                             simulation.setMainSimulationChanged();
-                            
+
                             // maak een kopie van dit device in de map
-    
                             DeviceBase newDevice = null;
                             try {
                                 //additem.add(Outer.this);
@@ -72,7 +71,7 @@ public class HousePredictor extends House {
                             // bind alle parameters
                             for (int i = 0; i < item.getParameters().size(); i++) {
                                 newDevice.getParameters().get(i).property.bind(item.getParameters().get(i).property);
-                                
+
                                 // als er iets aan de parameters veranderd moet de simulation.setMainSimulationChanged() aangeroepen worden
                                 // dit zorgt ervoor dat bij de eerst volgende tick() van de main simulation de prediction opnieuw begint
                                 item.getParameters().get(i).property.addListener(new ChangeListener<Object>() {

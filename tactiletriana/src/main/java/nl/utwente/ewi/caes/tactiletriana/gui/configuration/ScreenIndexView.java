@@ -18,7 +18,7 @@ import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
  * @author Richard
  */
 public class ScreenIndexView extends Label {
-    
+
     public ScreenIndexView(int i) {
         ViewLoader.load(this);
 

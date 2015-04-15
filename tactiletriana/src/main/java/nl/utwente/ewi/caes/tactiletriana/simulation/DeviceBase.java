@@ -19,22 +19,22 @@ import javafx.beans.property.SimpleObjectProperty;
  * @author Richard
  */
 public abstract class DeviceBase extends LoggingEntity {
+
     private final List<Parameter> parameters;
     private final List<Parameter> parametersUnmodifiable;
-    
-    public DeviceBase(String displayName,Simulation simulation) {
+
+    public DeviceBase(String displayName, Simulation simulation) {
         super(LoggedValueType.POWER, displayName, simulation);
 
         parameters = new ArrayList<>();
         parametersUnmodifiable = Collections.unmodifiableList(parameters);
     }
-    
+
     // PROPERTIES
-    
     /**
      * The amount of power that the device currently consumes
      */
-    private final ReadOnlyDoubleWrapper currentConsumption = new ReadOnlyDoubleWrapper(10.0){
+    private final ReadOnlyDoubleWrapper currentConsumption = new ReadOnlyDoubleWrapper(10.0) {
         @Override
         public void set(double value) {
             // consumption is always zero if not connected to the grid
@@ -45,79 +45,81 @@ public abstract class DeviceBase extends LoggingEntity {
             super.set(value);
         }
     };
-    
-    public ReadOnlyDoubleProperty currentConsumptionProperty(){
+
+    public ReadOnlyDoubleProperty currentConsumptionProperty() {
         return currentConsumption.getReadOnlyProperty();
     }
-    
+
     public final double getCurrentConsumption() {
         return currentConsumptionProperty().get();
     }
-    
-    protected final void setCurrentConsumption(double value){
+
+    protected final void setCurrentConsumption(double value) {
         currentConsumption.set(value);
     }
-    
+
     /**
-     * 
+     *
      * @return the state of this device
      */
-    private final ObjectProperty<State> state = new SimpleObjectProperty<State>(DeviceBase.State.NOT_IN_HOUSE){
+    private final ObjectProperty<State> state = new SimpleObjectProperty<State>(DeviceBase.State.NOT_IN_HOUSE) {
         @Override
-        public void set(State value){
-            if (value != DeviceBase.State.CONNECTED){
+        public void set(State value) {
+            if (value != DeviceBase.State.CONNECTED) {
                 // when not connected, no consumption
                 setCurrentConsumption(0);
             }
             super.set(value);
         }
     };
-    
+
     public ObjectProperty<State> stateProperty() {
         return this.state;
     }
-    
+
     public final State getState() {
         return stateProperty().get();
     }
-    
-    protected final void setState(State s){
+
+    protected final void setState(State s) {
         this.stateProperty().set(s);
     }
-    
+
     /**
-     * Returns the parameters of this device. This list is unmodifiable, never null,
-     * and its elements are never null.
+     * Returns the parameters of this device. This list is unmodifiable, never
+     * null, and its elements are never null.
+     *
      * @return the parameters of this device
      */
     public List<Parameter> getParameters() {
         return parametersUnmodifiable;
     }
-    
+
     /**
      * Adds a parameter to the list of parameters
-     * @param parameter 
+     *
+     * @param parameter
      */
     protected final void addParameter(Parameter parameter) {
         if (parameter != null) {
             parameters.add(parameter);
         }
     }
-    
-    public void tick(Simulation simulation, boolean connected){
-        if(!connected){
+
+    public void tick(Simulation simulation, boolean connected) {
+        if (!connected) {
             setState(DeviceBase.State.DISCONNECTED);
         } else {
             setState(DeviceBase.State.CONNECTED);
         }
     }
-    
+
     // ENUMS AND NESTED CLASSES
-    
     /**
      * Describes the state of a device
      */
     public enum State {
+
         /**
          * The device is not connected to a house
          */
@@ -131,11 +133,12 @@ public abstract class DeviceBase extends LoggingEntity {
          */
         DISCONNECTED,
     }
-    
+
     /**
      * The describes the parameters that can be set for this device
      */
     public static final class Parameter {
+
         /**
          * The display name of the parameter
          */
@@ -152,7 +155,7 @@ public abstract class DeviceBase extends LoggingEntity {
          * The maximum value of the property
          */
         public final double maxValue;
-        
+
         public Parameter(String displayName, DoubleProperty property, double minValue, double maxValue) {
             this.displayName = displayName;
             this.property = property;

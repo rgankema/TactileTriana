@@ -15,18 +15,23 @@ import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
  * @author Richard
  */
 public class WeatherView extends GridPane {
-    @FXML private Label radianceValueLabel;
-    @FXML private Label temperatureValueLabel;
-    
+
+    @FXML
+    private Label radianceValueLabel;
+    @FXML
+    private Label temperatureValueLabel;
+
     private WeatherVM viewModel;
-    
+
     public WeatherView() {
         ViewLoader.load(this);
     }
-    
+
     public void setViewModel(WeatherVM viewModel) {
-        if (this.viewModel != null) throw new IllegalStateException("ViewModel can only be set once");
-        
+        if (this.viewModel != null) {
+            throw new IllegalStateException("ViewModel can only be set once");
+        }
+
         radianceValueLabel.textProperty().bind(viewModel.radianceLabelProperty());
         temperatureValueLabel.textProperty().bind(viewModel.temperatureLabelProperty());
     }

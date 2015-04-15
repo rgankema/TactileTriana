@@ -23,36 +23,38 @@ import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
  * @author Richard
  */
 public class HouseView extends Pane {
-    @FXML private Rectangle rectangle;
-    
+
+    @FXML
+    private Rectangle rectangle;
+
     private HouseVM viewModel;
-    
+
     public HouseView() {
         ViewLoader.load(this);
     }
-    
+
     public HouseVM getViewModel() {
         return viewModel;
     }
-    
+
     public void setViewModel(HouseVM viewModel) {
-        if (this.viewModel != null) throw new IllegalStateException("ViewModel can only be set once");
-        
+        if (this.viewModel != null) {
+            throw new IllegalStateException("ViewModel can only be set once");
+        }
+
         this.viewModel = viewModel;
-        
+
         // Binds the load and whether the fuse is blown to the border color
-        rectangle.strokeProperty().bind(Bindings.createObjectBinding(() -> { 
+        rectangle.strokeProperty().bind(Bindings.createObjectBinding(() -> {
             if (viewModel.isFuseBlown()) {
                 return Color.BLACK;
             }
-            
+
             double load = viewModel.getLoad();
             return Color.DARKGRAY.interpolate(Color.RED, load);
         }, viewModel.loadProperty(), viewModel.fuseBlownProperty()));
-        
+
         // Repair fuse when house receives touch event
-     
-        
         this.setOnMousePressed(e -> {
             if (!taskScheduled) {
                 touchPressTimer = new TimerTask() {
@@ -80,7 +82,7 @@ public class HouseView extends Pane {
             e.consume();
         });
     }
-    
+
     private boolean taskScheduled;
     private TimerTask touchPressTimer;
     private Timer timer = new Timer();

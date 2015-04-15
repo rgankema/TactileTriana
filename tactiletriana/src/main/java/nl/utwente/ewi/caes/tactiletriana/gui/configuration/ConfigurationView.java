@@ -18,24 +18,33 @@ import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
  * @author Richard
  */
 public class ConfigurationView extends GridPane {
-    @FXML private TextField portField;
-    @FXML private ComboBox touchScreenComboBox;
-    @FXML private ComboBox detailScreenComboBox;
-    @FXML private CheckBox fullScreenCheckBox;
-    @FXML private Button startButton;
-    @FXML private Button resetButton;
-    
+
+    @FXML
+    private TextField portField;
+    @FXML
+    private ComboBox touchScreenComboBox;
+    @FXML
+    private ComboBox detailScreenComboBox;
+    @FXML
+    private CheckBox fullScreenCheckBox;
+    @FXML
+    private Button startButton;
+    @FXML
+    private Button resetButton;
+
     private ConfigurationVM viewModel;
-    
+
     public ConfigurationView() {
         ViewLoader.load(this);
     }
-    
+
     public void setViewModel(ConfigurationVM viewModel) {
-        if (this.viewModel != null) throw new IllegalStateException("ViewModel may only be set once");
-        
+        if (this.viewModel != null) {
+            throw new IllegalStateException("ViewModel may only be set once");
+        }
+
         this.viewModel = viewModel;
-        
+
         // Bind control properties to VM
         fullScreenCheckBox.selectedProperty().bindBidirectional(viewModel.fullScreenCheckedProperty());
         fullScreenCheckBox.disableProperty().bind(viewModel.fullScreenCheckBoxDisabledProperty());
@@ -49,7 +58,7 @@ public class ConfigurationView extends GridPane {
         startButton.disableProperty().bind(viewModel.startButtonDisabledProperty());
         startButton.textProperty().bind(viewModel.startButtonTextProperty());
         resetButton.disableProperty().bind(viewModel.resetButtonDisabledProperty());
-        
+
         // Event handling
         startButton.setOnAction(e -> viewModel.start());
         resetButton.setOnAction(e -> viewModel.reset());

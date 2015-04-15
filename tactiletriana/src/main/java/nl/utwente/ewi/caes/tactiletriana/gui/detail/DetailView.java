@@ -18,22 +18,29 @@ import nl.utwente.ewi.caes.tactiletriana.gui.detail.weather.WeatherView;
  * @author Richard
  */
 public class DetailView extends BorderPane {
-    @FXML private DateTimeView dateTimeView;
-    @FXML private ChartView chartView;
-    @FXML private WeatherView weatherView;
-    @FXML private ImageView trianaLogo;
-    
+
+    @FXML
+    private DateTimeView dateTimeView;
+    @FXML
+    private ChartView chartView;
+    @FXML
+    private WeatherView weatherView;
+    @FXML
+    private ImageView trianaLogo;
+
     private DetailVM viewModel;
-    
+
     public DetailView() {
         ViewLoader.load(this);
     }
-    
+
     public void setViewModel(DetailVM viewModel) {
-        if (this.viewModel != null) throw new IllegalStateException("ViewModel can only be set once");
-        
+        if (this.viewModel != null) {
+            throw new IllegalStateException("ViewModel can only be set once");
+        }
+
         this.viewModel = viewModel;
-        
+
         dateTimeView.setViewModel(viewModel.getDateTimeVM());
         chartView.setViewModel(viewModel.getChartVM());
         weatherView.setViewModel(viewModel.getWeatherVM());

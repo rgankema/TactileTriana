@@ -15,20 +15,25 @@ import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
  * @author Richard
  */
 public class DateTimeView extends GridPane {
-    @FXML private Label timeLabel;
-    @FXML private Label dateLabel;
-    
+
+    @FXML
+    private Label timeLabel;
+    @FXML
+    private Label dateLabel;
+
     private DateTimeVM viewModel;
-    
+
     public DateTimeView() {
         ViewLoader.load(this);
     }
-    
+
     public void setViewModel(DateTimeVM viewModel) {
-        if (this.viewModel != null) throw new IllegalStateException("ViewModel can only be set once");
-        
+        if (this.viewModel != null) {
+            throw new IllegalStateException("ViewModel can only be set once");
+        }
+
         this.viewModel = viewModel;
-        
+
         timeLabel.textProperty().bind(viewModel.timeLabelProperty());
         dateLabel.textProperty().bind(viewModel.dateLabelProperty());
     }

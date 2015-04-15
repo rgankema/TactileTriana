@@ -50,7 +50,7 @@ public final class StageController {
     private Stage touchStage;
     private Stage detailStage;
     private final List<Stage> screenIndexStages;
-    
+
     private final ConfigurationVM configurationVM;
     private TouchVM touchVM;
     private DetailVM detailVM;
@@ -75,19 +75,19 @@ public final class StageController {
         configurationStage.setOnCloseRequest(e -> closeAllStages());
         configurationStage.getIcons().add(new Image("images/triana.png"));
         configurationStage.setTitle("TactileTriana");
-        
+
         // Build screen index stages
         screenIndexStages = new ArrayList<>();
         for (Integer i : configurationVM.getScreenIndexList()) {
             Screen screen = configurationVM.getScreenByIndex(i);
-            
+
             Scene scene = new Scene(new ScreenIndexView(i));
             Stage stage = new Stage(StageStyle.TRANSPARENT);
 
             stage.setScene(scene);
             stage.setAlwaysOnTop(true);
             stage.setX(screen.getVisualBounds().getMinX());
-            stage.setY(screen.getVisualBounds().getMinY()); 
+            stage.setY(screen.getVisualBounds().getMinY());
             screenIndexStages.add(stage);
 
         }
@@ -111,7 +111,6 @@ public final class StageController {
             TouchView tv = new TouchView(this.simulation);
             tv.setViewModel(touchVM);
 
-
             Scene touchScene = new Scene(tv);
             touchScene.setOnKeyPressed(e -> {
                 if (e.getCode() == KeyCode.ESCAPE) {
@@ -124,7 +123,7 @@ public final class StageController {
             touchStage.setOnCloseRequest(e -> closeAllStages());
 
             if (configurationVM.fullScreenCheckedProperty().get()) {
-                Screen touchScreen = configurationVM.getScreenByIndex((Integer)configurationVM.touchScreenSelectionProperty().get());
+                Screen touchScreen = configurationVM.getScreenByIndex((Integer) configurationVM.touchScreenSelectionProperty().get());
 
                 touchStage.setX(touchScreen.getVisualBounds().getMinX());
                 touchStage.setY(touchScreen.getVisualBounds().getMinY());
@@ -142,9 +141,9 @@ public final class StageController {
 
             detailStage.setScene(new Scene(dv));
             detailStage.setOnCloseRequest(e -> closeAllStages());
- 
+
             if (configurationVM.fullScreenCheckedProperty().get()) {
-                Screen detailScreen = configurationVM.getScreenByIndex((Integer)configurationVM.detailScreenSelectionProperty().get());
+                Screen detailScreen = configurationVM.getScreenByIndex((Integer) configurationVM.detailScreenSelectionProperty().get());
 
                 detailStage.setX(detailScreen.getVisualBounds().getMinX());
                 detailStage.setY(detailScreen.getVisualBounds().getMinY());
@@ -164,7 +163,7 @@ public final class StageController {
 
     public void setScreenIndexStagesVisible(boolean visible) {
         for (Stage stage : screenIndexStages) {
-            if (visible){
+            if (visible) {
                 stage.show();
             } else {
                 stage.hide();
@@ -186,6 +185,7 @@ public final class StageController {
     public Simulation getSimulation() {
         return this.simulation;
     }
+
     public void showOnChart(LoggingEntity entity) {
         detailVM.getChartVM().setEntity(entity);
     }

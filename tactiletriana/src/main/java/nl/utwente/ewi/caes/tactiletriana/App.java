@@ -15,22 +15,23 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
  * @author Richard
  */
 public class App extends Application {
+
     public static final boolean DEBUG = false;
-    
+
     @Override
     public void start(Stage stage) throws Exception {
         StageController.initialize(stage);
         StageController.getInstance().setLauncherStageVisible(true);
         StageController.getInstance().setScreenIndexStagesVisible(true);
     }
-    
+
     @Override
     public void stop() {
         StageController.getInstance().getSimulation().stop();
     }
-    
+
     public static void main(String[] args) {
         launch(args);
     }
-    
+
 }

@@ -33,7 +33,6 @@ public class Simulation extends LoggingEntity {
     public static final LocalDateTime DEFAULT_TIME = LocalDateTime.of(2014, 1, 1, 0, 0);
     public static final boolean UNCONTROLABLE_LOAD_ENABLED = true; // staat de uncontrolable load aan?
 
-
     public static final double LONGITUDE = 6.897;
     public static final double LATITUDE = 52.237;
 

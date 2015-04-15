@@ -16,11 +16,13 @@ import javafx.beans.property.SimpleDoubleProperty;
  * A connection between to nodes
  */
 public class Cable extends LoggingEntity implements IFWBWSEntity {
+
     private final Node childNode;
-    private final double resistance;  
-    
+    private final double resistance;
+
     /**
      * Instantiates a new cable connected to two nodes
+     *
      * @param childNode The node away from the transformer
      * @param maxCurrent The maximum current that can flow through the cable
      */
@@ -30,33 +32,34 @@ public class Cable extends LoggingEntity implements IFWBWSEntity {
         this.resistance = 0.00005;
         setMaximumCurrent(maxCurrent);
     }
-    
+
     // PROPERTIES
-    
     /**
      * The length of the cable
      */
     private final DoubleProperty length = new SimpleDoubleProperty(10) {
         @Override
         public void set(double value) {
-            if (value <= 0) throw new IllegalArgumentException("Length must be a positive value");
-            
+            if (value <= 0) {
+                throw new IllegalArgumentException("Length must be a positive value");
+            }
+
             super.set(value);
         }
     };
-    
+
     public DoubleProperty lengthProperty() {
         return length;
     }
-    
+
     public final double getLength() {
         return length.get();
     }
-    
+
     public final void setLength(double length) {
         this.length.set(length);
     }
-    
+
     /**
      * The current that flows through the current measured in ampere.
      */
@@ -68,7 +71,7 @@ public class Cable extends LoggingEntity implements IFWBWSEntity {
             }
 
             log(value);
-       
+
             super.set(value);
         }
     };
@@ -76,33 +79,34 @@ public class Cable extends LoggingEntity implements IFWBWSEntity {
     public ReadOnlyDoubleProperty currentProperty() {
         return current.getReadOnlyProperty();
     }
-    
+
     public final double getCurrent() {
         return currentProperty().get();
     }
-    
+
     private void setCurrent(double value) {
         current.set(value);
     }
-    
+
     /**
-     * The absolute maximum current that can flow through the cable before it breaks;
+     * The absolute maximum current that can flow through the cable before it
+     * breaks;
      */
     private final ReadOnlyDoubleWrapper maximumCurrent = new ReadOnlyDoubleWrapper(100d);
-    
+
     public ReadOnlyDoubleProperty maximumCurrentProperty() {
         return maximumCurrent.getReadOnlyProperty();
     }
-    
+
     public final double getMaximumCurrent() {
         return maximumCurrentProperty().get();
     }
-    
+
     private void setMaximumCurrent(double maximumCurrent) {
         setAbsoluteMaximum(maximumCurrent);
         this.maximumCurrent.set(maximumCurrent);
     }
-     
+
     /**
      * Whether the cable is broken or not
      */
@@ -115,21 +119,21 @@ public class Cable extends LoggingEntity implements IFWBWSEntity {
             super.set(value);
         }
     };
-    
+
     public ReadOnlyBooleanProperty brokenProperty() {
         return broken;
     }
-    
+
     public final boolean isBroken() {
         return brokenProperty().get();
     }
-    
+
     private void setBroken(boolean value) {
         broken.set(value);
     }
-    
+
     /**
-     * 
+     *
      * @return the node that is the child
      */
     public Node getChildNode() {
@@ -137,31 +141,29 @@ public class Cable extends LoggingEntity implements IFWBWSEntity {
     }
 
     // METHODS
-
     public void tick(Simulation simulation, boolean connected) {
         if (isBroken()) {
             connected = false;
         }
-        
+
         getChildNode().tick(simulation, connected);
     }
-    
+
     /**
      * Repairs a broken cable. Does nothing if the cable is not broken.
      */
     public void repair() {
         setBroken(false);
     }
-    
+
     // FORWARD BACKWARD SWEEP
-    
     @Override
     public double doForwardBackwardSweep(double v) {
-       //update the voltages in the forward sweep
+        //update the voltages in the forward sweep
         double voltage = v - (getCurrent() * (resistance * getLength()));
 
         setCurrent(getChildNode().doForwardBackwardSweep(voltage));
-        
+
         return getCurrent();
     }
 
@@ -169,15 +171,15 @@ public class Cable extends LoggingEntity implements IFWBWSEntity {
     public void reset() {
         this.setCurrent(0d);
     }
-    
-    public String toString(int indentation){
+
+    public String toString(int indentation) {
         String output = "";
-        for (int i = 0; i < indentation; i++){
+        for (int i = 0; i < indentation; i++) {
             output += "\t";
         }
         output += "|-";
-        
-        output += "(Cable:R="+ resistance +  ",I="+ this.getCurrent() + ") -> " + this.getChildNode().toString(indentation);
+
+        output += "(Cable:R=" + resistance + ",I=" + this.getCurrent() + ") -> " + this.getChildNode().toString(indentation);
         return output;
     }
 }

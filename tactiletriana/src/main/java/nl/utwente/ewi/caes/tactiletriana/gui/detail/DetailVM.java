@@ -15,28 +15,29 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
  * @author Richard
  */
 public class DetailVM {
+
     private final Simulation simulation;
     private final DateTimeVM dateTimeVM;
     private final WeatherVM weatherVM;
-    
+
     private ChartVM chartVM;
-    
+
     public DetailVM(Simulation simulation) {
         this.simulation = simulation;
-        
+
         dateTimeVM = new DateTimeVM(simulation);
         chartVM = new ChartVM(simulation);
         weatherVM = new WeatherVM(simulation);
     }
-    
+
     public DateTimeVM getDateTimeVM() {
         return dateTimeVM;
     }
-    
+
     public ChartVM getChartVM() {
         return chartVM;
     }
-    
+
     public WeatherVM getWeatherVM() {
         return weatherVM;
     }

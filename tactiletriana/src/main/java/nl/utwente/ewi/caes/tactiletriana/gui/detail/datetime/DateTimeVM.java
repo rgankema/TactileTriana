@@ -16,26 +16,27 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
  * @author Richard
  */
 public class DateTimeVM {
+
     public DateTimeVM(Simulation simulation) {
         timeLabel.bind(Bindings.createStringBinding(() -> {
             LocalDateTime time = simulation.getCurrentTime();
             return String.format("%02d:%02d", time.getHour(), time.getMinute());
         }, simulation.currentTimeProperty()));
-        
+
         dateLabel.bind(Bindings.createStringBinding(() -> {
             LocalDateTime time = simulation.getCurrentTime();
             return String.format("%d-%d-%d", time.getDayOfMonth(), time.getMonthValue(), time.getYear());
         }, simulation.currentTimeProperty()));
     }
-    
+
     private final StringProperty timeLabel = new SimpleStringProperty();
-    
+
     public StringProperty timeLabelProperty() {
         return timeLabel;
     }
-    
+
     private final StringProperty dateLabel = new SimpleStringProperty();
-    
+
     public StringProperty dateLabelProperty() {
         return dateLabel;
     }
