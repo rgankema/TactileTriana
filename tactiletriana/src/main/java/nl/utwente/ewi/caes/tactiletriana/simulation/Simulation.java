@@ -19,6 +19,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.SimpleObjectProperty;
+import nl.utwente.ewi.caes.tactiletriana.simulation.devices.UncontrollableLoad;
 
 /**
  *
@@ -28,11 +29,10 @@ public class Simulation extends LoggingEntity {
     public static final int NUMBER_OF_HOUSES = 6;   // number of houses
     public static final int SYSTEM_TICK_TIME = 200;        // time between ticks in ms
     public static final int SIMULATION_TICK_TIME = 5;   // time in minutes that passes in the simulation with each tick
-    public static final LocalDateTime DEFAULT_TIME = LocalDateTime.of(2014, 7, 1, 0, 0);
+    public static final LocalDateTime DEFAULT_TIME = LocalDateTime.of(2014, 1, 1, 0, 0);
     
     public static final double LONGITUDE = 6.897;
     public static final double LATITUDE = 52.237;
-
     
     private final Transformer transformer;
     private final Map<Node, Double> lastVoltageByNode;
@@ -57,7 +57,6 @@ public class Simulation extends LoggingEntity {
     
     protected Simulation() {
         super(LoggedValueType.POWER, "Network");
-        
         setAbsoluteMaximum(250 * 500);
         
         // keep an array of nodes for later reference
@@ -74,6 +73,7 @@ public class Simulation extends LoggingEntity {
         // maak huizen aan met cables en dat soort grappen
         for(int i = 0; i <= NUMBER_OF_HOUSES-1; i ++){
             houses[i] = new House();
+            houses[i].getDevices().add(new UncontrollableLoad(i));
             
             houseNodes[i] = new Node(houses[i]);
             internalNodes[i] = new Node(null);
