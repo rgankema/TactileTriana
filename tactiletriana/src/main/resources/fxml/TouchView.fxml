@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import nl.utwente.cs.caes.tactile.control.*?>
+<?import nl.utwente.ewi.caes.tactilefx.control.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
 <?import javafx.scene.*?>
