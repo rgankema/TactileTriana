@@ -49,6 +49,10 @@ public class DeviceVM {
         }, model.stateProperty()));
     }
     
+    public DeviceBase getModel(){
+        return this.model;
+    }
+    
     /**
      * The load of the device on a scale from 0 to 1. Computed as device consumption
      * divided by 3700, which is assumed to be the maximum any single device will ever

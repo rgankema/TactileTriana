@@ -30,6 +30,7 @@ public class SolarPanel extends DeviceBase {
     
     
     public SolarPanel(){
+        super("Solar Panel");
         addParameter(new Parameter("Area of solarpanel (in m2)", solarPanelArea, MIN_AREA, MAX_AREA));
         setSolarPanelArea((MIN_AREA+MAX_AREA)/2);
     }   

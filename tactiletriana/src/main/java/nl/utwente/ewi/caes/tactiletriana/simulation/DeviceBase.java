@@ -18,12 +18,13 @@ import javafx.beans.property.SimpleObjectProperty;
  *
  * @author Richard
  */
-public abstract class DeviceBase extends Entity {
+public abstract class DeviceBase extends LoggingEntity {
     private final List<Parameter> parameters;
     private final List<Parameter> parametersUnmodifiable;
     
-    public DeviceBase() {
-        this.characteristic = CharacteristicType.POWER;
+    public DeviceBase(String displayName) {
+        super(LoggedValueType.POWER, displayName);
+
         parameters = new ArrayList<>();
         parametersUnmodifiable = Collections.unmodifiableList(parameters);
     }
@@ -40,8 +41,8 @@ public abstract class DeviceBase extends Entity {
             if (getState() != DeviceBase.State.CONNECTED) {
                 value = 0;
             }
-            if (Simulation.isInstance()){
-                characteristicMap.put(Simulation.getInstance().getCurrentTime(), value);
+            if (Simulation.isInitialized()){
+                log(Simulation.getInstance().getCurrentTime(), value);
             }
             super.set(value);
         }

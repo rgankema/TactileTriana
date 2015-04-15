@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<fx:root alignment="CENTER" contentDisplay="TEXT_ONLY" prefHeight="150.0" prefWidth="150.0" text="1" textAlignment="CENTER" type="Label" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <font>
+      <Font name="System Bold" size="96.0" />
+   </font>
+</fx:root>

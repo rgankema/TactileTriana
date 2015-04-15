@@ -6,19 +6,22 @@
 package nl.utwente.ewi.caes.tactiletriana.gui.detail;
 
 import javafx.fxml.FXML;
-import javafx.scene.layout.GridPane;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
-import nl.utwente.ewi.caes.tactiletriana.gui.detail.chart.ChartVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.detail.chart.ChartView;
 import nl.utwente.ewi.caes.tactiletriana.gui.detail.datetime.DateTimeView;
+import nl.utwente.ewi.caes.tactiletriana.gui.detail.weather.WeatherView;
 
 /**
  *
  * @author Richard
  */
-public class DetailView extends GridPane {
+public class DetailView extends BorderPane {
     @FXML private DateTimeView dateTimeView;
     @FXML private ChartView chartView;
+    @FXML private WeatherView weatherView;
+    @FXML private ImageView trianaLogo;
     
     private DetailVM viewModel;
     
@@ -32,5 +35,7 @@ public class DetailView extends GridPane {
         this.viewModel = viewModel;
         
         dateTimeView.setViewModel(viewModel.getDateTimeVM());
+        chartView.setViewModel(viewModel.getChartVM());
+        weatherView.setViewModel(viewModel.getWeatherVM());
     }
 }

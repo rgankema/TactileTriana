@@ -7,38 +7,30 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.*?>
 <?import javafx.geometry.*?>
+<?import javafx.scene.image.*?>
 <?import nl.utwente.ewi.caes.tactiletriana.gui.detail.datetime.*?>
 <?import nl.utwente.ewi.caes.tactiletriana.gui.detail.chart.*?>
+<?import nl.utwente.ewi.caes.tactiletriana.gui.detail.weather.*?>
 
+<fx:root prefHeight="1080"  prefWidth="1920" type="BorderPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
 
-<fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080" prefWidth="1920" type="GridPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
-    <columnConstraints>
-        <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" />
-    </columnConstraints>
-    <rowConstraints>
-        <RowConstraints valignment="CENTER"/>
-        <RowConstraints valignment="CENTER"/>
-    </rowConstraints>
-  
-    <StackPane >
-        
-        <!-- placeholder voor logo -->
-        <Rectangle width="150" height="150" StackPane.alignment="CENTER_LEFT">
-            <StackPane.margin>
-                <Insets bottom="5" left="5" top="5" />   
-            </StackPane.margin>
-        </Rectangle>
-        
-        <DateTimeView fx:id="dateTimeView" StackPane.alignment="CENTER" />
-        
-        <!-- placeholder voor weer -->
-        <Rectangle width="150" height="150" StackPane.alignment="CENTER_RIGHT">
-            <StackPane.margin>
-                <Insets bottom="5" right="5" top="5" />   
-            </StackPane.margin>
-        </Rectangle>
-    </StackPane>
+    <!-- HEADER -->
+    <top>
+        <StackPane>
+            <ImageView fx:id ="trianaLogo" fitHeight="200" fitWidth="200" preserveRatio="true" StackPane.alignment="CENTER_LEFT"  >
+                <image>
+                    <Image url="images/triana.png"/>
+                </image>
+            </ImageView>
+
+            <DateTimeView fx:id="dateTimeView" StackPane.alignment="CENTER"  />
+
+            <WeatherView fx:id="weatherView" StackPane.alignment="CENTER_RIGHT"   />
+        </StackPane>
+    </top>
     
-    <ChartView GridPane.rowIndex="1" GridPane.hgrow="ALWAYS" />
-    
+    <!-- MAIN CONTENT -->
+    <center>
+        <ChartView fx:id="chartView"  />
+    </center>
 </fx:root>

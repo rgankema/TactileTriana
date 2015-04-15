@@ -15,14 +15,15 @@ import javafx.beans.property.ReadOnlyDoubleWrapper;
  *
  * @author Richard
  */
-public class Node extends Entity implements IFWBWSweepEntity{
+public class Node extends LoggingEntity implements IFWBWSEntity{
     private final List<Cable> cables;
     private House house;
     
     public Node(House house) {
+        super(LoggedValueType.VOLTAGE, "Node");
+        
         this.cables = new ArrayList<>();
         this.house = house;
-        this.characteristic = CharacteristicType.VOLTAGE;
     }
 
     public void setHouse(House house){
@@ -34,9 +35,9 @@ public class Node extends Entity implements IFWBWSweepEntity{
     private final ReadOnlyDoubleWrapper voltage = new ReadOnlyDoubleWrapper(230.0){
         @Override
         public void set(double value) {
-            if (Simulation.isInstance()){
+            if (Simulation.isInitialized()){
                 LocalDateTime time = Simulation.getInstance().getCurrentTime();
-                characteristicMap.put(time, value);
+                log(time, value);
             }
             super.set(value);
         }

@@ -5,13 +5,9 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
-import java.net.URI;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -19,41 +15,41 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 import javafx.application.Platform;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.SimpleObjectProperty;
+import nl.utwente.ewi.caes.tactiletriana.simulation.devices.UncontrollableLoad;
 
 /**
  *
  * @author Richard
  */
-public class Simulation extends Entity {
+public class Simulation extends LoggingEntity {
     public static final int NUMBER_OF_HOUSES = 6;   // number of houses
-    public static final int TICK_TIME = 200;        // time between ticks in ms
+    public static final int SYSTEM_TICK_TIME = 200;        // time between ticks in ms
+    public static final int SIMULATION_TICK_TIME = 5;   // time in minutes that passes in the simulation with each tick
+    public static final LocalDateTime DEFAULT_TIME = LocalDateTime.of(2014, 1, 1, 0, 0);
     
     public static final double LONGITUDE = 6.897;
     public static final double LATITUDE = 52.237;
-
     
     private final Transformer transformer;
     private final Map<Node, Double> lastVoltageByNode;
     private final Map<LocalDateTime, Double> temperatureByTime;
     private final Map<LocalDateTime, Double> radianceByTime;
-    
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     
     private IController controller;
     
     protected static Simulation instance;
+    
     public static Simulation getInstance(){
         if (instance == null){
             instance = new Simulation();
         }
         return instance;
-    }
-    public static boolean isInstance(){
-        return (instance != null);
     }
     
     private Node[] internalNodes;
@@ -61,7 +57,10 @@ public class Simulation extends Entity {
     private Cable[] cables;
     private House[] houses;
     
-    public Simulation() {
+    protected Simulation() {
+        super(LoggedValueType.POWER, "Network");
+        setAbsoluteMaximum(250 * 500);
+
         // keep an array of nodes for later reference
         this.lastVoltageByNode = new HashMap<>();
         
@@ -76,6 +75,7 @@ public class Simulation extends Entity {
         // maak huizen aan met cables en dat soort grappen
         for(int i = 0; i <= NUMBER_OF_HOUSES-1; i ++){
             houses[i] = new House();
+            houses[i].getDevices().add(new UncontrollableLoad(i));
             
             houseNodes[i] = new Node(houses[i]);
             internalNodes[i] = new Node(null);
@@ -95,7 +95,7 @@ public class Simulation extends Entity {
         }
         
         // initialise time
-        setCurrentTime(LocalDateTime.of(2014, 1, 1, 0, 0));
+        setCurrentTime(DEFAULT_TIME);
         
         // load KNMI data
         temperatureByTime = new HashMap<>();
@@ -126,6 +126,48 @@ public class Simulation extends Entity {
     }
     
     // PROPERTIES
+    
+    /**
+     * @return whether the simulation has been initialized
+     */
+    public static boolean isInitialized(){
+        return (instance != null);
+    }
+    
+    /**
+     * Whether the Simulation has been started. This can be true even when the Simulation
+     * is not running. Resetting the Simulation will revert it to false.
+     */
+    private final ReadOnlyBooleanWrapper started = new ReadOnlyBooleanWrapper(false);
+    
+    public boolean isStarted() {
+        return startedProperty().get();
+    }
+    
+    private void setStarted(boolean started) {
+        this.started.set(started);
+    }
+    
+    public ReadOnlyBooleanProperty startedProperty() {
+        return started.getReadOnlyProperty();
+    }
+    
+    /**
+     * Whether the Simulation is currently running
+     */
+    private final ReadOnlyBooleanWrapper running = new ReadOnlyBooleanWrapper(false);
+    
+    public boolean isRunning() {
+        return runningProperty().get();
+    }
+    
+    private void setRunning(boolean running) {
+        this.running.set(running);
+    }
+    
+    public ReadOnlyBooleanProperty runningProperty() {
+        return running.getReadOnlyProperty();
+    }
     
     /**
      * The current time in the simulation.
@@ -196,22 +238,66 @@ public class Simulation extends Entity {
     
     // PUBLIC METHODS
     
+    // start, pause en reset kan ongetwijfeld allemaal veel mooier.
+    
     public void start() {
-        scheduler.scheduleAtFixedRate(() -> {
-            // Todo: optimize dit, dit is slechts een hotfix
-            // Uiteraard nogal idioot om de hele meuk op de JavaFX thread te draaien
-            Platform.runLater(() -> { 
-                getTransformer().tick(this, true);
-                initiateForwardBackwardSweep();
-                setCurrentTime((getCurrentTime().plusMinutes(5)));
-            });
-            
-            
-        }, TICK_TIME, TICK_TIME, TimeUnit.MILLISECONDS);
+        if (!isStarted()) {
+            scheduler.scheduleAtFixedRate(() -> {
+                // Todo: optimize dit, dit is slechts een hotfix
+                // Uiteraard nogal idioot om de hele meuk op de JavaFX thread te draaien
+                Platform.runLater(() -> { 
+                    if (!isRunning()) return;
+                    
+                    getTransformer().tick(this, true);
+                    initiateForwardBackwardSweep();
+
+                    // Log total power consumption in network
+                    log(getCurrentTime(), transformer.getCables().get(0).getCurrent() * 230d);
+
+                    // Increment time
+                    setCurrentTime((getCurrentTime().plusMinutes(SIMULATION_TICK_TIME)));
+                });
+
+            }, SYSTEM_TICK_TIME, SYSTEM_TICK_TIME, TimeUnit.MILLISECONDS);
+        }
+        
+        setRunning(true);
+        setStarted(true);
+    }
+    
+    public void pause() {
+        setRunning(false);
     }
     
     public void stop() {
         scheduler.shutdown();
+    }
+    
+    public void reset() {
+        setRunning(false);
+        
+        scheduler.shutdownNow();
+        scheduler = Executors.newScheduledThreadPool(1);
+        
+        for (House house : houses) {
+            house.getDevices().clear();
+            house.getLog().clear();
+        }
+        for (Node node : internalNodes) {
+            node.getLog().clear();
+            for (Cable cable : node.getCables()) {
+                cable.getLog().clear();
+            }
+        }
+        for (Node node : houseNodes) {
+            node.getLog().clear();
+        }
+        transformer.getLog().clear();
+        
+        setCurrentTime(DEFAULT_TIME);
+        getLog().clear();
+        
+        setStarted(false);
     }
     
     // FORWARD BACKWARD SWEEP METHODS

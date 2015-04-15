@@ -19,13 +19,14 @@ import javafx.collections.ObservableList;
  *
  * @author Richard
  */
-public class House extends Entity {
+public class House extends LoggingEntity {
     private final ObservableList<DeviceBase> devices;
     private DoubleBinding deviceConsumptionSum;
     
     public House(){
+        super(LoggedValueType.POWER, "House");
+        
         devices = FXCollections.observableArrayList();
-        this.characteristic = CharacteristicType.POWER;
         deviceConsumptionSum = Bindings.createDoubleBinding(() -> 0d);
         currentConsumption.bind(deviceConsumptionSum);
         
@@ -70,8 +71,8 @@ public class House extends Entity {
                 setFuseBlown(true);
                 value = 0;
             }
-            if (Simulation.isInstance()){
-                characteristicMap.put(Simulation.getInstance().getCurrentTime(), value);
+            if (Simulation.isInitialized()){
+                log(Simulation.getInstance().getCurrentTime(), value);
             }
             super.set(value);
         }
@@ -93,7 +94,7 @@ public class House extends Entity {
     private final ReadOnlyDoubleWrapper maximumConsumption = new ReadOnlyDoubleWrapper(230*100){
         @Override
         public void set(double value) {
-            characteristicAbsMax = Math.abs(value);
+            setAbsoluteMaximum(value);
             super.set(value);
         }
     };
