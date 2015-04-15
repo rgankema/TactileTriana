@@ -21,6 +21,7 @@ import nl.utwente.ewi.caes.tactiletriana.gui.configuration.ConfigurationView;
 import nl.utwente.ewi.caes.tactiletriana.gui.configuration.ScreenIndexView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.TouchVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.TouchView;
+import nl.utwente.ewi.caes.tactiletriana.simprediction.SimulationPrediction;
 import nl.utwente.ewi.caes.tactiletriana.simulation.LoggingEntity;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 
@@ -57,12 +58,14 @@ public final class StageController {
 
     private ConfigurationVM launcherVM;
     private Simulation simulation;
+    private SimulationPrediction simulationprediction;
     // CONSTRUCTOR
 
     private StageController(Stage configurationStage) {
         // Build launcher stage
         this.launcherStage = configurationStage;
         this.simulation = new Simulation();
+        this.simulationprediction = new SimulationPrediction(simulation);
 
         ConfigurationView lv = new ConfigurationView();
         configurationVM = new ConfigurationVM(this.simulation);

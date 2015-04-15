@@ -49,15 +49,19 @@ public class HousePredictor extends House {
                         //update item
                     } else {
                         for (DeviceBase item : c.getRemoved()) {
+                            simulation.setMainSimulationChanged();
                             //remitem.remove(Outer.this);
                             getDevices().remove(shadowDeviceMap.get(item));
                         }
                         for (DeviceBase item : c.getAddedSubList()) {
+                            simulation.setMainSimulationChanged();
+                            
                             // maak een kopie van dit device in de map
+    
                             DeviceBase newDevice = null;
                             try {
                                 //additem.add(Outer.this);
-                                newDevice = item.getClass().asSubclass(item.getClass()).getConstructor(simulation.getClass()).newInstance(simulation);
+                                newDevice = (DeviceBase) item.getClass().getConstructors()[0].newInstance(simulation);
                             } catch (Exception ex) {
                                 System.out.println("House Predictor is stuk");
                             }
