@@ -19,7 +19,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.devices.UncontrollableLoad;
  * @author mickvdv
  */
 public class SimulationPrediction extends Simulation {
-
+    public final static int RUN_AHEAD = 6; // aantal uren dat de prediction voorloopt
     private static SimulationPrediction instance;
     private Simulation mainSimulation;
 
@@ -51,7 +51,7 @@ public class SimulationPrediction extends Simulation {
             @Override
             public void changed(ObservableValue<? extends LocalDateTime> observable, LocalDateTime oldValue, LocalDateTime newValue) {
                 // Zo lang hij achterloopt -> doe een tick()
-                while (getCurrentTime().plusHours(6).isBefore(newValue)) {
+                while (getCurrentTime().plusHours(RUN_AHEAD).isBefore(newValue)) {
                     simulateTick();
                 }
             }
