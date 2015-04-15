@@ -35,10 +35,14 @@ public class UncontrollableLoad extends DeviceBase {
         //For each new instance one of the 6 houses is randomly selected as the source for the data.
         try {
             File csvData = new File("src/main/resources/datasets/watt_house_profiles_year.csv");
-            CSVParser parser = CSVParser.parse(csvData, Charset.defaultCharset(), CSVFormat.DEFAULT);
+            CSVFormat format = CSVFormat.DEFAULT.withDelimiter(';');
+            // Jan Harm: je kan gewoon een format aanmaken :)
+            CSVParser parser = CSVParser.parse(csvData, Charset.defaultCharset(), format);
+            // Een record is een rij.
+            
             
             for (CSVRecord csvRecord : parser) {
-                profile.add(Double.parseDouble(csvRecord.get(0).split(";")[profileNumber]));
+                profile.add(Double.parseDouble(csvRecord.get(profileNumber)));
             }
         } catch (IOException e) {
             throw new RuntimeException("Error while parsing house profile dataset", e);
