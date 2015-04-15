@@ -239,15 +239,8 @@ public class Simulation extends LoggingEntity {
                     if (!isRunning()) {
                         return;
                     }
+                    simulateTick();
 
-                    getTransformer().tick(this, true);
-                    initiateForwardBackwardSweep();
-
-                    // Log total power consumption in network
-                    this.log(transformer.getCables().get(0).getCurrent() * 230d);
-
-                    // Increment time
-                    setCurrentTime((getCurrentTime().plusMinutes(SIMULATION_TICK_TIME)));
                 });
 
             }, SYSTEM_TICK_TIME, SYSTEM_TICK_TIME, TimeUnit.MILLISECONDS);
@@ -255,6 +248,17 @@ public class Simulation extends LoggingEntity {
 
         setRunning(true);
         setStarted(true);
+    }
+
+    public void simulateTick() {
+        getTransformer().tick(this, true);
+        initiateForwardBackwardSweep();
+
+        // Log total power consumption in network
+        this.log(transformer.getCables().get(0).getCurrent() * 230d);
+
+        // Increment time
+        setCurrentTime((getCurrentTime().plusMinutes(SIMULATION_TICK_TIME)));
     }
 
     public void pause() {
