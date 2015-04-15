@@ -23,8 +23,8 @@ public class House extends LoggingEntity {
     private final ObservableList<DeviceBase> devices;
     private DoubleBinding deviceConsumptionSum;
     
-    public House(){
-        super(LoggedValueType.POWER, "House");
+    public House(Simulation simulation){
+        super(LoggedValueType.POWER, "House", simulation);
         
         devices = FXCollections.observableArrayList();
         deviceConsumptionSum = Bindings.createDoubleBinding(() -> 0d);
@@ -71,9 +71,8 @@ public class House extends LoggingEntity {
                 setFuseBlown(true);
                 value = 0;
             }
-            if (Simulation.isInitialized()){
-                log(Simulation.getInstance().getCurrentTime(), value);
-            }
+            log(value);
+
             super.set(value);
         }
     };

@@ -19,12 +19,17 @@ public abstract class LoggingEntity {
     private final LoggedValueType type;
     private final ObservableMap<LocalDateTime, Double> log;
     private double absoluteMaximum = Double.POSITIVE_INFINITY;
+    protected Simulation simulation;
     
-    public LoggingEntity(LoggedValueType type, String displayName){
+    public LoggingEntity(LoggedValueType type, String displayName, Simulation simulation){
         this.displayName = displayName;
         this.type = type;
-        
+        this.simulation = simulation;
         this.log = FXCollections.observableMap(new HashMap<>());
+    }
+    
+    protected void setSimulation(Simulation simulation){
+        this.simulation = simulation;
     }
     
     // PROPERTIES
@@ -51,8 +56,8 @@ public abstract class LoggingEntity {
     
     // METHODS
     
-    protected final void log(LocalDateTime time, double value) {
-        log.put(time, value);
+    protected final void log(double value) {
+        log.put(this.simulation.getCurrentTime(), value);
     }
     
     // ENUMS

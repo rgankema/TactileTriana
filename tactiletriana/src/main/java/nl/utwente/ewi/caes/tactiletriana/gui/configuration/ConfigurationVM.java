@@ -30,10 +30,11 @@ public class ConfigurationVM {
     // TODO: hele screen ding zou naar StageController mogen
     private ObservableList<Integer> screenIndexList;
     private List<Screen> screens;
-    
-    public ConfigurationVM() {
-        screens = Screen.getScreens();
-        screenIndexList = FXCollections.observableList(new ArrayList<Integer>());
+    private Simulation simulation;
+    public ConfigurationVM(Simulation simulation){
+        this.simulation = simulation;
+        this.screens = Screen.getScreens();
+        this.screenIndexList = FXCollections.observableList(new ArrayList<Integer>());
         //screenIndexList.add(null);
         
         for (int i = 0; i < screens.size(); i++) {
@@ -66,14 +67,14 @@ public class ConfigurationVM {
         // start button text is set to "Start" when the simulation hasn't started yet,
         // and "Resume" when it already has
         startButtonText.bind(Bindings.createStringBinding(() -> {
-            if (Simulation.getInstance().isStarted())
+            if (this.simulation.isStarted())
                 return "Resume Simulation";
             else
                 return "Start Simulation";
-        }, Simulation.getInstance().startedProperty()));
+        }, this.simulation.startedProperty()));
         
         // reset button is enabled when simulation has been started
-        resetButtonDisabled.bind(Simulation.getInstance().startedProperty().not());
+        resetButtonDisabled.bind(this.simulation.startedProperty().not());
     }
     
     // BINDABLE PROPERTIES
@@ -185,12 +186,12 @@ public class ConfigurationVM {
         StageController.getInstance().setMainStagesVisible(true);
         StageController.getInstance().setLauncherStageVisible(false);
         StageController.getInstance().setScreenIndexStagesVisible(false);
-        Simulation.getInstance().start();
+        this.simulation.start();
         
         launched.set(true);
     }
     
     public void reset() {
-        Simulation.getInstance().reset();
+        this.simulation.reset();
     }
 }

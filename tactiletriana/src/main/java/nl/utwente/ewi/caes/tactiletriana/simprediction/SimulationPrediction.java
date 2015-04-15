@@ -14,34 +14,28 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
  * @author mickvdv
  */
 public class SimulationPrediction extends Simulation {
+
     private static SimulationPrediction instance;
     private Simulation mainSimulation;
-    
-    
+
     ArrayList<HousePredictor> housePredictors;
-    public SimulationPrediction(Simulation mainSimulation){
+
+    public SimulationPrediction(Simulation mainSimulation) {
         super();
         this.mainSimulation = mainSimulation;
-        
+
         // this() koppelen aan mainSimulation via HousePredictor()
         housePredictors = new ArrayList<>();
-        for (int iN = 0; iN < mainSimulation.getHouseNodes().length; iN++){
-            HousePredictor h = new HousePredictor(mainSimulation.getHouses()[iN]);
+        for (int iN = 0; iN < mainSimulation.getHouseNodes().length; iN++) {
+            HousePredictor h = new HousePredictor(mainSimulation.getHouses()[iN], this);
             housePredictors.add(h);
-            
+
             // vervang alle houses in this().houseNodes[] door HousePredictors gekoppeld aan houses van de mainSimulation.
             this.getHouseNodes()[iN].setHouse(h);
-            
+
             // vervang alle houses in this().houses[] 
             this.getHouses()[iN] = h;
-        }       
+        }
     }
-    
-    public static SimulationPrediction getPredictionInstance() {
-      if(instance == null) {
-         instance = new SimulationPrediction(Simulation.getInstance());
-      }
-      return instance;
-   }
-    
+
 }

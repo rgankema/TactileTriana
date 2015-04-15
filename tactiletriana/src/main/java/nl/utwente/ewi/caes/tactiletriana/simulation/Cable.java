@@ -24,12 +24,10 @@ public class Cable extends LoggingEntity implements IFWBWSEntity {
      * @param childNode The node away from the transformer
      * @param maxCurrent The maximum current that can flow through the cable
      */
-    public Cable(Node childNode, double maxCurrent) {
-        super(LoggedValueType.CURRENT, "Cable");
-        
+    public Cable(Node childNode, double maxCurrent, Simulation simulation) {
+        super(LoggedValueType.CURRENT, "Cable", simulation);
         this.childNode = childNode;
         this.resistance = 0.00005;
-        
         setMaximumCurrent(maxCurrent);
     }
     
@@ -68,10 +66,9 @@ public class Cable extends LoggingEntity implements IFWBWSEntity {
             if (Math.abs(value) > getMaximumCurrent()) {
                 setBroken(true);
             }
-            if (Simulation.isInitialized()){
-                log(Simulation.getInstance().getCurrentTime(), value);
-            }
-            
+
+            log(value);
+       
             super.set(value);
         }
     };
@@ -140,7 +137,7 @@ public class Cable extends LoggingEntity implements IFWBWSEntity {
     }
 
     // METHODS
-    
+
     public void tick(Simulation simulation, boolean connected) {
         if (isBroken()) {
             connected = false;

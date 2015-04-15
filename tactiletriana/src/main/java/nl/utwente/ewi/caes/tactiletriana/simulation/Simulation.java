@@ -42,15 +42,7 @@ public class Simulation extends LoggingEntity {
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     
     private IController controller;
-    
-    protected static Simulation instance;
-    
-    public static Simulation getInstance(){
-        if (instance == null){
-            instance = new Simulation();
-        }
-        return instance;
-    }
+   
     
     private Node[] internalNodes;
     private Node[] houseNodes;
@@ -58,14 +50,16 @@ public class Simulation extends LoggingEntity {
     private House[] houses;
     
     protected Simulation() {
-        super(LoggedValueType.POWER, "Network");
+        super(LoggedValueType.POWER, "Network", null);
+        this.setSimulation(this);
+        
         setAbsoluteMaximum(250 * 500);
 
         // keep an array of nodes for later reference
         this.lastVoltageByNode = new HashMap<>();
         
         // de tree maken
-        transformer = new Transformer();
+        this.transformer = new Transformer(this);
         
         this.internalNodes = new Node[NUMBER_OF_HOUSES];
         this.houseNodes = new Node[NUMBER_OF_HOUSES];
@@ -74,15 +68,15 @@ public class Simulation extends LoggingEntity {
         
         // maak huizen aan met cables en dat soort grappen
         for(int i = 0; i <= NUMBER_OF_HOUSES-1; i ++){
-            houses[i] = new House();
-            houses[i].getDevices().add(new UncontrollableLoad(i));
+            this.houses[i] = new House(this);
+            this.houses[i].getDevices().add(new UncontrollableLoad(i, simulation));
             
-            houseNodes[i] = new Node(houses[i]);
-            internalNodes[i] = new Node(null);
-            Cable houseCable = new Cable(houseNodes[i], 110);
-            internalNodes[i].getCables().add(houseCable);
+            this.houseNodes[i] = new Node(houses[i], this);
+            this.internalNodes[i] = new Node(null, this);
+            Cable houseCable = new Cable(houseNodes[i], 110, this);
+            this.internalNodes[i].getCables().add(houseCable);
             
-            cables[i] = new Cable(internalNodes[i], 110 + (NUMBER_OF_HOUSES - i) * 60);
+           this. cables[i] = new Cable(internalNodes[i], 110 + (NUMBER_OF_HOUSES - i) * 60, simulation);
             if (i == 0) {
                 transformer.getCables().add(cables[i]);
             }
@@ -127,12 +121,6 @@ public class Simulation extends LoggingEntity {
     
     // PROPERTIES
     
-    /**
-     * @return whether the simulation has been initialized
-     */
-    public static boolean isInitialized(){
-        return (instance != null);
-    }
     
     /**
      * Whether the Simulation has been started. This can be true even when the Simulation
@@ -252,7 +240,7 @@ public class Simulation extends LoggingEntity {
                     initiateForwardBackwardSweep();
 
                     // Log total power consumption in network
-                    log(getCurrentTime(), transformer.getCables().get(0).getCurrent() * 230d);
+                    this.log(transformer.getCables().get(0).getCurrent() * 230d);
 
                     // Increment time
                     setCurrentTime((getCurrentTime().plusMinutes(SIMULATION_TICK_TIME)));

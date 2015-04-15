@@ -19,8 +19,8 @@ public class Node extends LoggingEntity implements IFWBWSEntity{
     private final List<Cable> cables;
     private House house;
     
-    public Node(House house) {
-        super(LoggedValueType.VOLTAGE, "Node");
+    public Node(House house, Simulation simulation) {
+        super(LoggedValueType.VOLTAGE, "Node", simulation);
         
         this.cables = new ArrayList<>();
         this.house = house;
@@ -35,10 +35,7 @@ public class Node extends LoggingEntity implements IFWBWSEntity{
     private final ReadOnlyDoubleWrapper voltage = new ReadOnlyDoubleWrapper(230.0){
         @Override
         public void set(double value) {
-            if (Simulation.isInitialized()){
-                LocalDateTime time = Simulation.getInstance().getCurrentTime();
-                log(time, value);
-            }
+            log(value);
             super.set(value);
         }
     };

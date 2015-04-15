@@ -22,8 +22,8 @@ public abstract class DeviceBase extends LoggingEntity {
     private final List<Parameter> parameters;
     private final List<Parameter> parametersUnmodifiable;
     
-    public DeviceBase(String displayName) {
-        super(LoggedValueType.POWER, displayName);
+    public DeviceBase(String displayName,Simulation simulation) {
+        super(LoggedValueType.POWER, displayName, simulation);
 
         parameters = new ArrayList<>();
         parametersUnmodifiable = Collections.unmodifiableList(parameters);
@@ -41,9 +41,7 @@ public abstract class DeviceBase extends LoggingEntity {
             if (getState() != DeviceBase.State.CONNECTED) {
                 value = 0;
             }
-            if (Simulation.isInitialized()){
-                log(Simulation.getInstance().getCurrentTime(), value);
-            }
+            log(value);
             super.set(value);
         }
     };

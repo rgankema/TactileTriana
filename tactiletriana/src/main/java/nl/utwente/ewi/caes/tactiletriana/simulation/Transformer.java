@@ -12,8 +12,8 @@ package nl.utwente.ewi.caes.tactiletriana.simulation;
 public class Transformer extends Node implements IFWBWSEntity {
     public final double TRANSFORMER_CURRENT = 230.0;
     
-    public Transformer() {
-        super(null);
+    public Transformer(Simulation simulation) {
+        super(null, simulation);
         setVoltage(230);
     }
     
