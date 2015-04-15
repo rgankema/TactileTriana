@@ -27,7 +27,6 @@ public class HouseVM {
     }
     
     public House getModel() {
-        System.out.println(model);
         return model;
     }
     

@@ -75,6 +75,7 @@ public class HouseView extends Pane {
                 timer.purge();
                 timer = new Timer();
                 viewModel.repairFuse();
+                taskScheduled = false;
             }
             e.consume();
         });
