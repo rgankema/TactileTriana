@@ -5,6 +5,8 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simprediction;
 
+import javafx.collections.ListChangeListener;
+import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.House;
 
 /**
@@ -20,6 +22,32 @@ public class HousePredictor extends House {
      */
     public HousePredictor(House linkedHouse){
         this.linkedHouse = linkedHouse;
+        
+        this.linkedHouse.getDevices().addListener(new ListChangeListener<DeviceBase>() {
+
+            @Override
+            public void onChanged(ListChangeListener.Change<? extends DeviceBase> c) {
+                while (c.next()) {
+             if (c.wasPermutated()) {
+                     for (int i = c.getFrom(); i < c.getTo(); ++i) {
+                          //permutate
+                     }
+                 } else if (c.wasUpdated()) {
+                          //update item
+                 } else {
+                     for (DeviceBase remitem : c.getRemoved()) {
+                         remitem.remove(Outer.this);
+                     }
+                     for (DeviceBase additem : c.getAddedSubList()) {
+                         additem.add(Outer.this);
+                     }
+                 }
+             }
+         }            }
+     });
+
+ }
     }
+    
     
 }
