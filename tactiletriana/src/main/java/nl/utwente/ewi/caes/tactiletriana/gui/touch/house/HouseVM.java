@@ -26,6 +26,11 @@ public class HouseVM {
         }, model.currentConsumptionProperty(), model.maximumConsumptionProperty()));
     }
     
+    public House getModel() {
+        System.out.println(model);
+        return model;
+    }
+    
     /**
      * The load of the house on a scale of 0 to 1. The load is the absolute amount
      * of consumption of the house, divided by the maximum consumption. When this

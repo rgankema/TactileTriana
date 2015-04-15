@@ -22,71 +22,13 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.LoggingEntity;
  * @author Richard
  */
 public class ChartVM {
-    private final LoggingEntity entity;
-    private final ObservableList<XYChart.Data<Number, Number>> seriesData;
+    private LoggingEntity entity;
+    private ObservableList<XYChart.Data<Number, Number>> seriesData;
     
     public ChartVM(LoggingEntity entity) {
-        this.entity = entity;
-        
-        // Set label of series
-        switch (entity.getLoggedValueType()) {
-            case POWER: 
-                seriesName.set("Power Consumption (W)");
-                break;
-            case VOLTAGE:
-                seriesName.set("Voltage (V)");
-                break;
-            case CURRENT:
-                seriesName.set("Current (A)");
-                break;
-        }
-        
-        // Set label of chart
-        chartTitle.set(entity.getDisplayName() + " " + seriesName.get());
-        
-        xAxisUpperBound.bind(xAxisLowerBound.add(60*12));
-        
-        if (entity.getAbsoluteMaximum() != Double.POSITIVE_INFINITY) {
-            yAxisAbsBound.set(entity.getAbsoluteMaximum());
-        }
-        
         seriesData = FXCollections.observableList(new ArrayList<XYChart.Data<Number, Number>>());
-        entity.getLog().addListener((MapChangeListener.Change<? extends LocalDateTime, ? extends Double> c) -> {
-            LocalDateTime time = c.getKey();
-            int minuteOfYear = (time.getDayOfYear() - 1) * 24 * 60 + time.getHour() * 60 + time.getMinute();
-            
-            if (c.wasRemoved()) {
-                int i = 0;
-                for (; i < seriesData.size(); i++) {
-                    XYChart.Data data = seriesData.get(i);
-                    if (data.getXValue().equals(minuteOfYear) && data.getYValue() == c.getValueRemoved()) {
-                        break;
-                    }
-                }
-                seriesData.remove(i);
-                if (i > 0) seriesData.remove(i - 1);
-            }
-            if (c.wasAdded()) {
-                // Add datapoint with previous value to obtain horizontal lines
-                if (seriesData.size() > 0 ) {
-                    seriesData.add(new XYChart.Data<>(minuteOfYear, seriesData.get(seriesData.size() - 1).getYValue()));
-                }
-                seriesData.add(new XYChart.Data<>(minuteOfYear, c.getValueAdded()));
-                
-                // Range x axis
-                if (seriesData.size() < 288) {
-                    xAxisLowerBound.set((Integer)seriesData.get(0).getXValue());
-                } 
-                else {
-                    xAxisLowerBound.set((Integer)seriesData.get(seriesData.size() - 288).getXValue());
-                }
-                
-                // Range y axis
-                if (Math.abs(c.getValueAdded()) > yAxisAbsBound.get()) {
-                    yAxisAbsBound.set(c.getValueAdded());
-                }
-            }
-        });
+        
+        setEntity(entity);
     }
     
     // BINDABLE PROPERTIES
@@ -143,4 +85,81 @@ public class ChartVM {
     public ObservableList<XYChart.Data<Number, Number>> getSeriesData() {
         return seriesData;
     }
+    
+    // PUBLIC METHODS
+    
+    public final void setEntity(LoggingEntity entity) {
+        if (this.entity != null) {
+            this.entity.getLog().removeListener(logListener);
+        }
+        
+        this.entity = entity;
+        
+        // Set label of series
+        switch (entity.getLoggedValueType()) {
+            case POWER: 
+                seriesName.set("Power Consumption (W)");
+                break;
+            case VOLTAGE:
+                seriesName.set("Voltage (V)");
+                break;
+            case CURRENT:
+                seriesName.set("Current (A)");
+                break;
+        }
+        
+        // Set label of chart
+        chartTitle.set(entity.getDisplayName() + " " + seriesName.get());
+        
+        xAxisUpperBound.bind(xAxisLowerBound.add(60*12));
+        
+        if (entity.getAbsoluteMaximum() != Double.POSITIVE_INFINITY) {
+            yAxisAbsBound.set(entity.getAbsoluteMaximum());
+        }
+        
+        seriesData.clear();
+        
+        logListener = new MapChangeListener<LocalDateTime, Double>() {
+            @Override
+            public void onChanged(MapChangeListener.Change<? extends LocalDateTime, ? extends Double> c) {
+                LocalDateTime time = c.getKey();
+                int minuteOfYear = (time.getDayOfYear() - 1) * 24 * 60 + time.getHour() * 60 + time.getMinute();
+                
+                if (c.wasRemoved()) {
+                    int i = 0;
+                    for (; i < seriesData.size(); i++) {
+                        XYChart.Data data = seriesData.get(i);
+                        if (data.getXValue().equals(minuteOfYear) && data.getYValue() == c.getValueRemoved()) {
+                            break;
+                        }
+                    }
+                    seriesData.remove(i);
+                    if (i > 0) seriesData.remove(i - 1);
+                }
+                if (c.wasAdded()) {
+                    // Add datapoint with previous value to obtain horizontal lines
+                    if (seriesData.size() > 0 ) {
+                        seriesData.add(new XYChart.Data<>(minuteOfYear, seriesData.get(seriesData.size() - 1).getYValue()));
+                    }
+                    seriesData.add(new XYChart.Data<>(minuteOfYear, c.getValueAdded()));
+                    
+                    // Range x axis
+                    if (seriesData.size() < 288) {
+                        xAxisLowerBound.set((Integer)seriesData.get(0).getXValue());
+                    }
+                    else {
+                        xAxisLowerBound.set((Integer)seriesData.get(seriesData.size() - 288).getXValue());
+                    }
+                    
+                    // Range y axis
+                    if (Math.abs(c.getValueAdded()) > yAxisAbsBound.get()) {
+                        yAxisAbsBound.set(c.getValueAdded());
+                    }
+                }
+            }
+        };
+        entity.getLog().addListener(logListener);
+    }
+    
+    private MapChangeListener logListener;
 }
