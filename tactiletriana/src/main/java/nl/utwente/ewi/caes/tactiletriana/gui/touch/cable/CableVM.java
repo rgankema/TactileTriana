@@ -51,6 +51,10 @@ public class CableVM {
         }
     }
 
+    public Cable getModel() {
+        return model;
+    }
+    
     // PROPERTIES
     /**
      * The load on the cable on a scale from 0 to 1.

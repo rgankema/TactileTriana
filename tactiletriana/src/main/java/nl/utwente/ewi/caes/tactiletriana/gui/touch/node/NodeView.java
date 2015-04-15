@@ -12,7 +12,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import nl.utwente.ewi.caes.tactiletriana.App;
+import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
+import nl.utwente.ewi.caes.tactiletriana.gui.events.TrianaEvents;
 
 /**
  * FXML Controller class
@@ -48,6 +50,11 @@ public class NodeView extends StackPane {
             label.textProperty().bind(viewModel.debugStringProperty());
             getChildren().add(label);
         }
+        
+        // Show on chart on long press
+        TrianaEvents.addShortAndLongPressEventHandler(this, null, n -> {
+            StageController.getInstance().showOnChart(viewModel.getModel());
+        });
     }
 
 }

@@ -17,7 +17,9 @@ import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import nl.utwente.ewi.caes.tactiletriana.App;
+import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
+import nl.utwente.ewi.caes.tactiletriana.gui.events.TrianaEvents;
 
 /**
  * FXML Controller class
@@ -103,9 +105,11 @@ public class CableView extends Group {
         directionStart.visibleProperty().bind(viewModel.directionProperty().isEqualTo(CableVM.Direction.START));
         directionEnd.visibleProperty().bind(viewModel.directionProperty().isEqualTo(CableVM.Direction.END));
 
-        // Handle events for cable
-        line.setOnMousePressed(e -> {
+        // Repair cable on short press, show on chart for long press
+        TrianaEvents.addShortAndLongPressEventHandler(line, l -> {
             viewModel.cablePressed();
+        }, l -> {
+            StageController.getInstance().showOnChart(viewModel.getModel());
         });
 
         if (App.DEBUG) {

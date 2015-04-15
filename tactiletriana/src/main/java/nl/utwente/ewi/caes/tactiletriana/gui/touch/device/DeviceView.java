@@ -19,7 +19,9 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
+import nl.utwente.ewi.caes.tactiletriana.gui.events.TrianaEvents;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceVM.State;
 
 /**
@@ -84,6 +86,11 @@ public class DeviceView extends StackPane {
                 getChildren().remove(configPanel);
                 getChildren().add(0, deviceIcon);
             }
+        });
+        
+        // Show on chart on long press
+        TrianaEvents.addShortAndLongPressEventHandler(this, null, e -> {
+            StageController.getInstance().showOnChart(viewModel.getModel());
         });
     }
 
