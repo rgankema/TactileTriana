@@ -21,33 +21,15 @@ import javafx.collections.ObservableList;
  */
 public class House extends LoggingEntity {
     private final ObservableList<DeviceBase> devices;
-    private DoubleBinding deviceConsumptionSum;
     
     public House(Simulation simulation){
         super(LoggedValueType.POWER, "House", simulation);
         
         devices = FXCollections.observableArrayList();
-        deviceConsumptionSum = Bindings.createDoubleBinding(() -> 0d);
-        currentConsumption.bind(deviceConsumptionSum);
-        
-        // Update current consumption when devices get added/removed
         devices.addListener((ListChangeListener.Change<? extends DeviceBase> c) -> {
             while(c.next()) {
-                for (DeviceBase addedDevice : c.getAddedSubList()) {
-                    // Acties voor alle devices die toegevoegd zijn
-                    deviceConsumptionSum = deviceConsumptionSum.add(addedDevice.currentConsumptionProperty());
-                    currentConsumption.unbind();
-                    currentConsumption.bind(deviceConsumptionSum);
-                }
                 for (DeviceBase removedDevice : c.getRemoved()) {
-                    // Acties voor alle devices die verwijderd zijn
                     removedDevice.setState(DeviceBase.State.NOT_IN_HOUSE);
-                    deviceConsumptionSum = Bindings.createDoubleBinding(() -> 0d);
-                    for (DeviceBase device : devices) {
-                        deviceConsumptionSum = deviceConsumptionSum.add(device.currentConsumptionProperty());
-                    }
-                    currentConsumption.unbind();
-                    currentConsumption.bind(deviceConsumptionSum);
                 }
             }
         });
@@ -68,11 +50,10 @@ public class House extends LoggingEntity {
         @Override
         public void set(double value) {
             if (value > getMaximumConsumption()) {
-                setFuseBlown(true);
                 value = 0;
+                setFuseBlown(true);
             }
             log(value);
-
             super.set(value);
         }
     };
@@ -85,11 +66,14 @@ public class House extends LoggingEntity {
         return currentConsumptionProperty().get();
     }
     
+    protected final void setCurrentConsumption(double value) {
+        this.currentConsumption.set(value);
+    }
+    
     /**
      * The absolute maximum of power the house can consume/produce. When more than
      * this is consumed, the fuse in the house will blow.
      */
-    //this.characteristicAbsMax = Math.abs(maximumCurrent);
     private final ReadOnlyDoubleWrapper maximumConsumption = new ReadOnlyDoubleWrapper(230*100){
         @Override
         public void set(double value) {
@@ -97,7 +81,6 @@ public class House extends LoggingEntity {
             super.set(value);
         }
     };
-    
     
     public ReadOnlyDoubleProperty maximumConsumptionProperty() {
         return maximumConsumption;
@@ -140,6 +123,10 @@ public class House extends LoggingEntity {
         for (DeviceBase device : getDevices()) {
             device.tick(simulation, connected);
         }
+        
+        setCurrentConsumption(getDevices().stream().mapToDouble(d -> d.getCurrentConsumption()).sum());
+        
+        log(getCurrentConsumption());
     }
     
     public String toString(int indentation){

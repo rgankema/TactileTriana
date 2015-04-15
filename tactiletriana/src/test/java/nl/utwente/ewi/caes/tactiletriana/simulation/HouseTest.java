@@ -20,6 +20,14 @@ import static org.mockito.Mockito.*;
  */
 public class HouseTest {
 
+    @Test
+    public void testMaximumConsumption() {
+        System.out.println("maximumConsumption");
+        House instance = new House(null);
+        
+        assertEquals(instance.getMaximumConsumption(), 230*100, 0.001);
+    }
+    
     /**
      * Test of currentConsumptionProperty method, of class House.
      */
@@ -58,6 +66,47 @@ public class HouseTest {
         ReadOnlyDoubleProperty result = instance.currentConsumptionProperty();
         
         assertEquals(nDevices * deviceConsumption, result.get(), 0.01);
+    }
+    
+    @Test
+    public void testFuseOkayWhenConsumptionIsLessThanMax() {
+        System.out.println("fuseOkayWhenConsumptionIsLessThanMax");
+        
+        // Mock simulation
+        Simulation simulation = mock(Simulation.class);
+        when(simulation.currentTimeProperty()).thenReturn(new SimpleObjectProperty<>(LocalDateTime.of(2014, 1, 1, 0, 0)));
+        
+        House instance = new House(simulation);
+        
+        // Mock device
+        DeviceBase device = mock(DeviceBase.class);
+        when(device.currentConsumptionProperty()).thenReturn(new SimpleDoubleProperty(200d));
+        instance.getDevices().add(device);
+        
+        instance.tick(simulation, true);
+        
+        assertFalse(instance.isFuseBlown());
+    }
+    
+    @Test
+    public void testFuseBlowsWhenConsumptionIsMoreThanMax() {
+        System.out.println("fuseBlowsWhenConsumptionIsMoreThanMax");
+        
+        // Mock simulation
+        Simulation simulation = mock(Simulation.class);
+        when(simulation.currentTimeProperty()).thenReturn(new SimpleObjectProperty<>(LocalDateTime.of(2014, 1, 1, 0, 0)));
+        
+        House instance = new House(simulation);
+        
+        // Mock device
+        DeviceBase device = mock(DeviceBase.class);
+        when(device.currentConsumptionProperty()).thenReturn(new SimpleDoubleProperty(Double.MAX_VALUE));
+        when(device.stateProperty()).thenReturn(new SimpleObjectProperty<>(DeviceBase.State.CONNECTED));
+        instance.getDevices().add(device);
+        
+        instance.tick(simulation, true);
+        
+        assertTrue(instance.isFuseBlown());
     }
     
 }

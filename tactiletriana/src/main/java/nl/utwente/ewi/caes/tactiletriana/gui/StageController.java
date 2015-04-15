@@ -21,6 +21,7 @@ import nl.utwente.ewi.caes.tactiletriana.gui.configuration.ConfigurationView;
 import nl.utwente.ewi.caes.tactiletriana.gui.configuration.ScreenIndexView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.TouchVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.TouchView;
+import nl.utwente.ewi.caes.tactiletriana.simulation.LoggingEntity;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 
 /**
@@ -47,40 +48,45 @@ public final class StageController {
     private final Stage launcherStage;
     private Stage touchStage;
     private Stage detailStage;
+    private final List<Stage> screenIndexStages;
+    
+    private final ConfigurationVM configurationVM;
+    private TouchVM touchVM;
+    private DetailVM detailVM;
     private List<Stage> screenIndexWindows;
 
     private ConfigurationVM launcherVM;
     private Simulation simulation;
     // CONSTRUCTOR
 
-    private StageController(Stage launcherStage) {
+    private StageController(Stage configurationStage) {
         // Build launcher stage
-        this.launcherStage = launcherStage;
+        this.launcherStage = configurationStage;
         this.simulation = new Simulation();
 
         ConfigurationView lv = new ConfigurationView();
-        launcherVM = new ConfigurationVM(this.simulation);
-        lv.setViewModel(launcherVM);
+        configurationVM = new ConfigurationVM(this.simulation);
+        lv.setViewModel(configurationVM);
 
-        launcherStage.setScene(new Scene(lv));
-        launcherStage.setOnCloseRequest(e -> closeAllStages());
-        launcherStage.getIcons().add(new Image("images/triana.png"));
-        launcherStage.setTitle("TactileTriana");
-
+        configurationStage.setScene(new Scene(lv));
+        configurationStage.setOnCloseRequest(e -> closeAllStages());
+        configurationStage.getIcons().add(new Image("images/triana.png"));
+        configurationStage.setTitle("TactileTriana");
+        
         // Build screen index stages
-        screenIndexWindows = new ArrayList<>();
-        for (Integer i : launcherVM.getScreenIndexList()) {
-            Screen screen = launcherVM.getScreenByIndex(i);
-
+        screenIndexStages = new ArrayList<>();
+        for (Integer i : configurationVM.getScreenIndexList()) {
+            Screen screen = configurationVM.getScreenByIndex(i);
+            
             Scene scene = new Scene(new ScreenIndexView(i));
             Stage stage = new Stage(StageStyle.TRANSPARENT);
 
             stage.setScene(scene);
             stage.setAlwaysOnTop(true);
             stage.setX(screen.getVisualBounds().getMinX());
-            stage.setY(screen.getVisualBounds().getMinY());
+            stage.setY(screen.getVisualBounds().getMinY()); 
+            screenIndexStages.add(stage);
 
-            screenIndexWindows.add(stage);
         }
     }
 
@@ -98,9 +104,10 @@ public final class StageController {
             // Build touch screen stage
             touchStage = new Stage();
 
-            TouchVM tvm = new TouchVM(simulation);
+            touchVM = new TouchVM(simulation);
             TouchView tv = new TouchView(this.simulation);
-            tv.setViewModel(tvm);
+            tv.setViewModel(touchVM);
+
 
             Scene touchScene = new Scene(tv);
             touchScene.setOnKeyPressed(e -> {
@@ -113,8 +120,9 @@ public final class StageController {
             touchStage.setScene(touchScene);
             touchStage.setOnCloseRequest(e -> closeAllStages());
 
-            if (launcherVM.fullScreenCheckedProperty().get()) {
-                Screen touchScreen = launcherVM.getScreenByIndex((Integer) launcherVM.touchScreenSelectionProperty().get());
+            if (configurationVM.fullScreenCheckedProperty().get()) {
+                Screen touchScreen = configurationVM.getScreenByIndex((Integer)configurationVM.touchScreenSelectionProperty().get());
+
                 touchStage.setX(touchScreen.getVisualBounds().getMinX());
                 touchStage.setY(touchScreen.getVisualBounds().getMinY());
 
@@ -124,15 +132,17 @@ public final class StageController {
             // Build detail screen stage
             detailStage = new Stage();
 
-            DetailVM dvm = new DetailVM(simulation);
+            detailVM = new DetailVM(simulation);
+
             DetailView dv = new DetailView();
-            dv.setViewModel(dvm);
+            dv.setViewModel(detailVM);
 
             detailStage.setScene(new Scene(dv));
             detailStage.setOnCloseRequest(e -> closeAllStages());
+ 
+            if (configurationVM.fullScreenCheckedProperty().get()) {
+                Screen detailScreen = configurationVM.getScreenByIndex((Integer)configurationVM.detailScreenSelectionProperty().get());
 
-            if (launcherVM.fullScreenCheckedProperty().get()) {
-                Screen detailScreen = launcherVM.getScreenByIndex((Integer) launcherVM.detailScreenSelectionProperty().get());
                 detailStage.setX(detailScreen.getVisualBounds().getMinX());
                 detailStage.setY(detailScreen.getVisualBounds().getMinY());
 
@@ -150,8 +160,8 @@ public final class StageController {
     }
 
     public void setScreenIndexStagesVisible(boolean visible) {
-        for (Stage stage : screenIndexWindows) {
-            if (visible) {
+        for (Stage stage : screenIndexStages) {
+            if (visible){
                 stage.show();
             } else {
                 stage.hide();
@@ -161,7 +171,7 @@ public final class StageController {
 
     public void closeAllStages() {
         launcherStage.close();
-        for (Stage stage : screenIndexWindows) {
+        for (Stage stage : screenIndexStages) {
             stage.close();
         }
         if (touchStage != null) {
@@ -172,5 +182,8 @@ public final class StageController {
 
     public Simulation getSimulation() {
         return this.simulation;
+    }
+    public void showOnChart(LoggingEntity entity) {
+        detailVM.getChartVM().setEntity(entity);
     }
 }
