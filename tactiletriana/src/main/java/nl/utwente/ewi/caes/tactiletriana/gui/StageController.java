@@ -34,6 +34,7 @@ public final class StageController {
     private static StageController instance;
 
     // STATIC METHODS
+    
     public static StageController getInstance() {
         return instance;
     }
@@ -45,6 +46,7 @@ public final class StageController {
     }
 
     // INSTANCE FIELDS
+    
     private final Stage launcherStage;
     private Stage touchStage;
     private Stage detailStage;
@@ -58,8 +60,9 @@ public final class StageController {
     private ConfigurationVM launcherVM;
     private Simulation simulation;
     private SimulationPrediction simulationprediction;
+    
     // CONSTRUCTOR
-
+    
     private StageController(Stage configurationStage) {
         // Build launcher stage
         this.launcherStage = configurationStage;
@@ -88,11 +91,11 @@ public final class StageController {
             stage.setX(screen.getVisualBounds().getMinX());
             stage.setY(screen.getVisualBounds().getMinY());
             screenIndexStages.add(stage);
-
         }
     }
 
     // METHODS
+    
     public void setLauncherStageVisible(boolean visible) {
         if (visible) {
             launcherStage.show();

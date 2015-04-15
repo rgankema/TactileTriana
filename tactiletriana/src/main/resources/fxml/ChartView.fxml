@@ -14,7 +14,7 @@
           <NumberAxis autoRanging="false" label="Time (minutes)" minorTickCount="0" minorTickVisible="false" side="BOTTOM" tickMarkVisible="false" tickUnit="60.0" fx:id="xAxis" />
         </xAxis>
         <yAxis>
-          <NumberAxis fx:id="yAxis" autoRanging="false" minorTickCount="0" minorTickVisible="false" side="LEFT" tickMarkVisible="false" />
+          <NumberAxis fx:id="yAxis" forceZeroInRange="false" minorTickCount="0" minorTickVisible="false" side="LEFT" tickMarkVisible="false" />
         </yAxis>
       </LineChart>
    </children>
