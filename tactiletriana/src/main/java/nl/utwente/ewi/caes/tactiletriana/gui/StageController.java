@@ -169,4 +169,8 @@ public final class StageController {
             detailStage.close();
         }
     }
+
+    public Simulation getSimulation() {
+        return this.simulation;
+    }
 }

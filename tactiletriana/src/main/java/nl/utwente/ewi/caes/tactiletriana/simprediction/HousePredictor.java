@@ -36,7 +36,6 @@ public class HousePredictor extends House {
         shadowDeviceMap = new HashMap<DeviceBase, DeviceBase>();
 
         this.linkedHouse.getDevices().addListener(new ListChangeListener<DeviceBase>() {
-
             @Override
             public void onChanged(ListChangeListener.Change<? extends DeviceBase> c) {
                 while (c.next()) {

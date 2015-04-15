@@ -26,7 +26,7 @@ public class App extends Application {
     
     @Override
     public void stop() {
-        Simulation.getInstance().stop();
+        StageController.getInstance().getSimulation().stop();
     }
     
     public static void main(String[] args) {

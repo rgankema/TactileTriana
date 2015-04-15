@@ -26,7 +26,7 @@ public class HouseTest {
     @Test
     public void testCurrentConsumptionPropertyNoDevices() {
         System.out.println("currentConsumptionPropertyNoDevices");
-        House instance = new House();
+        House instance = new House(null);
         
         ReadOnlyDoubleProperty result = instance.currentConsumptionProperty();
         
@@ -44,7 +44,7 @@ public class HouseTest {
         Simulation simulation = mock(Simulation.class);
         when(simulation.currentTimeProperty()).thenReturn(new SimpleObjectProperty<>(LocalDateTime.of(2014, 1, 1, 0, 0)));
         
-        House instance = new House();
+        House instance = new House(simulation);
         int nDevices = 5;
         double deviceConsumption = 50.0;
         for (int i = 0; i < nDevices; i++) {

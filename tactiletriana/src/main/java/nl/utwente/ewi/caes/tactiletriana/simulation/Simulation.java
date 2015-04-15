@@ -50,7 +50,7 @@ public class Simulation extends LoggingEntity {
     private Cable[] cables;
     private House[] houses;
 
-    protected Simulation() {
+    public Simulation() {
         super(LoggedValueType.POWER, "Network", null);
         this.setSimulation(this);
 
