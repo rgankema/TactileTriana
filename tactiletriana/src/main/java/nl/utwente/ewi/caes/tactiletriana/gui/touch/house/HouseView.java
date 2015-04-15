@@ -50,8 +50,6 @@ public class HouseView extends Pane {
             return Color.DARKGRAY.interpolate(Color.RED, load);
         }, viewModel.loadProperty(), viewModel.fuseBlownProperty()));
         
-        // Repair fuse when house receives touch event
-     
         
         this.setOnMousePressed(e -> {
             if (!taskScheduled) {
@@ -69,6 +67,7 @@ public class HouseView extends Pane {
             }
             e.consume();
         });
+        
         this.setOnMouseReleased(e -> {
             if (taskScheduled) {
                 timer.cancel();

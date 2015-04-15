@@ -35,6 +35,10 @@ public class NodeVM {
         }
     }
     
+    public Node getModel() {
+        return model;
+    }
+    
     /**
      * Defines how far off the voltage is in the node on a scale of 0 to 1.
      * 0 means the voltage is at 230, 1 means it's off with at least 10%.
