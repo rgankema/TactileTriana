@@ -35,6 +35,11 @@ public class NodeVM {
             }, model.voltageProperty()));
         }
     }
+    
+    public Node getModel() {
+        return model;
+    }
+    
 
     /**
      * Defines how far off the voltage is in the node on a scale of 0 to 1. 0
