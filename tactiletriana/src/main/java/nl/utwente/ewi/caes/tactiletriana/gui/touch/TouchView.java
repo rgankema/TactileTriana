@@ -58,6 +58,7 @@ public class TouchView extends TactilePane {
         this.simulation.startedProperty().addListener(i -> {
             if (!this.simulation.isStarted()) {
                 getChildren().removeIf(n -> n instanceof Group && ((Group) n).getChildren().get(0) instanceof DeviceView);
+                getActiveNodes().clear();
 
                 DeviceVM deviceVM2 = new DeviceVM(new MockDevice(this.simulation));
                 DeviceVM solarVM2 = new DeviceVM(new SolarPanel(this.simulation));
@@ -124,6 +125,7 @@ public class TouchView extends TactilePane {
             } else {
                 if (!TactilePane.getNodesColliding(group).stream().anyMatch(node -> node instanceof HouseView)) {
                     getChildren().remove(group);
+                    getActiveNodes().remove(group);
                     deviceVM.droppedOnHouse(null);
                 } else {
                     for (Node node : TactilePane.getNodesColliding(group)) {

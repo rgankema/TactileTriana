@@ -11,10 +11,10 @@
 <?import nl.utwente.ewi.caes.tactiletriana.gui.touch.network.*?>
 <?import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.*?>
 
-<fx:root type="TactilePane" fx:id="root"
+<fx:root type="TactilePane" fx:id="root" bordersCollide="true" proximityThreshold="0"  
          xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
     
     <children>
-        <NetworkView fx:id="networkView" TactilePane.draggable="false"  />
+        <NetworkView fx:id="networkView" TactilePane.draggable="false" />
     </children>
 </fx:root>
