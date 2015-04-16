@@ -16,9 +16,9 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.*;
  */
 public class SolarPanel extends DeviceBase {
 
-    //FIXME: Make these (all?) constants editable
+    //FIXME: Make (all?) these constants editable
+    
     //Elevation of the panel in degrees
-
     private double elevation = 45;
     //Azimuth orientation of the panel in degrees, 0 = south, 90 = west, 180 = north & 270 = east
     private double azimuth = 0;
@@ -73,7 +73,6 @@ public class SolarPanel extends DeviceBase {
         super.tick(simulation, connected);
 
         //Set the current consumption according to current temperature, radiation and time
-        //The value is multiplicated by -1 because the solarpanel produces and doesn't consume
         setCurrentConsumption(calculateProduction(simulation.getTemperature(), simulation.getRadiance(),
                 Simulation.LONGITUDE, Simulation.LATITUDE, simulation.getCurrentTime()));
     }
@@ -145,9 +144,16 @@ public class SolarPanel extends DeviceBase {
         //Guess for the PV temperature that affects the efficiency.
         double temperaturePV = temperature + (50 * powerSquareMeter / 1367); //Formula not based on anything or whatsover, this part can be improved
         double actualEfficiency = (efficiency * (1 - ((temperaturePV - 25) * temperatureEfficiency) / 100)) / 100;
-
+        
+        double result = getSolarPanelArea() * powerSquareMeter * actualEfficiency;
+        
+        //Quick dirty fix for when the solarpanel should consume instead of produce according to the calculations 
+        if (result > 0){
+            result = 0;
+        }
+        
         //Return the production in W (coming from J/cm2 for a whole hour)
-        return getSolarPanelArea() * powerSquareMeter * actualEfficiency;
+        return result;
     }
 
 }
