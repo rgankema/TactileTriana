@@ -77,6 +77,10 @@ public class ChartVM {
     public ReadOnlyDoubleProperty xAxisUpperBoundProperty() {
         return xAxisUpperBound.getReadOnlyProperty();
     }
+    
+    public LoggingEntity.LoggedValueType getValueType() {
+        return entity.getLoggedValueType();
+    }
 
     /**
      *

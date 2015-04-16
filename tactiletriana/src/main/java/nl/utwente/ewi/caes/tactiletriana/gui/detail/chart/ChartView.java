@@ -11,6 +11,7 @@ import javafx.scene.Group;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Series;
+import javafx.util.StringConverter;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 
 /**
@@ -50,10 +51,25 @@ public class ChartView extends Group {
         //yAxis.upperBoundProperty().bind(viewModel.yAxisAbsBoundProperty());
         //yAxis.tickUnitProperty().bind(viewModel.yAxisAbsBoundProperty().divide(5));
         yAxis.labelProperty().bind(viewModel.seriesNameProperty());
-
+        
         xAxis.lowerBoundProperty().bind(viewModel.xAxisLowerBoundProperty());
         xAxis.upperBoundProperty().bind(viewModel.xAxisUpperBoundProperty());
+        xAxis.setTickLabelFormatter(new StringConverter<Number>() {
+            @Override
+            public String toString(Number object) {
+                double totalMinutes = (double) object;
+                
+                int minutes = (int) (totalMinutes % 60);
+                int hours = (int) ((totalMinutes - minutes) / 60) % 24;
+                return String.format("%02d:%02d", hours, minutes);
+            }
 
+            @Override
+            public Number fromString(String string) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+        });
+        
         chart.titleProperty().bind(viewModel.chartTitleProperty());
         chart.getData().add(series);
     }
