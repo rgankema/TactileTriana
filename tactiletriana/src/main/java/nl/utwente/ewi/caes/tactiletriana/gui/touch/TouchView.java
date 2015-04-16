@@ -9,6 +9,7 @@ import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.image.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Polygon;
 import nl.utwente.ewi.caes.tactilefx.control.TactilePane;
@@ -44,15 +45,20 @@ public class TouchView extends TactilePane {
         for (HouseView house : networkView.getHouses()) {
             getActiveNodes().add(house);
         }
-
+        
+        
         DeviceView device = new DeviceView(new Polygon(new double[]{0d, 50d, 25d, 0d, 50d, 50d}));
         DeviceVM deviceVM = new DeviceVM(new MockDevice(this.simulation));
 
-        DeviceView solar = new DeviceView(new Polygon(new double[]{0d, 50d, 40d, 0d, 40d, 50d}));
+        DeviceView solar = new DeviceView(getNewSolarBackground());
         DeviceVM solarVM = new DeviceVM(new SolarPanel(this.simulation));
+        
+        DeviceView car = new DeviceView(getNewCarBackground());
+        DeviceVM carVM = new DeviceVM(new BufferTimeShiftable(this.simulation));
 
         addDeviceToStack((1920 / 2 - 40), (1080 / 2 - 25), device, deviceVM);
         addDeviceToStack((1920 / 2 + 40), (1080 / 2 - 25), solar, solarVM);
+        addDeviceToStack((1920 / 2 - 120), (1080 / 2 - 25), car, carVM);
 
         // Lelijke hack om devices te verwijderen na reset. moet allemaal ooit mooier
         this.simulation.startedProperty().addListener(i -> {
@@ -62,9 +68,11 @@ public class TouchView extends TactilePane {
 
                 DeviceVM deviceVM2 = new DeviceVM(new MockDevice(this.simulation));
                 DeviceVM solarVM2 = new DeviceVM(new SolarPanel(this.simulation));
+                DeviceVM carVM2 = new DeviceVM(new BufferTimeShiftable(this.simulation));
 
                 addDeviceToStack((1920 / 2 - 40), (1080 / 2 - 25), new DeviceView(new Polygon(new double[]{0d, 50d, 25d, 0d, 50d, 50d})), deviceVM2);
-                addDeviceToStack((1920 / 2 + 40), (1080 / 2 - 25), new DeviceView(new Polygon(new double[]{0d, 50d, 40d, 0d, 40d, 50d})), solarVM2);
+                addDeviceToStack((1920 / 2 + 40), (1080 / 2 - 25), new DeviceView(getNewSolarBackground()), solarVM2);
+                addDeviceToStack((1920 / 2 + 40), (1080 / 2 - 25), new DeviceView(getNewCarBackground()), carVM2);
             }
         });
     }
@@ -118,9 +126,13 @@ public class TouchView extends TactilePane {
                     DeviceVM deviceVM2 = new DeviceVM(new MockDevice(this.simulation));
                     addDeviceToStack(x, y, device2, deviceVM2);
                 } else if (deviceVM.getModel() instanceof SolarPanel) {
-                    DeviceView solar = new DeviceView(new Polygon(new double[]{0d, 50d, 40d, 0d, 40d, 50d}));
+                    DeviceView solar = new DeviceView(getNewSolarBackground());
                     DeviceVM solarVM = new DeviceVM(new SolarPanel(this.simulation));
                     addDeviceToStack(x, y, solar, solarVM);
+                } else if (deviceVM.getModel() instanceof BufferTimeShiftable){
+                    DeviceView car = new DeviceView(getNewCarBackground());
+                    DeviceVM carVM = new DeviceVM(new BufferTimeShiftable(this.simulation));
+                    addDeviceToStack(x, y, car, carVM);
                 }
             } else {
                 if (!TactilePane.getNodesColliding(group).stream().anyMatch(node -> node instanceof HouseView)) {
@@ -137,5 +149,13 @@ public class TouchView extends TactilePane {
                 }
             }
         });
+    }
+    
+    private ImageView getNewSolarBackground(){
+        return new ImageView(new Image("images/solarpanel.png",50,50,false,true));
+    }
+    
+    private ImageView getNewCarBackground(){
+        return new ImageView(new Image("images/car.png",50,50,false,true));
     }
 }
