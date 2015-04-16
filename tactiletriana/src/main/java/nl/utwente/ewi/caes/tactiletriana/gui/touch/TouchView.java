@@ -9,8 +9,10 @@ import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Polygon;
 import nl.utwente.ewi.caes.tactilefx.control.TactilePane;
+import nl.utwente.ewi.caes.tactilefx.debug.MouseToTouchMapper;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseView;
@@ -36,6 +38,8 @@ public class TouchView extends TactilePane {
         this.simulation = simulation;
         ViewLoader.load(this);
 
+        addEventFilter(MouseEvent.ANY, new MouseToTouchMapper());
+        
         // Track houses
         for (HouseView house : networkView.getHouses()) {
             getActiveNodes().add(house);

@@ -10,9 +10,12 @@ import java.util.List;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TouchEvent;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import nl.utwente.ewi.caes.tactilefx.debug.DebugParent;
 import nl.utwente.ewi.caes.tactiletriana.gui.detail.DetailVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.detail.DetailView;
 import nl.utwente.ewi.caes.tactiletriana.gui.configuration.ConfigurationVM;
@@ -112,7 +115,7 @@ public final class StageController {
             touchVM = new TouchVM(simulation);
             TouchView tv = new TouchView(this.simulation);
             tv.setViewModel(touchVM);
-
+            
             Scene touchScene = new Scene(tv);
             touchScene.setOnKeyPressed(e -> {
                 if (e.getCode() == KeyCode.ESCAPE) {

@@ -69,7 +69,7 @@ public class DeviceView extends StackPane {
         }, viewModel.loadProperty(), viewModel.stateProperty()));
 
         // Handle touch events on config icon
-        configIcon.setOnMousePressed(e -> {
+        configIcon.setOnTouchPressed(e -> {
             viewModel.configIconPressed();
             e.consume();
         });
