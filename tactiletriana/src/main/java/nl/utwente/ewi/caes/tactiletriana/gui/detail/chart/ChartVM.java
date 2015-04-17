@@ -15,7 +15,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
-import nl.utwente.ewi.caes.tactiletriana.simulation.LoggingEntity;
+import nl.utwente.ewi.caes.tactiletriana.simulation.LoggingEntityBase;
 
 /**
  *
@@ -23,10 +23,10 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.LoggingEntity;
  */
 public class ChartVM {
 
-    private LoggingEntity entity;
+    private LoggingEntityBase entity;
     private ObservableList<XYChart.Data<Number, Number>> seriesData;
 
-    public ChartVM(LoggingEntity entity) {
+    public ChartVM(LoggingEntityBase entity) {
         seriesData = FXCollections.observableList(new ArrayList<XYChart.Data<Number, Number>>());
 
         setEntity(entity);
@@ -78,7 +78,7 @@ public class ChartVM {
         return xAxisUpperBound.getReadOnlyProperty();
     }
     
-    public LoggingEntity.LoggedValueType getValueType() {
+    public LoggingEntityBase.LoggedValueType getValueType() {
         return entity.getLoggedValueType();
     }
 
@@ -91,7 +91,7 @@ public class ChartVM {
     }
 
     // PUBLIC METHODS
-    public final void setEntity(LoggingEntity entity) {
+    public final void setEntity(LoggingEntityBase entity) {
         if (this.entity != null) {
             this.entity.getLog().removeListener(logListener);
         }

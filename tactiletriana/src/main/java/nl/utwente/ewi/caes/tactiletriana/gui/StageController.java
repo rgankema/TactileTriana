@@ -21,7 +21,7 @@ import nl.utwente.ewi.caes.tactiletriana.gui.configuration.ScreenIndexView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.TouchVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.TouchView;
 import nl.utwente.ewi.caes.tactiletriana.simprediction.SimulationPrediction;
-import nl.utwente.ewi.caes.tactiletriana.simulation.LoggingEntity;
+import nl.utwente.ewi.caes.tactiletriana.simulation.LoggingEntityBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 
 /**
@@ -188,7 +188,7 @@ public final class StageController {
         return this.simulation;
     }
 
-    public void showOnChart(LoggingEntity entity) {
+    public void showOnChart(LoggingEntityBase entity) {
         if (entity == null) {
             entity = simulation;
         }

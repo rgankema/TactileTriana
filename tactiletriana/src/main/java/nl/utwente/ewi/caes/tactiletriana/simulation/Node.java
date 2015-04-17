@@ -15,7 +15,7 @@ import javafx.beans.property.ReadOnlyDoubleWrapper;
  *
  * @author Richard
  */
-public class Node extends LoggingEntity implements IFWBWSEntity {
+public class Node extends LoggingEntityBase implements IFWBWSEntity {
 
     private final List<Cable> cables;
     private House house;

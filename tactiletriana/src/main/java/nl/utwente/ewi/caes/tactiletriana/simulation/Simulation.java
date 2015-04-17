@@ -25,7 +25,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.devices.UncontrollableLoad;
  *
  * @author Richard
  */
-public class Simulation extends LoggingEntity {
+public class Simulation extends LoggingEntityBase {
 
     public static final int NUMBER_OF_HOUSES = 6;   // number of houses
     public static final int SYSTEM_TICK_TIME = 200;        // time between ticks in ms
