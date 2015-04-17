@@ -47,9 +47,6 @@ public class ChartView extends Group {
         Bindings.bindContent(series.getData(), viewModel.getSeriesData());
 
         yAxis.setAutoRanging(true);
-        //yAxis.lowerBoundProperty().bind(viewModel.yAxisAbsBoundProperty().negate());
-        //yAxis.upperBoundProperty().bind(viewModel.yAxisAbsBoundProperty());
-        //yAxis.tickUnitProperty().bind(viewModel.yAxisAbsBoundProperty().divide(5));
         yAxis.labelProperty().bind(viewModel.seriesNameProperty());
         
         xAxis.lowerBoundProperty().bind(viewModel.xAxisLowerBoundProperty());

@@ -30,7 +30,7 @@ public class Simulation extends LoggingEntityBase {
     public static final int NUMBER_OF_HOUSES = 6;   // number of houses
     public static final int SYSTEM_TICK_TIME = 200;        // time between ticks in ms
     public static final int SIMULATION_TICK_TIME = 5;   // time in minutes that passes in the simulation with each tick
-    public static final LocalDateTime DEFAULT_TIME = LocalDateTime.of(2014, 7, 1, 0, 0);
+    public static final LocalDateTime DEFAULT_TIME = LocalDateTime.of(2014, 1, 1, 0, 0);
     public static final boolean UNCONTROLABLE_LOAD_ENABLED = true; // staat de uncontrolable load aan?
 
     public static final double LONGITUDE = 6.897;
@@ -235,14 +235,10 @@ public class Simulation extends LoggingEntityBase {
             scheduler.scheduleAtFixedRate(() -> {
                 // Todo: optimize dit, dit is slechts een hotfix
                 // Uiteraard nogal idioot om de hele meuk op de JavaFX thread te draaien
-                Platform.runLater(() -> {
-                    if (!isRunning()) {
-                        return;
-                    }
-                    simulateTick();
-
-                });
-
+                if (!isRunning()) {
+                    return;
+                }
+                tick();
             }, SYSTEM_TICK_TIME, SYSTEM_TICK_TIME, TimeUnit.MILLISECONDS);
         }
 
@@ -250,15 +246,47 @@ public class Simulation extends LoggingEntityBase {
         setStarted(true);
     }
 
-    public void simulateTick() {
+    protected void tick() {
         getTransformer().tick(this, true);
-        initiateForwardBackwardSweep();
+        
+        // Reset the nodes.
+        transformer.prepareForwardBackwardSweep();
+        // Run the ForwardBackwardSweep Load-flow calculation until converged or the iteration limit is reached
+        for (int i = 0; i < 20; i++) {
+            transformer.doForwardBackwardSweep(230);
 
-        // Log total power consumption in network
-        this.log(transformer.getCables().get(0).getCurrent() * 230d);
+            if (hasFBSConverged(0.0001)) {
+                break;
+            }
 
-        // Increment time
-        setCurrentTime((getCurrentTime().plusMinutes(SIMULATION_TICK_TIME)));
+            // Store last voltage to check for convergence
+            for (Node node : this.lastVoltageByNode.keySet()) {
+                lastVoltageByNode.put(node, node.getVoltage());
+            }
+        }
+        
+        // Run anything that involves the UI on the JavaFX thread
+        if (!Platform.isFxApplicationThread()) {
+            Platform.runLater(() -> {
+                // Finish forward backward sweep
+                transformer.finishForwardBackwardSweep();
+
+                // Log total power consumption in network
+                log(transformer.getCables().get(0).getCurrent() * 230d);
+
+                // Increment time
+                setCurrentTime((getCurrentTime().plusMinutes(SIMULATION_TICK_TIME)));
+            });
+        } else {
+            // Finish forward backward sweep
+            transformer.finishForwardBackwardSweep();
+
+            // Log total power consumption in network
+            log(transformer.getCables().get(0).getCurrent() * 230d);
+
+            // Increment time
+            setCurrentTime((getCurrentTime().plusMinutes(SIMULATION_TICK_TIME)));
+        }
     }
 
     public void pause() {
@@ -300,7 +328,7 @@ public class Simulation extends LoggingEntityBase {
     // Start the forward backward sweep algorithm
     private void initiateForwardBackwardSweep() {
         // First reset the nodes.
-        transformer.reset();
+        transformer.prepareForwardBackwardSweep();
         // Run the ForwardBackwardSweep Load-flow calculation until converged or the iteration limit is reached
         for (int i = 0; i < 20; i++) {
             transformer.doForwardBackwardSweep(230); // this runs recursivly down the tree
@@ -314,6 +342,10 @@ public class Simulation extends LoggingEntityBase {
                 lastVoltageByNode.put(node, node.getVoltage());
             }
         }
+        // Finish forward backward sweep
+        Platform.runLater(() -> {
+            transformer.finishForwardBackwardSweep();
+        });
     }
 
     // Calculate if the FBS algorithm has converged. 
@@ -339,11 +371,5 @@ public class Simulation extends LoggingEntityBase {
         return this.houses;
     }
 
-    /**
-     *
-     * @return all nodes directly connected to houses
-     */
-    public Node[] getHouseNodes() {
-        return this.houseNodes;
-    }
+
 }

@@ -24,7 +24,8 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.LoggingEntityBase;
 public class ChartVM {
 
     private LoggingEntityBase entity;
-    private ObservableList<XYChart.Data<Number, Number>> seriesData;
+    private MapChangeListener logListener;
+    private final ObservableList<XYChart.Data<Number, Number>> seriesData;
 
     public ChartVM(LoggingEntityBase entity) {
         seriesData = FXCollections.observableList(new ArrayList<XYChart.Data<Number, Number>>());
@@ -36,7 +37,7 @@ public class ChartVM {
     /**
      * The name of the chart
      */
-    private ReadOnlyStringWrapper chartTitle = new ReadOnlyStringWrapper();
+    private final ReadOnlyStringWrapper chartTitle = new ReadOnlyStringWrapper();
 
     public ReadOnlyStringProperty chartTitleProperty() {
         return chartTitle.getReadOnlyProperty();
@@ -45,25 +46,16 @@ public class ChartVM {
     /**
      * The name of the series
      */
-    private ReadOnlyStringWrapper seriesName = new ReadOnlyStringWrapper();
+    private final ReadOnlyStringWrapper seriesName = new ReadOnlyStringWrapper();
 
     public ReadOnlyStringProperty seriesNameProperty() {
         return seriesName.getReadOnlyProperty();
     }
-
-    /**
-     * The absolute y value within which the series is bounded
-     */
-    private ReadOnlyDoubleWrapper yAxisAbsBound = new ReadOnlyDoubleWrapper();
-
-    public ReadOnlyDoubleProperty yAxisAbsBoundProperty() {
-        return yAxisAbsBound.getReadOnlyProperty();
-    }
-
+    
     /**
      * The lower bound of the x axis
      */
-    private ReadOnlyDoubleWrapper xAxisLowerBound = new ReadOnlyDoubleWrapper();
+    private final ReadOnlyDoubleWrapper xAxisLowerBound = new ReadOnlyDoubleWrapper();
 
     public ReadOnlyDoubleProperty xAxisLowerBoundProperty() {
         return xAxisLowerBound.getReadOnlyProperty();
@@ -72,7 +64,7 @@ public class ChartVM {
     /**
      * The upper bound of the x axis
      */
-    private ReadOnlyDoubleWrapper xAxisUpperBound = new ReadOnlyDoubleWrapper();
+    private final ReadOnlyDoubleWrapper xAxisUpperBound = new ReadOnlyDoubleWrapper();
 
     public ReadOnlyDoubleProperty xAxisUpperBoundProperty() {
         return xAxisUpperBound.getReadOnlyProperty();
@@ -91,11 +83,14 @@ public class ChartVM {
     }
 
     // PUBLIC METHODS
+    
     public final void setEntity(LoggingEntityBase entity) {
+        // Reset chart
         if (this.entity != null) {
             this.entity.getLog().removeListener(logListener);
         }
-
+        seriesData.clear();
+        
         this.entity = entity;
 
         // Set label of series
@@ -114,14 +109,19 @@ public class ChartVM {
         // Set label of chart
         chartTitle.set(entity.getDisplayName() + " " + seriesName.get());
 
+        // Show 12 hours of data
         xAxisUpperBound.bind(xAxisLowerBound.add(60 * 12));
 
-        if (entity.getAbsoluteMaximum() != Double.POSITIVE_INFINITY) {
-            yAxisAbsBound.set(entity.getAbsoluteMaximum());
+        // Update chart with recorded data
+        for (LocalDateTime time : entity.getLog().keySet()) {
+            int minuteOfYear = (time.getDayOfYear() - 1) * 24 * 60 + time.getHour() * 60 + time.getMinute();
+            if (seriesData.size() > 0) {
+                seriesData.add(new XYChart.Data<>(minuteOfYear, seriesData.get(seriesData.size() - 1).getYValue()));
+            }
+            seriesData.add(new XYChart.Data(minuteOfYear, entity.getLog().get(time)));
         }
-
-        seriesData.clear();
-
+        
+        // Update chart when a new value is logged
         logListener = new MapChangeListener<LocalDateTime, Double>() {
             @Override
             public void onChanged(MapChangeListener.Change<? extends LocalDateTime, ? extends Double> c) {
@@ -154,16 +154,10 @@ public class ChartVM {
                     } else {
                         xAxisLowerBound.set((Integer) seriesData.get(seriesData.size() - 288).getXValue());
                     }
-
-                    // Range y axis
-                    if (Math.abs(c.getValueAdded()) > yAxisAbsBound.get()) {
-                        yAxisAbsBound.set(c.getValueAdded());
-                    }
                 }
             }
         };
+        
         entity.getLog().addListener(logListener);
     }
-
-    private MapChangeListener logListener;
 }

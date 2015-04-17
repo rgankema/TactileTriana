@@ -6,7 +6,7 @@
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
+import java.util.TreeMap;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 
@@ -26,7 +26,7 @@ public abstract class LoggingEntityBase {
         this.displayName = displayName;
         this.type = type;
         this.simulation = simulation;
-        this.log = FXCollections.observableMap(new HashMap<>());
+        this.log = FXCollections.observableMap(new TreeMap<>());
     }
 
     protected void setSimulation(Simulation simulation) {
@@ -56,7 +56,10 @@ public abstract class LoggingEntityBase {
 
     // METHODS
     protected final void log(double value) {
-        log.put(this.simulation.getCurrentTime(), value);
+        // Log can be called when Simulation is still initializing, and thus currentTime can be null
+        if (this.simulation.getCurrentTime() != null) {
+            log.put(this.simulation.getCurrentTime(), value);
+        }
     }
 
     // ENUMS
