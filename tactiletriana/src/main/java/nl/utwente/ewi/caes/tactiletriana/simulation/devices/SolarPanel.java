@@ -153,7 +153,7 @@ public class SolarPanel extends DeviceBase {
         }
         
         //Return the production in W (coming from J/cm2 for a whole hour)
-        return result;
+        return result; 
     }
 
 }
