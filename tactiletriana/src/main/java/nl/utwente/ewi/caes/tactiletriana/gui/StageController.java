@@ -57,13 +57,13 @@ public final class StageController {
     private DetailVM detailVM;
 
     private final Simulation simulation;
-    private final SimulationPrediction simulationprediction;
+    //private final SimulationPrediction simulationprediction;
     
     // CONSTRUCTOR
     
     private StageController(Stage configurationStage) {
         this.simulation = new Simulation();
-        this.simulationprediction = new SimulationPrediction(simulation);
+        //this.simulationprediction = new SimulationPrediction(simulation);
 
         // Build configuration stage
         this.configurationStage = configurationStage;

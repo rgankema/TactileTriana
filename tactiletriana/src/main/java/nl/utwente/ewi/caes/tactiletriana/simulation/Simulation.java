@@ -247,7 +247,11 @@ public class Simulation extends LoggingEntityBase {
     }
 
     protected void tick() {
-        getTransformer().tick(this, true);
+        if (!Platform.isFxApplicationThread()) {
+            Platform.runLater( () -> getTransformer().tick(this, true));
+        } else {
+            getTransformer().tick(this, true);
+        }
         
         // Reset the nodes.
         transformer.prepareForwardBackwardSweep();
