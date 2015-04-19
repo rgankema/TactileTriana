@@ -57,13 +57,13 @@ public final class StageController {
     private DetailVM detailVM;
 
     private final Simulation simulation;
-    //private final SimulationPrediction simulationprediction;
+    private final SimulationPrediction simulationPrediction;
     
     // CONSTRUCTOR
     
     private StageController(Stage configurationStage) {
         this.simulation = new Simulation();
-        //this.simulationprediction = new SimulationPrediction(simulation);
+        this.simulationPrediction = new SimulationPrediction(simulation);
 
         // Build configuration stage
         this.configurationStage = configurationStage;
@@ -152,6 +152,8 @@ public final class StageController {
 
                 detailStage.initStyle(StageStyle.UNDECORATED);
             }
+            
+            showOnChart(simulation);
         }
 
         if (visible) {
@@ -192,6 +194,6 @@ public final class StageController {
         if (entity == null) {
             entity = simulation;
         }
-        detailVM.getChartVM().setEntity(entity);
+        detailVM.getChartVM().setEntity(entity, simulationPrediction.getFuture(entity));
     }
 }

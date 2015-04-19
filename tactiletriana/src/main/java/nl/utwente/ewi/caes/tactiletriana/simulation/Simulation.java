@@ -11,9 +11,12 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
@@ -31,7 +34,7 @@ public class Simulation extends LoggingEntityBase {
     public static final int NUMBER_OF_HOUSES = 6;   // number of houses
     public static final int SYSTEM_TICK_TIME = 200;        // time between ticks in ms
     public static final int SIMULATION_TICK_TIME = 5;   // time in minutes that passes in the simulation with each tick
-    public static final LocalDateTime DEFAULT_TIME = LocalDateTime.of(2014, 1, 1, 0, 0);
+    public static final LocalDateTime DEFAULT_TIME = LocalDateTime.of(2014, 7, 1, 0, 0);
     public static final boolean UNCONTROLABLE_LOAD_ENABLED = true; // staat de uncontrolable load aan?
 
     public static final double LONGITUDE = 6.897;
@@ -344,11 +347,28 @@ public class Simulation extends LoggingEntityBase {
 
     // HELP METHODS
     
+    /**
+     * Runs a given task on the JavaFX thread, and blocks until the task
+     * is done.
+     * 
+     * @param task that needs to be run on the JavaFX thread
+     */
     private void runOnJavaFXThread(Runnable task) {
         if (Platform.isFxApplicationThread()) {
             task.run();
         } else {
-            Platform.runLater(task);
+            CountDownLatch latch = new CountDownLatch(1);
+            Platform.runLater( () -> {
+                task.run(); 
+                latch.countDown();
+            });
+            // Wait until the JavaFX thread is done to avoid synchronization
+            // issues
+            try {
+                latch.await();
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
 

@@ -8,8 +8,11 @@ package nl.utwente.ewi.caes.tactiletriana.simprediction;
 import java.util.HashMap;
 import java.util.Map;
 import javafx.collections.ListChangeListener;
+import nl.utwente.ewi.caes.tactiletriana.simulation.Cable;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.House;
+import nl.utwente.ewi.caes.tactiletriana.simulation.LoggingEntityBase;
+import nl.utwente.ewi.caes.tactiletriana.simulation.Node;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 
 /**
@@ -21,21 +24,20 @@ public class SimulationPrediction extends Simulation {
     
     private final Simulation mainSimulation;
     private boolean mainSimulationChanged = false;
-    public Map<DeviceBase, DeviceBase> shadowDeviceMap = new HashMap<>();
+    public Map<LoggingEntityBase, LoggingEntityBase> futureByActual = new HashMap<>();
 
     public SimulationPrediction(Simulation mainSimulation) {
         super();
         this.mainSimulation = mainSimulation;
         setCurrentTime(mainSimulation.getCurrentTime());
 
-        // this() koppelen aan mainSimulation via HousePredictor()
-        for (int iN = 0; iN < mainSimulation.getHouses().length; iN++) {
-            linkHouse(mainSimulation.getHouses()[iN], getHouses()[iN]);
-        }
+        // Link this (future) simulation to acual simulation
+        futureByActual.put(mainSimulation, this);
+        linkNetwork(mainSimulation.getTransformer(), this.getTransformer());
 
-        // zorg dat de simulatie 12 uur vooruit loopt
+        // Zorg dat de simulatie 12 uur vooruit loopt
         this.mainSimulation.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
-            // er is iets veranderd. Run de simulation vanaf het huidige punt vooruit
+            // Er is iets veranderd. Run de simulation vanaf het huidige punt vooruit
             if (mainSimulationChanged) {
                 mainSimulationChanged = false;
                 setCurrentTime(newValue);
@@ -43,50 +45,70 @@ public class SimulationPrediction extends Simulation {
 
             // Zo lang hij achterloopt -> doe een tick()
             while (getCurrentTime().isBefore(newValue.plusHours(RUN_AHEAD))) {
-                tick();
+                super.tick();
             }
         });
     }
     
+    private void linkNetwork(Node actual, Node future) {
+        futureByActual.put(actual, future);
+        if (actual.getHouse() != null) {
+            linkHouse(actual.getHouse(), future.getHouse());
+        }
+        for (int i = 0; i < actual.getCables().size(); i++) {
+            Cable actualCable = actual.getCables().get(i);
+            Cable futureCable = future.getCables().get(i);
+            // Bind length
+            actualCable.lengthProperty().addListener(obs -> { 
+                futureCable.setLength(actualCable.getLength());
+                mainSimulationChanged = true;
+            });
+            futureByActual.put(actualCable, futureCable);
+            linkNetwork(actualCable.getChildNode(), futureCable.getChildNode());
+        }
+    }
+    
     private void linkHouse(House actual, House future) {
-        actual.getDevices().addListener(new ListChangeListener<DeviceBase>() {
-            @Override
-            public void onChanged(ListChangeListener.Change<? extends DeviceBase> c) {
-                while (c.next()) {
-                    for (DeviceBase item : c.getRemoved()) {
-                        mainSimulationChanged = true;
-                        future.getDevices().remove(shadowDeviceMap.get(item));
+        futureByActual.put(actual, future);
+        actual.getDevices().addListener((ListChangeListener.Change<? extends DeviceBase> c) -> {
+            while (c.next()) {
+                for (DeviceBase item : c.getRemoved()) {
+                    mainSimulationChanged = true;
+                    future.getDevices().remove((DeviceBase)futureByActual.get(item));
+                }
+                for (DeviceBase actualDevice : c.getAddedSubList()) {
+                    mainSimulationChanged = true;
+                    
+                    // maak een kopie van dit device in de map
+                    DeviceBase shadowDevice = null;
+                    try {
+                        shadowDevice = (DeviceBase) actualDevice.getClass().getConstructors()[0].newInstance(simulation);
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
                     }
-                    for (DeviceBase item : c.getAddedSubList()) {
-                        mainSimulationChanged = true;
-
-                        // maak een kopie van dit device in de map
-                        DeviceBase newDevice = null;
-                        try {
-                            newDevice = (DeviceBase) item.getClass().getConstructors()[0].newInstance(simulation);
-                        } catch (Exception ex) {
-                            throw new RuntimeException(ex);
-                        }
-
-                        // sla het nieuwe device op in de map
-                        shadowDeviceMap.put(item, newDevice);
-
-                        // bind alle parameters
-                        for (int i = 0; i < item.getParameters().size(); i++) {
-                            newDevice.getParameters().get(i).property.bind(item.getParameters().get(i).property);
-
-                            // als er iets aan de parameters veranderd moet de simulation.setMainSimulationChanged() aangeroepen worden
-                            // dit zorgt ervoor dat bij de eerst volgende tick() van de main simulation de prediction opnieuw begint
-                            item.getParameters().get(i).property.addListener(observable -> {
-                                mainSimulationChanged = true;
-                            });
-                        }
-
-                        // voeg het toe aan dit huis
-                        future.getDevices().add(newDevice);
+                    
+                    // sla het nieuwe device op in de map
+                    futureByActual.put(actualDevice, shadowDevice);
+                    
+                    // bind alle parameters
+                    for (int i = 0; i < actualDevice.getParameters().size(); i++) {
+                        shadowDevice.getParameters().get(i).property.bind(actualDevice.getParameters().get(i).property);
+                        
+                        // als er iets aan de parameters veranderd moet de simulation.setMainSimulationChanged() aangeroepen worden
+                        // dit zorgt ervoor dat bij de eerst volgende tick() van de main simulation de prediction opnieuw begint
+                        actualDevice.getParameters().get(i).property.addListener(observable -> {
+                            mainSimulationChanged = true;
+                        });
                     }
+                    
+                    // voeg het toe aan dit huis
+                    future.getDevices().add(shadowDevice);
                 }
             }
         });
+    }
+    
+    public LoggingEntityBase getFuture(LoggingEntityBase actual) {
+        return futureByActual.get(actual);
     }
 }

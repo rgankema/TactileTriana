@@ -27,8 +27,9 @@ public class ChartView extends Group {
     @FXML
     private NumberAxis yAxis;
 
-    private Series<Number, Number> series;
-
+    private Series<Number, Number> actualSeries;
+    private Series<Number, Number> futureSeries;
+    
     private ChartVM viewModel;
 
     public ChartView() {
@@ -42,10 +43,11 @@ public class ChartView extends Group {
 
         this.viewModel = viewModel;
 
-        series = new Series<>();
-        series.nameProperty().bind(viewModel.seriesNameProperty());
-        Bindings.bindContent(series.getData(), viewModel.getSeriesData());
-
+        actualSeries = new Series<>();
+        Bindings.bindContent(actualSeries.getData(), viewModel.getActualSeriesData());
+        futureSeries = new Series<>();
+        Bindings.bindContent(futureSeries.getData(), viewModel.getFutureSeriesData());
+        
         yAxis.setAutoRanging(true);
         yAxis.labelProperty().bind(viewModel.seriesNameProperty());
         
@@ -68,6 +70,10 @@ public class ChartView extends Group {
         });
         
         chart.titleProperty().bind(viewModel.chartTitleProperty());
-        chart.getData().add(series);
+        
+        // Draw actualSeries on top of futureSeries by adding it later
+        chart.getData().add(futureSeries);
+        chart.getData().add(actualSeries);
+        
     }
 }
