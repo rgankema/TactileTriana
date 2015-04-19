@@ -8,6 +8,7 @@ package nl.utwente.ewi.caes.tactiletriana.simulation;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -227,6 +228,14 @@ public class Simulation extends LoggingEntityBase {
     public Transformer getTransformer() {
         return transformer;
     }
+    
+    /**
+     *
+     * @return a copy of the array of houses in this simulation
+     */
+    public House[] getHouses() {
+        return Arrays.copyOf(houses, houses.length);
+    }
 
     // PUBLIC METHODS
     // start, pause en reset kan ongetwijfeld allemaal veel mooier.
@@ -247,11 +256,10 @@ public class Simulation extends LoggingEntityBase {
     }
 
     protected void tick() {
-        if (!Platform.isFxApplicationThread()) {
-            Platform.runLater( () -> getTransformer().tick(this, true));
-        } else {
+        // Run anything that involves the UI on the JavaFX thread
+        runOnJavaFXThread(() -> {
             getTransformer().tick(this, true);
-        }
+        });
         
         // Reset the nodes.
         transformer.prepareForwardBackwardSweep();
@@ -270,18 +278,7 @@ public class Simulation extends LoggingEntityBase {
         }
         
         // Run anything that involves the UI on the JavaFX thread
-        if (!Platform.isFxApplicationThread()) {
-            Platform.runLater(() -> {
-                // Finish forward backward sweep
-                transformer.finishForwardBackwardSweep();
-
-                // Log total power consumption in network
-                log(transformer.getCables().get(0).getCurrent() * 230d);
-
-                // Increment time
-                setCurrentTime((getCurrentTime().plusMinutes(SIMULATION_TICK_TIME)));
-            });
-        } else {
+        runOnJavaFXThread(() -> {
             // Finish forward backward sweep
             transformer.finishForwardBackwardSweep();
 
@@ -290,7 +287,7 @@ public class Simulation extends LoggingEntityBase {
 
             // Increment time
             setCurrentTime((getCurrentTime().plusMinutes(SIMULATION_TICK_TIME)));
-        }
+        });
     }
 
     public void pause() {
@@ -329,29 +326,7 @@ public class Simulation extends LoggingEntityBase {
     }
 
     // FORWARD BACKWARD SWEEP METHODS
-    // Start the forward backward sweep algorithm
-    private void initiateForwardBackwardSweep() {
-        // First reset the nodes.
-        transformer.prepareForwardBackwardSweep();
-        // Run the ForwardBackwardSweep Load-flow calculation until converged or the iteration limit is reached
-        for (int i = 0; i < 20; i++) {
-            transformer.doForwardBackwardSweep(230); // this runs recursivly down the tree
-
-            if (hasFBSConverged(0.0001)) {
-                break;
-            }
-
-            // Store last voltage to check for convergence
-            for (Node node : this.lastVoltageByNode.keySet()) {
-                lastVoltageByNode.put(node, node.getVoltage());
-            }
-        }
-        // Finish forward backward sweep
-        Platform.runLater(() -> {
-            transformer.finishForwardBackwardSweep();
-        });
-    }
-
+    
     // Calculate if the FBS algorithm has converged. 
     private boolean hasFBSConverged(double error) {
         boolean result = true;
@@ -367,12 +342,14 @@ public class Simulation extends LoggingEntityBase {
         return result;
     }
 
-    /**
-     *
-     * @return all houses in this simulation
-     */
-    public House[] getHouses() {
-        return this.houses;
+    // HELP METHODS
+    
+    private void runOnJavaFXThread(Runnable task) {
+        if (Platform.isFxApplicationThread()) {
+            task.run();
+        } else {
+            Platform.runLater(task);
+        }
     }
 
 
