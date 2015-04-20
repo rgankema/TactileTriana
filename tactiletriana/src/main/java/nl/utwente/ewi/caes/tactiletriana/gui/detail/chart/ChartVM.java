@@ -130,20 +130,22 @@ public class ChartVM {
         xAxisUpperBound.bind(xAxisLowerBound.add(60 * 12));
 
         // Update chart with recorded data
-        for (LocalDateTime time : actual.getLog().keySet()) {
-            int minuteOfYear = (time.getDayOfYear() - 1) * 24 * 60 + time.getHour() * 60 + time.getMinute();
-            if (actualSeriesData.size() > 0) {
-                actualSeriesData.add(new XYChart.Data<>(minuteOfYear, actualSeriesData.get(actualSeriesData.size() - 1).getYValue()));
-            }
-            actualSeriesData.add(new XYChart.Data(minuteOfYear, actual.getLog().get(time)));
-        }
-        
         for (LocalDateTime time : future.getLog().keySet()) {
             int minuteOfYear = (time.getDayOfYear() - 1) * 24 * 60 + time.getHour() * 60 + time.getMinute();
             if (futureSeriesData.size() > 0) {
                 futureSeriesData.add(new XYChart.Data<>(minuteOfYear, futureSeriesData.get(futureSeriesData.size() - 1).getYValue()));
             }
             futureSeriesData.add(new XYChart.Data(minuteOfYear, future.getLog().get(time)));
+        }
+        
+        for (LocalDateTime time : actual.getLog().keySet()) {
+            int minuteOfYear = (time.getDayOfYear() - 1) * 24 * 60 + time.getHour() * 60 + time.getMinute();
+            if (actualSeriesData.size() > 0) {
+                futureSeriesData.remove(0);
+                actualSeriesData.add(new XYChart.Data<>(minuteOfYear, actualSeriesData.get(actualSeriesData.size() - 1).getYValue()));
+            }
+            futureSeriesData.remove(0);
+            actualSeriesData.add(new XYChart.Data(minuteOfYear, actual.getLog().get(time)));
         }
         
         // Update chart when a new value is logged
@@ -167,7 +169,11 @@ public class ChartVM {
             if (c.wasAdded()) {
                 // Add datapoint with previous value to obtain horizontal lines
                 if (actualSeriesData.size() > 0) {
+                    futureSeriesData.remove(0);
                     actualSeriesData.add(new XYChart.Data<>(minuteOfYear, actualSeriesData.get(actualSeriesData.size() - 1).getYValue()));
+                }
+                if (futureSeriesData.size() > 0) {
+                    futureSeriesData.remove(0);
                 }
                 actualSeriesData.add(new XYChart.Data<>(minuteOfYear, c.getValueAdded()));
                 

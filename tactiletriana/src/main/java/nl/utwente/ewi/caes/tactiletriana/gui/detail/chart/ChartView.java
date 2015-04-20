@@ -71,9 +71,7 @@ public class ChartView extends Group {
         
         chart.titleProperty().bind(viewModel.chartTitleProperty());
         
-        // Draw actualSeries on top of futureSeries by adding it later
-        chart.getData().add(futureSeries);
         chart.getData().add(actualSeries);
-        
+        chart.getData().add(futureSeries);
     }
 }
