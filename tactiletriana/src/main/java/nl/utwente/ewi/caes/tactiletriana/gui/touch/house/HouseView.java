@@ -53,9 +53,9 @@ public class HouseView extends Pane {
 
         // Repair fuse on short press, show on chart for long press
         TrianaEvents.addShortAndLongPressEventHandler(this, hv -> {
-            viewModel.repairFuse();
+            viewModel.pressed();
         }, hv -> {
-            StageController.getInstance().showOnChart(viewModel.getModel());
+            viewModel.longPressed();
         });
     }
 }

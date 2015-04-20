@@ -105,9 +105,9 @@ public class CableView extends Group {
 
         // Repair cable on short press, show on chart for long press
         TrianaEvents.addShortAndLongPressEventHandler(line, l -> {
-            viewModel.cablePressed();
+            viewModel.pressed();
         }, l -> {
-            StageController.getInstance().showOnChart(viewModel.getModel());
+            viewModel.longPressed();
         });
     }
 

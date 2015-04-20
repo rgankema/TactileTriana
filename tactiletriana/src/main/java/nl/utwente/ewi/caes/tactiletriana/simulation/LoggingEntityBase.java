@@ -7,7 +7,6 @@ package nl.utwente.ewi.caes.tactiletriana.simulation;
 
 import java.time.LocalDateTime;
 import java.util.TreeMap;
-import javafx.beans.property.DoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 
@@ -50,6 +49,10 @@ public abstract class LoggingEntityBase {
         absoluteMaximum = Math.abs(maximum);
     }
 
+    public final Simulation getSimulation() {
+        return this.simulation;
+    }
+    
     public final ObservableMap<LocalDateTime, Double> getLog() {
         return this.log;
     }

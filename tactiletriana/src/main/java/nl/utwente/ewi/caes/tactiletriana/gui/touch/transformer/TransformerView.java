@@ -15,13 +15,18 @@ import nl.utwente.ewi.caes.tactiletriana.gui.events.TrianaEvents;
  * @author Richard
  */
 public class TransformerView extends Rectangle {
-
+    private TransformerVM viewModel;
+    
     public TransformerView() {
         ViewLoader.load(this);
+    }
+    
+    public void setViewModel(TransformerVM viewModel) {
+        this.viewModel = viewModel;
         
         // Show entire network on chart on long press
         TrianaEvents.addShortAndLongPressEventHandler(this, null, n -> {
-            StageController.getInstance().showOnChart(null);
+            viewModel.longPressed();
         });
     }
 }

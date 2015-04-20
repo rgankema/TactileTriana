@@ -12,6 +12,7 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Cable;
 
 /**
@@ -91,12 +92,9 @@ public class CableVM {
     public ReadOnlyObjectProperty<Direction> directionProperty() {
         return direction.getReadOnlyProperty();
     }
-
+    
     // METHODS
-    public void cablePressed() {
-        model.repair();
-    }
-
+    
     /**
      * To be used by the CableView to bind the model's cable length to some
      * double binding
@@ -106,8 +104,19 @@ public class CableVM {
     public void bindCableLength(DoubleBinding length) {
         model.lengthProperty().bind(length);
     }
+    
+    // EVENT HANDLING
+    
+    public void pressed() {
+        model.repair();
+    }
+    
+    public void longPressed() {
+        StageController.getInstance().showOnChart(model);
+    }
 
     // ENUMS
+    
     /**
      * Describes the direction of current in a cable
      */

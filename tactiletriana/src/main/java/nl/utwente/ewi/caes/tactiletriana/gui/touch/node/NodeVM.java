@@ -8,6 +8,7 @@ package nl.utwente.ewi.caes.tactiletriana.gui.touch.node;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
+import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Node;
 
 /**
@@ -44,5 +45,11 @@ public class NodeVM {
 
     public ReadOnlyDoubleProperty voltageErrorProperty() {
         return voltageErrorProperty.getReadOnlyProperty();
+    }
+    
+    // EVENT HANDLING
+    
+    public void longPressed() {
+        StageController.getInstance().showOnChart(model);
     }
 }
