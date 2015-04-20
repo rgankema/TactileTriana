@@ -6,7 +6,6 @@
 package nl.utwente.ewi.caes.tactiletriana.gui.detail.chart;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyStringProperty;
@@ -16,7 +15,6 @@ import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
 import nl.utwente.ewi.caes.tactiletriana.simulation.LoggingEntityBase;
-import nl.utwente.ewi.caes.tactiletriana.simulation.Node;
 
 /**
  *
@@ -73,6 +71,10 @@ public class ChartVM {
         return xAxisUpperBound.getReadOnlyProperty();
     }
     
+    /**
+     * 
+     * @return the type of value that is shown on the chart
+     */
     public LoggingEntityBase.LoggedValueType getValueType() {
         return actual.getLoggedValueType();
     }
@@ -100,11 +102,6 @@ public class ChartVM {
         if (this.actual != null) {
             this.actual.getLog().removeListener(actualLogListener);
             this.future.getLog().removeListener(futureLogListener);           
-        }
- 
-        if (actual instanceof Node) {
-            System.out.println(((Node)actual).toString(0));
-            System.out.println(((Node)future).toString(0));
         }
         
         actualSeriesData.clear();
@@ -158,7 +155,7 @@ public class ChartVM {
                 int i = 0;
                 for (; i < actualSeriesData.size(); i++) {
                     XYChart.Data data = actualSeriesData.get(i);
-                    if (data.getXValue().equals(minuteOfYear) && data.getYValue() == c.getValueRemoved()) {
+                    if (data.getXValue().equals(minuteOfYear) && data.getYValue().equals(c.getValueRemoved())) {
                         break;
                     }
                 }
@@ -187,7 +184,7 @@ public class ChartVM {
                 int i = 0;
                 for (; i < futureSeriesData.size(); i++) {
                     XYChart.Data data = futureSeriesData.get(i);
-                    if (data.getXValue().equals(minuteOfYear) && data.getYValue() == c.getValueRemoved()) {
+                    if (data.getXValue().equals(minuteOfYear) && data.getYValue().equals(c.getValueRemoved())) {
                         break;
                     }
                 }

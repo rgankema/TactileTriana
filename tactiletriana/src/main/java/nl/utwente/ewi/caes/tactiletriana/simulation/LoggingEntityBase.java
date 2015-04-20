@@ -7,6 +7,7 @@ package nl.utwente.ewi.caes.tactiletriana.simulation;
 
 import java.time.LocalDateTime;
 import java.util.TreeMap;
+import javafx.beans.property.DoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 
@@ -15,7 +16,6 @@ import javafx.collections.ObservableMap;
  * @author mickvdv
  */
 public abstract class LoggingEntityBase {
-
     private final String displayName;
     private final LoggedValueType type;
     private final ObservableMap<LocalDateTime, Double> log;

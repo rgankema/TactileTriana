@@ -31,11 +31,11 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.devices.UncontrollableLoad;
  */
 public class Simulation extends LoggingEntityBase {
 
-    public static final int NUMBER_OF_HOUSES = 6;   // number of houses
-    public static final int SYSTEM_TICK_TIME = 200;        // time between ticks in ms
-    public static final int SIMULATION_TICK_TIME = 5;   // time in minutes that passes in the simulation with each tick
-    public static final LocalDateTime DEFAULT_TIME = LocalDateTime.of(2014, 7, 1, 0, 0);
-    public static final boolean UNCONTROLABLE_LOAD_ENABLED = true; // staat de uncontrolable load aan?
+    private static final int NUMBER_OF_HOUSES = 6;   // number of houses
+    private static final int SYSTEM_TICK_TIME = 200;        // time between ticks in ms
+    private static final int SIMULATION_TICK_TIME = 5;   // time in minutes that passes in the simulation with each tick
+    private static final LocalDateTime DEFAULT_TIME = LocalDateTime.of(2014, 7, 1, 0, 0);
+    private static final boolean UNCONTROLABLE_LOAD_ENABLED = true; // staat de uncontrolable load aan?
 
     public static final double LONGITUDE = 6.897;
     public static final double LATITUDE = 52.237;
@@ -245,8 +245,6 @@ public class Simulation extends LoggingEntityBase {
     public void start() {
         if (!isStarted()) {
             scheduler.scheduleAtFixedRate(() -> {
-                // Todo: optimize dit, dit is slechts een hotfix
-                // Uiteraard nogal idioot om de hele meuk op de JavaFX thread te draaien
                 if (!isRunning()) {
                     return;
                 }
@@ -258,9 +256,9 @@ public class Simulation extends LoggingEntityBase {
         setStarted(true);
     }
 
-    protected void tick() {
+    protected final void tick() {
         // Run anything that involves the UI on the JavaFX thread
-        runOnJavaFXThread(() -> {
+        runOnJavaFXThreadSynchronously(() -> {
             getTransformer().tick(this, true);
         });
         
@@ -281,7 +279,7 @@ public class Simulation extends LoggingEntityBase {
         }
         
         // Run anything that involves the UI on the JavaFX thread
-        runOnJavaFXThread(() -> {
+        runOnJavaFXThreadSynchronously(() -> {
             // Finish forward backward sweep
             transformer.finishForwardBackwardSweep();
 
@@ -337,10 +335,10 @@ public class Simulation extends LoggingEntityBase {
         //Loop through the network-tree and compare the previous voltage from each with the current voltage.
         //If the difference between the previous and current voltage is smaller than the given error, the result is true
         for (Node node : this.lastVoltageByNode.keySet()) {
+            result = (Math.abs(lastVoltageByNode.get(node) - node.getVoltage()) < error);
             if (!result) {
                 break;
             }
-            result = (Math.abs(lastVoltageByNode.get(node) - node.getVoltage()) < error);
         }
         return result;
     }
@@ -353,7 +351,8 @@ public class Simulation extends LoggingEntityBase {
      * 
      * @param task that needs to be run on the JavaFX thread
      */
-    private void runOnJavaFXThread(Runnable task) {
+    private void runOnJavaFXThreadSynchronously(Runnable task) {
+        
         if (Platform.isFxApplicationThread()) {
             task.run();
         } else {

@@ -53,7 +53,7 @@ public class SimulationTest {
         
         // Loop over all internal nodes but the last
         Node internalNode = transformer.getCables().stream().findAny().get().getChildNode();
-        for (int i = 0; i < Simulation.NUMBER_OF_HOUSES - 1; i++) {
+        for (int i = 0; i < 5; i++) {
             List<Cable> cables = internalNode.getCables();
             // Every internal node except the last has two outgoing cables
             assertEquals(2, cables.size());
