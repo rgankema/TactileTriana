@@ -186,17 +186,5 @@ public class CableTest {
         double result = instance.doForwardBackwardSweep(v);
         assertEquals(expResult, result, 0.0);
     }
-
-    /**
-     * Test of reset method, of class Cable.
-     */
-    @Test
-    public void testReset() {
-        System.out.println("reset");
-        Cable instance = new Cable(mock(Node.class),100,mock(Simulation.class));
-        instance.reset();
-        assertEquals(0.0, instance.getCurrent(),0.0);
-    }
-
     
 }
