@@ -157,7 +157,9 @@ public class DeviceVM {
      * Shows the device on the chart
      */
     public void longPressed() {
-        StageController.getInstance().showOnChart(model);
+        if (model.getState() != DeviceBase.State.NOT_IN_HOUSE) {
+            StageController.getInstance().showOnChart(model);
+        }
     }
 
     // NESTED ENUMS

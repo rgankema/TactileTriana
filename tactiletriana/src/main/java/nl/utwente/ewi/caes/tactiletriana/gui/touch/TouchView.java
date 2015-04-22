@@ -5,13 +5,20 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.touch;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.image.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Polygon;
+import nl.utwente.ewi.caes.tactilefx.control.Anchor;
 import nl.utwente.ewi.caes.tactilefx.control.TactilePane;
 import nl.utwente.ewi.caes.tactilefx.debug.MouseToTouchMapper;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceVM;
@@ -19,6 +26,8 @@ import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.network.NetworkView;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
+import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceView.DeviceType;
+import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.*;
 
@@ -33,10 +42,8 @@ public class TouchView extends TactilePane {
     private NetworkView networkView;
 
     private TouchVM viewModel;
-    private Simulation simulation;
-
-    public TouchView(Simulation simulation) {
-        this.simulation = simulation;
+    
+    public TouchView() {
         ViewLoader.load(this);
 
         addEventFilter(MouseEvent.ANY, new MouseToTouchMapper());
@@ -45,36 +52,6 @@ public class TouchView extends TactilePane {
         for (HouseView house : networkView.getHouses()) {
             getActiveNodes().add(house);
         }
-        
-        
-        DeviceView device = new DeviceView(new Polygon(new double[]{0d, 50d, 25d, 0d, 50d, 50d}));
-        DeviceVM deviceVM = new DeviceVM(new MockDevice(this.simulation));
-
-        DeviceView solar = new DeviceView(getNewSolarBackground());
-        DeviceVM solarVM = new DeviceVM(new SolarPanel(this.simulation));
-        
-        DeviceView car = new DeviceView(getNewCarBackground());
-        DeviceVM carVM = new DeviceVM(new BufferTimeShiftable(this.simulation));
-
-        addDeviceToStack((1920 / 2 - 40), (1080 / 2 - 25), device, deviceVM);
-        addDeviceToStack((1920 / 2 + 40), (1080 / 2 - 25), solar, solarVM);
-        addDeviceToStack((1920 / 2 - 120), (1080 / 2 - 25), car, carVM);
-
-        // Lelijke hack om devices te verwijderen na reset. moet allemaal ooit mooier
-        this.simulation.startedProperty().addListener(i -> {
-            if (!this.simulation.isStarted()) {
-                getChildren().removeIf(n -> n instanceof Group && ((Group) n).getChildren().get(0) instanceof DeviceView);
-                getActiveNodes().clear();
-
-                DeviceVM deviceVM2 = new DeviceVM(new MockDevice(this.simulation));
-                DeviceVM solarVM2 = new DeviceVM(new SolarPanel(this.simulation));
-                DeviceVM carVM2 = new DeviceVM(new BufferTimeShiftable(this.simulation));
-
-                addDeviceToStack((1920 / 2 - 40), (1080 / 2 - 25), new DeviceView(new Polygon(new double[]{0d, 50d, 25d, 0d, 50d, 50d})), deviceVM2);
-                addDeviceToStack((1920 / 2 + 40), (1080 / 2 - 25), new DeviceView(getNewSolarBackground()), solarVM2);
-                addDeviceToStack((1920 / 2 + 40), (1080 / 2 - 25), new DeviceView(getNewCarBackground()), carVM2);
-            }
-        });
     }
 
     public void setViewModel(TouchVM viewModel) {
@@ -91,24 +68,32 @@ public class TouchView extends TactilePane {
             networkView.getHouseCables()[i].setViewModel(viewModel.getHouseCables()[i]);
             networkView.getHouses()[i].setViewModel(viewModel.getHouses()[i]);
         }
+        
+        DeviceView mv = new DeviceView(DeviceType.MOCK);
+        mv.setViewModel(viewModel.getMockVM());
+        DeviceView cv = new DeviceView(DeviceType.CAR);
+        cv.setViewModel(viewModel.getCarVM());
+        DeviceView sv = new DeviceView(DeviceType.SOLAR_PANEL);
+        sv.setViewModel(viewModel.getSolarPanelVM());
+        
+        pushDeviceStack(mv, -100);
+        pushDeviceStack(cv, 0);
+        pushDeviceStack(sv, 100);
     }
-
-    private void addDeviceToStack(int x, int y, DeviceView device, DeviceVM deviceVM) {
-
-        device.setViewModel(deviceVM);
-
+    
+    private void pushDeviceStack(DeviceView device, double xOffset) {
         // Add device to group to fix drag bug
         Group group = new Group(device);
-        group.relocate(x, y);
-
         // Add device to pane, in background
         getChildren().add(1, group);
         // Track device
         getActiveNodes().add(group);
 
-        // Make device rotate       TODO: misschien moet dit in DeviceVM gebeuren?
+        TactilePane.setAnchor(group, new Anchor(this, xOffset, 0, Pos.CENTER));
+        
+        // Rotate device
         device.rotateProperty().bind(Bindings.createDoubleBinding(() -> {
-            double rotate = group.getLayoutY() - y;
+            double rotate = - getHeight() / 2 + device.getHeight() / 2 + group.getLayoutY();
             if (rotate < -90) {
                 rotate = -90.0;
             }
@@ -116,46 +101,28 @@ public class TouchView extends TactilePane {
                 rotate = 90.0;
             }
             return 90.0 - rotate;
-        }, group.layoutYProperty()));
+        }, group.layoutYProperty(), heightProperty(), device.heightProperty()));
 
         // Add new device when drag starts, remove device if not on house
         TactilePane.inUseProperty(group).addListener(obs -> {
             if (TactilePane.isInUse(group)) {
-                if (deviceVM.getModel() instanceof MockDevice) {
-                    DeviceView device2 = new DeviceView(new Polygon(new double[]{0d, 50d, 25d, 0d, 50d, 50d}));
-                    DeviceVM deviceVM2 = new DeviceVM(new MockDevice(this.simulation));
-                    addDeviceToStack(x, y, device2, deviceVM2);
-                } else if (deviceVM.getModel() instanceof SolarPanel) {
-                    DeviceView solar = new DeviceView(getNewSolarBackground());
-                    DeviceVM solarVM = new DeviceVM(new SolarPanel(this.simulation));
-                    addDeviceToStack(x, y, solar, solarVM);
-                } else if (deviceVM.getModel() instanceof BufferTimeShiftable){
-                    DeviceView car = new DeviceView(getNewCarBackground());
-                    DeviceVM carVM = new DeviceVM(new BufferTimeShiftable(this.simulation));
-                    addDeviceToStack(x, y, car, carVM);
-                }
+                DeviceView newDevice = new DeviceView(device.getType());
+                newDevice.setViewModel(viewModel.getDeviceVM(device.getViewModel().getModel().getClass()));
+                pushDeviceStack(newDevice, xOffset);
             } else {
                 if (!TactilePane.getNodesColliding(group).stream().anyMatch(node -> node instanceof HouseView)) {
                     getChildren().remove(group);
                     getActiveNodes().remove(group);
-                    deviceVM.droppedOnHouse(null);
+                    device.getViewModel().droppedOnHouse(null);
                 } else {
                     for (Node node : TactilePane.getNodesColliding(group)) {
                         if (node instanceof HouseView) {
-                            deviceVM.droppedOnHouse(((HouseView) node).getViewModel());
+                            device.getViewModel().droppedOnHouse(((HouseView) node).getViewModel());
                             break;
                         }
                     }
                 }
             }
         });
-    }
-    
-    private ImageView getNewSolarBackground(){
-        return new ImageView(new Image("images/solarpanel.png",50,50,false,true));
-    }
-    
-    private ImageView getNewCarBackground(){
-        return new ImageView(new Image("images/car.png",50,50,false,true));
     }
 }

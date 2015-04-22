@@ -110,7 +110,7 @@ public final class StageController {
             touchStage = new Stage();
 
             touchVM = new TouchVM(simulation);
-            TouchView tv = new TouchView(this.simulation);
+            TouchView tv = new TouchView();
             tv.setViewModel(touchVM);
             
             Scene touchScene = new Scene(tv);
@@ -137,7 +137,6 @@ public final class StageController {
             detailStage = new Stage();
 
             detailVM = new DetailVM(simulation);
-
             DetailView dv = new DetailView();
             dv.setViewModel(detailVM);
 

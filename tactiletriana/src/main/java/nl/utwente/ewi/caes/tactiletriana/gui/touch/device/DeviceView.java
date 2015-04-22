@@ -9,6 +9,8 @@ import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Border;
@@ -19,7 +21,7 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
+import javafx.scene.shape.Polygon;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 import nl.utwente.ewi.caes.tactiletriana.gui.events.TrianaEvents;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceVM.State;
@@ -29,24 +31,45 @@ import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceVM.State;
  * @author Richard
  */
 public class DeviceView extends StackPane {
-
     @FXML
     private Node configIcon;
-    private final Node deviceIcon;
+    private Node deviceIcon;
     private DeviceConfigView configPanel;
 
     private DeviceVM viewModel;
-
-    public DeviceView(Node deviceIcon) {
+    private final DeviceType type;
+    
+    public DeviceView(DeviceType type) {
         ViewLoader.load(this);
 
-        this.deviceIcon = deviceIcon;
+        this.type = type;
+        
+        deviceIcon = null;
+        switch(type) {
+            case CAR:
+                deviceIcon = new ImageView(new Image("images/car.png",50,50,false,true));
+                break;
+            case MOCK:
+                deviceIcon = new Polygon(new double[]{0d, 50d, 25d, 0d, 50d, 50d});
+                break;
+            case SOLAR_PANEL:
+                deviceIcon = new ImageView(new Image("images/solarpanel.png",50,50,false,true));
+                break;
+        }
         getChildren().add(0, deviceIcon);
 
         this.setBackground(new Background(new BackgroundFill(Color.GREY, CornerRadii.EMPTY, Insets.EMPTY)));
         this.setBorder(buildBorder(Color.DARKGREY));
     }
+    
+    public DeviceType getType() {
+        return type;
+    }
 
+    public DeviceVM getViewModel() {
+        return viewModel;
+    }
+    
     public void setViewModel(DeviceVM viewModel) {
         if (this.viewModel != null) {
             throw new IllegalStateException("ViewModel already set");
@@ -98,5 +121,11 @@ public class DeviceView extends StackPane {
     // Returns a Border for a given color
     private Border buildBorder(Paint color) {
         return new Border(new BorderStroke(color, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(5)));
+    }
+    
+    public enum DeviceType {
+        MOCK,
+        CAR,
+        SOLAR_PANEL
     }
 }
