@@ -31,8 +31,25 @@ public class NodeTest {
         House house = new House(sim);
         Node instance = new Node(house,sim);
         double expResult = house.getCurrentConsumption()/instance.getVoltage();
+        //test when there are no cables
         double result = instance.doForwardBackwardSweep(voltage);
         assertEquals(expResult, result, 0.0);
+        
+        //add two mocked cables and test again
+        Cable c1 = mock(Cable.class);
+        Cable c2 = mock(Cable.class);
+        double testCurrent = 100.0;
+        when(c1.doForwardBackwardSweep(voltage)).thenReturn(testCurrent);
+        when(c2.doForwardBackwardSweep(voltage)).thenReturn(testCurrent);
+        instance.getCables().add(c1);
+        instance.getCables().add(c2);
+        
+        expResult = testCurrent*2 + house.getCurrentConsumption()/instance.getVoltage();
+        result = instance.doForwardBackwardSweep(voltage);
+        
+        assertEquals(expResult, result, 0.0);
+        
+        
     }
 
     
