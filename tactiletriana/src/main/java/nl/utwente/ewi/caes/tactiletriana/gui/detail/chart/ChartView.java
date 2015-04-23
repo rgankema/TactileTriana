@@ -10,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Group;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.StackedAreaChart;
 import javafx.scene.chart.XYChart.Series;
 import javafx.util.StringConverter;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;

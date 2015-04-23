@@ -16,7 +16,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 public class BufferTimeShiftable extends DeviceBase{
 
     public BufferTimeShiftable(Simulation simulation) {
-        super("BufferTimeShiftable", simulation);
+        super(simulation, EntityType.BUFFER_TIME_SHIFTABLE);
     }
     
     
