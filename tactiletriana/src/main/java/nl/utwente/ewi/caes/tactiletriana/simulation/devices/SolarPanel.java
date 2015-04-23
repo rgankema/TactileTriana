@@ -83,15 +83,13 @@ public class SolarPanel extends DeviceBase {
         super.tick(simulation, connected);
 
         //Set the current consumption according to current temperature, radiation and time
-        setCurrentConsumption(calculateProduction(simulation.getTemperature(), simulation.getRadiance(),
+        //Multiplied by -1 because the solarpanel produces and doesn't consume
+        setCurrentConsumption(-1*calculateProduction(simulation.getTemperature(), simulation.getRadiance(),
                 SimulationConfig.SIMULATION_LOCATION_LONGITUDE, SimulationConfig.SIMULATION_LOCATION_LATITUDE, simulation.getCurrentTime()));
     }
 
-    //Returns the W/m2
+    //Returns the production in W
     public double calculateProduction(double temperature, double radiance, double longitude, double latitude, LocalDateTime time) {
-
-        //Do it like they do it in the C code
-        temperature = temperature * getSolarPanelArea();
 
         double PI = 3.14159265359;
 
