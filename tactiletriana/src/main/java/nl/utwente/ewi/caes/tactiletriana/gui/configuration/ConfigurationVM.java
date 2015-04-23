@@ -27,21 +27,13 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 public class ConfigurationVM {
 
     private static SimpleBooleanProperty launched = new SimpleBooleanProperty(false);
-
-    // TODO: hele screen ding zou naar StageController mogen
-    private ObservableList<Integer> screenIndexList;
-    private List<Screen> screens;
+    private final ObservableList screenIndexList = FXCollections.observableArrayList();
+    
     private Simulation simulation;
 
+    
     public ConfigurationVM(Simulation simulation) {
         this.simulation = simulation;
-        this.screens = Screen.getScreens();
-        this.screenIndexList = FXCollections.observableList(new ArrayList<Integer>());
-        //screenIndexList.add(null);
-
-        for (int i = 0; i < screens.size(); i++) {
-            screenIndexList.add(i + 1);
-        }
 
         // full screen checkbox is enabled when application hasn't launched yet
         fullScreenCheckBoxDisabled.bind(launched);
@@ -171,22 +163,10 @@ public class ConfigurationVM {
      * @return an ObservableList of screen indexes
      */
     public ObservableList<Integer> getScreenIndexList() {
-        return this.screenIndexList;
+        return screenIndexList;
     }
 
     // METHODS
-    /**
-     *
-     * @param index the screen index
-     * @return the Screen associated with the index as shown in the ComboBoxes
-     */
-    public Screen getScreenByIndex(Integer index) {
-        if (index == null || index <= 0) {
-            return Screen.getPrimary();
-        } else {
-            return this.screens.get(index - 1);
-        }
-    }
 
     public void start() {
         StageController.getInstance().setMainStagesVisible(true);

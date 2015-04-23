@@ -7,6 +7,8 @@ package nl.utwente.ewi.caes.tactiletriana.gui;
 
 import java.util.ArrayList;
 import java.util.List;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
@@ -52,6 +54,8 @@ public final class StageController {
     private Stage touchStage;
     private Stage detailStage;
     private final List<Stage> screenIndexStages;
+    private final ObservableList<Integer> screenIndexList;
+    private final List<Screen> screens;
 
     private final ConfigurationVM configurationVM;
     private TouchVM touchVM;
@@ -67,23 +71,18 @@ public final class StageController {
         this.simulation = new Simulation();
         this.simulationPrediction = new SimulationPrediction(simulation);
 
-        // Build configuration stage
-        this.configurationStage = configurationStage;
+        // Detect screens
+        this.screens = Screen.getScreens();
+        this.screenIndexList = FXCollections.observableList(new ArrayList<Integer>());
+
+        for (int i = 0; i < screens.size(); i++) {
+            screenIndexList.add(i + 1);
+        }
         
-
-        ConfigurationView lv = new ConfigurationView();
-        configurationVM = new ConfigurationVM(this.simulation);
-        lv.setViewModel(configurationVM);
-
-        configurationStage.setScene(new Scene(lv));
-        configurationStage.setOnCloseRequest(e -> closeAllStages());
-        configurationStage.getIcons().add(new Image("images/triana.png"));
-        configurationStage.setTitle("TactileTriana");
-
         // Build screen index stages
         screenIndexStages = new ArrayList<>();
-        for (Integer i : configurationVM.getScreenIndexList()) {
-            Screen screen = configurationVM.getScreenByIndex(i);
+        for (Integer i : screenIndexList) {
+            Screen screen = getScreenByIndex(i);
 
             Scene scene = new Scene(new ScreenIndexView(i));
             Stage stage = new Stage(StageStyle.TRANSPARENT);
@@ -94,6 +93,19 @@ public final class StageController {
             stage.setY(screen.getVisualBounds().getMinY());
             screenIndexStages.add(stage);
         }
+        
+        // Build configuration stage
+        this.configurationStage = configurationStage;
+
+        ConfigurationView cv = new ConfigurationView();
+        configurationVM = new ConfigurationVM(this.simulation);
+        configurationVM.getScreenIndexList().addAll(screenIndexList);
+        cv.setViewModel(configurationVM);
+
+        configurationStage.setScene(new Scene(cv));
+        configurationStage.setOnCloseRequest(e -> closeAllStages());
+        configurationStage.getIcons().add(new Image("images/triana.png"));
+        configurationStage.setTitle("TactileTriana");
     }
 
     // METHODS
@@ -127,7 +139,7 @@ public final class StageController {
             touchStage.setOnCloseRequest(e -> closeAllStages());
 
             if (configurationVM.fullScreenCheckedProperty().get()) {
-                Screen touchScreen = configurationVM.getScreenByIndex((Integer) configurationVM.touchScreenSelectionProperty().get());
+                Screen touchScreen = getScreenByIndex((Integer) configurationVM.touchScreenSelectionProperty().get());
 
                 touchStage.setX(touchScreen.getVisualBounds().getMinX());
                 touchStage.setY(touchScreen.getVisualBounds().getMinY());
@@ -146,7 +158,7 @@ public final class StageController {
             detailStage.setOnCloseRequest(e -> closeAllStages());
 
             if (configurationVM.fullScreenCheckedProperty().get()) {
-                Screen detailScreen = configurationVM.getScreenByIndex((Integer) configurationVM.detailScreenSelectionProperty().get());
+                Screen detailScreen = getScreenByIndex((Integer) configurationVM.detailScreenSelectionProperty().get());
 
                 detailStage.setX(detailScreen.getVisualBounds().getMinX());
                 detailStage.setY(detailScreen.getVisualBounds().getMinY());
@@ -184,6 +196,23 @@ public final class StageController {
         if (touchStage != null) {
             touchStage.close();
             detailStage.close();
+        }
+    }
+    
+    public ObservableList<Integer> getScreenIndexList() {
+        return screenIndexList;
+    }
+    
+    /**
+     *
+     * @param index the screen index
+     * @return the Screen associated with the index as shown in the ComboBoxes
+     */
+    public Screen getScreenByIndex(Integer index) {
+        if (index == null || index <= 0) {
+            return Screen.getPrimary();
+        } else {
+            return this.screens.get(index - 1);
         }
     }
 
