@@ -149,6 +149,10 @@ public class Simulation extends LoggingEntityBase {
     }
 
     protected void setCurrentTime(LocalDateTime time) {
+        // als er een jaar verstreken is. Ga dan weer een jaar terug.
+        if (time.isAfter(SimulationConfig.SIMULATION_START_TIME.plusYears(1))){
+            time = time.minusYears(1);
+        }
         currentTimeProperty().set(time);
     }
 
