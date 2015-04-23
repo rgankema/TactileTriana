@@ -22,6 +22,8 @@ import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.UncontrollableLoad;
 
@@ -36,6 +38,14 @@ public class Simulation extends LoggingEntityBase {
     private static final int SIMULATION_TICK_TIME = 5;   // time in minutes that passes in the simulation with each tick
     private static final LocalDateTime DEFAULT_TIME = LocalDateTime.of(2014, 7, 1, 0, 0);
     private static final boolean UNCONTROLABLE_LOAD_ENABLED = true; // staat de uncontrolable load aan?
+    
+    // de verschillende stati van de simulation
+    // INITIALIZED: alles is aangemaakt maar nog niks runt
+    // RUNNING: de simulation is running -> hij voert tick() uit
+    // PAUSED: de simulatie is gepauzeerd
+    // STOPPED: de simulatie is gestopt
+    
+    public static enum SimulationState { INITIALIZED, RUNNING, PAUSED, STOPPED };
 
     public static final double LONGITUDE = 6.897;
     public static final double LATITUDE = 52.237;
@@ -57,7 +67,11 @@ public class Simulation extends LoggingEntityBase {
     public Simulation() {
         super(LoggedValueType.POWER, "Network", null);
         this.setSimulation(this);
+        
+        this.setState(SimulationState.INITIALIZED);
 
+        
+        // wat doet dit?
         setAbsoluteMaximum(250 * 500);
 
         // keep an array of nodes for later reference
@@ -126,42 +140,7 @@ public class Simulation extends LoggingEntityBase {
 
     }
 
-    // PROPERTIES
-    /**
-     * Whether the Simulation has been started. This can be true even when the
-     * Simulation is not running. Resetting the Simulation will revert it to
-     * false.
-     */
-    private final ReadOnlyBooleanWrapper started = new ReadOnlyBooleanWrapper(false);
-
-    public boolean isStarted() {
-        return startedProperty().get();
-    }
-
-    private void setStarted(boolean started) {
-        this.started.set(started);
-    }
-
-    public ReadOnlyBooleanProperty startedProperty() {
-        return started.getReadOnlyProperty();
-    }
-
-    /**
-     * Whether the Simulation is currently running
-     */
-    private final ReadOnlyBooleanWrapper running = new ReadOnlyBooleanWrapper(false);
-
-    public boolean isRunning() {
-        return runningProperty().get();
-    }
-
-    private void setRunning(boolean running) {
-        this.running.set(running);
-    }
-
-    public ReadOnlyBooleanProperty runningProperty() {
-        return running.getReadOnlyProperty();
-    }
+    
 
     /**
      * The current time in the simulation.
@@ -243,17 +222,7 @@ public class Simulation extends LoggingEntityBase {
     // PUBLIC METHODS
     // start, pause en reset kan ongetwijfeld allemaal veel mooier.
     public void start() {
-        if (!isStarted()) {
-            scheduler.scheduleAtFixedRate(() -> {
-                if (!isRunning()) {
-                    return;
-                }
-                tick();
-            }, SYSTEM_TICK_TIME, SYSTEM_TICK_TIME, TimeUnit.MILLISECONDS);
-        }
-
-        setRunning(true);
-        setStarted(true);
+        this.setState(SimulationState.RUNNING);
     }
 
     protected final void tick() {
@@ -292,15 +261,16 @@ public class Simulation extends LoggingEntityBase {
     }
 
     public void pause() {
-        setRunning(false);
+        this.setState(SimulationState.PAUSED);
     }
 
     public void stop() {
-        scheduler.shutdown();
+        this.setState(SimulationState.STOPPED);
+        
     }
 
     public void reset() {
-        setRunning(false);
+        this.setState(SimulationState.INITIALIZED);
 
         scheduler.shutdownNow();
         scheduler = Executors.newScheduledThreadPool(1);
@@ -323,7 +293,7 @@ public class Simulation extends LoggingEntityBase {
         setCurrentTime(DEFAULT_TIME);
         getLog().clear();
 
-        setStarted(false);
+        
     }
 
     // FORWARD BACKWARD SWEEP METHODS
@@ -371,5 +341,108 @@ public class Simulation extends LoggingEntityBase {
         }
     }
 
+    /**
+     * Bestuurt of de simulation tick()s doet. Ook zet hij de waarden van started en running
+     * @param state de state waarin de simulation gezet moet worden.
+     */
+    public void setState(SimulationState state){
+        switch (state){
+            case STOPPED:
+                scheduler.shutdown();
+                this.started.set(true);
+                this.running.set(false);
+                break;
+            case PAUSED:
+                this.running.set(false);
+                this.started.set(true);
+                break;
+            case INITIALIZED:
+                this.running.set(false);
+                this.started.set(false);
+                break;
+            case RUNNING:
+                // hij word op running gezet maar heeft nog niet gerunt
+                this.running.set(true);
+                this.started.set(true);
+                if (this.getState() == SimulationState.INITIALIZED){
+                    scheduler.scheduleAtFixedRate(() -> {
+
+                        // zo lang hij runt doe een tick. Dus als hij PAUSED staat niet.
+                        if (this.getState() == SimulationState.RUNNING){
+                            tick();
+                        }
+
+                    }, SYSTEM_TICK_TIME, SYSTEM_TICK_TIME, TimeUnit.MILLISECONDS);
+                }
+                break;                    
+        }
+        this.state.set(state);
+    }
+    public SimulationState getState(){
+        return this.stateProperty().get();
+    }
+    
+    // PROPERTIES
+    /**
+     * Whether the Simulation has been started. This can be true even when the
+     * Simulation is not running. Resetting the Simulation will revert it to
+     * false.
+     */
+    private final ReadOnlyObjectWrapper<SimulationState> state = new ReadOnlyObjectWrapper<>();
+
+    
+    public ReadOnlyObjectProperty<SimulationState> stateProperty() {
+        return state.getReadOnlyProperty();
+    }
+    
+    // PROPERTIES
+    /**
+     * Whether the Simulation has been started. This can be true even when the
+     * Simulation is not running. Resetting the Simulation will revert it to
+     * false.
+     */
+    private final ReadOnlyBooleanWrapper started = new ReadOnlyBooleanWrapper(false);
+
+    /**
+     * Checkt of de simulation ooit gestart is geweest
+     * @return true als de simulation ooit gestart is geweest. Dit is zo als hij niet meer op INITIALIZED staat.
+     */
+    public boolean isStarted() {
+        return startedProperty().get();
+    }
+
+    private void setStarted(boolean started) {
+        if (started){
+            this.setState(SimulationState.RUNNING);
+        }
+        else{
+            this.setState(SimulationState.STOPPED);
+        }
+    }
+
+    public ReadOnlyBooleanProperty startedProperty() {
+        return started.getReadOnlyProperty();
+    }
+
+    /**
+     * Whether the Simulation is currently running
+     */
+    private final ReadOnlyBooleanWrapper running = new ReadOnlyBooleanWrapper(false);
+
+    public boolean isRunning() {
+        return runningProperty().get();
+    }
+    private void setRunning(boolean running) {
+        if (running){
+            this.setState(SimulationState.RUNNING);
+        }
+        else{
+            this.setState(SimulationState.PAUSED);
+        }
+    }
+
+    public ReadOnlyBooleanProperty runningProperty() {
+        return running.getReadOnlyProperty();
+    }
 
 }
