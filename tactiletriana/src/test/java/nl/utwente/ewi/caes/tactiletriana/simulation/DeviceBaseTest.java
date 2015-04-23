@@ -56,7 +56,7 @@ public class DeviceBaseTest {
     public class DeviceBaseImpl extends DeviceBase {
 
         public DeviceBaseImpl() {
-            super("", mock(Simulation.class));
+            super(mock(Simulation.class), EntityType.UNCONTROLLABLE);
         }
     }
     

@@ -32,7 +32,7 @@ public class SolarPanel extends DeviceBase {
     private static final double MAX_AREA = 50;
 
     public SolarPanel(Simulation simulation) {
-        super("Solar Panel", simulation);
+        super(simulation, EntityType.SOLAR_PANEL);
         addParameter(new Parameter("Area of solarpanel (in m2)", solarPanelArea, MIN_AREA, MAX_AREA));
         setSolarPanelArea((MIN_AREA + MAX_AREA) / 2);
     }

@@ -58,7 +58,7 @@ public class Simulation extends LoggingEntityBase {
     private House[] houses;
 
     public Simulation() {
-        super(LoggedValueType.POWER, "Network", null);
+        super(QuantityType.POWER, null, EntityType.NETWORK);
         this.setSimulation(this);
         
         this.setState(SimulationState.INITIALIZED);

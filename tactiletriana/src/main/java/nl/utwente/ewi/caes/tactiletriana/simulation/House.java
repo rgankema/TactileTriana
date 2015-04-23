@@ -5,8 +5,6 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyDoubleProperty;
@@ -25,7 +23,8 @@ public class House extends LoggingEntityBase {
     private final ObservableList<DeviceBase> devices;
 
     public House(Simulation simulation) {
-        super(LoggedValueType.POWER, "House", simulation);
+        super(QuantityType.POWER, simulation, EntityType.HOUSE, EntityType.UNCONTROLLABLE,
+                EntityType.MOCK_DEVICE, EntityType.BUFFER_TIME_SHIFTABLE, EntityType.SOLAR_PANEL);
 
         devices = FXCollections.observableArrayList();
         devices.addListener((ListChangeListener.Change<? extends DeviceBase> c) -> {
@@ -76,11 +75,6 @@ public class House extends LoggingEntityBase {
      * The absolute maximum of power the house can consume/produce. When more
      * than this is consumed, the fuse in the house will blow.
      */
-    
-    /*
-    * Deze waarde is het aantal ampere dat een huis maximaal mag hebben kan hebben.
-    */
-    
     private final ReadOnlyDoubleWrapper maximumConsumption = new ReadOnlyDoubleWrapper(230 * SimulationConfig.HOUSE_MAX_FUSE_CURRENT) {
         @Override
         public void set(double value) {
@@ -134,6 +128,11 @@ public class House extends LoggingEntityBase {
         setCurrentConsumption(getDevices().stream().mapToDouble(d -> d.getCurrentConsumption()).sum());
 
         log(getCurrentConsumption());
+        
+        log(EntityType.BUFFER_TIME_SHIFTABLE, getDevices().stream().filter(d -> d.getEntityType() == EntityType.BUFFER_TIME_SHIFTABLE).mapToDouble(d -> d.getCurrentConsumption()).sum());
+        log(EntityType.SOLAR_PANEL, getDevices().stream().filter(d -> d.getEntityType() == EntityType.SOLAR_PANEL).mapToDouble(d -> d.getCurrentConsumption()).sum());
+        log(EntityType.MOCK_DEVICE, getDevices().stream().filter(d -> d.getEntityType() == EntityType.MOCK_DEVICE).mapToDouble(d -> d.getCurrentConsumption()).sum());
+        log(EntityType.UNCONTROLLABLE, getDevices().stream().filter(d -> d.getEntityType() == EntityType.UNCONTROLLABLE).mapToDouble(d -> d.getCurrentConsumption()).sum());
     }
 
     public String toString(int indentation) {
