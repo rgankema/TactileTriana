@@ -9,13 +9,14 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
+import nl.utwente.ewi.caes.tactiletriana.gui.touch.LoggingEntityVMBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Node;
 
 /**
  *
  * @author Richard
  */
-public class NodeVM {
+public class NodeVM extends LoggingEntityVMBase {
 
     private Node model;
 
@@ -50,6 +51,6 @@ public class NodeVM {
     // EVENT HANDLING
     
     public void longPressed() {
-        StageController.getInstance().showOnChart(model);
+        StageController.getInstance().showOnChart(this, model);
     }
 }

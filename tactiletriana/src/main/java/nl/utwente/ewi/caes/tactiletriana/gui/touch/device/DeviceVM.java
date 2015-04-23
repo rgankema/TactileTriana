@@ -14,6 +14,7 @@ import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
+import nl.utwente.ewi.caes.tactiletriana.gui.touch.LoggingEntityVMBase;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseVM;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase.Parameter;
@@ -22,7 +23,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase.Parameter;
  *
  * @author Richard
  */
-public class DeviceVM {
+public class DeviceVM extends LoggingEntityVMBase {
 
     private DeviceBase model;
     private HouseVM house;
@@ -114,7 +115,7 @@ public class DeviceVM {
     private void setConfigPanelShown(boolean configPanelShown) {
         this.configPanelShown.set(configPanelShown);
     }
-
+    
     /**
      * @return the parameters that can be configured for the device
      */
@@ -158,7 +159,7 @@ public class DeviceVM {
      */
     public void longPressed() {
         if (model.getState() != DeviceBase.State.NOT_IN_HOUSE) {
-            StageController.getInstance().showOnChart(model);
+            StageController.getInstance().showOnChart(this, model);
         }
     }
 

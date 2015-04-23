@@ -13,13 +13,14 @@ import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
+import nl.utwente.ewi.caes.tactiletriana.gui.touch.LoggingEntityVMBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Cable;
 
 /**
  *
  * @author Richard
  */
-public class CableVM {
+public class CableVM  extends LoggingEntityVMBase {
 
     private Cable model;
 
@@ -112,7 +113,7 @@ public class CableVM {
     }
     
     public void longPressed() {
-        StageController.getInstance().showOnChart(model);
+        StageController.getInstance().showOnChart(this, model);
     }
 
     // ENUMS

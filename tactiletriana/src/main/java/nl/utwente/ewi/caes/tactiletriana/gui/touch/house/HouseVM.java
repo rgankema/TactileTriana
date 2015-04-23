@@ -10,6 +10,7 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
+import nl.utwente.ewi.caes.tactiletriana.gui.touch.LoggingEntityVMBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.House;
 
@@ -17,7 +18,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.House;
  *
  * @author Richard
  */
-public class HouseVM {
+public class HouseVM extends LoggingEntityVMBase {
 
     private House model;
 
@@ -66,7 +67,7 @@ public class HouseVM {
     }
     
     public void longPressed() {
-        StageController.getInstance().showOnChart(model);
+        StageController.getInstance().showOnChart(this, model);
     }
 
     /**

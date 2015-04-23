@@ -9,6 +9,7 @@ import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
@@ -118,6 +119,14 @@ public class DeviceView extends StackPane {
         // Show on chart on long press
         TrianaEvents.addShortAndLongPressEventHandler(this, null, e -> {
             viewModel.longPressed();
+        });
+        
+        viewModel.shownOnChartProperty().addListener(obs -> {
+            if (viewModel.isShownOnChart()) {
+                this.setEffect(new DropShadow());
+            } else {
+                this.setEffect(null);
+            }
         });
     }
 

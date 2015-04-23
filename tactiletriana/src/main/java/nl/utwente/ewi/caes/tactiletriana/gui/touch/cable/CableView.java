@@ -13,6 +13,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
@@ -108,6 +109,14 @@ public class CableView extends Group {
             viewModel.pressed();
         }, l -> {
             viewModel.longPressed();
+        });
+        
+        viewModel.shownOnChartProperty().addListener(obs -> {
+            if (viewModel.isShownOnChart()) {
+                line.setEffect(new DropShadow());
+            } else {
+                line.setEffect(null);
+            }
         });
     }
 
