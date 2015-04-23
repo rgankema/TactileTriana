@@ -37,7 +37,7 @@ public class CableTest {
     @Test
     public void testLengthProperty() {
         System.out.println("lengthProperty");
-        Cable instance = new Cable(mock(Node.class),100,mock(Simulation.class));
+        Cable instance = new Cable(mock(Node.class),100, 10, mock(Simulation.class));
         DoubleProperty result = instance.lengthProperty();
         assertNotNull(result);
     }
@@ -48,7 +48,7 @@ public class CableTest {
     @Test
     public void testGetLength() {
         System.out.println("getLength");
-        Cable instance = new Cable(mock(Node.class),100,mock(Simulation.class));
+        Cable instance = new Cable(mock(Node.class),100, 10, mock(Simulation.class));
         double expResult = 10.0;
         double result = instance.getLength();
         assertEquals(expResult, result, 0.0);
@@ -61,7 +61,7 @@ public class CableTest {
     public void testSetLength() {
         System.out.println("setLength");
         double length = 15.0;
-        Cable instance = new Cable(mock(Node.class),100,mock(Simulation.class));
+        Cable instance = new Cable(mock(Node.class),100, 10, mock(Simulation.class));
         instance.setLength(length);
         assertEquals(length,instance.getLength(),0.0);
     }
@@ -72,7 +72,7 @@ public class CableTest {
     @Test
     public void testCurrentProperty() {
         System.out.println("currentProperty");
-        Cable instance = new Cable(mock(Node.class),100,mock(Simulation.class));
+        Cable instance = new Cable(mock(Node.class),100, 10, mock(Simulation.class));
         ReadOnlyDoubleProperty result = instance.currentProperty();
         assertNotNull(result);
     }
@@ -83,7 +83,7 @@ public class CableTest {
     @Test
     public void testGetCurrent() {
         System.out.println("getCurrent");
-        Cable instance = new Cable(mock(Node.class),100,mock(Simulation.class));
+        Cable instance = new Cable(mock(Node.class),100, 10, mock(Simulation.class));
         double expResult = 0.0;
         double result = instance.getCurrent();
         assertEquals(expResult, result, 0.0);
@@ -95,7 +95,7 @@ public class CableTest {
     @Test
     public void testMaximumCurrentProperty() {
         System.out.println("maximumCurrentProperty");
-        Cable instance = new Cable(mock(Node.class),100,mock(Simulation.class));
+        Cable instance = new Cable(mock(Node.class),100, 10, mock(Simulation.class));
         double expResult = 100;
         ReadOnlyDoubleProperty result = instance.maximumCurrentProperty();
         assertEquals(expResult, result.get(), 0.0);
@@ -107,7 +107,7 @@ public class CableTest {
     @Test
     public void testGetMaximumCurrent() {
         System.out.println("getMaximumCurrent");
-        Cable instance = new Cable(mock(Node.class),100,mock(Simulation.class));
+        Cable instance = new Cable(mock(Node.class),100, 10, mock(Simulation.class));
         double expResult = 100;
         double result = instance.getMaximumCurrent();
         assertEquals(expResult, result, 0.0);
@@ -119,7 +119,7 @@ public class CableTest {
     @Test
     public void testBrokenProperty() {
         System.out.println("brokenProperty");
-        Cable instance = new Cable(mock(Node.class),100,mock(Simulation.class));
+        Cable instance = new Cable(mock(Node.class),100, 10, mock(Simulation.class));
         ReadOnlyBooleanProperty result = instance.brokenProperty();
         assertNotNull(result);
     }
@@ -130,7 +130,7 @@ public class CableTest {
     @Test
     public void testIsBroken() {
         System.out.println("isBroken");
-        Cable instance = new Cable(mock(Node.class),100,mock(Simulation.class));
+        Cable instance = new Cable(mock(Node.class),100, 10, mock(Simulation.class));
         boolean expResult = false;
         boolean result = instance.isBroken();
         assertEquals(expResult, result);
@@ -143,7 +143,7 @@ public class CableTest {
     public void testGetChildNode() {
         System.out.println("getChildNode");
         Node node = mock(Node.class);
-        Cable instance = new Cable(node,100,mock(Simulation.class));
+        Cable instance = new Cable(node,100, 10, mock(Simulation.class));
         Node expResult = node;
         Node result = instance.getChildNode();
         assertEquals(expResult, result);
@@ -157,7 +157,7 @@ public class CableTest {
         System.out.println("tick");
         Simulation simulation = mock(Simulation.class);
         boolean connected = false;
-        Cable instance = new Cable(mock(Node.class),100,simulation);
+        Cable instance = new Cable(mock(Node.class),100, 10, simulation);
         instance.tick(simulation, connected);
     }
 
@@ -167,7 +167,7 @@ public class CableTest {
     @Test
     public void testRepair() {
         System.out.println("repair");
-        Cable instance = new Cable(mock(Node.class),100,mock(Simulation.class));
+        Cable instance = new Cable(mock(Node.class),100, 10, mock(Simulation.class));
         instance.repair();
         assertEquals(false,instance.isBroken());
     }
@@ -181,7 +181,7 @@ public class CableTest {
         double v = 200;
         Node childnode = mock(Node.class);
         when(childnode.doForwardBackwardSweep(200)).thenReturn(100.0);
-        Cable instance = new Cable(childnode,100,mock(Simulation.class));
+        Cable instance = new Cable(childnode,100, 10, mock(Simulation.class));
         double expResult = 100;
         double result = instance.doForwardBackwardSweep(v);
         assertEquals(expResult, result, 0.0);

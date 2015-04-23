@@ -81,10 +81,10 @@ public class Simulation extends LoggingEntityBase {
 
             this.houseNodes[i] = new Node(houses[i], this);
             this.internalNodes[i] = new Node(null, this);
-            Cable houseCable = new Cable(houseNodes[i], 110, this);
+            Cable houseCable = new Cable(houseNodes[i], 110, 5, this);
             this.internalNodes[i].getCables().add(houseCable);
 
-            this.cables[i] = new Cable(internalNodes[i], 110 + (NUMBER_OF_HOUSES - i) * 60, simulation);
+            this.cables[i] = new Cable(internalNodes[i], 110 + (NUMBER_OF_HOUSES - i) * 60, 20, simulation);
             if (i == 0) {
                 transformer.getCables().add(cables[i]);
             } else {

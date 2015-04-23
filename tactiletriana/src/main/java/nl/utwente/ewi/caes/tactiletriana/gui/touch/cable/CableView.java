@@ -69,13 +69,7 @@ public class CableView extends Group {
         }
 
         this.viewModel = viewModel;
-        // Bind model length to view length
-        viewModel.bindCableLength(Bindings.createDoubleBinding(() -> {
-            double a = line.getStartX() - line.getEndX();
-            double b = line.getStartY() - line.getEndY();
-            return Math.sqrt(a * a + b * b);
-        }, line.startXProperty(), line.startYProperty(), line.endXProperty(), line.endYProperty()));
-
+        
         // Bind color in view to load and broken in viewmodel
         line.strokeProperty().bind(Bindings.createObjectBinding(() -> {
             if (viewModel.isBroken()) {

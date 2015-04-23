@@ -94,18 +94,6 @@ public class CableVM  extends LoggingEntityVMBase {
         return direction.getReadOnlyProperty();
     }
     
-    // METHODS
-    
-    /**
-     * To be used by the CableView to bind the model's cable length to some
-     * double binding
-     *
-     * @param length A double binding that the cable model will bind to
-     */
-    public void bindCableLength(DoubleBinding length) {
-        model.lengthProperty().bind(length);
-    }
-    
     // EVENT HANDLING
     
     public void pressed() {
