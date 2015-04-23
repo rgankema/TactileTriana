@@ -18,6 +18,7 @@ import nl.utwente.ewi.caes.tactiletriana.gui.detail.DetailView;
 import nl.utwente.ewi.caes.tactiletriana.gui.configuration.ConfigurationVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.configuration.ConfigurationView;
 import nl.utwente.ewi.caes.tactiletriana.gui.configuration.ScreenIndexView;
+import nl.utwente.ewi.caes.tactiletriana.gui.touch.LoggingEntityVMBase;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.TouchVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.TouchView;
 import nl.utwente.ewi.caes.tactiletriana.simulation.prediction.SimulationPrediction;
@@ -55,7 +56,8 @@ public final class StageController {
     private final ConfigurationVM configurationVM;
     private TouchVM touchVM;
     private DetailVM detailVM;
-
+    private LoggingEntityVMBase vmOnChart;
+    
     private final Simulation simulation;
     private final SimulationPrediction simulationPrediction;
     
@@ -110,7 +112,7 @@ public final class StageController {
             touchStage = new Stage();
 
             touchVM = new TouchVM(simulation);
-            TouchView tv = new TouchView(this.simulation);
+            TouchView tv = new TouchView();
             tv.setViewModel(touchVM);
             
             Scene touchScene = new Scene(tv);
@@ -137,7 +139,6 @@ public final class StageController {
             detailStage = new Stage();
 
             detailVM = new DetailVM(simulation);
-
             DetailView dv = new DetailView();
             dv.setViewModel(detailVM);
 
@@ -153,7 +154,7 @@ public final class StageController {
                 detailStage.initStyle(StageStyle.UNDECORATED);
             }
             
-            showOnChart(simulation);
+            showOnChart(touchVM.getTransformer(), simulation);
         }
 
         if (visible) {
@@ -190,7 +191,11 @@ public final class StageController {
         return this.simulation;
     }
 
-    public void showOnChart(LoggingEntityBase entity) {
+    public void showOnChart(LoggingEntityVMBase logger, LoggingEntityBase entity) {
+        if (vmOnChart != null) vmOnChart.setShownOnChart(false);
+        this.vmOnChart = logger;
+        vmOnChart.setShownOnChart(true);
+        
         if (entity == null) {
             entity = simulation;
         }

@@ -6,6 +6,9 @@
 package nl.utwente.ewi.caes.tactiletriana.gui.touch.device;
 
 import java.util.List;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.input.TouchEvent;
@@ -35,5 +38,7 @@ class DeviceConfigView extends GridPane {
             this.add(s, 1, row);
             row++;
         }
+        
+        
     }
 }

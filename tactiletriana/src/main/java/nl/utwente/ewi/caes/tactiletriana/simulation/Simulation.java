@@ -320,8 +320,8 @@ public class Simulation extends LoggingEntityBase {
             task.run();
         } else {
             CountDownLatch latch = new CountDownLatch(1);
-            Platform.runLater( () -> {
-                task.run(); 
+            Platform.runLater(() -> {
+                task.run();
                 latch.countDown();
             });
             // Wait until the JavaFX thread is done to avoid synchronization

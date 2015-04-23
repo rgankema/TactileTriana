@@ -6,13 +6,14 @@
 package nl.utwente.ewi.caes.tactiletriana.gui.touch.transformer;
 
 import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
+import nl.utwente.ewi.caes.tactiletriana.gui.touch.LoggingEntityVMBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Transformer;
 
 /**
  *
  * @author Richard
  */
-public class TransformerVM {
+public class TransformerVM extends LoggingEntityVMBase {
     private Transformer model;
     
     public TransformerVM(Transformer model) {
@@ -20,6 +21,6 @@ public class TransformerVM {
     }
     
     public void longPressed() {
-        StageController.getInstance().showOnChart(model.getSimulation());
+        StageController.getInstance().showOnChart(this, model.getSimulation());
     }
 }

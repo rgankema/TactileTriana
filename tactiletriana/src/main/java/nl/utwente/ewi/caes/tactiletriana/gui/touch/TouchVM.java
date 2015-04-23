@@ -6,12 +6,17 @@
 package nl.utwente.ewi.caes.tactiletriana.gui.touch;
 
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.cable.CableVM;
+import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.node.NodeVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.transformer.TransformerVM;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Cable;
+import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Node;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
+import nl.utwente.ewi.caes.tactiletriana.simulation.devices.BufferTimeShiftable;
+import nl.utwente.ewi.caes.tactiletriana.simulation.devices.MockDevice;
+import nl.utwente.ewi.caes.tactiletriana.simulation.devices.SolarPanel;
 
 /**
  *
@@ -58,6 +63,8 @@ public class TouchVM {
         }
     }
     
+    // VIEWMODELS
+    
     public TransformerVM getTransformer() {
         return transformer;
     }
@@ -80,6 +87,29 @@ public class TouchVM {
 
     public HouseVM[] getHouses() {
         return houses;
+    }
+    
+    public DeviceVM getDeviceVM(Class<? extends DeviceBase> deviceClass) {
+        if (deviceClass.equals(MockDevice.class)) {
+            return getMockVM();
+        } else if (deviceClass.equals(SolarPanel.class)) {
+            return getSolarPanelVM();
+        } else if (deviceClass.equals(BufferTimeShiftable.class)) {
+            return getCarVM();
+        }
+        return null;
+    }
+    
+    public DeviceVM getMockVM() {
+        return new DeviceVM(new MockDevice(model));
+    }
+    
+    public DeviceVM getSolarPanelVM() {
+        return new DeviceVM(new SolarPanel(model));
+    }
+    
+    public DeviceVM getCarVM() {
+        return new DeviceVM(new BufferTimeShiftable(model));
     }
 
 }

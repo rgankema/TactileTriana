@@ -5,6 +5,7 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.touch.transformer;
 
+import javafx.scene.effect.DropShadow;
 import javafx.scene.shape.Rectangle;
 import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
@@ -27,6 +28,14 @@ public class TransformerView extends Rectangle {
         // Show entire network on chart on long press
         TrianaEvents.addShortAndLongPressEventHandler(this, null, n -> {
             viewModel.longPressed();
+        });
+        
+        viewModel.shownOnChartProperty().addListener(obs -> {
+            if (viewModel.isShownOnChart()) {
+                this.setEffect(new DropShadow());
+            } else {
+                this.setEffect(null);
+            }
         });
     }
 }

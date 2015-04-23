@@ -7,6 +7,7 @@ package nl.utwente.ewi.caes.tactiletriana.gui.touch.node;
 
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -46,6 +47,14 @@ public class NodeView extends StackPane {
         // Show on chart on long press
         TrianaEvents.addShortAndLongPressEventHandler(this, null, n -> {
             viewModel.longPressed();
+        });
+        
+        viewModel.shownOnChartProperty().addListener(obs -> {
+            if (viewModel.isShownOnChart()) {
+                this.setEffect(new DropShadow());
+            } else {
+                this.setEffect(null);
+            }
         });
     }
 
