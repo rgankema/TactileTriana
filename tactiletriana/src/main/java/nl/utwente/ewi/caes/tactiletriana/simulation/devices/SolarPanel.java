@@ -8,6 +8,7 @@ package nl.utwente.ewi.caes.tactiletriana.simulation.devices;
 import java.time.LocalDateTime;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 import nl.utwente.ewi.caes.tactiletriana.simulation.*;
 
 /**
@@ -74,7 +75,7 @@ public class SolarPanel extends DeviceBase {
 
         //Set the current consumption according to current temperature, radiation and time
         setCurrentConsumption(calculateProduction(simulation.getTemperature(), simulation.getRadiance(),
-                Simulation.LONGITUDE, Simulation.LATITUDE, simulation.getCurrentTime()));
+                SimulationConfig.SIMULATION_LOCATION_LONGITUDE, SimulationConfig.SIMULATION_LOCATION_LATITUDE, simulation.getCurrentTime()));
     }
 
     //Returns the W/m2

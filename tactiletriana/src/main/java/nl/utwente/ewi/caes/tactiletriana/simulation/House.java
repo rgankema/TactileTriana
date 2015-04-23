@@ -14,6 +14,7 @@ import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 
 /**
  *
@@ -75,7 +76,12 @@ public class House extends LoggingEntityBase {
      * The absolute maximum of power the house can consume/produce. When more
      * than this is consumed, the fuse in the house will blow.
      */
-    private final ReadOnlyDoubleWrapper maximumConsumption = new ReadOnlyDoubleWrapper(230 * 100) {
+    
+    /*
+    * Deze waarde is het aantal ampere dat een huis maximaal mag hebben kan hebben.
+    */
+    
+    private final ReadOnlyDoubleWrapper maximumConsumption = new ReadOnlyDoubleWrapper(230 * SimulationConfig.HOUSE_MAX_FUSE_CURRENT) {
         @Override
         public void set(double value) {
             setAbsoluteMaximum(value);
