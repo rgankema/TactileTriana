@@ -36,7 +36,16 @@ public class SolarPanel extends DeviceBase {
         addParameter(new Parameter("Area of solarpanel (in m2)", solarPanelArea, MIN_AREA, MAX_AREA));
         setSolarPanelArea((MIN_AREA + MAX_AREA) / 2);
     }
-
+    
+    /* for debug purposes */
+    private void printVariables(){
+        System.out.println("elevation" + elevation);
+        System.out.println("azimuth" + azimuth);
+        System.out.println("efficiency" + efficiency);
+        System.out.println("temperatureEfficiency:" + temperatureEfficiency);
+        System.out.println("area:" + solarPanelArea.get());
+    }
+    
     /**
      * The amount of power the device will consume when turned on
      */
@@ -139,7 +148,8 @@ public class SolarPanel extends DeviceBase {
                 + Math.cos(delta) * Math.sin(azimuthRadian) * Math.sin(omega) * Math.sin(elevationRadian));
         double G_bs = Math.max(0.0, I * Math.cos(theta));
         double G_ts = G_ds + G_bs + G_gnds; //This is the joules in one hour for a square cm
-
+        
+        
         double powerSquareMeter = (G_ts * 10000) / 3600;
 
         //Guess for the PV temperature that affects the efficiency.
@@ -148,10 +158,30 @@ public class SolarPanel extends DeviceBase {
         
         double result = getSolarPanelArea() * powerSquareMeter * actualEfficiency;
         
-        //Quick dirty fix for when the solarpanel should consume instead of produce according to the calculations 
-        if (result > 0){
-            result = 0;
-        }
+//        //Debug variables
+//        if (result > 0){
+//            System.out.println("===============================================");
+//            printVariables();
+//            System.out.println("temperature:" + temperature);
+//            System.out.println("radiance:" + radiance);
+//            System.out.println("day:" + day);
+//            System.out.println("time" + time.getHour()+":"+time.getMinute());
+//            System.out.println("delta:" + delta);
+//            System.out.println("N:" + N);
+//            System.out.println("E_time:" + E_time);
+//            System.out.println("local time:" + local_std_time);
+//            System.out.println("solar time:" + solar_time);
+//            System.out.println("h:" + h);
+//            System.out.println("I_d:" + I_d);
+//            System.out.println("theta:" + theta);
+//            System.out.println("G_bs:" + G_bs);
+//            System.out.println("G_ts:" + G_ts);
+//            System.out.println("powerSquareMeter:" + powerSquareMeter);
+//            System.out.println("temperaturePV:" + temperaturePV);
+//            System.out.println("actualEfficiency:" + actualEfficiency);
+//            System.out.println("result:" + result);
+//            
+//        }
         
         //Return the production in W (coming from J/cm2 for a whole hour)
         return result; 
