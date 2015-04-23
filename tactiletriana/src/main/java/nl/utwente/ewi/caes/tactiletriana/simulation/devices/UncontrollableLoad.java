@@ -29,7 +29,7 @@ public class UncontrollableLoad extends DeviceBase {
      * the profile data on which this instance is based
      */
     public UncontrollableLoad(int profileNumber, Simulation simulation) {
-        super(simulation, EntityType.UNCONTROLLABLE);
+        super(simulation);
 
         if (profileNumber < 0 || profileNumber > 5) {
             throw new IllegalArgumentException("profileNumber must be in the range of 0 to 5");
@@ -63,5 +63,10 @@ public class UncontrollableLoad extends DeviceBase {
         LocalDateTime t = simulation.getCurrentTime();
         int minuteOfYear = t.getDayOfYear() * 24 * 60 + t.getHour() * 60 + t.getMinute();
         setCurrentConsumption(profile[profileNumber][minuteOfYear]);
+    }
+
+    @Override
+    public String getDisplayName() {
+        return "Uncontrollable Load";
     }
 }

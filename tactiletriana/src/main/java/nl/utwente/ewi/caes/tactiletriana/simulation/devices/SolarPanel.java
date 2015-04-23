@@ -32,7 +32,7 @@ public class SolarPanel extends DeviceBase {
     private static final double MAX_AREA = 50;
 
     public SolarPanel(Simulation simulation) {
-        super(simulation, EntityType.SOLAR_PANEL);
+        super(simulation);
         addParameter(new Parameter("Area of solarpanel (in m2)", solarPanelArea, MIN_AREA, MAX_AREA));
         setSolarPanelArea((MIN_AREA + MAX_AREA) / 2);
     }
@@ -183,6 +183,11 @@ public class SolarPanel extends DeviceBase {
         
         //Return the production in W (coming from J/cm2 for a whole hour)
         return result; 
+    }
+
+    @Override
+    public String getDisplayName() {
+        return "Solar Panel";
     }
 
 }

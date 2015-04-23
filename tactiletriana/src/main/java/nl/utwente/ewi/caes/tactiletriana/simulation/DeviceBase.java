@@ -23,8 +23,8 @@ public abstract class DeviceBase extends LoggingEntityBase {
     private final List<Parameter> parameters;
     private final List<Parameter> parametersUnmodifiable;
 
-    public DeviceBase(Simulation simulation, EntityType eType) {
-        super(QuantityType.POWER, simulation, eType);
+    public DeviceBase(Simulation simulation) {
+        super(QuantityType.POWER, simulation);
 
         parameters = new ArrayList<>();
         parametersUnmodifiable = Collections.unmodifiableList(parameters);
@@ -41,7 +41,7 @@ public abstract class DeviceBase extends LoggingEntityBase {
             if (getState() != DeviceBase.State.CONNECTED) {
                 value = 0;
             }
-            log(value);
+            log(DeviceBase.this.getClass(), value);
             super.set(value);
         }
     };

@@ -47,13 +47,15 @@ public class SimulationPrediction extends Simulation {
                 // Clear the invalid log values
                 for (LoggingEntityBase logger : futureByActual.values()) {
                     Set<LocalDateTime> toRemove = new TreeSet<>();
-                    for (LocalDateTime time : logger.getLog().keySet()) {
-                        if (!time.isBefore(oldValue)) {
-                            toRemove.add(time);
+                    for (Map<LocalDateTime, Double> log : logger.getLogsByEntityType().values()) {
+                        for (LocalDateTime time : log.keySet()) {
+                            if (!time.isBefore(oldValue)) {
+                                toRemove.add(time);
+                            }
                         }
-                    }
-                    for (LocalDateTime time : toRemove) {
-                        logger.getLog().remove(time);
+                        for (LocalDateTime time : toRemove) {
+                            log.remove(time);
+                        }
                     }
                 }
             }

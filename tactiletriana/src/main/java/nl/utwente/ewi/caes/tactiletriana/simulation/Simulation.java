@@ -32,6 +32,11 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.devices.UncontrollableLoad;
  */
 public class Simulation extends LoggingEntityBase {
 
+    @Override
+    public String getDisplayName() {
+        return "Network";
+    }
+
     
     // de verschillende stati van de simulation
     // INITIALIZED: alles is aangemaakt maar nog niks runt
@@ -58,7 +63,7 @@ public class Simulation extends LoggingEntityBase {
     private House[] houses;
 
     public Simulation() {
-        super(QuantityType.POWER, null, EntityType.NETWORK);
+        super(QuantityType.POWER, null);
         this.setSimulation(this);
         
         this.setState(SimulationState.INITIALIZED);
@@ -250,7 +255,7 @@ public class Simulation extends LoggingEntityBase {
             transformer.finishForwardBackwardSweep();
 
             // Log total power consumption in network
-            log(transformer.getCables().get(0).getCurrent() * 230d);
+            log(getClass(), transformer.getCables().get(0).getCurrent() * 230d);
 
             // Increment time
             setCurrentTime((getCurrentTime().plusMinutes(SimulationConfig.SIMULATION_TICK_TIME)));
@@ -274,21 +279,21 @@ public class Simulation extends LoggingEntityBase {
 
         for (House house : houses) {
             house.getDevices().clear();
-            house.getLog().clear();
+            house.clearLogs();
         }
         for (Node node : internalNodes) {
-            node.getLog().clear();
+            node.clearLogs();
             for (Cable cable : node.getCables()) {
-                cable.getLog().clear();
+                cable.clearLogs();
             }
         }
         for (Node node : houseNodes) {
-            node.getLog().clear();
+            node.clearLogs();
         }
-        transformer.getLog().clear();
+        transformer.clearLogs();
 
         setCurrentTime(SimulationConfig.SIMULATION_START_TIME);
-        getLog().clear();
+        clearLogs();
 
         
     }

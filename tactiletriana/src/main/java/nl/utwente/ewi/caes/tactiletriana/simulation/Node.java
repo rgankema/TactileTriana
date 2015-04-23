@@ -20,8 +20,7 @@ public class Node extends LoggingEntityBase implements IFWBWSEntity {
     private House house;
 
     public Node(House house, Simulation simulation) {
-        super(QuantityType.VOLTAGE, simulation, EntityType.NODE);
-
+        super(QuantityType.VOLTAGE, simulation);
         this.cables = new ArrayList<>();
         this.house = house;
     }
@@ -35,7 +34,7 @@ public class Node extends LoggingEntityBase implements IFWBWSEntity {
     private final ReadOnlyDoubleWrapper voltage = new ReadOnlyDoubleWrapper(230.0) {
         @Override
         public void set(double value) {
-            log(value);
+            log(Node.this.getClass(), value);
             super.set(value);
         }
     };
@@ -131,5 +130,10 @@ public class Node extends LoggingEntityBase implements IFWBWSEntity {
             output += c.toString(indentation + 1);
         }
         return output;
+    }
+
+    @Override
+    public String getDisplayName() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

@@ -15,7 +15,7 @@ public class MockDevice extends DeviceBase {
     private static final double MAX_CONSUMPTION = 3700d;
 
     public MockDevice(Simulation simulation) {
-        super(simulation, EntityType.MOCK_DEVICE);
+        super(simulation);
         addParameter(new Parameter("Consumption", mockDeviceUsage, MIN_CONSUMPTION, MAX_CONSUMPTION));
     }
 
@@ -63,5 +63,10 @@ public class MockDevice extends DeviceBase {
             Double plannedConsumption = simulation.getController().getPlannedConsumption(this, simulation.getCurrentTime());
             setCurrentConsumption(getMockDeviceUsage());
         }
+    }
+
+    @Override
+    public String getDisplayName() {
+        return "Mock Device";
     }
 }

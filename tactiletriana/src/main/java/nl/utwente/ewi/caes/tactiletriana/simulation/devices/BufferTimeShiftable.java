@@ -21,7 +21,7 @@ public class BufferTimeShiftable extends DeviceBase{
     private double currentCharge = 0;
     
     public BufferTimeShiftable(Simulation simulation) {
-        super(simulation, EntityType.BUFFER_TIME_SHIFTABLE);
+        super(simulation);
     }
     
     
@@ -63,6 +63,11 @@ public class BufferTimeShiftable extends DeviceBase{
     
     public boolean isCharged(){
         return currentCharge == capacity;
+    }
+
+    @Override
+    public String getDisplayName() {
+        return "Buffer Time Shiftable";
     }
             
 }

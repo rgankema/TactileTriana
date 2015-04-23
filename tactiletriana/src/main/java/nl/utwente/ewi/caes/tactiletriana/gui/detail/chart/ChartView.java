@@ -5,15 +5,25 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.detail.chart;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import javafx.beans.binding.Bindings;
+import javafx.collections.MapChangeListener;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.StackedAreaChart;
+import javafx.scene.chart.XYChart;
+import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
 import javafx.util.StringConverter;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
+import nl.utwente.ewi.caes.tactiletriana.simulation.LoggingEntityBase;
 
 /**
  *
@@ -22,14 +32,11 @@ import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 public class ChartView extends Group {
 
     @FXML
-    private LineChart chart;
+    private StackedAreaChart chart;
     @FXML
     private NumberAxis xAxis;
     @FXML
     private NumberAxis yAxis;
-
-    private Series<Number, Number> actualSeries;
-    private Series<Number, Number> futureSeries;
     
     private ChartVM viewModel;
 
@@ -44,10 +51,6 @@ public class ChartView extends Group {
 
         this.viewModel = viewModel;
 
-        actualSeries = new Series<>();
-        Bindings.bindContent(actualSeries.getData(), viewModel.getActualSeriesData());
-        futureSeries = new Series<>();
-        Bindings.bindContent(futureSeries.getData(), viewModel.getFutureSeriesData());
         
         yAxis.setAutoRanging(true);
         yAxis.labelProperty().bind(viewModel.seriesNameProperty());
@@ -72,7 +75,15 @@ public class ChartView extends Group {
         
         chart.titleProperty().bind(viewModel.chartTitleProperty());
         
-        chart.getData().add(actualSeries);
-        chart.getData().add(futureSeries);
+        viewModel.getSeriesByType().addListener((MapChangeListener.Change<? extends Class<? extends LoggingEntityBase>, ? extends ObservableList<Data<Number, Number>>> c) -> {
+            if (c.wasRemoved()) {
+                chart.getData().remove(c.getValueRemoved());
+            }
+            if (c.wasAdded()) {
+                Series<Number, Number> s = new Series<>();
+                s.setData(c.getValueAdded());
+                chart.getData().add(s);
+            }
+        });
     }
 }

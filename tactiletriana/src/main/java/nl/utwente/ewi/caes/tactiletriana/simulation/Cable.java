@@ -27,7 +27,7 @@ public class Cable extends LoggingEntityBase implements IFWBWSEntity {
      * @param maxCurrent The maximum current that can flow through the cable
      */
     public Cable(Node childNode, double maxCurrent, double length, Simulation simulation) {
-        super(QuantityType.CURRENT, simulation, EntityType.CABLE);
+        super(QuantityType.CURRENT, simulation);
         this.childNode = childNode;
         this.resistance = 0.00005;
         setLength(length);
@@ -71,7 +71,7 @@ public class Cable extends LoggingEntityBase implements IFWBWSEntity {
                 setBroken(true);
             }
 
-            log(value);
+            log(Cable.this.getClass(), value);
 
             super.set(value);
         }
@@ -192,5 +192,10 @@ public class Cable extends LoggingEntityBase implements IFWBWSEntity {
 
         output += "(Cable:R=" + resistance + ",I=" + this.getCurrent() + ") -> " + this.getChildNode().toString(indentation);
         return output;
+    }
+
+    @Override
+    public String getDisplayName() {
+        return "Cable";
     }
 }

@@ -6,10 +6,8 @@
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import javafx.collections.FXCollections;
@@ -21,22 +19,14 @@ import javafx.collections.ObservableMap;
  */
 public abstract class LoggingEntityBase {
     private final QuantityType qType;
-    private final EntityType eType;
-    private final ObservableMap<LocalDateTime, Double> log;
-    private final Map<EntityType, ObservableMap<LocalDateTime, Double>> childLogs;
+    private final Map<Class<? extends LoggingEntityBase>, ObservableMap<LocalDateTime, Double>> logsByEntityType;
     private double absoluteMaximum = Double.POSITIVE_INFINITY;
     protected Simulation simulation;
 
-    public LoggingEntityBase(QuantityType qType, Simulation simulation, 
-            EntityType eType, EntityType... childTypes) {
+    public LoggingEntityBase(QuantityType qType, Simulation simulation) {
         this.qType = qType;
-        this.eType = eType;
         this.simulation = simulation;
-        this.log = FXCollections.observableMap(new TreeMap<>());
-        this.childLogs = new HashMap<>();
-        for (EntityType childType : childTypes) {
-            childLogs.put(childType, FXCollections.observableMap(new TreeMap<>()));
-        }
+        this.logsByEntityType = new HashMap<>();
     }
 
     protected void setSimulation(Simulation simulation) {
@@ -45,43 +35,10 @@ public abstract class LoggingEntityBase {
 
     // PROPERTIES
     
-    public final String getDisplayName() {
-        String name = null;
-        switch (eType) {
-            case BUFFER_TIME_SHIFTABLE:
-                name = "Buffer Time Shiftable";
-                break;
-            case CABLE:
-                name = "Cable";
-                break;
-            case HOUSE:
-                name = "House";
-                break;
-            case MOCK_DEVICE:
-                name = "Mock Device";
-                break;
-            case NETWORK:
-                name = "Network";
-                break;
-            case NODE:
-                name = "Node";
-                break;
-            case SOLAR_PANEL:
-                name = "Solar Panel";
-                break;
-            case UNCONTROLLABLE:
-                name = "Uncontrollable Load";
-                break;
-        }
-        return name;
-    }
+    public abstract String getDisplayName();
 
     public final QuantityType getQuantityType() {
         return this.qType;
-    }
-    
-    public final EntityType getEntityType() {
-        return this.eType;
     }
 
     public final double getAbsoluteMaximum() {
@@ -96,27 +53,25 @@ public abstract class LoggingEntityBase {
         return this.simulation;
     }
     
-    public final ObservableMap<LocalDateTime, Double> getLog() {
-        return this.log;
-    }
-    
-    public final Map<EntityType, ObservableMap<LocalDateTime, Double>> getChildLogs() {
-        return Collections.unmodifiableMap(this.childLogs);
+    public final Map<Class<? extends LoggingEntityBase>, ObservableMap<LocalDateTime, Double>> getLogsByEntityType() {
+        return Collections.unmodifiableMap(this.logsByEntityType);
     }
 
     // METHODS
     
-    protected final void log(double value) {
+    protected final void log(Class<? extends LoggingEntityBase> type, double value) {
         // Log can be called when Simulation is still initializing, and thus currentTime can be null
         if (this.simulation.getCurrentTime() != null) {
-            log.put(this.simulation.getCurrentTime(), value);
+            if (logsByEntityType.get(type) == null) {
+                logsByEntityType.put(type, FXCollections.observableMap(new TreeMap<>()));
+            }
+            logsByEntityType.get(type).put(this.simulation.getCurrentTime(), value);
         }
     }
     
-    protected final void log(EntityType childType, double value) {
-        // Log can be called when Simulation is still initializing, and thus currentTime can be null
-        if (this.simulation.getCurrentTime() != null) {
-            childLogs.get(childType).put(this.simulation.getCurrentTime(), value);
+    public final void clearLogs() {
+        for (Map<LocalDateTime, Double> log : logsByEntityType.values()) {
+            log.clear();
         }
     }
 
@@ -127,13 +82,5 @@ public abstract class LoggingEntityBase {
      */
     public static enum QuantityType {
         CURRENT, POWER, VOLTAGE
-    }
-    
-    /**
-     * Describes types of entities.
-     */
-    public static enum EntityType {
-        NETWORK, HOUSE, NODE, CABLE, MOCK_DEVICE,
-        BUFFER_TIME_SHIFTABLE, SOLAR_PANEL, UNCONTROLLABLE
     }
 }
