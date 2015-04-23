@@ -26,7 +26,7 @@ public class DetailVM {
         this.simulation = simulation;
 
         dateTimeVM = new DateTimeVM(simulation);
-        chartVM = new ChartVM(simulation);
+        chartVM = new ChartVM();
         weatherVM = new WeatherVM(simulation);
     }
 

@@ -6,7 +6,7 @@
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
+import java.util.TreeMap;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 
@@ -14,19 +14,18 @@ import javafx.collections.ObservableMap;
  *
  * @author mickvdv
  */
-public abstract class LoggingEntity {
-
+public abstract class LoggingEntityBase {
     private final String displayName;
     private final LoggedValueType type;
     private final ObservableMap<LocalDateTime, Double> log;
     private double absoluteMaximum = Double.POSITIVE_INFINITY;
     protected Simulation simulation;
 
-    public LoggingEntity(LoggedValueType type, String displayName, Simulation simulation) {
+    public LoggingEntityBase(LoggedValueType type, String displayName, Simulation simulation) {
         this.displayName = displayName;
         this.type = type;
         this.simulation = simulation;
-        this.log = FXCollections.observableMap(new HashMap<>());
+        this.log = FXCollections.observableMap(new TreeMap<>());
     }
 
     protected void setSimulation(Simulation simulation) {
@@ -50,13 +49,20 @@ public abstract class LoggingEntity {
         absoluteMaximum = Math.abs(maximum);
     }
 
+    public final Simulation getSimulation() {
+        return this.simulation;
+    }
+    
     public final ObservableMap<LocalDateTime, Double> getLog() {
         return this.log;
     }
 
     // METHODS
     protected final void log(double value) {
-        log.put(this.simulation.getCurrentTime(), value);
+        // Log can be called when Simulation is still initializing, and thus currentTime can be null
+        if (this.simulation.getCurrentTime() != null) {
+            log.put(this.simulation.getCurrentTime(), value);
+        }
     }
 
     // ENUMS

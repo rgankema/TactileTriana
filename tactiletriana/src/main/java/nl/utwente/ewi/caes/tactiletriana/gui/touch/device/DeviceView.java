@@ -90,7 +90,7 @@ public class DeviceView extends StackPane {
         
         // Show on chart on long press
         TrianaEvents.addShortAndLongPressEventHandler(this, null, e -> {
-            StageController.getInstance().showOnChart(viewModel.getModel());
+            viewModel.longPressed();
         });
     }
 

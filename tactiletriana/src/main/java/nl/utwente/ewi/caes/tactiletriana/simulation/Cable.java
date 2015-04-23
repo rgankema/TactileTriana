@@ -15,7 +15,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 /**
  * A connection between to nodes
  */
-public class Cable extends LoggingEntity implements IFWBWSEntity {
+public class Cable extends LoggingEntityBase implements IFWBWSEntity {
 
     private final Node childNode;
     private final double resistance;
@@ -157,20 +157,30 @@ public class Cable extends LoggingEntity implements IFWBWSEntity {
     }
 
     // FORWARD BACKWARD SWEEP
+    private double tempCurrent;
+    
     @Override
-    public double doForwardBackwardSweep(double v) {
+    public void prepareForwardBackwardSweep() {
+        tempCurrent = 0;
+    }
+    
+    @Override
+    public double doForwardBackwardSweep(double voltage) {
         //update the voltages in the forward sweep
-        double voltage = v - (getCurrent() * (resistance * getLength()));
+        voltage = voltage - (tempCurrent * (resistance * getLength()));
 
-        setCurrent(getChildNode().doForwardBackwardSweep(voltage));
+        tempCurrent = getChildNode().doForwardBackwardSweep(voltage);
 
-        return getCurrent();
+        return tempCurrent;
     }
-
+    
     @Override
-    public void reset() {
-        this.setCurrent(0d);
+    public void finishForwardBackwardSweep() {
+        setCurrent(tempCurrent);
+        childNode.finishForwardBackwardSweep();
     }
+
+    
 
     public String toString(int indentation) {
         String output = "";

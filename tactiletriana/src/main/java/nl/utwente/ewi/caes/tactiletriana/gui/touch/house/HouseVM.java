@@ -9,6 +9,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
+import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.House;
 
@@ -60,8 +61,12 @@ public class HouseVM {
     /**
      * Repairs a blown fuse. If the fuse is not blown, nothing happens
      */
-    public void repairFuse() {
+    public void pressed() {
         this.model.repairFuse();
+    }
+    
+    public void longPressed() {
+        StageController.getInstance().showOnChart(model);
     }
 
     /**

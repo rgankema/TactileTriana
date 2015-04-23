@@ -1,2 +1,4 @@
 /tactiletriana/target/
 /tactiletriana-gui-test/target/
+*.class
+*.class

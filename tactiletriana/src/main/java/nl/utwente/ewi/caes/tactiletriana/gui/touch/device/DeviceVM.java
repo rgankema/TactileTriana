@@ -13,6 +13,7 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseVM;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase.Parameter;
@@ -121,7 +122,8 @@ public class DeviceVM {
         return model.getParameters();
     }
 
-    // METHODS
+    // EVENT HANDLING
+    
     /**
      * Called when the device view is dropped on a house
      *
@@ -149,6 +151,13 @@ public class DeviceVM {
      */
     public void configIconPressed() {
         setConfigPanelShown(!isConfigPanelShown());
+    }
+    
+    /**
+     * Shows the device on the chart
+     */
+    public void longPressed() {
+        StageController.getInstance().showOnChart(model);
     }
 
     // NESTED ENUMS

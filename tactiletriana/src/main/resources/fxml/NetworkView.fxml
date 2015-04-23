@@ -10,7 +10,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1920.0" type="Pane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root prefHeight="1080.0" prefWidth="1920.0" type="Pane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <!-- Houses -->
       <HouseView fx:id="h1" layoutX="10.0" layoutY="10.0" />
@@ -19,10 +19,10 @@
       <HouseView fx:id="h4" layoutX="1510.0" layoutY="870.0" />
       <HouseView fx:id="h5" layoutX="760.0" layoutY="870.0" />
       <HouseView fx:id="h6" layoutX="10.0" layoutY="870.0" />
-      
+
       <!-- Transformer -->
       <TransformerView fx:id="t" layoutX="170.0" layoutY="500.0" />
-      
+
       <!-- Nodes at houses -->
       <NodeView fx:id="nh1" layoutX="195.0" layoutY="195.0" />
       <NodeView fx:id="nh2" layoutX="945.0" layoutY="195.0" />
@@ -30,7 +30,7 @@
       <NodeView fx:id="nh4" layoutX="1695.0" layoutY="855.0" />
       <NodeView fx:id="nh5" layoutX="945.0" layoutY="855.0" />
       <NodeView fx:id="nh6" layoutX="195.0" layoutY="855.0" />
-      
+
       <!-- Nodes in internal network -->
       <NodeView fx:id="ni1" layoutX="195.0" layoutY="295.0" />
       <NodeView fx:id="ni2" layoutX="945.0" layoutY="295.0" />
@@ -38,7 +38,7 @@
       <NodeView fx:id="ni4" layoutX="1695.0" layoutY="755.0" />
       <NodeView fx:id="ni5" layoutX="945.0" layoutY="755.0" />
       <NodeView fx:id="ni6" layoutX="195.0" layoutY="755.0" />
-      
+
       <!-- Cables between house nodes and internal nodes -->
       <CableView fx:id="ni1_nh1" endNode="$nh1" startNode="$ni1" />
       <CableView fx:id="ni2_nh2" endNode="$nh2" startNode="$ni2" />
@@ -46,7 +46,7 @@
       <CableView fx:id="ni4_nh4" endNode="$nh4" startNode="$ni4" />
       <CableView fx:id="ni5_nh5" endNode="$nh5" startNode="$ni5" />
       <CableView fx:id="ni6_nh6" endNode="$nh6" startNode="$ni6" />
-      
+
       <!-- Cables between internal nodes -->
       <CableView fx:id="t_ni1" endNode="$ni1" startNode="$t" />
       <CableView fx:id="ni1_ni2" endNode="$ni2" startNode="$ni1" />

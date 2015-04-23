@@ -8,11 +8,15 @@ package nl.utwente.ewi.caes.tactiletriana.simulation;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
@@ -25,13 +29,13 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.devices.UncontrollableLoad;
  *
  * @author Richard
  */
-public class Simulation extends LoggingEntity {
+public class Simulation extends LoggingEntityBase {
 
-    public static final int NUMBER_OF_HOUSES = 6;   // number of houses
-    public static final int SYSTEM_TICK_TIME = 200;        // time between ticks in ms
-    public static final int SIMULATION_TICK_TIME = 5;   // time in minutes that passes in the simulation with each tick
-    public static final LocalDateTime DEFAULT_TIME = LocalDateTime.of(2014, 7, 1, 0, 0);
-    public static final boolean UNCONTROLABLE_LOAD_ENABLED = false; // staat de uncontrolable load aan?
+    private static final int NUMBER_OF_HOUSES = 6;   // number of houses
+    private static final int SYSTEM_TICK_TIME = 200;        // time between ticks in ms
+    private static final int SIMULATION_TICK_TIME = 5;   // time in minutes that passes in the simulation with each tick
+    private static final LocalDateTime DEFAULT_TIME = LocalDateTime.of(2014, 7, 1, 0, 0);
+    private static final boolean UNCONTROLABLE_LOAD_ENABLED = true; // staat de uncontrolable load aan?
 
     public static final double LONGITUDE = 6.897;
     public static final double LATITUDE = 52.237;
@@ -227,22 +231,24 @@ public class Simulation extends LoggingEntity {
     public Transformer getTransformer() {
         return transformer;
     }
+    
+    /**
+     *
+     * @return a copy of the array of houses in this simulation
+     */
+    public House[] getHouses() {
+        return Arrays.copyOf(houses, houses.length);
+    }
 
     // PUBLIC METHODS
     // start, pause en reset kan ongetwijfeld allemaal veel mooier.
     public void start() {
         if (!isStarted()) {
             scheduler.scheduleAtFixedRate(() -> {
-                // Todo: optimize dit, dit is slechts een hotfix
-                // Uiteraard nogal idioot om de hele meuk op de JavaFX thread te draaien
-                Platform.runLater(() -> {
-                    if (!isRunning()) {
-                        return;
-                    }
-                    simulateTick();
-
-                });
-
+                if (!isRunning()) {
+                    return;
+                }
+                tick();
             }, SYSTEM_TICK_TIME, SYSTEM_TICK_TIME, TimeUnit.MILLISECONDS);
         }
 
@@ -250,15 +256,39 @@ public class Simulation extends LoggingEntity {
         setStarted(true);
     }
 
-    public void simulateTick() {
-        getTransformer().tick(this, true);
-        initiateForwardBackwardSweep();
+    protected final void tick() {
+        // Run anything that involves the UI on the JavaFX thread
+        runOnJavaFXThreadSynchronously(() -> {
+            getTransformer().tick(this, true);
+        });
+        
+        // Reset the nodes.
+        transformer.prepareForwardBackwardSweep();
+        // Run the ForwardBackwardSweep Load-flow calculation until converged or the iteration limit is reached
+        for (int i = 0; i < 20; i++) {
+            transformer.doForwardBackwardSweep(230);
 
-        // Log total power consumption in network
-        this.log(transformer.getCables().get(0).getCurrent() * 230d);
+            if (hasFBSConverged(0.0001)) {
+                break;
+            }
 
-        // Increment time
-        setCurrentTime((getCurrentTime().plusMinutes(SIMULATION_TICK_TIME)));
+            // Store last voltage to check for convergence
+            for (Node node : this.lastVoltageByNode.keySet()) {
+                lastVoltageByNode.put(node, node.getVoltage());
+            }
+        }
+        
+        // Run anything that involves the UI on the JavaFX thread
+        runOnJavaFXThreadSynchronously(() -> {
+            // Finish forward backward sweep
+            transformer.finishForwardBackwardSweep();
+
+            // Log total power consumption in network
+            log(transformer.getCables().get(0).getCurrent() * 230d);
+
+            // Increment time
+            setCurrentTime((getCurrentTime().plusMinutes(SIMULATION_TICK_TIME)));
+        });
     }
 
     public void pause() {
@@ -297,25 +327,7 @@ public class Simulation extends LoggingEntity {
     }
 
     // FORWARD BACKWARD SWEEP METHODS
-    // Start the forward backward sweep algorithm
-    private void initiateForwardBackwardSweep() {
-        // First reset the nodes.
-        transformer.reset();
-        // Run the ForwardBackwardSweep Load-flow calculation until converged or the iteration limit is reached
-        for (int i = 0; i < 20; i++) {
-            transformer.doForwardBackwardSweep(230); // this runs recursivly down the tree
-
-            if (hasFBSConverged(0.0001)) {
-                break;
-            }
-
-            // Store last voltage to check for convergence
-            for (Node node : this.lastVoltageByNode.keySet()) {
-                lastVoltageByNode.put(node, node.getVoltage());
-            }
-        }
-    }
-
+    
     // Calculate if the FBS algorithm has converged. 
     private boolean hasFBSConverged(double error) {
         boolean result = true;
@@ -323,27 +335,41 @@ public class Simulation extends LoggingEntity {
         //Loop through the network-tree and compare the previous voltage from each with the current voltage.
         //If the difference between the previous and current voltage is smaller than the given error, the result is true
         for (Node node : this.lastVoltageByNode.keySet()) {
+            result = (Math.abs(lastVoltageByNode.get(node) - node.getVoltage()) < error);
             if (!result) {
                 break;
             }
-            result = (Math.abs(lastVoltageByNode.get(node) - node.getVoltage()) < error);
         }
         return result;
     }
 
+    // HELP METHODS
+    
     /**
-     *
-     * @return all houses in this simulation
+     * Runs a given task on the JavaFX thread, and blocks until the task
+     * is done.
+     * 
+     * @param task that needs to be run on the JavaFX thread
      */
-    public House[] getHouses() {
-        return this.houses;
+    private void runOnJavaFXThreadSynchronously(Runnable task) {
+        
+        if (Platform.isFxApplicationThread()) {
+            task.run();
+        } else {
+            CountDownLatch latch = new CountDownLatch(1);
+            Platform.runLater( () -> {
+                task.run(); 
+                latch.countDown();
+            });
+            // Wait until the JavaFX thread is done to avoid synchronization
+            // issues
+            try {
+                latch.await();
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
     }
 
-    /**
-     *
-     * @return all nodes directly connected to houses
-     */
-    public Node[] getHouseNodes() {
-        return this.houseNodes;
-    }
+
 }

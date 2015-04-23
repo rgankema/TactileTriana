@@ -12,9 +12,7 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.ReadOnlyStringProperty;
-import javafx.beans.property.ReadOnlyStringWrapper;
-import nl.utwente.ewi.caes.tactiletriana.App;
+import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Cable;
 
 /**
@@ -43,12 +41,6 @@ public class CableVM {
             }
             return Direction.NONE;
         }, model.brokenProperty(), model.currentProperty()));
-
-        if (App.DEBUG) {
-            debugString.bind(Bindings.createStringBinding(() -> {
-                return String.format("I: %.3f, max: %.1f, length: %.2f", model.getCurrent(), model.getMaximumCurrent(), model.getLength());
-            }, model.currentProperty(), model.maximumCurrentProperty(), model.lengthProperty()));
-        }
     }
 
     public Cable getModel() {
@@ -100,21 +92,9 @@ public class CableVM {
     public ReadOnlyObjectProperty<Direction> directionProperty() {
         return direction.getReadOnlyProperty();
     }
-
-    /**
-     * Debug information
-     */
-    private final ReadOnlyStringWrapper debugString = new ReadOnlyStringWrapper();
-
-    public ReadOnlyStringProperty debugStringProperty() {
-        return debugString.getReadOnlyProperty();
-    }
-
+    
     // METHODS
-    public void cablePressed() {
-        model.repair();
-    }
-
+    
     /**
      * To be used by the CableView to bind the model's cable length to some
      * double binding
@@ -124,8 +104,19 @@ public class CableVM {
     public void bindCableLength(DoubleBinding length) {
         model.lengthProperty().bind(length);
     }
+    
+    // EVENT HANDLING
+    
+    public void pressed() {
+        model.repair();
+    }
+    
+    public void longPressed() {
+        StageController.getInstance().showOnChart(model);
+    }
 
     // ENUMS
+    
     /**
      * Describes the direction of current in a cable
      */

@@ -13,10 +13,8 @@ import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
-import nl.utwente.ewi.caes.tactiletriana.App;
 import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 import nl.utwente.ewi.caes.tactiletriana.gui.events.TrianaEvents;
@@ -107,18 +105,10 @@ public class CableView extends Group {
 
         // Repair cable on short press, show on chart for long press
         TrianaEvents.addShortAndLongPressEventHandler(line, l -> {
-            viewModel.cablePressed();
+            viewModel.pressed();
         }, l -> {
-            StageController.getInstance().showOnChart(viewModel.getModel());
+            viewModel.longPressed();
         });
-
-        if (App.DEBUG) {
-            Label label = new Label();
-            label.textProperty().bind(viewModel.debugStringProperty());
-            getChildren().add(label);
-            label.layoutXProperty().bind(line.endXProperty().add(line.startXProperty()).divide(2d));
-            label.layoutYProperty().bind(line.endYProperty().add(line.startYProperty()).divide(2d));
-        }
     }
 
     // PROPERTIES

@@ -83,7 +83,7 @@ public class TouchView extends TactilePane {
         }
 
         this.viewModel = viewModel;
-
+        networkView.getTransformer().setViewModel(viewModel.getTransformer());
         for (int i = 0; i < 6; i++) {
             networkView.getInternalNodes()[i].setViewModel(viewModel.getInternalNodes()[i]);
             networkView.getInternalCables()[i].setViewModel(viewModel.getInternalCables()[i]);

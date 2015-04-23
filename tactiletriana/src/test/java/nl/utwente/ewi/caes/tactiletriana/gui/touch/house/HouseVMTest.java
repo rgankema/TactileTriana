@@ -178,7 +178,7 @@ public class HouseVMTest {
         System.out.println("repairFuse");
         HouseVM instance = new HouseVM(mockedHouse);
         
-        instance.repairFuse();
+        instance.pressed();
         
         verify(mockedHouse).repairFuse();
     }

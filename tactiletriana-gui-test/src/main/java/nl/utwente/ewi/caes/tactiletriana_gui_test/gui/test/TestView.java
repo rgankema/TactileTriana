@@ -6,7 +6,7 @@
 package nl.utwente.ewi.caes.tactiletriana_gui_test.gui.test;
 
 import javafx.beans.property.SimpleDoubleProperty;
-import nl.utwente.cs.caes.tactile.control.TactilePane;
+import nl.utwente.ewi.caes.tactilefx.control.TactilePane;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.cable.CableVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.cable.CableView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseVM;
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.*;
 public class TestView extends TactilePane {
     
     public TestView(ConfigView configView) {
-        setPrefWidth(600);
+        setPrefWidth(600d);
         
         // Mock models
         

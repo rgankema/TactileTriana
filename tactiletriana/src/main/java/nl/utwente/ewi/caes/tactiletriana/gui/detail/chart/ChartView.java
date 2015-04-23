@@ -27,8 +27,9 @@ public class ChartView extends Group {
     @FXML
     private NumberAxis yAxis;
 
-    private Series<Number, Number> series;
-
+    private Series<Number, Number> actualSeries;
+    private Series<Number, Number> futureSeries;
+    
     private ChartVM viewModel;
 
     public ChartView() {
@@ -42,14 +43,12 @@ public class ChartView extends Group {
 
         this.viewModel = viewModel;
 
-        series = new Series<>();
-        series.nameProperty().bind(viewModel.seriesNameProperty());
-        Bindings.bindContent(series.getData(), viewModel.getSeriesData());
-
+        actualSeries = new Series<>();
+        Bindings.bindContent(actualSeries.getData(), viewModel.getActualSeriesData());
+        futureSeries = new Series<>();
+        Bindings.bindContent(futureSeries.getData(), viewModel.getFutureSeriesData());
+        
         yAxis.setAutoRanging(true);
-        //yAxis.lowerBoundProperty().bind(viewModel.yAxisAbsBoundProperty().negate());
-        //yAxis.upperBoundProperty().bind(viewModel.yAxisAbsBoundProperty());
-        //yAxis.tickUnitProperty().bind(viewModel.yAxisAbsBoundProperty().divide(5));
         yAxis.labelProperty().bind(viewModel.seriesNameProperty());
         
         xAxis.lowerBoundProperty().bind(viewModel.xAxisLowerBoundProperty());
@@ -71,6 +70,8 @@ public class ChartView extends Group {
         });
         
         chart.titleProperty().bind(viewModel.chartTitleProperty());
-        chart.getData().add(series);
+        
+        chart.getData().add(actualSeries);
+        chart.getData().add(futureSeries);
     }
 }

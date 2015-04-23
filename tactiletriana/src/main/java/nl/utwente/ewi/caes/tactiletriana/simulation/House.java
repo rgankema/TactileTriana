@@ -19,7 +19,7 @@ import javafx.collections.ObservableList;
  *
  * @author Richard
  */
-public class House extends LoggingEntity {
+public class House extends LoggingEntityBase {
 
     private final ObservableList<DeviceBase> devices;
 

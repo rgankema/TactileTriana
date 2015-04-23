@@ -20,8 +20,8 @@ import nl.utwente.ewi.caes.tactiletriana.gui.configuration.ConfigurationView;
 import nl.utwente.ewi.caes.tactiletriana.gui.configuration.ScreenIndexView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.TouchVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.TouchView;
-import nl.utwente.ewi.caes.tactiletriana.simprediction.SimulationPrediction;
-import nl.utwente.ewi.caes.tactiletriana.simulation.LoggingEntity;
+import nl.utwente.ewi.caes.tactiletriana.simulation.prediction.SimulationPrediction;
+import nl.utwente.ewi.caes.tactiletriana.simulation.LoggingEntityBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 
 /**
@@ -57,13 +57,13 @@ public final class StageController {
     private DetailVM detailVM;
 
     private final Simulation simulation;
-    private final SimulationPrediction simulationprediction;
+    private final SimulationPrediction simulationPrediction;
     
     // CONSTRUCTOR
     
     private StageController(Stage configurationStage) {
         this.simulation = new Simulation();
-        this.simulationprediction = new SimulationPrediction(simulation);
+        this.simulationPrediction = new SimulationPrediction(simulation);
 
         // Build configuration stage
         this.configurationStage = configurationStage;
@@ -152,6 +152,8 @@ public final class StageController {
 
                 detailStage.initStyle(StageStyle.UNDECORATED);
             }
+            
+            showOnChart(simulation);
         }
 
         if (visible) {
@@ -188,10 +190,10 @@ public final class StageController {
         return this.simulation;
     }
 
-    public void showOnChart(LoggingEntity entity) {
+    public void showOnChart(LoggingEntityBase entity) {
         if (entity == null) {
             entity = simulation;
         }
-        detailVM.getChartVM().setEntity(entity);
+        detailVM.getChartVM().setEntity(entity, simulationPrediction.getFuture(entity));
     }
 }
