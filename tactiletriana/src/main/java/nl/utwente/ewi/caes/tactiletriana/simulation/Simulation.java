@@ -15,8 +15,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Stream;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
@@ -25,6 +23,7 @@ import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
+import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.UncontrollableLoad;
 
 /**
@@ -33,11 +32,6 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.devices.UncontrollableLoad;
  */
 public class Simulation extends LoggingEntityBase {
 
-    private static final int NUMBER_OF_HOUSES = 6;   // number of houses
-    private static final int SYSTEM_TICK_TIME = 200;        // time between ticks in ms
-    private static final int SIMULATION_TICK_TIME = 5;   // time in minutes that passes in the simulation with each tick
-    private static final LocalDateTime DEFAULT_TIME = LocalDateTime.of(2014, 7, 1, 0, 0);
-    private static final boolean UNCONTROLABLE_LOAD_ENABLED = true; // staat de uncontrolable load aan?
     
     // de verschillende stati van de simulation
     // INITIALIZED: alles is aangemaakt maar nog niks runt
@@ -47,8 +41,7 @@ public class Simulation extends LoggingEntityBase {
     
     public static enum SimulationState { INITIALIZED, RUNNING, PAUSED, STOPPED };
 
-    public static final double LONGITUDE = 6.897;
-    public static final double LATITUDE = 52.237;
+    
 
     private final Transformer transformer;
     private final Map<Node, Double> lastVoltageByNode;
@@ -80,16 +73,16 @@ public class Simulation extends LoggingEntityBase {
         // de tree maken
         this.transformer = new Transformer(this);
 
-        this.internalNodes = new Node[NUMBER_OF_HOUSES];
-        this.houseNodes = new Node[NUMBER_OF_HOUSES];
-        this.cables = new Cable[NUMBER_OF_HOUSES];
-        this.houses = new House[NUMBER_OF_HOUSES];
+        this.internalNodes = new Node[SimulationConfig.SIMULATION_NUMBER_OF_HOUSES];
+        this.houseNodes = new Node[SimulationConfig.SIMULATION_NUMBER_OF_HOUSES];
+        this.cables = new Cable[SimulationConfig.SIMULATION_NUMBER_OF_HOUSES];
+        this.houses = new House[SimulationConfig.SIMULATION_NUMBER_OF_HOUSES];
 
         // maak huizen aan met cables en dat soort grappen
-        for (int i = 0; i <= NUMBER_OF_HOUSES - 1; i++) {
+        for (int i = 0; i <= SimulationConfig.SIMULATION_NUMBER_OF_HOUSES - 1; i++) {
             this.houses[i] = new House(this);
 
-            if (UNCONTROLABLE_LOAD_ENABLED) {
+            if (SimulationConfig.SIMULATION_UNCONTROLABLE_LOAD_ENABLED) {
                 houses[i].getDevices().add(new UncontrollableLoad(i, this.simulation));
             }
 
@@ -98,7 +91,7 @@ public class Simulation extends LoggingEntityBase {
             Cable houseCable = new Cable(houseNodes[i], 110, this);
             this.internalNodes[i].getCables().add(houseCable);
 
-            this.cables[i] = new Cable(internalNodes[i], 110 + (NUMBER_OF_HOUSES - i) * 60, simulation);
+            this.cables[i] = new Cable(internalNodes[i], 110 + (SimulationConfig.SIMULATION_NUMBER_OF_HOUSES - i) * 60, simulation);
             if (i == 0) {
                 transformer.getCables().add(cables[i]);
             } else {
@@ -110,7 +103,7 @@ public class Simulation extends LoggingEntityBase {
         }
 
         // initialise time
-        setCurrentTime(DEFAULT_TIME);
+        setCurrentTime(SimulationConfig.SIMULATION_START_TIME);
 
         // load KNMI data
         temperatureByTime = new HashMap<>();
@@ -256,7 +249,7 @@ public class Simulation extends LoggingEntityBase {
             log(transformer.getCables().get(0).getCurrent() * 230d);
 
             // Increment time
-            setCurrentTime((getCurrentTime().plusMinutes(SIMULATION_TICK_TIME)));
+            setCurrentTime((getCurrentTime().plusMinutes(SimulationConfig.SIMULATION_TICK_TIME)));
         });
     }
 
@@ -290,7 +283,7 @@ public class Simulation extends LoggingEntityBase {
         }
         transformer.getLog().clear();
 
-        setCurrentTime(DEFAULT_TIME);
+        setCurrentTime(SimulationConfig.SIMULATION_START_TIME);
         getLog().clear();
 
         
@@ -372,7 +365,7 @@ public class Simulation extends LoggingEntityBase {
                             tick();
                         }
 
-                    }, SYSTEM_TICK_TIME, SYSTEM_TICK_TIME, TimeUnit.MILLISECONDS);
+                    }, SimulationConfig.SYSTEM_TICK_TIME, SimulationConfig.SYSTEM_TICK_TIME, TimeUnit.MILLISECONDS);
                 }
                 break;                    
         }

@@ -14,6 +14,7 @@ import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 
 /**
  *
@@ -79,8 +80,8 @@ public class House extends LoggingEntityBase {
     /*
     * Deze waarde is het aantal ampere dat een huis maximaal mag hebben kan hebben.
     */
-    public static final int HOUSE_MAX_FUSE_CURRENT = 3 * 35;
-    private final ReadOnlyDoubleWrapper maximumConsumption = new ReadOnlyDoubleWrapper(230 * HOUSE_MAX_FUSE_CURRENT) {
+    
+    private final ReadOnlyDoubleWrapper maximumConsumption = new ReadOnlyDoubleWrapper(230 * SimulationConfig.HOUSE_MAX_FUSE_CURRENT) {
         @Override
         public void set(double value) {
             setAbsoluteMaximum(value);
