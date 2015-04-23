@@ -6,6 +6,8 @@
 package nl.utwente.ewi.caes.tactiletriana.gui.detail.datetime;
 
 import java.time.LocalDateTime;
+import java.time.format.TextStyle;
+import java.util.Locale;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -25,7 +27,7 @@ public class DateTimeVM {
 
         dateLabel.bind(Bindings.createStringBinding(() -> {
             LocalDateTime time = simulation.getCurrentTime();
-            return String.format("%d-%d-%d", time.getDayOfMonth(), time.getMonthValue(), time.getYear());
+            return String.format("%s %d-%d-%d", time.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault()), time.getDayOfMonth(), time.getMonthValue(), time.getYear());
         }, simulation.currentTimeProperty()));
     }
 
