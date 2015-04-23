@@ -25,6 +25,10 @@ import javafx.scene.shape.Polygon;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 import nl.utwente.ewi.caes.tactiletriana.gui.events.TrianaEvents;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceVM.State;
+import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
+import nl.utwente.ewi.caes.tactiletriana.simulation.devices.BufferTimeShiftable;
+import nl.utwente.ewi.caes.tactiletriana.simulation.devices.MockDevice;
+import nl.utwente.ewi.caes.tactiletriana.simulation.devices.SolarPanel;
 
 /**
  *
@@ -37,32 +41,29 @@ public class DeviceView extends StackPane {
     private DeviceConfigView configPanel;
 
     private DeviceVM viewModel;
-    private final DeviceType type;
+    private final Class<? extends DeviceBase> type;
     
-    public DeviceView(DeviceType type) {
+    public DeviceView(Class<? extends DeviceBase> type) {
         ViewLoader.load(this);
 
         this.type = type;
         
         deviceIcon = null;
-        switch(type) {
-            case CAR:
-                deviceIcon = new ImageView(new Image("images/car.png",50,50,false,true));
-                break;
-            case MOCK:
-                deviceIcon = new Polygon(new double[]{0d, 50d, 25d, 0d, 50d, 50d});
-                break;
-            case SOLAR_PANEL:
-                deviceIcon = new ImageView(new Image("images/solarpanel.png",50,50,false,true));
-                break;
-        }
+        if (type == BufferTimeShiftable.class)
+            deviceIcon = new ImageView(new Image("images/car.png",50,50,false,true));
+        else if (type == MockDevice.class) 
+            deviceIcon = new Polygon(new double[]{0d, 50d, 25d, 0d, 50d, 50d});
+        else if (type == SolarPanel.class)
+            deviceIcon = new ImageView(new Image("images/solarpanel.png",50,50,false,true));
+        else
+            throw new UnsupportedOperationException("No DeviceView for type " + type.toString());
         getChildren().add(0, deviceIcon);
 
         this.setBackground(new Background(new BackgroundFill(Color.GREY, CornerRadii.EMPTY, Insets.EMPTY)));
         this.setBorder(buildBorder(Color.DARKGREY));
     }
     
-    public DeviceType getType() {
+    public Class<? extends DeviceBase> getType() {
         return type;
     }
 
@@ -74,7 +75,10 @@ public class DeviceView extends StackPane {
         if (this.viewModel != null) {
             throw new IllegalStateException("ViewModel already set");
         }
-
+        if (viewModel.getModel().getClass() != getType()) {
+            throw new IllegalArgumentException("ViewModel does not reference a model of type " + getType().toString());
+        }
+        
         this.viewModel = viewModel;
 
         // Bind config icon visibility to viewmodel
@@ -121,11 +125,5 @@ public class DeviceView extends StackPane {
     // Returns a Border for a given color
     private Border buildBorder(Paint color) {
         return new Border(new BorderStroke(color, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(5)));
-    }
-    
-    public enum DeviceType {
-        MOCK,
-        CAR,
-        SOLAR_PANEL
     }
 }

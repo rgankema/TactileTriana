@@ -5,31 +5,22 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.touch;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.image.*;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.shape.Polygon;
 import nl.utwente.ewi.caes.tactilefx.control.Anchor;
 import nl.utwente.ewi.caes.tactilefx.control.TactilePane;
 import nl.utwente.ewi.caes.tactilefx.debug.MouseToTouchMapper;
-import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.network.NetworkView;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
-import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceView.DeviceType;
-import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
-import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
-import nl.utwente.ewi.caes.tactiletriana.simulation.devices.*;
+import nl.utwente.ewi.caes.tactiletriana.simulation.devices.BufferTimeShiftable;
+import nl.utwente.ewi.caes.tactiletriana.simulation.devices.MockDevice;
+import nl.utwente.ewi.caes.tactiletriana.simulation.devices.SolarPanel;
 
 /**
  * FXML Controller class
@@ -69,11 +60,11 @@ public class TouchView extends TactilePane {
             networkView.getHouses()[i].setViewModel(viewModel.getHouses()[i]);
         }
         
-        DeviceView mv = new DeviceView(DeviceType.MOCK);
+        DeviceView mv = new DeviceView(MockDevice.class);
         mv.setViewModel(viewModel.getMockVM());
-        DeviceView cv = new DeviceView(DeviceType.CAR);
+        DeviceView cv = new DeviceView(BufferTimeShiftable.class);
         cv.setViewModel(viewModel.getCarVM());
-        DeviceView sv = new DeviceView(DeviceType.SOLAR_PANEL);
+        DeviceView sv = new DeviceView(SolarPanel.class);
         sv.setViewModel(viewModel.getSolarPanelVM());
         
         pushDeviceStack(mv, -100);
@@ -89,11 +80,11 @@ public class TouchView extends TactilePane {
         // Track device
         getActiveNodes().add(group);
 
-        TactilePane.setAnchor(group, new Anchor(this, xOffset, 0, Pos.CENTER));
+        TactilePane.setAnchor(group, new Anchor(this, xOffset, 0, Pos.CENTER, false));
         
         // Rotate device
         device.rotateProperty().bind(Bindings.createDoubleBinding(() -> {
-            double rotate = - getHeight() / 2 + device.getHeight() / 2 + group.getLayoutY();
+            double rotate = -getHeight() / 2 + device.getBoundsInLocal().getHeight() / 2 + group.getLayoutY();
             if (rotate < -90) {
                 rotate = -90.0;
             }
@@ -101,7 +92,7 @@ public class TouchView extends TactilePane {
                 rotate = 90.0;
             }
             return 90.0 - rotate;
-        }, group.layoutYProperty(), heightProperty(), device.heightProperty()));
+        }, group.layoutYProperty(), heightProperty()));
 
         // Add new device when drag starts, remove device if not on house
         TactilePane.inUseProperty(group).addListener(obs -> {
