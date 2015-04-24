@@ -217,7 +217,6 @@ public class Simulation extends LoggingEntityBase {
     }
 
     // PUBLIC METHODS
-    // start, pause en reset kan ongetwijfeld allemaal veel mooier.
     public void start() {
         this.setState(SimulationState.RUNNING);
     }
