@@ -40,7 +40,7 @@ public class Simulation extends LoggingEntityBase {
     // STOPPED: de simulatie is gestopt
     
     public static enum SimulationState { INITIALIZED, RUNNING, PAUSED, STOPPED };
-
+    public static final int NUMBER_OF_HOUSES = 6;
     
 
     private final Transformer transformer;
@@ -73,13 +73,13 @@ public class Simulation extends LoggingEntityBase {
         // de tree maken
         this.transformer = new Transformer(this);
 
-        this.internalNodes = new Node[SimulationConfig.SIMULATION_NUMBER_OF_HOUSES];
-        this.houseNodes = new Node[SimulationConfig.SIMULATION_NUMBER_OF_HOUSES];
-        this.cables = new Cable[SimulationConfig.SIMULATION_NUMBER_OF_HOUSES];
-        this.houses = new House[SimulationConfig.SIMULATION_NUMBER_OF_HOUSES];
+        this.internalNodes = new Node[NUMBER_OF_HOUSES];
+        this.houseNodes = new Node[NUMBER_OF_HOUSES];
+        this.cables = new Cable[NUMBER_OF_HOUSES];
+        this.houses = new House[NUMBER_OF_HOUSES];
 
         // maak huizen aan met cables en dat soort grappen
-        for (int i = 0; i <= SimulationConfig.SIMULATION_NUMBER_OF_HOUSES - 1; i++) {
+        for (int i = 0; i <= NUMBER_OF_HOUSES - 1; i++) {
             this.houses[i] = new House(this);
 
             if (SimulationConfig.SIMULATION_UNCONTROLABLE_LOAD_ENABLED) {
@@ -91,7 +91,7 @@ public class Simulation extends LoggingEntityBase {
             Cable houseCable = new Cable(houseNodes[i], 110, 5, this);
             this.internalNodes[i].getCables().add(houseCable);
 
-            this.cables[i] = new Cable(internalNodes[i], 110 + (SimulationConfig.SIMULATION_NUMBER_OF_HOUSES - i) * 60, 20, simulation);
+            this.cables[i] = new Cable(internalNodes[i], 110 + (NUMBER_OF_HOUSES - i) * 60, 20, simulation);
             if (i == 0) {
                 transformer.getCables().add(cables[i]);
             } else {
