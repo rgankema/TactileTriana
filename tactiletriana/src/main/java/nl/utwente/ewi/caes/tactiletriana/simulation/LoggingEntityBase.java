@@ -6,12 +6,14 @@
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableMap;
+import javafx.collections.ObservableList;
+import javafx.scene.chart.XYChart.Data;
+import nl.utwente.ewi.caes.tactiletriana.simulation.devices.SolarPanel;
+import nl.utwente.ewi.caes.tactiletriana.util.Util;
 
 /**
  *
@@ -19,14 +21,17 @@ import javafx.collections.ObservableMap;
  */
 public abstract class LoggingEntityBase {
     private final QuantityType qType;
-    private final Map<Class<? extends LoggingEntityBase>, ObservableMap<LocalDateTime, Double>> logsByEntityType;
+    private final Map<String, ObservableList<Data<Number, Number>>> logsByName;
     private double absoluteMaximum = Double.POSITIVE_INFINITY;
     protected Simulation simulation;
 
-    public LoggingEntityBase(QuantityType qType, Simulation simulation) {
+    public LoggingEntityBase(QuantityType qType, Simulation simulation, String... logNames) {
         this.qType = qType;
         this.simulation = simulation;
-        this.logsByEntityType = new HashMap<>();
+        this.logsByName = new HashMap<>();
+        for (String logName : logNames) {
+            logsByName.put(logName, FXCollections.observableArrayList());
+        }
     }
 
     protected void setSimulation(Simulation simulation) {
@@ -53,24 +58,30 @@ public abstract class LoggingEntityBase {
         return this.simulation;
     }
     
-    public final Map<Class<? extends LoggingEntityBase>, ObservableMap<LocalDateTime, Double>> getLogsByEntityType() {
-        return Collections.unmodifiableMap(this.logsByEntityType);
+    public final Map<String, ObservableList<Data<Number, Number>>> getLogsByName() {
+        return this.logsByName;
     }
 
     // METHODS
     
-    protected final void log(Class<? extends LoggingEntityBase> type, double value) {
-        // Log can be called when Simulation is still initializing, and thus currentTime can be null
+    protected final void log(String logName, double value) {
+        // Log can be called when Simulation is still initializing, and thus currentTime might be null
         if (this.simulation.getCurrentTime() != null) {
-            if (logsByEntityType.get(type) == null) {
-                logsByEntityType.put(type, FXCollections.observableMap(new TreeMap<>()));
+            LocalDateTime time = simulation.getCurrentTime();
+            List<Data<Number, Number>> log = logsByName.get(logName);
+            
+            long minutes = Util.toEpochMinutes(time);
+            if (log.isEmpty()) {
+                log.add(new Data<>(minutes, 0));
+            } else {
+      //          log.add(new Data<>(minutes, log.get(log.size() - 1).getYValue()));
             }
-            logsByEntityType.get(type).put(this.simulation.getCurrentTime(), value);
+            log.add(new Data<>(minutes, value));
         }
     }
     
     public final void clearLogs() {
-        for (Map<LocalDateTime, Double> log : logsByEntityType.values()) {
+        for (List log : logsByName.values()) {
             log.clear();
         }
     }

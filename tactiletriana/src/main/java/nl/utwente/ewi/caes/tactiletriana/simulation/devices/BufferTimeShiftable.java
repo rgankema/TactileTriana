@@ -15,13 +15,14 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
  * @author niels
  */
 public class BufferTimeShiftable extends DeviceBase{
+    public static final String NAME = "Buffer Time Shiftable";
     
     //Capacity in W/h
     private double capacity = 85000; //FIXME add other car models (currently Tesla)
     private double currentCharge = 0;
     
     public BufferTimeShiftable(Simulation simulation) {
-        super(simulation);
+        super(simulation, NAME);
     }
     
     
@@ -67,7 +68,7 @@ public class BufferTimeShiftable extends DeviceBase{
 
     @Override
     public String getDisplayName() {
-        return "Buffer Time Shiftable";
+        return NAME;
     }
             
 }

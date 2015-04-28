@@ -10,12 +10,12 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
  * @author mickvdv
  */
 public class MockDevice extends DeviceBase {
-
+    public static final String NAME = "Mock Device";
     private static final double MIN_CONSUMPTION = -3700d;
     private static final double MAX_CONSUMPTION = 3700d;
 
     public MockDevice(Simulation simulation) {
-        super(simulation);
+        super(simulation, NAME);
         addParameter(new Parameter("Consumption", mockDeviceUsage, MIN_CONSUMPTION, MAX_CONSUMPTION));
     }
 
@@ -67,6 +67,6 @@ public class MockDevice extends DeviceBase {
 
     @Override
     public String getDisplayName() {
-        return "Mock Device";
+        return NAME;
     }
 }

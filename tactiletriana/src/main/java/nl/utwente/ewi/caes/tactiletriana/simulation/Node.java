@@ -15,12 +15,13 @@ import javafx.beans.property.ReadOnlyDoubleWrapper;
  * @author Richard
  */
 public class Node extends LoggingEntityBase implements IFWBWSEntity {
-
+    public static final String NAME = "Node";
+    
     private final List<Cable> cables;
     private House house;
 
     public Node(House house, Simulation simulation) {
-        super(QuantityType.VOLTAGE, simulation);
+        super(QuantityType.VOLTAGE, simulation, NAME);
         this.cables = new ArrayList<>();
         this.house = house;
     }
@@ -34,7 +35,7 @@ public class Node extends LoggingEntityBase implements IFWBWSEntity {
     private final ReadOnlyDoubleWrapper voltage = new ReadOnlyDoubleWrapper(230.0) {
         @Override
         public void set(double value) {
-            log(Node.this.getClass(), value);
+            log(NAME, value);
             super.set(value);
         }
     };

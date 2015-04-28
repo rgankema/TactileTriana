@@ -19,14 +19,6 @@ import static org.mockito.Mockito.*;
  * @author Richard
  */
 public class HouseTest {
-
-    @Test
-    public void testMaximumConsumption() {
-        System.out.println("maximumConsumption");
-        House instance = new House(null);
-        
-        assertEquals(instance.getMaximumConsumption(), 230*100, 0.001);
-    }
     
     /**
      * Test of currentConsumptionProperty method, of class House.

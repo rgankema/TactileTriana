@@ -23,11 +23,13 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.devices.UncontrollableLoad;
  * @author Richard
  */
 public class House extends LoggingEntityBase {
-
+    public static final String NAME = "House";
     private final ObservableList<DeviceBase> devices;
 
     public House(Simulation simulation) {
-        super(QuantityType.POWER, simulation);
+        super(QuantityType.POWER, simulation, SolarPanel.NAME, UncontrollableLoad.NAME, 
+                MockDevice.NAME, BufferTimeShiftable.NAME );
+//                MockDevice.NAME, UncontrollableLoad.NAME, SolarPanel.NAME);
 
         devices = FXCollections.observableArrayList();
         devices.addListener((ListChangeListener.Change<? extends DeviceBase> c) -> {
@@ -129,12 +131,10 @@ public class House extends LoggingEntityBase {
 
         setCurrentConsumption(getDevices().stream().mapToDouble(d -> d.getCurrentConsumption()).sum());
 
-        log(getClass(), getCurrentConsumption());
-        
-        log(BufferTimeShiftable.class, getDevices().stream().filter(d -> d instanceof BufferTimeShiftable).mapToDouble(d -> d.getCurrentConsumption()).sum());
-        log(SolarPanel.class, getDevices().stream().filter(d -> d instanceof SolarPanel).mapToDouble(d -> d.getCurrentConsumption()).sum());
-        log(MockDevice.class, getDevices().stream().filter(d -> d instanceof MockDevice).mapToDouble(d -> d.getCurrentConsumption()).sum());
-        log(UncontrollableLoad.class, getDevices().stream().filter(d -> d instanceof UncontrollableLoad).mapToDouble(d -> d.getCurrentConsumption()).sum());
+        log(BufferTimeShiftable.NAME, getDevices().stream().filter(d -> d instanceof BufferTimeShiftable).mapToDouble(d -> d.getCurrentConsumption()).sum());
+        log(SolarPanel.NAME, getDevices().stream().filter(d -> d instanceof SolarPanel).mapToDouble(d -> d.getCurrentConsumption()).sum());
+        log(MockDevice.NAME, getDevices().stream().filter(d -> d instanceof MockDevice).mapToDouble(d -> d.getCurrentConsumption()).sum());
+        log(UncontrollableLoad.NAME, getDevices().stream().filter(d -> d instanceof UncontrollableLoad).mapToDouble(d -> d.getCurrentConsumption()).sum());
     }
 
     public String toString(int indentation) {

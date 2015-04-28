@@ -5,6 +5,7 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.detail.chart;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -75,15 +76,26 @@ public class ChartView extends Group {
         
         chart.titleProperty().bind(viewModel.chartTitleProperty());
         
-        viewModel.getSeriesByType().addListener((MapChangeListener.Change<? extends Class<? extends LoggingEntityBase>, ? extends ObservableList<Data<Number, Number>>> c) -> {
-            if (c.wasRemoved()) {
-                chart.getData().remove(c.getValueRemoved());
+        viewModel.getSeriesByType().addListener(new MapChangeListener<String, ObservableList<Data<Number, Number>>>() {
+
+            @Override
+            public void onChanged(MapChangeListener.Change<? extends String, ? extends ObservableList<Data<Number, Number>>> change) {
+                if (change.wasRemoved()) {
+                    chart.getData().removeIf(s -> {
+                        if (s instanceof Series) {
+                            if (((Series) s).getData() == change.getValueRemoved()) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    });
+                }
+                if (change.wasAdded()) {
+                    Series s = new Series(change.getKey(), change.getValueAdded());
+                    chart.getData().add(s);
+                }
             }
-            if (c.wasAdded()) {
-                Series<Number, Number> s = new Series<>();
-                s.setData(c.getValueAdded());
-                chart.getData().add(s);
-            }
+            
         });
     }
 }

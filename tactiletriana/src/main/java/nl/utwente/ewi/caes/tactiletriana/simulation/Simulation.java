@@ -32,10 +32,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.devices.UncontrollableLoad;
  */
 public class Simulation extends LoggingEntityBase {
 
-    @Override
-    public String getDisplayName() {
-        return "Network";
-    }
+    public static final String NAME = "Network";
 
     
     // de verschillende stati van de simulation
@@ -63,7 +60,7 @@ public class Simulation extends LoggingEntityBase {
     private House[] houses;
 
     public Simulation() {
-        super(QuantityType.POWER, null);
+        super(QuantityType.POWER, null, NAME);
         this.setSimulation(this);
         
         this.setState(SimulationState.INITIALIZED);
@@ -220,6 +217,11 @@ public class Simulation extends LoggingEntityBase {
     public House[] getHouses() {
         return Arrays.copyOf(houses, houses.length);
     }
+    
+    @Override
+    public String getDisplayName() {
+        return NAME;
+    }
 
     // PUBLIC METHODS
     // start, pause en reset kan ongetwijfeld allemaal veel mooier.
@@ -255,7 +257,7 @@ public class Simulation extends LoggingEntityBase {
             transformer.finishForwardBackwardSweep();
 
             // Log total power consumption in network
-            log(getClass(), transformer.getCables().get(0).getCurrent() * 230d);
+            log(NAME, transformer.getCables().get(0).getCurrent() * 230d);
 
             // Increment time
             setCurrentTime((getCurrentTime().plusMinutes(SimulationConfig.SIMULATION_TICK_TIME)));

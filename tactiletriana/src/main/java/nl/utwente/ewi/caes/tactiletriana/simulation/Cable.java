@@ -16,7 +16,7 @@ import javafx.beans.property.SimpleDoubleProperty;
  * A connection between to nodes
  */
 public class Cable extends LoggingEntityBase implements IFWBWSEntity {
-
+    public static final String NAME = "Cable";
     private final Node childNode;
     private final double resistance;
 
@@ -27,7 +27,7 @@ public class Cable extends LoggingEntityBase implements IFWBWSEntity {
      * @param maxCurrent The maximum current that can flow through the cable
      */
     public Cable(Node childNode, double maxCurrent, double length, Simulation simulation) {
-        super(QuantityType.CURRENT, simulation);
+        super(QuantityType.CURRENT, simulation, NAME);
         this.childNode = childNode;
         this.resistance = 0.00005;
         setLength(length);
@@ -71,7 +71,7 @@ public class Cable extends LoggingEntityBase implements IFWBWSEntity {
                 setBroken(true);
             }
 
-            log(Cable.this.getClass(), value);
+            log(NAME, value);
 
             super.set(value);
         }

@@ -16,7 +16,8 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.*;
  * @author niels
  */
 public class SolarPanel extends DeviceBase {
-
+    public static final String NAME = "Solar Panel";
+    
     //FIXME: Make (all?) these constants editable
     
     //Elevation of the panel in degrees
@@ -32,7 +33,7 @@ public class SolarPanel extends DeviceBase {
     private static final double MAX_AREA = 50;
 
     public SolarPanel(Simulation simulation) {
-        super(simulation);
+        super(simulation, NAME);
         addParameter(new Parameter("Area of solarpanel (in m2)", solarPanelArea, MIN_AREA, MAX_AREA));
         setSolarPanelArea((MIN_AREA + MAX_AREA) / 2);
     }
@@ -187,7 +188,7 @@ public class SolarPanel extends DeviceBase {
 
     @Override
     public String getDisplayName() {
-        return "Solar Panel";
+        return NAME;
     }
 
 }

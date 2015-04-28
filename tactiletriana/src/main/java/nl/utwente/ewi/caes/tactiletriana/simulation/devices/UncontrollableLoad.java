@@ -18,7 +18,8 @@ import org.apache.commons.csv.*;
  * @author jd
  */
 public class UncontrollableLoad extends DeviceBase {
-
+    public static final String NAME = "Uncontrollable Load";
+    
     //Power consumption per minute for a complete year(365 days)
     private static double[][] profile;
     private final int profileNumber;
@@ -29,7 +30,7 @@ public class UncontrollableLoad extends DeviceBase {
      * the profile data on which this instance is based
      */
     public UncontrollableLoad(int profileNumber, Simulation simulation) {
-        super(simulation);
+        super(simulation, NAME);
 
         if (profileNumber < 0 || profileNumber > 5) {
             throw new IllegalArgumentException("profileNumber must be in the range of 0 to 5");
@@ -67,6 +68,6 @@ public class UncontrollableLoad extends DeviceBase {
 
     @Override
     public String getDisplayName() {
-        return "Uncontrollable Load";
+        return NAME;
     }
 }

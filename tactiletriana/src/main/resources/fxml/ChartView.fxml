@@ -9,7 +9,7 @@
 
 <fx:root stylesheets="@../stylesheets/chartview.css" type="Group" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <StackedAreaChart fx:id="chart" animated="false" createSymbols="false" legendVisible="false" prefHeight="600.0" prefWidth="1800.0" title="Chart Title">
+      <StackedAreaChart fx:id="chart" animated="false" createSymbols="false" legendVisible="true" prefHeight="600.0" prefWidth="1800.0" title="Chart Title">
         <xAxis>
           <NumberAxis autoRanging="false" label="Time" minorTickCount="0" minorTickVisible="false" side="BOTTOM" tickMarkVisible="false" tickUnit="60.0" fx:id="xAxis" />
         </xAxis>

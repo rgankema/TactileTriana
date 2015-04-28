@@ -7,16 +7,20 @@ package nl.utwente.ewi.caes.tactiletriana.simulation.prediction;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import javafx.collections.ListChangeListener;
+import javafx.scene.chart.XYChart.Data;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Cable;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.House;
 import nl.utwente.ewi.caes.tactiletriana.simulation.LoggingEntityBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Node;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
+import static nl.utwente.ewi.caes.tactiletriana.util.Util.toEpochMinutes;
 
 /**
  *
@@ -46,15 +50,15 @@ public class SimulationPrediction extends Simulation {
                 
                 // Clear the invalid log values
                 for (LoggingEntityBase logger : futureByActual.values()) {
-                    Set<LocalDateTime> toRemove = new TreeSet<>();
-                    for (Map<LocalDateTime, Double> log : logger.getLogsByEntityType().values()) {
-                        for (LocalDateTime time : log.keySet()) {
-                            if (!time.isBefore(oldValue)) {
-                                toRemove.add(time);
+                    Set<Data<Number, Number>> toRemove = new HashSet<>();
+                    for (List<Data<Number, Number>> log : logger.getLogsByName().values()) {
+                        for (Data<Number, Number> data : log) {
+                            if ((long)data.getXValue() >= toEpochMinutes(oldValue)) {
+                                toRemove.add(data);
                             }
                         }
-                        for (LocalDateTime time : toRemove) {
-                            log.remove(time);
+                        for (Data data : toRemove) {
+                            log.remove(data);
                         }
                     }
                 }
