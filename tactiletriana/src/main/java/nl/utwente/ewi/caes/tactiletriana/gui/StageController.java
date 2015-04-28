@@ -143,8 +143,8 @@ public final class StageController {
 
                 tv.setMinSize(touchScreen.getBounds().getWidth(), 
                         touchScreen.getBounds().getHeight());
-                touchStage.setX(touchScreen.getVisualBounds().getMinX());
-                touchStage.setY(touchScreen.getVisualBounds().getMinY());
+                touchStage.setX(touchScreen.getBounds().getMinX());
+                touchStage.setY(touchScreen.getBounds().getMinY());
 
                 touchStage.initStyle(StageStyle.UNDECORATED);
             }
@@ -164,8 +164,8 @@ public final class StageController {
 
                 dv.setMinSize(detailScreen.getBounds().getWidth(),
                         detailScreen.getBounds().getHeight());
-                detailStage.setX(detailScreen.getVisualBounds().getMinX());
-                detailStage.setY(detailScreen.getVisualBounds().getMinY());
+                detailStage.setX(detailScreen.getBounds().getMinX());
+                detailStage.setY(detailScreen.getBounds().getMinY());
 
                 detailStage.initStyle(StageStyle.UNDECORATED);
             }
