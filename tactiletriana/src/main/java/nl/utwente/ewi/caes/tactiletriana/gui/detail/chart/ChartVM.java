@@ -85,6 +85,10 @@ public class ChartVM {
         return actual.getQuantityType();
     }
     
+    public String getDefaultSeries() {
+        return actual.getDefault();
+    }
+    
     // PUBLIC METHODS
     
     public final void setEntity(LoggingEntityBase actual, LoggingEntityBase future) {
