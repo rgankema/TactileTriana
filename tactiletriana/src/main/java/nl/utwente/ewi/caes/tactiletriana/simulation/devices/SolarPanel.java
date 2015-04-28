@@ -37,15 +37,6 @@ public class SolarPanel extends DeviceBase {
         setSolarPanelArea((MIN_AREA + MAX_AREA) / 2);
     }
     
-    /* for debug purposes */
-    private void printVariables(){
-        System.out.println("elevation" + elevation);
-        System.out.println("azimuth" + azimuth);
-        System.out.println("efficiency" + efficiency);
-        System.out.println("temperatureEfficiency:" + temperatureEfficiency);
-        System.out.println("area:" + solarPanelArea.get());
-    }
-    
     /**
      * The amount of power the device will consume when turned on
      */
@@ -155,32 +146,7 @@ public class SolarPanel extends DeviceBase {
         double actualEfficiency = (efficiency * (1 - ((temperaturePV - 25) * temperatureEfficiency) / 100)) / 100;
         
         double result = getSolarPanelArea() * powerSquareMeter * actualEfficiency;
-        
-//        //Debug variables
-//        if (result > 0){
-//            System.out.println("===============================================");
-//            printVariables();
-//            System.out.println("temperature:" + temperature);
-//            System.out.println("radiance:" + radiance);
-//            System.out.println("day:" + day);
-//            System.out.println("time" + time.getHour()+":"+time.getMinute());
-//            System.out.println("delta:" + delta);
-//            System.out.println("N:" + N);
-//            System.out.println("E_time:" + E_time);
-//            System.out.println("local time:" + local_std_time);
-//            System.out.println("solar time:" + solar_time);
-//            System.out.println("h:" + h);
-//            System.out.println("I_d:" + I_d);
-//            System.out.println("theta:" + theta);
-//            System.out.println("G_bs:" + G_bs);
-//            System.out.println("G_ts:" + G_ts);
-//            System.out.println("powerSquareMeter:" + powerSquareMeter);
-//            System.out.println("temperaturePV:" + temperaturePV);
-//            System.out.println("actualEfficiency:" + actualEfficiency);
-//            System.out.println("result:" + result);
-//            
-//        }
-        
+           
         //Return the production in W (coming from J/cm2 for a whole hour)
         return result; 
     }

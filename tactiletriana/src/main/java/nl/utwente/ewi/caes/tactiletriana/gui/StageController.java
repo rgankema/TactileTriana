@@ -141,6 +141,8 @@ public final class StageController {
             if (configurationVM.fullScreenCheckedProperty().get()) {
                 Screen touchScreen = getScreenByIndex((Integer) configurationVM.touchScreenSelectionProperty().get());
 
+                tv.setMinSize(touchScreen.getBounds().getWidth(), 
+                        touchScreen.getBounds().getHeight());
                 touchStage.setX(touchScreen.getVisualBounds().getMinX());
                 touchStage.setY(touchScreen.getVisualBounds().getMinY());
 

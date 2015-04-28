@@ -7,6 +7,7 @@ package nl.utwente.ewi.caes.tactiletriana.gui.touch;
 
 import java.util.ArrayList;
 import java.util.List;
+import javafx.animation.FadeTransition;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
@@ -16,6 +17,7 @@ import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
+import javafx.util.Duration;
 import nl.utwente.ewi.caes.tactilefx.control.Anchor;
 import nl.utwente.ewi.caes.tactilefx.control.TactilePane;
 import nl.utwente.ewi.caes.tactilefx.debug.MouseToTouchMapper;
@@ -24,6 +26,7 @@ import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseView;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 import nl.utwente.ewi.caes.tactiletriana.gui.customcontrols.FloatPane;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.cable.CableView;
+import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.node.NodeView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.transformer.TransformerView;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.BufferTimeShiftable;
@@ -66,24 +69,24 @@ public class TouchView extends TactilePane {
         
         for (int i = 0; i < 6; i++) {
             hv[i] = new HouseView();
+            getActiveNodes().add(hv[i]);
             nvh[i] = new NodeView();
             nvi[i] = new NodeView();
             cvh[i] = new CableView();
+            cvh[i].setManaged(false);
             cvi[i] = new CableView();
+            cvi[i].setManaged(false);
             
             // Arrange internal cables
             if (i == 0) {
-                cvi[i].setManaged(false);
                 cvi[i].setStartNode(tv);
                 cvi[i].setEndNode(nvi[i]);
             } else {
-                cvi[i].setManaged(false);
                 cvi[i].setStartNode(nvi[i - 1]);
                 cvi[i].setEndNode(nvi[i]);
             }
             
             // Arrange house cables
-            cvh[i].setManaged(false);
             cvh[i].setStartNode(nvi[i]);
             cvh[i].setEndNode(nvh[i]);
             
@@ -173,6 +176,11 @@ public class TouchView extends TactilePane {
     private void pushDeviceStack(DeviceView device, double xOffset) {
         // Add device to group to fix drag bug
         Group group = new Group(device);
+        // Animate new device
+        FadeTransition ft = new FadeTransition(Duration.millis(500), group);
+        ft.setFromValue(0);
+        ft.setToValue(1);
+        ft.playFromStart();
         // Add device to pane, in background
         getChildren().add(1, group);
         // Track device
@@ -194,7 +202,7 @@ public class TouchView extends TactilePane {
 
         // Add new device when drag starts, remove device if not on house
         TactilePane.inUseProperty(group).addListener(obs -> {
-            if (TactilePane.isInUse(group)) {
+            if (TactilePane.isInUse(group) && device.getViewModel().getState() == DeviceVM.State.DISCONNECTED) {
                 DeviceView newDevice = new DeviceView(device.getType());
                 newDevice.setViewModel(viewModel.getDeviceVM(device.getViewModel().getModel().getClass()));
                 pushDeviceStack(newDevice, xOffset);

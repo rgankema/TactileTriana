@@ -31,7 +31,6 @@ public class BufferTimeShiftable extends DeviceBase{
 
         //Set the current consumption according to current temperature, radiation and time
         setCurrentConsumption(getCurrentConsumption(simulation.getCurrentTime()));
-        System.out.println(currentCharge);
     }
     
     
