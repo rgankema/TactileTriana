@@ -21,7 +21,7 @@ public class BufferTimeShiftable extends DeviceBase{
     private double currentCharge = 0;
     
     public BufferTimeShiftable(Simulation simulation) {
-        super(simulation, EntityType.BUFFER_TIME_SHIFTABLE);
+        super(simulation, "BufferTimeShiftable");
     }
     
     

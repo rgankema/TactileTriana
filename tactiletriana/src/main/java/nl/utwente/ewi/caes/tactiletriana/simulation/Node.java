@@ -20,7 +20,7 @@ public class Node extends LoggingEntityBase implements IFWBWSEntity {
     private House house;
 
     public Node(House house, Simulation simulation) {
-        super(QuantityType.VOLTAGE, simulation, EntityType.NODE);
+        super(simulation, "Node", QuantityType.VOLTAGE);
 
         this.cables = new ArrayList<>();
         this.house = house;

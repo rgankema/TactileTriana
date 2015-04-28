@@ -20,23 +20,18 @@ import javafx.collections.ObservableMap;
  * @author mickvdv
  */
 public abstract class LoggingEntityBase {
+    private final String displayName;
     private final QuantityType qType;
-    private final EntityType eType;
     private final ObservableMap<LocalDateTime, Double> log;
-    private final Map<EntityType, ObservableMap<LocalDateTime, Double>> childLogs;
+    
     private double absoluteMaximum = Double.POSITIVE_INFINITY;
     protected Simulation simulation;
 
-    public LoggingEntityBase(QuantityType qType, Simulation simulation, 
-            EntityType eType, EntityType... childTypes) {
+    public LoggingEntityBase(Simulation simulation, String displayName, QuantityType qType) {
+        this.displayName = displayName;
         this.qType = qType;
-        this.eType = eType;
         this.simulation = simulation;
         this.log = FXCollections.observableMap(new TreeMap<>());
-        this.childLogs = new HashMap<>();
-        for (EntityType childType : childTypes) {
-            childLogs.put(childType, FXCollections.observableMap(new TreeMap<>()));
-        }
     }
 
     protected void setSimulation(Simulation simulation) {
@@ -46,44 +41,13 @@ public abstract class LoggingEntityBase {
     // PROPERTIES
     
     public final String getDisplayName() {
-        String name = null;
-        switch (eType) {
-            case BUFFER_TIME_SHIFTABLE:
-                name = "Buffer Time Shiftable";
-                break;
-            case CABLE:
-                name = "Cable";
-                break;
-            case HOUSE:
-                name = "House";
-                break;
-            case MOCK_DEVICE:
-                name = "Mock Device";
-                break;
-            case NETWORK:
-                name = "Network";
-                break;
-            case NODE:
-                name = "Node";
-                break;
-            case SOLAR_PANEL:
-                name = "Solar Panel";
-                break;
-            case UNCONTROLLABLE:
-                name = "Uncontrollable Load";
-                break;
-        }
-        return name;
+        return this.displayName;
     }
 
     public final QuantityType getQuantityType() {
         return this.qType;
     }
     
-    public final EntityType getEntityType() {
-        return this.eType;
-    }
-
     public final double getAbsoluteMaximum() {
         return this.absoluteMaximum;
     }
@@ -99,10 +63,6 @@ public abstract class LoggingEntityBase {
     public final ObservableMap<LocalDateTime, Double> getLog() {
         return this.log;
     }
-    
-    public final Map<EntityType, ObservableMap<LocalDateTime, Double>> getChildLogs() {
-        return Collections.unmodifiableMap(this.childLogs);
-    }
 
     // METHODS
     
@@ -110,13 +70,6 @@ public abstract class LoggingEntityBase {
         // Log can be called when Simulation is still initializing, and thus currentTime can be null
         if (this.simulation.getCurrentTime() != null) {
             log.put(this.simulation.getCurrentTime(), value);
-        }
-    }
-    
-    protected final void log(EntityType childType, double value) {
-        // Log can be called when Simulation is still initializing, and thus currentTime can be null
-        if (this.simulation.getCurrentTime() != null) {
-            childLogs.get(childType).put(this.simulation.getCurrentTime(), value);
         }
     }
 
@@ -127,13 +80,5 @@ public abstract class LoggingEntityBase {
      */
     public static enum QuantityType {
         CURRENT, POWER, VOLTAGE
-    }
-    
-    /**
-     * Describes types of entities.
-     */
-    public static enum EntityType {
-        NETWORK, HOUSE, NODE, CABLE, MOCK_DEVICE,
-        BUFFER_TIME_SHIFTABLE, SOLAR_PANEL, UNCONTROLLABLE
     }
 }

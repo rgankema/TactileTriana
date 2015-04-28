@@ -23,8 +23,8 @@ public abstract class DeviceBase extends LoggingEntityBase {
     private final List<Parameter> parameters;
     private final List<Parameter> parametersUnmodifiable;
 
-    public DeviceBase(Simulation simulation, EntityType eType) {
-        super(QuantityType.POWER, simulation, eType);
+    public DeviceBase(Simulation simulation, String displayName) {
+        super(simulation, displayName, QuantityType.POWER);
 
         parameters = new ArrayList<>();
         parametersUnmodifiable = Collections.unmodifiableList(parameters);

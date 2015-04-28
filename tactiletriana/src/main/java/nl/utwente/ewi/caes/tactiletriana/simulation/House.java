@@ -23,9 +23,7 @@ public class House extends LoggingEntityBase {
     private final ObservableList<DeviceBase> devices;
 
     public House(Simulation simulation) {
-        super(QuantityType.POWER, simulation, EntityType.HOUSE, EntityType.UNCONTROLLABLE,
-                EntityType.MOCK_DEVICE, EntityType.BUFFER_TIME_SHIFTABLE, EntityType.SOLAR_PANEL);
-
+        super(simulation, "House", QuantityType.POWER);
         devices = FXCollections.observableArrayList();
         devices.addListener((ListChangeListener.Change<? extends DeviceBase> c) -> {
             while (c.next()) {
@@ -128,11 +126,6 @@ public class House extends LoggingEntityBase {
         setCurrentConsumption(getDevices().stream().mapToDouble(d -> d.getCurrentConsumption()).sum());
 
         log(getCurrentConsumption());
-        
-        log(EntityType.BUFFER_TIME_SHIFTABLE, getDevices().stream().filter(d -> d.getEntityType() == EntityType.BUFFER_TIME_SHIFTABLE).mapToDouble(d -> d.getCurrentConsumption()).sum());
-        log(EntityType.SOLAR_PANEL, getDevices().stream().filter(d -> d.getEntityType() == EntityType.SOLAR_PANEL).mapToDouble(d -> d.getCurrentConsumption()).sum());
-        log(EntityType.MOCK_DEVICE, getDevices().stream().filter(d -> d.getEntityType() == EntityType.MOCK_DEVICE).mapToDouble(d -> d.getCurrentConsumption()).sum());
-        log(EntityType.UNCONTROLLABLE, getDevices().stream().filter(d -> d.getEntityType() == EntityType.UNCONTROLLABLE).mapToDouble(d -> d.getCurrentConsumption()).sum());
     }
 
     public String toString(int indentation) {
