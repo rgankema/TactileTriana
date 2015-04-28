@@ -5,8 +5,6 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.configuration;
 
-import java.util.ArrayList;
-import java.util.List;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -16,7 +14,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.stage.Screen;
 import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 
@@ -26,7 +23,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
  */
 public class ConfigurationVM {
 
-    private static SimpleBooleanProperty launched = new SimpleBooleanProperty(false);
+    private static final SimpleBooleanProperty launched = new SimpleBooleanProperty(false);
     private final ObservableList screenIndexList = FXCollections.observableArrayList();
     
     private Simulation simulation;
@@ -63,15 +60,17 @@ public class ConfigurationVM {
         // start button text is set to "Start" when the simulation hasn't started yet,
         // and "Resume" when it already has
         startButtonText.bind(Bindings.createStringBinding(() -> {
-            if (this.simulation.isStarted()) {
+            if (simulation.getState() == Simulation.SimulationState.PAUSED) {
                 return "Resume Simulation";
             } else {
                 return "Start Simulation";
             }
-        }, this.simulation.startedProperty()));
+        }, this.simulation.stateProperty()));
 
         // reset button is enabled when simulation has been started
-        resetButtonDisabled.bind(this.simulation.startedProperty().not());
+        resetButtonDisabled.bind(Bindings.createBooleanBinding(() -> { 
+            return simulation.getState() == Simulation.SimulationState.STOPPED;
+        }, this.simulation.stateProperty()));
     }
 
     // BINDABLE PROPERTIES
@@ -178,6 +177,6 @@ public class ConfigurationVM {
     }
 
     public void reset() {
-        this.simulation.reset();
+        StageController.getInstance().resetSimulation();
     }
 }

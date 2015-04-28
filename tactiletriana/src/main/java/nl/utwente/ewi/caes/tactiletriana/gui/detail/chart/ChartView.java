@@ -12,6 +12,8 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.StackedAreaChart;
 import javafx.scene.chart.XYChart.Series;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.util.StringConverter;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 
@@ -19,7 +21,7 @@ import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
  *
  * @author Richard
  */
-public class ChartView extends Group {
+public class ChartView extends StackPane {
 
     @FXML
     private LineChart chart;

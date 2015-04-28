@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.image.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.shape.*?>
 <?import java.lang.*?>
@@ -8,8 +9,12 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<fx:root prefHeight="50.0" prefWidth="50.0" type="StackPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root minHeight="50.0" minWidth="50.0" type="StackPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Circle fx:id="configIcon" fill="DODGERBLUE" radius="15.0" stroke="BLACK" strokeType="INSIDE" translateX="15.0" translateY="-15.0" StackPane.alignment="TOP_RIGHT" />
+      <ImageView fx:id="configIcon" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" translateX="15.0" translateY="-15.0" StackPane.alignment="TOP_RIGHT">
+         <image>
+            <Image url="@../images/config.png" />
+         </image>
+      </ImageView>
    </children>
 </fx:root>

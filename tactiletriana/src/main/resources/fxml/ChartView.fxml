@@ -7,15 +7,18 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<fx:root stylesheets="@../stylesheets/chartview.css" type="Group" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root stylesheets="@../stylesheets/chartview.css" type="StackPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <LineChart fx:id="chart" animated="false" createSymbols="false" legendVisible="false" prefHeight="600.0" prefWidth="1800.0" title="Chart Title">
+      <LineChart fx:id="chart" animated="false" createSymbols="false" legendVisible="false" title="Chart Title">
         <xAxis>
           <NumberAxis autoRanging="false" label="Time" minorTickCount="0" minorTickVisible="false" side="BOTTOM" tickMarkVisible="false" tickUnit="60.0" fx:id="xAxis" />
         </xAxis>
         <yAxis>
           <NumberAxis fx:id="yAxis" forceZeroInRange="false" minorTickCount="0" minorTickVisible="false" side="LEFT" tickMarkVisible="false" />
         </yAxis>
+        <StackPane.margin>
+            <javafx.geometry.Insets top="50" right="50" bottom="50" left="50"  />
+        </StackPane.margin>
       </LineChart>
    </children>
 </fx:root>

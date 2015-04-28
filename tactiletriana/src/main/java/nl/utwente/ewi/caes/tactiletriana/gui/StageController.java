@@ -162,6 +162,8 @@ public final class StageController {
             if (configurationVM.fullScreenCheckedProperty().get()) {
                 Screen detailScreen = getScreenByIndex((Integer) configurationVM.detailScreenSelectionProperty().get());
 
+                dv.setMinSize(detailScreen.getBounds().getWidth(),
+                        detailScreen.getBounds().getHeight());
                 detailStage.setX(detailScreen.getVisualBounds().getMinX());
                 detailStage.setY(detailScreen.getVisualBounds().getMinY());
 
@@ -224,12 +226,20 @@ public final class StageController {
 
     public void showOnChart(LoggingEntityVMBase logger, LoggingEntityBase entity) {
         if (vmOnChart != null) vmOnChart.setShownOnChart(false);
-        this.vmOnChart = logger;
-        vmOnChart.setShownOnChart(true);
         
-        if (entity == null) {
+        if (logger == null && entity == null) {
+            logger = touchVM.getTransformer();
             entity = simulation;
         }
+        
+        this.vmOnChart = logger;
+        
+        vmOnChart.setShownOnChart(true);
         detailVM.getChartVM().setEntity(entity, simulationPrediction.getFuture(entity));
+    }
+    
+    public void resetSimulation() {
+        this.simulation.reset();
+        this.simulationPrediction.reset();
     }
 }

@@ -144,6 +144,8 @@ public class DeviceVM extends LoggingEntityVMBase {
 
         if (house != null) {
             house.addDevice(model);
+        } else if (isShownOnChart()) {
+            StageController.getInstance().showOnChart(null, null);
         }
     }
 
