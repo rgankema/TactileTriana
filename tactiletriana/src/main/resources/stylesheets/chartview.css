@@ -19,3 +19,12 @@ and open the template in the editor.
 .axis-label {
     -fx-font-size: 20px;
 }
+
+.series0.chart-series-line {    
+    -fx-stroke-width: 4px;
+    -fx-stroke: #000000;
+}
+
+.series0.chart-line-symbol {
+    -fx-stroke: #000000;
+}

@@ -33,7 +33,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.LoggingEntityBase;
 public class ChartView extends Group {
 
     @FXML
-    private StackedAreaChart chart;
+    private LineChart chart;
     @FXML
     private NumberAxis xAxis;
     @FXML
@@ -92,7 +92,11 @@ public class ChartView extends Group {
                 }
                 if (change.wasAdded()) {
                     Series s = new Series(change.getKey(), change.getValueAdded());
-                    chart.getData().add(s);
+                    if (viewModel.getDefaultSeries().equals(change.getKey())) {
+                        chart.getData().add(0, s);
+                    } else {
+                        chart.getData().add(s);
+                    }
                 }
             }
             

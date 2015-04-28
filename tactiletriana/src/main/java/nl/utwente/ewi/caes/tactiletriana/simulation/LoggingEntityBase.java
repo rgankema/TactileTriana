@@ -22,6 +22,7 @@ import nl.utwente.ewi.caes.tactiletriana.util.Util;
 public abstract class LoggingEntityBase {
     private final QuantityType qType;
     private final Map<String, ObservableList<Data<Number, Number>>> logsByName;
+    private final String defaultLog;
     private double absoluteMaximum = Double.POSITIVE_INFINITY;
     protected Simulation simulation;
 
@@ -29,7 +30,9 @@ public abstract class LoggingEntityBase {
         this.qType = qType;
         this.simulation = simulation;
         this.logsByName = new HashMap<>();
+        defaultLog = logNames[0];
         for (String logName : logNames) {
+            
             logsByName.put(logName, FXCollections.observableArrayList());
         }
     }
@@ -42,6 +45,10 @@ public abstract class LoggingEntityBase {
     
     public abstract String getDisplayName();
 
+    public String getDefault() {
+        return this.defaultLog;
+    }
+    
     public final QuantityType getQuantityType() {
         return this.qType;
     }
@@ -72,9 +79,9 @@ public abstract class LoggingEntityBase {
             
             long minutes = Util.toEpochMinutes(time);
             if (log.isEmpty()) {
-                log.add(new Data<>(minutes, 0));
+        //        log.add(new Data<>(minutes, 0));
             } else {
-      //          log.add(new Data<>(minutes, log.get(log.size() - 1).getYValue()));
+        //        log.add(new Data<>(minutes, log.get(log.size() - 1).getYValue()));
             }
             log.add(new Data<>(minutes, value));
         }
