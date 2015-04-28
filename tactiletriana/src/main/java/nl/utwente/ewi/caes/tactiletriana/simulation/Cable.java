@@ -35,6 +35,7 @@ public class Cable extends LoggingEntityBase implements IFWBWSEntity {
     }
 
     // PROPERTIES
+    
     /**
      * The length of the cable
      */
@@ -70,9 +71,6 @@ public class Cable extends LoggingEntityBase implements IFWBWSEntity {
             if (Math.abs(value) > getMaximumCurrent()) {
                 setBroken(true);
             }
-
-            log(value);
-
             super.set(value);
         }
     };
@@ -85,7 +83,7 @@ public class Cable extends LoggingEntityBase implements IFWBWSEntity {
         return currentProperty().get();
     }
 
-    private void setCurrent(double value) {
+    protected final void setCurrent(double value) {
         current.set(value);
     }
 
@@ -103,7 +101,7 @@ public class Cable extends LoggingEntityBase implements IFWBWSEntity {
         return maximumCurrentProperty().get();
     }
 
-    private void setMaximumCurrent(double maximumCurrent) {
+    protected final void setMaximumCurrent(double maximumCurrent) {
         setAbsoluteMaximum(maximumCurrent);
         this.maximumCurrent.set(maximumCurrent);
     }
@@ -129,7 +127,7 @@ public class Cable extends LoggingEntityBase implements IFWBWSEntity {
         return brokenProperty().get();
     }
 
-    private void setBroken(boolean value) {
+    protected final void setBroken(boolean value) {
         broken.set(value);
     }
 
@@ -146,7 +144,7 @@ public class Cable extends LoggingEntityBase implements IFWBWSEntity {
         if (isBroken()) {
             connected = false;
         }
-
+        
         getChildNode().tick(simulation, connected);
     }
 
@@ -178,19 +176,7 @@ public class Cable extends LoggingEntityBase implements IFWBWSEntity {
     @Override
     public void finishForwardBackwardSweep() {
         setCurrent(tempCurrent);
+        log(getCurrent());
         childNode.finishForwardBackwardSweep();
-    }
-
-    
-
-    public String toString(int indentation) {
-        String output = "";
-        for (int i = 0; i < indentation; i++) {
-            output += "\t";
-        }
-        output += "|-";
-
-        output += "(Cable:R=" + resistance + ",I=" + this.getCurrent() + ") -> " + this.getChildNode().toString(indentation);
-        return output;
     }
 }

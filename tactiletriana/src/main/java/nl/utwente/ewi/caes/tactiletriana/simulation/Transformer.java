@@ -17,25 +17,4 @@ public class Transformer extends Node implements IFWBWSEntity {
         super(null, simulation);
         setVoltage(230);
     }
-
-    @Override
-    public String toString() {
-        return toString(0);
-    }
-
-    @Override
-    public String toString(int indentation) {
-        String output = "";
-        for (int i = 0; i < indentation; i++) {
-            output += "\t";
-        }
-        output += "|-";
-
-        output = "(Transformer:U=" + this.getVoltage() + ")\n";
-        for (Cable c : this.getCables()) {
-            output += c.toString(indentation + 1);
-        }
-        return output;
-    }
-
 }

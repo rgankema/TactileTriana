@@ -32,13 +32,7 @@ public class Node extends LoggingEntityBase implements IFWBWSEntity {
     /**
      * The voltage measured on this node
      */
-    private final ReadOnlyDoubleWrapper voltage = new ReadOnlyDoubleWrapper(230.0) {
-        @Override
-        public void set(double value) {
-            log(value);
-            super.set(value);
-        }
-    };
+    private final ReadOnlyDoubleWrapper voltage = new ReadOnlyDoubleWrapper(230.0);
 
     public ReadOnlyDoubleProperty voltageProperty() {
         return voltage.getReadOnlyProperty();
@@ -110,26 +104,9 @@ public class Node extends LoggingEntityBase implements IFWBWSEntity {
     @Override
     public void finishForwardBackwardSweep() {
         setVoltage(tempVoltage);
+        log(getVoltage());
         for (Cable c : cables) {
             c.finishForwardBackwardSweep();
         }
-    }
-
-    public String toString(int indentation) {
-        String output = "";
-        for (int i = 0; i < indentation; i++) {
-            output += "\t";
-        }
-        output += "|-";
-
-        if (getHouse() != null) {
-            output = "(Node:U=" + getVoltage() + ")\n" + getHouse().toString(indentation + 1) + "\n";
-        } else {
-            output = "(Node:U=" + getVoltage() + ") -> " + "\n";
-        }
-        for (Cable c : this.getCables()) {
-            output += c.toString(indentation + 1);
-        }
-        return output;
     }
 }

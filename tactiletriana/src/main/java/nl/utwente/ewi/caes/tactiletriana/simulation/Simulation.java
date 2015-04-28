@@ -32,16 +32,8 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.devices.UncontrollableLoad;
  */
 public class Simulation extends LoggingEntityBase {
 
-    
-    // de verschillende stati van de simulation
-    // INITIALIZED: alles is aangemaakt maar nog niks runt
-    // RUNNING: de simulation is running -> hij voert tick() uit
-    // PAUSED: de simulatie is gepauzeerd
-    // STOPPED: de simulatie is gestopt
-    
     public static enum SimulationState { RUNNING, PAUSED, STOPPED };
     public static final int NUMBER_OF_HOUSES = 6;
-    
 
     private final Transformer transformer;
     private final Map<Node, Double> lastVoltageByNode;
