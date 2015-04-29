@@ -14,7 +14,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
  *
  * @author niels
  */
-public abstract class BufferTimeShiftable extends DeviceBase{
+public class BufferTimeShiftable extends DeviceBase{
     
     //Capacity in W/h
     private double capacity; 
