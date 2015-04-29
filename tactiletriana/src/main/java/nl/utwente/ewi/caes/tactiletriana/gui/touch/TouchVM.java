@@ -109,7 +109,7 @@ public class TouchVM {
     }
     
     public DeviceVM getCarVM() {
-        return new DeviceVM(new BufferTimeShiftable(model));
+        return new DeviceVM(new BufferTimeShiftable(model, (int) (Math.random() * 4)));
     }
 
 }
