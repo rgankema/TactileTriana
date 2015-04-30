@@ -21,6 +21,9 @@ public class APIServer implements Runnable {
     protected int serverPort   = 8080;
     protected ServerSocket serverSocket = null;
     protected boolean isStopped    = false;
+    private ServerConnection controlConnection = null;
+    
+    private final Object controllerLock = new Object();
     
     public APIServer(int port) {
         this.serverPort = port;
@@ -34,7 +37,7 @@ public class APIServer implements Runnable {
         try {
             this.serverSocket = new ServerSocket(this.serverPort);
         } catch (IOException e) {
-            throw new RuntimeException("Cannot open port 8080", e);
+            throw new RuntimeException("Cannot open port", e);
         }
         
         //Main server loop
@@ -69,6 +72,26 @@ public class APIServer implements Runnable {
         } catch (IOException e) {
             throw new RuntimeException("Error closing server", e);
         }
+    }
+    
+    public boolean requestControl(ServerConnection s) {
+        boolean result = false;
+        synchronized(controllerLock) {
+            if(controlConnection == null || !controlConnection.isRunning() ) {
+                controlConnection = s;
+                result = true;
+            }
+        }
+        return result;
+        
+    }
+    
+    public static void main(String args[]) {
+        System.out.println("Starting server...");
+        APIServer s = new APIServer(8070);
+        Thread t = new Thread(s);
+        t.start();
+        
     }
     
 }
