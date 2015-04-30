@@ -14,9 +14,8 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Cable;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Node;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
-import nl.utwente.ewi.caes.tactiletriana.simulation.devices.BufferTimeShiftable;
-import nl.utwente.ewi.caes.tactiletriana.simulation.devices.MockDevice;
-import nl.utwente.ewi.caes.tactiletriana.simulation.devices.SolarPanel;
+import nl.utwente.ewi.caes.tactiletriana.simulation.devices.*;
+
 
 /**
  *
@@ -96,6 +95,10 @@ public class TouchVM {
             return getSolarPanelVM();
         } else if (deviceClass.equals(BufferTimeShiftable.class)) {
             return getCarVM();
+        } else if (deviceClass.equals(DishWasher.class)){
+            return getDishWasherVM();
+        } else if (deviceClass.equals(WashingMachine.class)){
+            return getWashingMachineVM();
         }
         return null;
     }
@@ -110,6 +113,14 @@ public class TouchVM {
     
     public DeviceVM getCarVM() {
         return new DeviceVM(new BufferTimeShiftable(model, (int) (Math.random() * 4)));
+    }
+    
+    public DeviceVM getDishWasherVM(){
+        return new DeviceVM(new DishWasher(model));
+    }
+    
+    public DeviceVM getWashingMachineVM(){
+        return new DeviceVM(new WashingMachine(model));
     }
 
 }

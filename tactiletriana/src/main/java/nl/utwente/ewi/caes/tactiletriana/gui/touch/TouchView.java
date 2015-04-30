@@ -29,9 +29,7 @@ import nl.utwente.ewi.caes.tactiletriana.gui.touch.cable.CableView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.node.NodeView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.transformer.TransformerView;
-import nl.utwente.ewi.caes.tactiletriana.simulation.devices.BufferTimeShiftable;
-import nl.utwente.ewi.caes.tactiletriana.simulation.devices.MockDevice;
-import nl.utwente.ewi.caes.tactiletriana.simulation.devices.SolarPanel;
+import nl.utwente.ewi.caes.tactiletriana.simulation.devices.*;
 
 /**
  * FXML Controller class
@@ -167,10 +165,16 @@ public class TouchView extends TactilePane {
         cv.setViewModel(viewModel.getCarVM());
         DeviceView sv = new DeviceView(SolarPanel.class);
         sv.setViewModel(viewModel.getSolarPanelVM());
+        DeviceView dv = new DeviceView(DishWasher.class);
+        dv.setViewModel(viewModel.getDishWasherVM());
+        DeviceView wv = new DeviceView(WashingMachine.class);
+        wv.setViewModel(viewModel.getWashingMachineVM());
         
-        pushDeviceStack(mv, -100);
-        pushDeviceStack(cv, 0);
-        pushDeviceStack(sv, 100);
+        pushDeviceStack(mv, -200);
+        pushDeviceStack(cv, -100);
+        pushDeviceStack(sv, 0);
+        pushDeviceStack(dv, 100);
+        pushDeviceStack(wv, 200);
     }
     
     private void pushDeviceStack(DeviceView device, double xOffset) {
