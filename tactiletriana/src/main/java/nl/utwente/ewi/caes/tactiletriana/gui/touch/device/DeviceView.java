@@ -27,9 +27,7 @@ import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 import nl.utwente.ewi.caes.tactiletriana.gui.events.TrianaEvents;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceVM.State;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
-import nl.utwente.ewi.caes.tactiletriana.simulation.devices.BufferTimeShiftable;
-import nl.utwente.ewi.caes.tactiletriana.simulation.devices.MockDevice;
-import nl.utwente.ewi.caes.tactiletriana.simulation.devices.SolarPanel;
+import nl.utwente.ewi.caes.tactiletriana.simulation.devices.*;
 
 /**
  *
@@ -56,6 +54,10 @@ public class DeviceView extends StackPane {
             deviceIcon = new Polygon(new double[]{0d, 50d, 25d, 0d, 50d, 50d});
         else if (type == SolarPanel.class)
             deviceIcon = new ImageView(new Image("images/solarpanel.png",50,50,false,true));
+        else if (type == DishWasher.class)
+            deviceIcon = new ImageView(new Image("images/dishwasher.png",50,50,false,true));
+        else if (type == WashingMachine.class)
+            deviceIcon = new ImageView(new Image("images/washingmachine.png",50,50,false,true));
         else
             throw new UnsupportedOperationException("No DeviceView for type " + type.toString());
         getChildren().add(0, deviceIcon);
