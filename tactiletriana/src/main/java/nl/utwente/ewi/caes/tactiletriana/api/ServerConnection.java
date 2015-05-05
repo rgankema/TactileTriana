@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
+import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -35,7 +37,8 @@ public class ServerConnection implements Runnable {
         INVALID_TYPE("Invalid message type specified."),
         INVALID_DATATYPE("Invalid data type encountered in JSON message."),
         UNKNOWN_TYPE("Unknown message type."),
-        UNKNOWN_CATEGORY("Unknown message category")
+        UNKNOWN_CATEGORY("Unknown message category"),
+        TYPENOTACCEPTED("Message type not accepted.")
         ;
         
         private final String errorMessage;
@@ -151,7 +154,7 @@ public class ServerConnection implements Runnable {
      * Shutdown and clean-up this ServerConnection
      * This function might be called from two threads at the same time, and thus has to be synchronized 
      */
-    private synchronized void shutdown() {
+    public synchronized void shutdown() {
         
         //Check if this connection is still running (i.e. if this function was called before)
         if (this.isRunning()) {
@@ -160,6 +163,7 @@ public class ServerConnection implements Runnable {
                 in.close();
                 out.close();
                 socket.close();
+                server.removeConnection(this);
             } catch (IOException e ) {
                 //FIXME
                 log("Error on client socket shutdown.");
@@ -251,7 +255,7 @@ public class ServerConnection implements Runnable {
             boolean categoryPass = true;
             try {
                 String category = (String) json.get("category");
-                if (category != "request") {
+                if (!category.equals("request")) {
                     error = ClientError.INVALID_CATEGORY.errorMessage();
                     categoryPass = false;
                     log(error);
@@ -259,6 +263,7 @@ public class ServerConnection implements Runnable {
                     
                    
                 }
+                
             } catch (ClassCastException ce) {
                 error = ClientError.INVALID_DATATYPE + "In 'message category'.";
                 categoryPass = false;
@@ -283,30 +288,30 @@ public class ServerConnection implements Runnable {
             
             try {
                 String type_received = (String) json.get("type");
-                if(type_received == MessageType.DEVICEPARAMETERS.toString()) {
+                if(type_received.equals(MessageType.DEVICEPARAMETERS.toString())) {
                     type = MessageType.DEVICEPARAMETERS;
-                } else if(type_received == MessageType.GETDEVICES.toString()) {
+                } else if(type_received.equals(MessageType.GETDEVICES.toString())) {
                     type = MessageType.GETDEVICES;
-                } else if(type_received == MessageType.RELEASECONTROL.toString()) {
+                } else if(type_received.equals(MessageType.RELEASECONTROL.toString())) {
                     type = MessageType.RELEASECONTROL;
-                } else if(type_received == MessageType.REQUESTCONTROL.toString()) {
+                } else if(type_received.equals(MessageType.REQUESTCONTROL.toString())) {
                     type = MessageType.REQUESTCONTROL;
-                } else if(type_received == MessageType.RESETSIMULATION.toString()) {
+                } else if(type_received .equals(MessageType.RESETSIMULATION.toString())) {
                     type = MessageType.RESETSIMULATION;
-                } else if (type_received == MessageType.SIMTIME.toString()) {
+                } else if (type_received.equals(MessageType.SIMTIME.toString())) {
                     type = MessageType.SIMTIME;
-                } else if (type_received == MessageType.SIMULATIONINFO.toString()) {
+                } else if (type_received.equals(MessageType.SIMULATIONINFO.toString())) {
                     type = MessageType.SIMULATIONINFO;
-                } else if (type_received == MessageType.STARTSIMULATION.toString()) {
+                } else if (type_received.equals(MessageType.STARTSIMULATION.toString())) {
                     type = MessageType.STARTSIMULATION;
-                } else if (type_received == MessageType.SUBMITPLANNING.toString()) {
+                } else if (type_received.equals(MessageType.SUBMITPLANNING.toString())) {
                     type = MessageType.SUBMITPLANNING;
-                } else if(type_received == MessageType.STOPSIMULATION.toString()) {
+                } else if(type_received.equals(MessageType.STOPSIMULATION.toString())) {
                     type = MessageType.STOPSIMULATION;
                 }      
                 
             } catch (ClassCastException ce) {
-                error = ClientError.INVALID_DATATYPE + "In 'message type'.";
+                error = ClientError.INVALID_DATATYPE.errorMessage() + " In 'message type'.";
                 categoryPass = false;
                 log(error);
                 sendError(error);
@@ -323,6 +328,7 @@ public class ServerConnection implements Runnable {
             if(type == null) {
                 sendError(ClientError.UNKNOWN_TYPE.errorMessage());
                 log(ClientError.UNKNOWN_TYPE.errorMessage());
+                return;
             } 
             
             //Check if the data field exists
@@ -338,6 +344,10 @@ public class ServerConnection implements Runnable {
                     case REQUESTCONTROL:
                         break;
                     case SIMULATIONINFO:
+                        processSimulationInfo();
+                        break;
+                    default:
+                        sendError(ClientError.TYPENOTACCEPTED.errorMessage());
                         break;
                 }
             } else if (getClientState() == ClientState.CONTROL) {
@@ -345,6 +355,7 @@ public class ServerConnection implements Runnable {
                     case GETDEVICES:
                         break;
                     case SIMULATIONINFO:
+                        processSimulationInfo();
                         break;
                     case STARTSIMULATION:
                         break;
@@ -358,12 +369,16 @@ public class ServerConnection implements Runnable {
                         break;
                     case DEVICEPARAMETERS:
                         break;
+                    default:
+                        sendError(ClientError.TYPENOTACCEPTED.errorMessage());
+                        break;
                 }
             } else if (getClientState() == ClientState.WAITING) {
                 switch (type) {
                     case GETDEVICES:
                         break;
                     case SIMULATIONINFO:
+                        processSimulationInfo();
                         break;
                     case STARTSIMULATION:
                         break;
@@ -379,6 +394,9 @@ public class ServerConnection implements Runnable {
                         break;
                     case SUBMITPLANNING:
                         break;
+                    default:
+                        sendError(ClientError.TYPENOTACCEPTED.errorMessage());
+                        break;
                 }
             }
             
@@ -387,6 +405,7 @@ public class ServerConnection implements Runnable {
             
         } catch(ParseException e) {
             this.sendMessage("{\"succes\" : false, \"error\" : \"Invalid JSON request received.\"}");
+            log("Invalid message received.");
            
         }
     }
@@ -411,8 +430,18 @@ public class ServerConnection implements Runnable {
         
     }
     
+    /**
+     * Create a JSON response for the SimulationInfo request and send it to the client.
+     */
     public void processSimulationInfo() {
-        
+        Simulation sim = server.getSimulation();
+        JSONObject jsonResponse = new JSONObject();
+        jsonResponse.put("isRunning", (sim.getState() == Simulation.SimulationState.RUNNING));
+        jsonResponse.put("isStarted", (sim.getState() != Simulation.SimulationState.STOPPED));
+        //Minute of the year in the simulation.
+        jsonResponse.put("simTime", sim.getCurrentTime().getDayOfYear()*24*60 + sim.getCurrentTime().getHour() * 60 + sim.getCurrentTime().getMinute());
+        jsonResponse.put("timeStep", SimulationConfig.SIMULATION_TICK_TIME);
+        sendMessage(jsonResponse.toJSONString());
     }
     
     public void processSubmitPlanning() {

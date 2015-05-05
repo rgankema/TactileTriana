@@ -10,6 +10,8 @@ import java.net.Socket;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 
 
 /**
@@ -20,16 +22,22 @@ public class APIServer implements Runnable {
     
     protected int serverPort   = 8080;
     protected ServerSocket serverSocket = null;
+    protected Simulation simulation = null;
     protected boolean isStopped    = false;
     private ServerConnection controlConnection = null;
+    private ArrayList<ServerConnection> serverConnections = null;
     
     private final Object controllerLock = new Object();
     
-    public APIServer(int port) {
+    public APIServer(int port, Simulation sim) {
         this.serverPort = port;
+        this.simulation = sim;
+        this.serverConnections = new ArrayList<ServerConnection>();
     }
     
-    
+    /**
+     * Main loop of the server
+     */
     @Override
     public void run() {
         
@@ -53,27 +61,66 @@ public class APIServer implements Runnable {
                 throw new RuntimeException(
                     "Error accepting client connection", e);
             }
-            new Thread(
-                new ServerConnection(
-                    clientSocket, this)
-            ).start();
+            ServerConnection sc = new ServerConnection(clientSocket, this);
+            addConnection(sc);
+            
+            new Thread(sc).start();
+            
         }
         System.out.println("Server Stopped.") ;
     }
     
-    private synchronized boolean isStopped() {
+    /** Check if the server is still running
+     * 
+     * @return 
+     */
+    private boolean isStopped() {
         return this.isStopped;
     }
-
-    public synchronized void stop(){
+    
+    /**
+     * Synchronized method for adding a ServerConnection to the list of active connections.
+     * 
+     * @param s 
+     */
+    public synchronized void addConnection(ServerConnection s) {
+        serverConnections.add(s);
+    }    
+    
+    /**
+     * Synchronized method for removing a ServerConnection from the list of active ServerConnections
+     * 
+     * @param s 
+     */
+    public synchronized void removeConnection(ServerConnection s) {
+        serverConnections.remove(s);
+    }
+    
+    
+    /**
+     * Stop the server
+     */
+    //TODO test this method
+    public void stop(){
         this.isStopped = true;
         try {
             this.serverSocket.close();
         } catch (IOException e) {
             throw new RuntimeException("Error closing server", e);
         }
+        
+        //Close all ServerConnections
+        for(ServerConnection sc : serverConnections) {
+            sc.shutdown();
+        }
     }
     
+    /**
+     * Request for a ServerConnection to become the controller of the Simulation
+     * 
+     * @param s
+     * @return 
+     */
     public boolean requestControl(ServerConnection s) {
         boolean result = false;
         synchronized(controllerLock) {
@@ -86,12 +133,22 @@ public class APIServer implements Runnable {
         
     }
     
+    public Simulation getSimulation() {
+        
+        
+        
+        return this.simulation;
+    }
+    
+    
     public static void main(String args[]) {
         System.out.println("Starting server...");
-        APIServer s = new APIServer(8070);
+        APIServer s = new APIServer(8070, new Simulation());
         Thread t = new Thread(s);
         t.start();
         
     }
+    
+    
     
 }
