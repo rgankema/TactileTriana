@@ -194,6 +194,7 @@ public class ServerConnection implements Runnable {
      * @param s 
      */
     private synchronized void setClientState(ClientState s) {
+        log("Client state changed: " + s.toString());
         this.state = s;
     }
     
@@ -342,6 +343,7 @@ public class ServerConnection implements Runnable {
                     case GETDEVICES:
                         break;
                     case REQUESTCONTROL:
+                        processRequestControl();
                         break;
                     case SIMULATIONINFO:
                         processSimulationInfo();
@@ -358,12 +360,16 @@ public class ServerConnection implements Runnable {
                         processSimulationInfo();
                         break;
                     case STARTSIMULATION:
+                        processStartSimulation();
                         break;
                     case STOPSIMULATION:
+                        processStopSimulation();
                         break;
                     case RESETSIMULATION:
+                        processResetSimulation();
                         break;
                     case RELEASECONTROL:
+                        processReleaseControl();
                         break;
                     case SIMTIME: 
                         break;
@@ -381,12 +387,16 @@ public class ServerConnection implements Runnable {
                         processSimulationInfo();
                         break;
                     case STARTSIMULATION:
+                        processStartSimulation();
                         break;
                     case STOPSIMULATION:
+                        processStopSimulation();
                         break;
                     case RESETSIMULATION:
+                        processResetSimulation();
                         break;
                     case RELEASECONTROL:
+                        processReleaseControl();
                         break;
                     case SIMTIME: 
                         break;
@@ -415,15 +425,18 @@ public class ServerConnection implements Runnable {
     }
     
     public void processStartSimulation() {
-        
+        log("Processing StartSimulation request...");
+        server.getSimulation().start();
     }
     
     public void processStopSimulation() {
-        
+        log("Processing StopSimulation request...");
+        server.getSimulation().stop();
     }
     
     public void processResetSimulation() {
-        
+        log("Processing ResetSimulation request...");
+        server.getSimulation().reset();
     }
     
     public void processDeviceParameters() {
@@ -434,6 +447,7 @@ public class ServerConnection implements Runnable {
      * Create a JSON response for the SimulationInfo request and send it to the client.
      */
     public void processSimulationInfo() {
+        log("Processing SimulationInfo request...");
         Simulation sim = server.getSimulation();
         JSONObject jsonResponse = new JSONObject();
         jsonResponse.put("isRunning", (sim.getState() == Simulation.SimulationState.RUNNING));
@@ -449,11 +463,17 @@ public class ServerConnection implements Runnable {
     }
     
     public void processReleaseControl() {
-        
+        log("Processing ReleaseControl request...");
+        server.releaseControl(this);
+        setClientState(ClientState.CONNECTED);
     }
     
     public void processRequestControl() {
-        
+        log("Processing RequestControl request...");
+        if(server.requestControl(this)) {
+            setClientState(ClientState.CONTROL);
+            
+        }
     }
     
     

@@ -96,6 +96,15 @@ public class APIServer implements Runnable {
         serverConnections.remove(s);
     }
     
+    /**
+     * Get the active server connections
+     * TODO make the returned list immutable
+     * 
+     * @return list of ServerConnections
+     */
+    public ArrayList<ServerConnection> getConnections() {
+        return serverConnections;
+    }
     
     /**
      * Stop the server
@@ -131,6 +140,19 @@ public class APIServer implements Runnable {
         }
         return result;
         
+    }
+    
+    /**
+     * Unregisters a ServerConnection as the controller. Only works if the given ServerConnection actually was the controller.
+     * 
+     * @param s ServerConnection that is the current controller of the simulation
+     */
+    public void releaseControl(ServerConnection s) {
+        synchronized(controllerLock) {
+            if(controlConnection == s) {
+                controlConnection = null;
+            }
+        }
     }
     
     public Simulation getSimulation() {
