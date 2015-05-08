@@ -8,8 +8,6 @@ package nl.utwente.ewi.caes.tactiletriana.api;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 
@@ -156,9 +154,6 @@ public class APIServer implements Runnable {
     }
     
     public Simulation getSimulation() {
-        
-        
-        
         return this.simulation;
     }
     

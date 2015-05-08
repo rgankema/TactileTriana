@@ -5,13 +5,14 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation.devices;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.SimpleDoubleProperty;
 import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
-import nl.utwente.ewi.caes.tactiletriana.simulation.House;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 
 /**
@@ -19,140 +20,141 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
  * @author mickvdv
  */
 public class Buffer extends DeviceBase {
-
-    House deviceHouse;
-    int timestep;
-
-    public Buffer(Simulation simulation, String displayName) {
+    private long prevSeconds = -1;
+    
+    public Buffer(Simulation simulation) {
+        super(simulation, "Buffer");
+    }
+    
+    /**
+     * For use by inheriting classes
+     */
+    protected Buffer(Simulation simulation, String displayName) {
         super(simulation, displayName);
-        timestep = SimulationConfig.SIMULATION_TICK_TIME;
-
-        // find the house for this device
-        for (House h : this.getSimulation().getHouses()) {
-            if (h.getDevices().contains(this)) {
-                deviceHouse = h;
-                break;
-            }
-        }
-    }
-
-    // Capacity (double)
-    // max_power (double)
-    // SOC (double)
-    private final DoubleProperty capacityProperty = new SimpleDoubleProperty(1000d) {
-        @Override
-        public void set(double value) {
-            if (get() == value) {
-                return;
-            }
-            if (value < 0) {
-                value = 0;
-            }
-            super.set(value);
-        }
-    };
-
-    public double getCapacity() {
-        return capacityProperty.get();
-    }
-
-    public void setCapacity(double capacity) {
-        this.capacityProperty.set(capacity);
-    }
-
-    public DoubleProperty capacityPropety() {
-        return capacityProperty;
-    }
-
-    private final DoubleProperty maxPowerProperty = new SimpleDoubleProperty(1000d) {
-        @Override
-        public void set(double value) {
-            if (get() == value) {
-                return;
-            }
-            if (value < 0) {
-                value = 0;
-            }
-            super.set(value);
-        }
-    };
-
-    public double getMaxPower() {
-        return maxPowerProperty.get();
-    }
-
-    public void setMaxPowerProperty(double power) {
-        this.maxPowerProperty.set(power);
-    }
-
-    public DoubleProperty maxPowerPorperty() {
-        return maxPowerProperty;
     }
 
     /**
-     * SOC is the state of charge,
+     * Capacitiy of Buffer in Wh
      */
-    private final ReadOnlyDoubleWrapper soc = new ReadOnlyDoubleWrapper(230.0);
-
-    public ReadOnlyDoubleProperty socProperty() {
-        return soc.getReadOnlyProperty();
-    }
-
-    public final double getSoc() {
-        return socProperty().get();
-    }
-
-    protected void setSoc(double soc) {
-        if (soc > getCapacity()) {
-            soc = getCapacity();
-        } else if (soc < 0) {
-            soc = 0;
+    private final DoubleProperty capacity = new SimpleDoubleProperty(1000d) {
+        @Override
+        public void set(double value) {
+            if (value < 0) {
+                value = 0;
+            }
+            super.set(value);
         }
+    };
+    
+    public DoubleProperty capacityProperty() {
+        return capacity;
+    }
 
-        this.soc.set(soc);
+    public double getCapacity() {
+        return capacity.get();
+    }
+
+    public void setCapacity(double capacity) {
+        this.capacity.set(capacity);
+    }
+
+    /**
+     * The maximum power the Buffer can produce or consume
+     */
+    private final DoubleProperty maxPower = new SimpleDoubleProperty(1000d) {
+        @Override
+        public void set(double value) {
+            if (get() == value) {
+                return;
+            }
+            if (value < 0) {
+                value = 0;
+            }
+            super.set(value);
+        }
+    };
+
+    public DoubleProperty maxPowerProperty() {
+        return maxPower;
+    }
+    
+    public double getMaxPower() {
+        return maxPower.get();
+    }
+
+    public void setMaxPower(double power) {
+        this.maxPower.set(power);
+    }
+
+    /**
+     * The state of charge in Wh
+     */
+    private final ReadOnlyDoubleWrapper stateOfCharge = new ReadOnlyDoubleWrapper(230.0) {
+        @Override
+        public void set(double value) {
+            if (value < 0) {
+                value = 0;
+            }
+            super.set(value);
+        }
+    };
+
+    public ReadOnlyDoubleProperty stateOfChargeProperty() {
+        return stateOfCharge.getReadOnlyProperty();
+    }
+
+    public final double getStateOfCharge() {
+        return stateOfChargeProperty().get();
+    }
+
+    protected void setStateOfCharge(double soc) {
+        this.stateOfCharge.set(soc);
     }
 
     @Override
     public void tick(Simulation simulation, boolean connected) {
         super.tick(simulation, connected);
-        // twee cases. Het huis heeft stroom over -> opladen
-        double consumption = -deviceHouse.getCurrentConsumption();
-
-        if (deviceHouse.getCurrentConsumption() < 0) {
-
-            if (consumption > this.getMaxPower()) {
-                consumption = this.getMaxPower();
-            }
-
-            // als hij vol is gebruik niks
-            if (isCharged()) {
-                consumption = 0;
-            } // als er meer gegenereerd wordt dan er er over is. Zorg dat er maximaal gepakt kan worden wat er over is.
-            else if ((consumption * timestep) > (this.getCapacity() - this.getSoc())) {
-                consumption = (this.getCapacity() - this.getSoc()) / timestep;
-            }
-            
-        }
-        // het huis heeft stroom nodig
-        else if (deviceHouse.getCurrentConsumption() > 0) {
-            if (consumption > -this.getMaxPower()){
-                consumption = - this.getMaxPower();
-            }
-            
-            if (this.getSoc() == 0){
-                consumption = 0;
-            }
-            else if ( (this.getSoc() - (consumption * timestep)) < 0){
-                consumption = this.getSoc() / timestep;
-            }
-        }
         
-        this.setSoc(this.getSoc() + (consumption * timestep));
+        // Calculate state of charge change based on previous consumption
+        LocalDateTime currentTime = simulation.getCurrentTime();
+        long currentSeconds = currentTime.toEpochSecond(ZoneOffset.UTC);
+        if (prevSeconds != -1) {
+            double deltaHours = (double)(currentSeconds - prevSeconds) / 360d;
+            double deltaSOC = getCurrentConsumption() * deltaHours;
+            setStateOfCharge(getStateOfCharge() - deltaSOC);
+        } 
+        prevSeconds = currentSeconds;
+        
+        double consumption;
+        // If no planning available, help out parent house
+        if (simulation.getController() == null || simulation.getController().getPlannedConsumption(this, currentTime) == null) {
+            // Likely to change, tick time is probably going to be variable
+            int timestep = SimulationConfig.SIMULATION_TICK_TIME;
+
+            consumption = -getParentHouse().getCurrentConsumption();
+            // The house is producing energy, so consume
+            if (consumption > 0) {
+                if (consumption > this.getMaxPower()) {
+                    consumption = this.getMaxPower();
+                }
+                // Don't charge if already at max capacity
+                if (getStateOfCharge() == getCapacity()) {
+                    consumption = 0;
+                }
+            }
+            // The house is consuming energy, so produce
+            else if (consumption < 0) {
+                if (consumption < -this.getMaxPower()){
+                    consumption = -this.getMaxPower();
+                }
+                // Don't produce more energy than available
+                if ( (getStateOfCharge() - (consumption * timestep)) < 0){
+                    consumption = -this.getStateOfCharge() / timestep;
+                }
+            }
+        } else {
+            consumption = simulation.getController().getPlannedConsumption(this, currentTime);
+        }
         this.setCurrentConsumption(consumption);
-
-    }
-
-    boolean isCharged() {
-        return this.getSoc() == this.getCapacity();
     }
 }

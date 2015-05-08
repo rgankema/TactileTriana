@@ -29,6 +29,11 @@ public class House extends LoggingEntityBase {
             while (c.next()) {
                 for (DeviceBase removedDevice : c.getRemoved()) {
                     removedDevice.setState(DeviceBase.State.NOT_IN_HOUSE);
+                    removedDevice.setParentHouse(null);
+                }
+                for (DeviceBase addedDevice : c.getAddedSubList()) {
+                    // State automatically changes on next tick
+                    addedDevice.setParentHouse(this);
                 }
             }
         });

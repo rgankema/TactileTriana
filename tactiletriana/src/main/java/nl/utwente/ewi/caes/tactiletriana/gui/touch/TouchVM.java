@@ -112,7 +112,7 @@ public class TouchVM {
     }
     
     public DeviceVM getCarVM() {
-        return new DeviceVM(new BufferTimeShiftable(model, (int) (Math.random() * 4)));
+        return new DeviceVM(new BufferTimeShiftable(model));
     }
     
     public DeviceVM getDishWasherVM(){
@@ -122,5 +122,4 @@ public class TouchVM {
     public DeviceVM getWashingMachineVM(){
         return new DeviceVM(new WashingMachine(model));
     }
-
 }
