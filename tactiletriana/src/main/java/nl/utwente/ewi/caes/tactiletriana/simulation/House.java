@@ -78,12 +78,7 @@ public class House extends LoggingEntityBase {
      * The absolute maximum of power the house can consume/produce. When more
      * than this is consumed, the fuse in the house will blow.
      */
-    private final ReadOnlyDoubleWrapper maximumConsumption = new ReadOnlyDoubleWrapper(230 * SimulationConfig.HOUSE_MAX_FUSE_CURRENT) {
-        @Override
-        public void set(double value) {
-            super.set(value);
-        }
-    };
+    private final ReadOnlyDoubleWrapper maximumConsumption = new ReadOnlyDoubleWrapper(230 * SimulationConfig.HOUSE_MAX_FUSE_CURRENT);
 
     public ReadOnlyDoubleProperty maximumConsumptionProperty() {
         return maximumConsumption;
@@ -106,7 +101,7 @@ public class House extends LoggingEntityBase {
         return fuseBlownProperty().get();
     }
 
-    private void setFuseBlown(boolean fuseBlown) {
+    protected void setFuseBlown(boolean fuseBlown) {
         this.fuseBlown.set(fuseBlown);
     }
 

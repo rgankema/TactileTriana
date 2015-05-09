@@ -11,6 +11,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Before;
 import static org.mockito.Mockito.*;
 
 /**
@@ -19,13 +20,23 @@ import static org.mockito.Mockito.*;
  */
 public class HouseTest {
     
+    private House instance;
+    private Simulation mockedSimulation;
+    
+    @Before
+    public void setUp() {
+        mockedSimulation = mock(Simulation.class);
+        when(mockedSimulation.currentTimeProperty()).thenReturn(new SimpleObjectProperty<>(LocalDateTime.of(2014, 1, 1, 0, 0)));
+        
+        instance = new House(mockedSimulation);
+    }
+    
     /**
      * Test of currentConsumptionProperty method, of class House.
      */
     @Test
     public void testCurrentConsumptionPropertyNoDevices() {
         System.out.println("currentConsumptionPropertyNoDevices");
-        House instance = new House(null);
         
         ReadOnlyDoubleProperty result = instance.currentConsumptionProperty();
         
@@ -39,11 +50,6 @@ public class HouseTest {
     public void testCurrentConsumptionPropertyMultipleDevices() {
         System.out.println("currentConsumptionPropertyMultipleDevices");
         
-        // Mock simulation
-        Simulation simulation = mock(Simulation.class);
-        when(simulation.currentTimeProperty()).thenReturn(new SimpleObjectProperty<>(LocalDateTime.of(2014, 1, 1, 0, 0)));
-        
-        House instance = new House(simulation);
         int nDevices = 5;
         double deviceConsumption = 50.0;
         for (int i = 0; i < nDevices; i++) {
@@ -63,12 +69,6 @@ public class HouseTest {
     public void testFuseOkayWhenConsumptionIsLessThanMax() {
         System.out.println("fuseOkayWhenConsumptionIsLessThanMax");
         
-        // Mock simulation
-        Simulation simulation = mock(Simulation.class);
-        when(simulation.currentTimeProperty()).thenReturn(new SimpleObjectProperty<>(LocalDateTime.of(2014, 1, 1, 0, 0)));
-        
-        House instance = new House(simulation);
-        
         // Mock device
         DeviceBase device = mock(DeviceBase.class);
         when(device.currentConsumptionProperty()).thenReturn(new SimpleDoubleProperty(200d));
@@ -83,12 +83,6 @@ public class HouseTest {
     public void testFuseBlowsWhenConsumptionIsMoreThanMax() {
         System.out.println("fuseBlowsWhenConsumptionIsMoreThanMax");
         
-        // Mock simulation
-        Simulation simulation = mock(Simulation.class);
-        when(simulation.currentTimeProperty()).thenReturn(new SimpleObjectProperty<>(LocalDateTime.of(2014, 1, 1, 0, 0)));
-        
-        House instance = new House(simulation);
-        
         // Mock device
         DeviceBase device = mock(DeviceBase.class);
         when(device.currentConsumptionProperty()).thenReturn(new SimpleDoubleProperty(Double.MAX_VALUE));
@@ -100,4 +94,29 @@ public class HouseTest {
         assertTrue(instance.isFuseBlown());
     }
     
+    @Test
+    public void testRepairFuse() {
+        System.out.println("repairFuse");
+        
+        instance.setFuseBlown(true);
+        
+        instance.repairFuse();
+        
+        assertFalse(instance.isFuseBlown());
+    }
+    
+    @Test
+    public void testBrokenFuseDisconnectsChildren() {
+        System.out.println("brokenFuseDisconnectsChildren");
+        
+        instance.setFuseBlown(true);
+        DeviceBase mockedDevice = mock(DeviceBase.class);
+        when(mockedDevice.stateProperty()).thenReturn(new SimpleObjectProperty<>(DeviceBase.State.CONNECTED));
+        when(mockedDevice.currentConsumptionProperty()).thenReturn(new SimpleDoubleProperty(0d));
+        instance.getDevices().add(mockedDevice);
+        
+        instance.tick(5, true);
+        
+        verify(mockedDevice).tick(5, false);
+    }
 }

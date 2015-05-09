@@ -166,13 +166,11 @@ public class CableTest {
     @Test
     public void testDoForwardBackwardSweep() {
         System.out.println("doForwardBackwardSweep");
+        
         double v = 200;
-        Node childnode = mock(Node.class);
-        when(childnode.doForwardBackwardSweep(200)).thenReturn(100.0);
-        Cable instance = new Cable(childnode,100, 10, mock(Simulation.class));
-        double expResult = 100;
-        double result = instance.doForwardBackwardSweep(v);
-        assertEquals(expResult, result, 0.01);
+        when(mockedChildNode.doForwardBackwardSweep(v)).thenReturn(100.0);
+        
+        assertEquals(100, instance.doForwardBackwardSweep(v), 0.01);
     }
     
 }

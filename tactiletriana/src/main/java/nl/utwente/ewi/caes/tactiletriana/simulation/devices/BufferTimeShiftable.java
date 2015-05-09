@@ -10,6 +10,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleObjectProperty;
+import nl.utwente.ewi.caes.tactiletriana.simulation.IController;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 
 /**
@@ -19,7 +20,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 public class BufferTimeShiftable extends BufferBase {
     
     /**
-     * Constructs a BufferTimeShiftable device (electric vechicle). The model is determined by the model parameter.
+     * Constructs a BufferTimeShiftable device (electric vehicle). The model is determined by the model parameter.
      * @param simulation The simulation object of the current simulation.
      * @param model The model of the EV
      */
@@ -134,11 +135,19 @@ public class BufferTimeShiftable extends BufferBase {
             chargeBuffer(-10000, timePassed);
         }
         
-        // Decide consumption for upcoming tick, can only charge when at home and not fully charged
-        if (!( 8 < h && h < 18) && !isCharged()){
-            setCurrentConsumption(getMaxPower());
+        // Get planning if available
+        IController controller = getSimulation().getController();
+        Double plannedConsumption = (controller != null) ? controller.getPlannedConsumption(this, simulation.getCurrentTime()) : null;
+        
+        if (plannedConsumption == null) {
+            // Decide consumption for upcoming tick, can only charge when at home and not fully charged
+            if (!( 8 < h && h < 18) && !isCharged()){
+                setCurrentConsumption(getMaxPower());
+            } else {
+                setCurrentConsumption(0);
+            }
         } else {
-            setCurrentConsumption(0);
+            setCurrentConsumption(plannedConsumption);
         }
     }
     
