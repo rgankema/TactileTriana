@@ -158,6 +158,8 @@ public class BufferTimeShiftable extends DeviceBase {
                     setMaxPower(7400);
                     break;
             }
+            
+            super.set(value);
         }
     };
     
@@ -206,24 +208,25 @@ public class BufferTimeShiftable extends DeviceBase {
         LocalDateTime time = simulation.getCurrentTime();
         int h = time.getHour();
         
-        //Only charge on non-work hours
-        //FIXME change implementation for profiles with triana and stuff
-        if (((0 <= h && h <= 8) || ( 18 <= h && h <= 23)) && !isCharged()){
-            setCurrentConsumption(getMaxPower());
-            // FIXME the state of charge should be changed on the next tick, not now already!
-            chargeBuffer(getCurrentConsumption(), SimulationConfig.SIMULATION_TICK_TIME);
-        //Drain battery during day
-        } else if (!(0 <= h && h <= 8) || ( 18 <= h && h <= 23)){
-            //FIXME do something else instead of draining with 10KW
-            setCurrentConsumption(0);
+        // Update state of charge
+        chargeBuffer(getCurrentConsumption(), SimulationConfig.SIMULATION_TICK_TIME);
+        if ( 8 < h && h < 18) {
+            // During working hours the battery drains (fix this, make more sophisticated)
             chargeBuffer(-10000, SimulationConfig.SIMULATION_TICK_TIME);
+        }
+        
+        // Decide consumption for upcoming tick, can only charge when at home
+        if (!( 8 < h && h < 18) && !isCharged()){
+            setCurrentConsumption(getMaxPower());
+        } else {
+            setCurrentConsumption(0);
         }
     }
     
-    //Charge the buffer with an amount of W, can also be negative (draining the battery)
-    private void chargeBuffer(double W, double timestep){
+    //Charge the buffer with an amount of power times timestep, can also be negative (draining the battery)
+    private void chargeBuffer(double power, double timestep){
         if (!isCharged()){
-            setStateOfCharge(getStateOfCharge() + W*(timestep/60));
+            setStateOfCharge(getStateOfCharge() + power * (timestep/60));
         }
         //Make sure charge doesn't exceed capacity and doesn't get below zero
         if (getStateOfCharge() > getCapacity()){
@@ -238,7 +241,7 @@ public class BufferTimeShiftable extends DeviceBase {
     /**
      * Describes models of EVs
      */
-    public static enum Model {
+    public enum Model {
         TESLA_MODEL_S,
         AUDI_A3_E_TRON,
         FORD_C_MAX,

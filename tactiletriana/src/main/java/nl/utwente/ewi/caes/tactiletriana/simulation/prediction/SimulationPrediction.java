@@ -17,6 +17,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.House;
 import nl.utwente.ewi.caes.tactiletriana.simulation.LoggingEntityBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Node;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
+import nl.utwente.ewi.caes.tactiletriana.simulation.devices.*;
 
 /**
  *
@@ -96,12 +97,25 @@ public class SimulationPrediction extends Simulation {
                     
                     // maak een kopie van dit device in de map
                     DeviceBase futureDevice = (DeviceBase) futureByActual.get(actualDevice);
-                    try {
-                        if (futureDevice == null)
-                            futureDevice = (DeviceBase) actualDevice.getClass().getConstructors()[0].newInstance(simulation);
-                    } catch (Exception ex) {
-                        throw new RuntimeException(ex);
+                    if (futureDevice == null) {
+                        if (actualDevice instanceof Buffer) {
+                            futureDevice = new Buffer(this);
+                        } else if (actualDevice instanceof BufferTimeShiftable) {
+                            futureDevice = new BufferTimeShiftable(this, ((BufferTimeShiftable)actualDevice).getModel());
+                        } else if (actualDevice instanceof DishWasher) {
+                            futureDevice = new DishWasher(this);
+                        } else if (actualDevice instanceof MockDevice) {
+                            futureDevice = new MockDevice(this);
+                        } else if (actualDevice instanceof SolarPanel) {
+                            futureDevice = new SolarPanel(this);
+                        } else if (actualDevice instanceof WashingMachine) {
+                            futureDevice = new WashingMachine(this);
+                        } else {
+                            throw new UnsupportedOperationException("Copying instances of type " + 
+                                    actualDevice.getClass().getName() + " not supported.");
+                        }
                     }
+                   
                     
                     // sla het nieuwe device op in de map
                     futureByActual.put(actualDevice, futureDevice);
