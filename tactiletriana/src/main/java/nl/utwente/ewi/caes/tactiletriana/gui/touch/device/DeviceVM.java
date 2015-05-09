@@ -18,6 +18,8 @@ import nl.utwente.ewi.caes.tactiletriana.gui.touch.LoggingEntityVMBase;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseVM;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase.Parameter;
+import nl.utwente.ewi.caes.tactiletriana.simulation.devices.Buffer;
+import nl.utwente.ewi.caes.tactiletriana.simulation.devices.BufferTimeShiftable;
 
 /**
  *
@@ -36,6 +38,16 @@ public class DeviceVM extends LoggingEntityVMBase {
             return Math.min(1.0, Math.abs(model.getCurrentConsumption()) / 3700d);
         }, model.currentConsumptionProperty()));
 
+        // Bind state of charge
+        stateOfCharge.set(-100d);
+        if (model instanceof BufferTimeShiftable) {
+            BufferTimeShiftable bts = (BufferTimeShiftable) model;
+            stateOfCharge.bind(bts.stateOfChargeProperty().divide(bts.capacityProperty()));
+        } else if (model instanceof Buffer) {
+            Buffer b = (Buffer) model;
+            stateOfCharge.bind(b.stateOfChargeProperty().divide(b.capacityProperty()));
+        }
+        
         // Define states for view
         state.bind(Bindings.createObjectBinding(() -> {
             if (model.getState() != DeviceBase.State.CONNECTED) {
@@ -72,9 +84,23 @@ public class DeviceVM extends LoggingEntityVMBase {
     public double getLoad() {
         return load.get();
     }
-
+    
     /**
-     * The current state of the view
+     * The state of charge of the device, a value of 0 to 1. A negative value if 
+     * the device does not have a battery.
+     */
+    private final ReadOnlyDoubleWrapper stateOfCharge = new ReadOnlyDoubleWrapper();
+    
+    public ReadOnlyDoubleProperty stateOfChargeProperty() {
+        return stateOfCharge.getReadOnlyProperty();
+    }
+    
+    public double getStateOfCharge() {
+        return stateOfCharge.get();
+    }
+    
+    /**
+     * The current visual state of the view
      */
     private final ReadOnlyObjectWrapper<State> state = new ReadOnlyObjectWrapper<>();
 

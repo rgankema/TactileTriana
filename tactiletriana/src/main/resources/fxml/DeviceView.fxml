@@ -16,5 +16,6 @@
             <Image url="@../images/config.png" />
          </image>
       </ImageView>
+      <Label fx:id="batteryLabel" maxHeight="30.0" maxWidth="30.0" prefHeight="30.0" prefWidth="30.0" text="0%" textOverrun="CLIP" translateX="-15.0" translateY="-15.0" StackPane.alignment="TOP_LEFT" />
    </children>
 </fx:root>

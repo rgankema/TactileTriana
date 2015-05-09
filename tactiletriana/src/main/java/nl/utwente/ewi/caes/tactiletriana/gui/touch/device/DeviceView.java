@@ -9,6 +9,7 @@ import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -34,8 +35,8 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.devices.*;
  * @author Richard
  */
 public class DeviceView extends StackPane {
-    @FXML
-    private Node configIcon;
+    @FXML private Node configIcon;
+    @FXML private Label batteryLabel;
     private Node deviceIcon;
     private DeviceConfigView configPanel;
 
@@ -118,6 +119,10 @@ public class DeviceView extends StackPane {
                 getChildren().add(0, deviceIcon);
             }
         });
+        
+        // Show/hide battery icon
+        batteryLabel.visibleProperty().bind(viewModel.stateOfChargeProperty().greaterThanOrEqualTo(0));
+        batteryLabel.textProperty().bind(viewModel.stateOfChargeProperty().multiply(100d).asString("%.0f%%"));
         
         // Show on chart on long press
         TrianaEvents.addShortAndLongPressEventHandler(this, null, e -> {
