@@ -16,8 +16,8 @@ public class WashingMachine extends TimeShiftable{
     public WashingMachine(Simulation simulation){
         super(simulation, "WashingMachine");
         this.programUsage = washingMachineUsage;
-        addParameter(new Parameter("Start time (h)", startTime, 0, 24));
-        addParameter(new Parameter("Timewindow (min)", timeWindow, programUsage.length, 24*60));
+        addParameter(new DoubleParameter("Start time (h)", startTime, 0, 24));
+        addParameter(new DoubleParameter("Timewindow (min)", timeWindow, programUsage.length, 24*60));
         setTimeWindow(programUsage.length);
     }
     

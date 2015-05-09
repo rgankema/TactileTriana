@@ -6,13 +6,13 @@
 package nl.utwente.ewi.caes.tactiletriana.gui.touch.device;
 
 import java.util.List;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.input.TouchEvent;
 import javafx.scene.layout.GridPane;
+import nl.utwente.ewi.caes.tactiletriana.gui.customcontrols.Carousel;
+import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase.CategoryParameter;
+import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase.DoubleParameter;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase.Parameter;
 
 /**
@@ -27,15 +27,23 @@ class DeviceConfigView extends GridPane {
         int row = 0;
         for (Parameter p : parameters) {
             this.add(new Label(p.displayName), 0, row);
+            
+            if (p instanceof DoubleParameter) {
+                DoubleParameter dp = (DoubleParameter)p;
+                Slider s = new Slider(dp.minValue, dp.maxValue, dp.property.get());
 
-            Slider s = new Slider(p.minValue, p.maxValue, p.property.get());
+                // consume touch events so that the deviceview can't be dragged while using the slider
+                // todo: fix TactilePane so that this isn't necessary anymore
+                s.addEventFilter(TouchEvent.ANY, e -> e.consume());
 
-            // consume touch events so that the deviceview can't be dragged while using the slider
-            // todo: fix TactilePane so that this isn't necessary anymore
-            s.addEventFilter(TouchEvent.ANY, e -> e.consume());
-
-            p.property.bindBidirectional(s.valueProperty());
-            this.add(s, 1, row);
+                p.property.bindBidirectional(s.valueProperty());
+                this.add(s, 1, row);
+            } else { // p instanceof CategoryParameter
+                CategoryParameter cp = (CategoryParameter)p;
+                Carousel c = new Carousel(cp.property, cp.valueDisplayName, cp.possibleValues);
+                
+                this.add(c, 1, row);
+            }
             row++;
         }
         

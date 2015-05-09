@@ -10,10 +10,12 @@ import java.util.Collections;
 import java.util.List;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
 /**
@@ -154,32 +156,84 @@ public abstract class DeviceBase extends LoggingEntityBase {
     }
 
     /**
-     * The describes the parameters that can be set for this device
+     * Describes the parameters that can be configured for this device
      */
-    public static final class Parameter {
-
+    public static abstract class Parameter {
+        // TODO: would be prettier with getters rather than public fields,
+        // since that way we could just override the property getter to return
+        // a more specific type of property for the subclasses.
+        
         /**
          * The display name of the parameter
          */
         public final String displayName;
+        
+        /**
+         * The property holding the parameter's value
+         */
+        public final Property property;
+        
+        public Parameter(String displayName, Property property) {
+            this.displayName = displayName;
+            this.property = property;
+        }
+    }
+    
+    /**
+     * Describes the parameters for this device that have a numeric value
+     */
+    public static final class DoubleParameter extends Parameter {
+        
         /**
          * The property that the parameter binds to
          */
         public final DoubleProperty property;
+        
         /**
          * The minimum value of the property
          */
         public final double minValue;
+        
         /**
          * The maximum value of the property
          */
         public final double maxValue;
 
-        public Parameter(String displayName, DoubleProperty property, double minValue, double maxValue) {
-            this.displayName = displayName;
+        public DoubleParameter(String displayName, DoubleProperty property, double minValue, double maxValue) {
+            super(displayName, property);
             this.property = property;
             this.minValue = minValue;
             this.maxValue = maxValue;
+        }
+    }
+    
+    /**
+     * Describes the parameters for this device that cannot be represented by
+     * a numeric value
+     * @param <T> The type of the category
+     */
+    public static final class CategoryParameter<T> extends Parameter {
+        /**
+         * The property that the parameter binds to
+         */
+        public final ObjectProperty<T> property;
+        
+        /**
+         * A property that binds to a display name of the currently selected 
+         * category value
+         */
+        public final ReadOnlyStringProperty valueDisplayName;
+        
+        /**
+         * A set of values that this parameter may have
+         */
+        public final T[] possibleValues;
+        
+        public CategoryParameter(String displayName, ObjectProperty<T> property, ReadOnlyStringProperty valueDisplayName, T... possibleValues) {
+            super(displayName, property);
+            this.property = property;
+            this.valueDisplayName = valueDisplayName;
+            this.possibleValues = possibleValues;
         }
     }
 }

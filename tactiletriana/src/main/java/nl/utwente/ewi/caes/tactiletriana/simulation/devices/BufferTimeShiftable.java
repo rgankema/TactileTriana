@@ -30,6 +30,9 @@ public class BufferTimeShiftable extends DeviceBase {
      */
     public BufferTimeShiftable(Simulation simulation, Model model) {
         super(simulation,"Electric Vehicle");
+        
+        addParameter(new CategoryParameter<>("Model", this.model, this.modelName, Model.values()));
+        
         setModel(model);
     }
     
@@ -108,7 +111,6 @@ public class BufferTimeShiftable extends DeviceBase {
             } else if (value > getCapacity()) {
                 value = getCapacity();
             }
-            //System.out.println(hashCode() + ": " + getSimulation().getCurrentTime() + ": " + value);
             super.set(value);
         }
     };
