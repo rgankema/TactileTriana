@@ -56,6 +56,14 @@ public class SimulationPrediction extends Simulation {
                     for (LocalDateTime time : toRemove) {
                         logger.getLog().remove(time);
                     }
+                    
+                    // Reset state of charges of all buffers
+                    if (logger instanceof Buffer) {
+                        ((Buffer)logger).setStateOfCharge(((Buffer)getActual(logger)).getStateOfCharge());
+                    }
+                    if (logger instanceof BufferTimeShiftable) {
+                        ((BufferTimeShiftable)logger).setStateOfCharge(((BufferTimeShiftable)getActual(logger)).getStateOfCharge());
+                    }
                 }
             }
 
@@ -115,7 +123,6 @@ public class SimulationPrediction extends Simulation {
                                     actualDevice.getClass().getName() + " not supported.");
                         }
                     }
-                   
                     
                     // sla het nieuwe device op in de map
                     futureByActual.put(actualDevice, futureDevice);
@@ -138,7 +145,16 @@ public class SimulationPrediction extends Simulation {
         });
     }
     
-    public LoggingEntityBase getFuture(LoggingEntityBase actual) {
+    public final LoggingEntityBase getFuture(LoggingEntityBase actual) {
         return futureByActual.get(actual);
+    }
+    
+    public final LoggingEntityBase getActual(LoggingEntityBase future) {
+        for (LoggingEntityBase actual : futureByActual.keySet()) {
+            if (futureByActual.get(actual).equals(future)) {
+                return actual;
+            }
+        }
+        return null;
     }
 }

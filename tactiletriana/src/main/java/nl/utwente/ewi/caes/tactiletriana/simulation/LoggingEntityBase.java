@@ -11,15 +11,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 
 /**
- *
- * @author mickvdv
+ * Superclass of any class that needs to log a certain value at a certain time.
+ * Needs an instance of Simulation to attain the current time.
  */
 public abstract class LoggingEntityBase {
     private final String displayName;
     private final QuantityType qType;
     private final ObservableMap<LocalDateTime, Double> log;
     
-    private double absoluteMaximum = Double.POSITIVE_INFINITY;
     protected Simulation simulation;
 
     public LoggingEntityBase(Simulation simulation, String displayName, QuantityType qType) {

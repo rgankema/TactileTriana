@@ -108,6 +108,7 @@ public class BufferTimeShiftable extends DeviceBase {
             } else if (value > getCapacity()) {
                 value = getCapacity();
             }
+            //System.out.println(hashCode() + ": " + getSimulation().getCurrentTime() + ": " + value);
             super.set(value);
         }
     };
@@ -120,7 +121,9 @@ public class BufferTimeShiftable extends DeviceBase {
         return stateOfChargeProperty().get();
     }
 
-    protected void setStateOfCharge(double soc) {
+    // Temporary solution for buffers not working correctly after SimPrediction reset
+    // Shouldn't be public in the end
+    public void setStateOfCharge(double soc) {
         this.stateOfCharge.set(soc);
     }
     
@@ -227,9 +230,9 @@ public class BufferTimeShiftable extends DeviceBase {
     
     //Charge the buffer with an amount of power times timestep, can also be negative (draining the battery)
     private void chargeBuffer(double power, double timestep){
-        if (!isCharged()){
-            setStateOfCharge(getStateOfCharge() + power * (timestep/60));
-        }
+        if (power == 0) return;
+
+        setStateOfCharge(getStateOfCharge() + power * (timestep/60));
     }
     
     // NESTED ENUMS

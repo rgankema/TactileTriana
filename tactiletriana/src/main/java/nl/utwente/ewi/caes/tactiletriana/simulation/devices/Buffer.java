@@ -99,7 +99,9 @@ public class Buffer extends DeviceBase {
         return stateOfChargeProperty().get();
     }
 
-    protected void setStateOfCharge(double soc) {
+    // Temporary solution for buffers not working correctly after SimPrediction reset
+    // Shouldn't be public in the end
+    public void setStateOfCharge(double soc) {
         this.stateOfCharge.set(soc);
     }
 
