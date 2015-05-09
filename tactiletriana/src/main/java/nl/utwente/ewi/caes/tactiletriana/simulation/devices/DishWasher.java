@@ -11,14 +11,16 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
  *
  * @author niels
  */
-public class DishWasher extends TimeShiftable{        
+public class DishWasher extends TimeShiftable {        
 
     public DishWasher(Simulation simulation){
         super(simulation, "DishWasher");
-        this.programUsage = dishWasherUsage;
+        this.usageProgram = dishWasherUsage;
+        
         addParameter(new DoubleParameter("Start time (h)", startTime, 0, 24));
-        addParameter(new DoubleParameter("Timewindow (min)", timeWindow, programUsage.length, 24*60));
-        setTimeWindow(programUsage.length);
+        addParameter(new DoubleParameter("Timewindow (min)", timeWindow, usageProgram.length, 24*60));
+        
+        setTimeWindow(usageProgram.length);
     }
     
     //usage of a dishwasher program in 1m steps in W

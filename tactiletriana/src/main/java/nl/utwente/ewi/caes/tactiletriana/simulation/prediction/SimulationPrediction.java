@@ -58,11 +58,8 @@ public class SimulationPrediction extends Simulation {
                     }
                     
                     // Reset state of charges of all buffers
-                    if (logger instanceof Buffer) {
-                        ((Buffer)logger).setStateOfCharge(((Buffer)getActual(logger)).getStateOfCharge());
-                    }
-                    if (logger instanceof BufferTimeShiftable) {
-                        ((BufferTimeShiftable)logger).setStateOfCharge(((BufferTimeShiftable)getActual(logger)).getStateOfCharge());
+                    if (logger instanceof BufferBase) {
+                        ((BufferBase)logger).setStateOfCharge(((BufferBase)getActual(logger)).getStateOfCharge());
                     }
                 }
             }

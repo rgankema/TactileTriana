@@ -18,7 +18,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.*;
 public abstract class TimeShiftable extends DeviceBase {
         
     //The usage in W per minute mapped in an array
-    protected double[] programUsage;
+    protected double[] usageProgram;
 
     public TimeShiftable(Simulation simulation, String displayName) {
         super(simulation, displayName);
@@ -27,7 +27,8 @@ public abstract class TimeShiftable extends DeviceBase {
     
     //time in h when this timeshiftable is ready to operate (0 <= startTime < 24)
     protected final DoubleProperty startTime = new SimpleDoubleProperty(){
-        public void setValue(double value) {
+        @Override
+        public void set(double value) {
             if (get() == value) {
                 return;
             }
@@ -39,7 +40,6 @@ public abstract class TimeShiftable extends DeviceBase {
             if (value > 24) {
                 value = 24;
             }
-
             super.set(value);
         } 
     
@@ -60,13 +60,14 @@ public abstract class TimeShiftable extends DeviceBase {
     //window in which the timeshiftable must operate in minutes, endtime = startTime+timeWindow.
     //Must be greater than or equal to programUsage.length.
     protected final DoubleProperty timeWindow = new SimpleDoubleProperty(){
-        public void setValue(double value) {
+        @Override
+        public void set(double value) {
             if (get() == value) {
                 return;
             }
             //Can't be smaller than the length of the program
-            if (value < programUsage.length) {
-                value = programUsage.length;
+            if (value < usageProgram.length) {
+                value = usageProgram.length;
             }
             //Can't be bigger than a day?
             if (value > 24*60) {
@@ -119,8 +120,8 @@ public abstract class TimeShiftable extends DeviceBase {
     public double getCurrentConsumptionInProgram(){
         double result = 0;
         //Collect #timestep usages, if currentMinute >= programUsage.length, then program is done
-        for (int i=currentMinute; i < programUsage.length && i < currentMinute+SimulationConfig.SIMULATION_TICK_TIME; i++){
-            result = result + programUsage[i];
+        for (int i=currentMinute; i < usageProgram.length && i < currentMinute+SimulationConfig.SIMULATION_TICK_TIME; i++){
+            result = result + usageProgram[i];
         }
         currentMinute = currentMinute+SimulationConfig.SIMULATION_TICK_TIME;
         //Calculate the average of the #timestep usages

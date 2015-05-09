@@ -18,8 +18,7 @@ import nl.utwente.ewi.caes.tactiletriana.gui.touch.LoggingEntityVMBase;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseVM;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase.Parameter;
-import nl.utwente.ewi.caes.tactiletriana.simulation.devices.Buffer;
-import nl.utwente.ewi.caes.tactiletriana.simulation.devices.BufferTimeShiftable;
+import nl.utwente.ewi.caes.tactiletriana.simulation.devices.BufferBase;
 
 /**
  *
@@ -40,11 +39,8 @@ public class DeviceVM extends LoggingEntityVMBase {
 
         // Bind state of charge
         stateOfCharge.set(-100d);
-        if (model instanceof BufferTimeShiftable) {
-            BufferTimeShiftable bts = (BufferTimeShiftable) model;
-            stateOfCharge.bind(bts.stateOfChargeProperty().divide(bts.capacityProperty()));
-        } else if (model instanceof Buffer) {
-            Buffer b = (Buffer) model;
+        if (model instanceof BufferBase) {
+            BufferBase b = (BufferBase) model;
             stateOfCharge.bind(b.stateOfChargeProperty().divide(b.capacityProperty()));
         }
         

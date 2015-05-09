@@ -6,103 +6,17 @@
 package nl.utwente.ewi.caes.tactiletriana.simulation.devices;
 
 import java.time.LocalDateTime;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ReadOnlyDoubleProperty;
-import javafx.beans.property.ReadOnlyDoubleWrapper;
-import javafx.beans.property.SimpleDoubleProperty;
 import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
-import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 
 /**
  *
  * @author mickvdv
  */
-public class Buffer extends DeviceBase {
-    private long prevSeconds = -1;
+public class Buffer extends BufferBase {
     
     public Buffer(Simulation simulation) {
         super(simulation, "Buffer");
-    }
-
-    /**
-     * Capacitiy of Buffer in Wh
-     */
-    private final DoubleProperty capacity = new SimpleDoubleProperty(1000d) {
-        @Override
-        public void set(double value) {
-            if (value < 0) {
-                value = 0;
-            }
-            super.set(value);
-        }
-    };
-    
-    public DoubleProperty capacityProperty() {
-        return capacity;
-    }
-
-    public double getCapacity() {
-        return capacity.get();
-    }
-
-    public void setCapacity(double capacity) {
-        this.capacity.set(capacity);
-    }
-
-    /**
-     * The maximum power the Buffer can produce or consume
-     */
-    private final DoubleProperty maxPower = new SimpleDoubleProperty(1000d) {
-        @Override
-        public void set(double value) {
-            if (get() == value) {
-                return;
-            }
-            if (value < 0) {
-                value = 0;
-            }
-            super.set(value);
-        }
-    };
-
-    public DoubleProperty maxPowerProperty() {
-        return maxPower;
-    }
-    
-    public double getMaxPower() {
-        return maxPower.get();
-    }
-
-    public void setMaxPower(double power) {
-        this.maxPower.set(power);
-    }
-
-    /**
-     * The state of charge in Wh
-     */
-    private final ReadOnlyDoubleWrapper stateOfCharge = new ReadOnlyDoubleWrapper(230.0) {
-        @Override
-        public void set(double value) {
-            if (value < 0) {
-                value = 0;
-            }
-            super.set(value);
-        }
-    };
-
-    public ReadOnlyDoubleProperty stateOfChargeProperty() {
-        return stateOfCharge.getReadOnlyProperty();
-    }
-
-    public final double getStateOfCharge() {
-        return stateOfChargeProperty().get();
-    }
-
-    // Temporary solution for buffers not working correctly after SimPrediction reset
-    // Shouldn't be public in the end
-    public void setStateOfCharge(double soc) {
-        this.stateOfCharge.set(soc);
     }
 
     @Override
@@ -110,11 +24,9 @@ public class Buffer extends DeviceBase {
         super.tick(timePassed, connected);
         
         // Calculate state of charge change based on previous consumption
-        if (prevSeconds != -1) {
-            double deltaHours = timePassed / 360d;
-            double deltaSOC = getCurrentConsumption() * deltaHours;
-            setStateOfCharge(getStateOfCharge() - deltaSOC);
-        }
+        double deltaHours = timePassed / 60d;
+        double deltaSOC = getCurrentConsumption() * deltaHours;
+        setStateOfCharge(getStateOfCharge() - deltaSOC);
         
         LocalDateTime currentTime = getSimulation().getCurrentTime();
         

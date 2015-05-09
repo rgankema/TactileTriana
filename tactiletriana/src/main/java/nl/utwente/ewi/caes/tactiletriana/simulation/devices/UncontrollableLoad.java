@@ -41,8 +41,7 @@ public class UncontrollableLoad extends DeviceBase {
         if (profile == null) {
             profile = new double[6][525608];
             try {
-                File csvData = new File("src/main/resources/datasets/watt_house_profiles_year.csv");
-                // Jan Harm: je kan gewoon een format aanmaken :)
+                File csvData = new File("src/main/resources/datasets/house_profiles.csv");
                 CSVFormat format = CSVFormat.DEFAULT.withDelimiter(';');
                 CSVParser parser = CSVParser.parse(csvData, Charset.defaultCharset(), format);
                 for (CSVRecord csvRecord : parser) {
