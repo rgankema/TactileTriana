@@ -25,13 +25,6 @@ public class Buffer extends DeviceBase {
     public Buffer(Simulation simulation) {
         super(simulation, "Buffer");
     }
-    
-    /**
-     * For use by inheriting classes
-     */
-    protected Buffer(Simulation simulation, String displayName) {
-        super(simulation, displayName);
-    }
 
     /**
      * Capacitiy of Buffer in Wh
