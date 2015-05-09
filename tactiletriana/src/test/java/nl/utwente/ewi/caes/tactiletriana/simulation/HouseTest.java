@@ -53,7 +53,7 @@ public class HouseTest {
             instance.getDevices().add(device);
         }
         
-        instance.tick(simulation, true);
+        instance.tick(5, true);
         ReadOnlyDoubleProperty result = instance.currentConsumptionProperty();
         
         assertEquals(nDevices * deviceConsumption, result.get(), 0.01);
@@ -74,7 +74,7 @@ public class HouseTest {
         when(device.currentConsumptionProperty()).thenReturn(new SimpleDoubleProperty(200d));
         instance.getDevices().add(device);
         
-        instance.tick(simulation, true);
+        instance.tick(5, true);
         
         assertFalse(instance.isFuseBlown());
     }
@@ -95,7 +95,7 @@ public class HouseTest {
         when(device.stateProperty()).thenReturn(new SimpleObjectProperty<>(DeviceBase.State.CONNECTED));
         instance.getDevices().add(device);
         
-        instance.tick(simulation, true);
+        instance.tick(5, true);
         
         assertTrue(instance.isFuseBlown());
     }

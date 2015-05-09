@@ -145,9 +145,9 @@ public class CableTest {
     public void testTick() {
         System.out.println("tick");
         
-        instance.tick(mockedSimulation, true);
+        instance.tick(5, true);
         
-        verify(instance.getChildNode()).tick(mockedSimulation, true);
+        verify(instance.getChildNode()).tick(5, true);
     }
     
     @Test
@@ -155,9 +155,9 @@ public class CableTest {
         System.out.println("tickBroken");
         
         instance.setBroken(true);
-        instance.tick(mockedSimulation, true);
+        instance.tick(5, true);
         
-        verify(instance.getChildNode()).tick(mockedSimulation, false);
+        verify(instance.getChildNode()).tick(5, false);
     }
     
     /**
