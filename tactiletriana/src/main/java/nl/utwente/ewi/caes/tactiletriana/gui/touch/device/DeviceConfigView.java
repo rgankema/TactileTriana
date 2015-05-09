@@ -26,21 +26,21 @@ class DeviceConfigView extends GridPane {
     public DeviceConfigView(List<Parameter> parameters) {
         int row = 0;
         for (Parameter p : parameters) {
-            this.add(new Label(p.displayName), 0, row);
+            this.add(new Label(p.getDisplayName()), 0, row);
             
             if (p instanceof DoubleParameter) {
                 DoubleParameter dp = (DoubleParameter)p;
-                Slider s = new Slider(dp.minValue, dp.maxValue, dp.property.get());
+                Slider s = new Slider(dp.getMin(), dp.getMax(), dp.getProperty().get());
 
                 // consume touch events so that the deviceview can't be dragged while using the slider
                 // todo: fix TactilePane so that this isn't necessary anymore
                 s.addEventFilter(TouchEvent.ANY, e -> e.consume());
 
-                p.property.bindBidirectional(s.valueProperty());
+                p.getProperty().bindBidirectional(s.valueProperty());
                 this.add(s, 1, row);
             } else { // p instanceof CategoryParameter
                 CategoryParameter cp = (CategoryParameter)p;
-                Carousel c = new Carousel(cp.property, cp.valueDisplayName, cp.possibleValues);
+                Carousel c = new Carousel(cp.getProperty(), o -> cp.getCurrentValueDisplayName(), cp.getPossibleValues());
                 
                 this.add(c, 1, row);
             }

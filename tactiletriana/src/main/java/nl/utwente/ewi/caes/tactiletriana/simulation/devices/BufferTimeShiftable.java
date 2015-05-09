@@ -26,7 +26,7 @@ public class BufferTimeShiftable extends BufferBase {
     public BufferTimeShiftable(Simulation simulation, Model model) {
         super(simulation,"Electric Vehicle");
         
-        addParameter(new CategoryParameter<>("Model", this.model, this.modelName, Model.values()));
+        addParameter(new CategoryParameter<>("Model", this.model, m -> getModelName(), Model.values()));
         
         setModel(model);
     }

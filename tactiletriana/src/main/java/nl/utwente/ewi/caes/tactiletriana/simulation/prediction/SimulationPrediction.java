@@ -126,11 +126,11 @@ public class SimulationPrediction extends Simulation {
                     
                     // bind alle parameters
                     for (int i = 0; i < actualDevice.getParameters().size(); i++) {
-                        futureDevice.getParameters().get(i).property.bind(actualDevice.getParameters().get(i).property);
+                        futureDevice.getParameters().get(i).getProperty().bind(actualDevice.getParameters().get(i).getProperty());
                         
                         // als er iets aan de parameters veranderd moet de simulation.setMainSimulationChanged() aangeroepen worden
                         // dit zorgt ervoor dat bij de eerst volgende tick() van de main simulation de prediction opnieuw begint
-                        actualDevice.getParameters().get(i).property.addListener(observable -> {
+                        actualDevice.getParameters().get(i).getProperty().addListener(observable -> {
                             mainSimulationChanged = true;
                         });
                     }

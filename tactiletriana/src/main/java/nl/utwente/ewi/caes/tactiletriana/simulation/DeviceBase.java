@@ -8,6 +8,8 @@ package nl.utwente.ewi.caes.tactiletriana.simulation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
@@ -15,7 +17,6 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
 /**
@@ -156,84 +157,122 @@ public abstract class DeviceBase extends LoggingEntityBase {
     }
 
     /**
-     * Describes the parameters that can be configured for this device
+     * Describes a parameter that can be configured for a device. These parameters
+     * are intended to be used both by TRIANA and the GUI.
      */
     public static abstract class Parameter {
-        // TODO: would be prettier with getters rather than public fields,
-        // since that way we could just override the property getter to return
-        // a more specific type of property for the subclasses.
+        private final String displayName;
         
-        /**
-         * The display name of the parameter
-         */
-        public final String displayName;
-        
-        /**
-         * The property holding the parameter's value
-         */
-        public final Property property;
-        
-        public Parameter(String displayName, Property property) {
+        public Parameter(String displayName) {
             this.displayName = displayName;
-            this.property = property;
+        }
+        
+        /**
+         * @return the property holding the parameter's value
+         */
+        public abstract Property getProperty();
+        
+        /**
+         * @return the name of the parameter as it should appear to the user
+         */
+        public final String getDisplayName() {
+            return this.displayName;
         }
     }
     
     /**
-     * Describes the parameters for this device that have a numeric value
+     * Describes a parameter for a device that have a numeric value
      */
     public static final class DoubleParameter extends Parameter {
         
-        /**
-         * The property that the parameter binds to
-         */
-        public final DoubleProperty property;
-        
-        /**
-         * The minimum value of the property
-         */
-        public final double minValue;
-        
-        /**
-         * The maximum value of the property
-         */
-        public final double maxValue;
+        private final DoubleProperty property;
+        private final double minValue;
+        private final double maxValue;
 
         public DoubleParameter(String displayName, DoubleProperty property, double minValue, double maxValue) {
-            super(displayName, property);
+            super(displayName);
             this.property = property;
             this.minValue = minValue;
             this.maxValue = maxValue;
         }
+
+        @Override
+        public final DoubleProperty getProperty() {
+            return property;
+        }
+        
+        /**
+         * @return the minimum value of the property
+         */
+        public final double getMin() {
+            return minValue;
+        }
+        
+        /**
+         * @return the maximum value of the property
+         */
+        public final double getMax() {
+            return maxValue;
+        }
     }
     
     /**
-     * Describes the parameters for this device that cannot be represented by
-     * a numeric value
+     * Describes a parameter for a device that can only be true or false
+     */
+    public static final class BooleanParameter extends Parameter {
+
+        private final BooleanProperty property;
+        
+        public BooleanParameter(String displayName, BooleanProperty property) {
+            super(displayName);
+            this.property = property;
+        }
+        
+        @Override
+        public BooleanProperty getProperty() {
+            return this.property;
+        }
+        
+    }
+    
+    /**
+     * Describes a parameter for a device that cannot be represented by
+     * a numeric value or a boolean
      * @param <T> The type of the category
      */
     public static final class CategoryParameter<T> extends Parameter {
-        /**
-         * The property that the parameter binds to
-         */
-        public final ObjectProperty<T> property;
         
-        /**
-         * A property that binds to a display name of the currently selected 
-         * category value
-         */
-        public final ReadOnlyStringProperty valueDisplayName;
+        private final ObjectProperty<T> property;
+        private final Function<T, String> categoryToString;
+        private final T[] possibleValues;
         
-        /**
-         * A set of values that this parameter may have
-         */
-        public final T[] possibleValues;
-        
-        public CategoryParameter(String displayName, ObjectProperty<T> property, ReadOnlyStringProperty valueDisplayName, T... possibleValues) {
-            super(displayName, property);
+        public CategoryParameter(String displayName, ObjectProperty<T> property, Function<T, String> categoryToString, T... possibleValues) {
+            super(displayName);
             this.property = property;
-            this.valueDisplayName = valueDisplayName;
+            this.categoryToString = categoryToString;
             this.possibleValues = possibleValues;
         }
+
+        @Override
+        public ObjectProperty<T> getProperty() {
+            return this.property;
+        }
+        
+        /**
+         * @return the display name of the currently selected value for this
+         * parameter
+         */
+        public String getCurrentValueDisplayName() {
+            return categoryToString.apply(getProperty().get());
+        }
+        
+        /**
+         * @return the set of values that this parameter may have
+         */
+        public T[] getPossibleValues() {
+            return possibleValues;
+        }
     }
+    
+    
 }

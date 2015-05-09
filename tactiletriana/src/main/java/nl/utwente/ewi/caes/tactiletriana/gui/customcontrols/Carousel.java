@@ -5,8 +5,8 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.customcontrols;
 
+import java.util.function.Function;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -25,23 +25,24 @@ public class Carousel extends BorderPane {
     @FXML Node rightArrow;
     
     private ObjectProperty property;
+    private Function<Object, String> objectToString;
     private Object[] possibleValues;
     private int index = -1;
     
     /**
      * Constructs a new Carousel control
      * @param property          The property that is affected by the Carousel
-     * @param displayName       StringProperty that holds the display name of the current value in property
+     * @param objectToString    Mapping from selected object to string
      * @param possibleValues    Array of values that the user should be able to choose from
      */
-    public Carousel(ObjectProperty property, ReadOnlyStringProperty displayName, Object... possibleValues) {
+    public Carousel(ObjectProperty property, Function<Object, String> objectToString, Object... possibleValues) {
         ViewLoader.load(this);
         
         this.property = property;
-        valueLabel.textProperty().bind(displayName);
+        this.objectToString = objectToString;
         this.possibleValues = possibleValues;
         
-        updateIndex();
+        update();
         
         leftArrow.setOnTouchPressed(e -> { 
             index--;
@@ -61,10 +62,13 @@ public class Carousel extends BorderPane {
             e.consume();
         });
         
-        property.addListener(i -> updateIndex());
+        property.addListener(i -> update());
     }
     
-    private void updateIndex() {
+    /**
+     * Updates the index and value label
+     */
+    private void update() {
         for (int i = 0; i < possibleValues.length; i++) {
             if (possibleValues[i].equals(property.get())) {
                 index = i;
@@ -75,5 +79,7 @@ public class Carousel extends BorderPane {
         if (index == -1) {
             throw new IllegalStateException("Current value of property not among possible values");
         }
+        
+        valueLabel.setText(objectToString.apply(possibleValues[index]));
     }
 }
