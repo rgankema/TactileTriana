@@ -6,14 +6,16 @@
 package nl.utwente.ewi.caes.tactiletriana.gui.touch.device;
 
 import java.util.List;
+import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.input.TouchEvent;
 import javafx.scene.layout.GridPane;
+import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 import nl.utwente.ewi.caes.tactiletriana.gui.customcontrols.Carousel;
-import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase.CategoryParameter;
-import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase.DoubleParameter;
-import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase.Parameter;
+import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase.ConfigurableCategory;
+import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase.ConfigurableDouble;
+import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase.Configurable;
 
 /**
  * A panel for configuring device parameters. Has two columns, with labels on
@@ -22,14 +24,19 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase.Parameter;
  * @author Richard
  */
 class DeviceConfigView extends GridPane {
-
-    public DeviceConfigView(List<Parameter> parameters) {
-        int row = 0;
-        for (Parameter p : parameters) {
+    @FXML private Label header;
+    
+    public DeviceConfigView(String header, List<Configurable> parameters) {
+        ViewLoader.load(this);
+        
+        this.header.setText(header);
+        
+        int row = 1;
+        for (Configurable p : parameters) {
             this.add(new Label(p.getDisplayName()), 0, row);
             
-            if (p instanceof DoubleParameter) {
-                DoubleParameter dp = (DoubleParameter)p;
+            if (p instanceof ConfigurableDouble) {
+                ConfigurableDouble dp = (ConfigurableDouble)p;
                 Slider s = new Slider(dp.getMin(), dp.getMax(), dp.getProperty().get());
 
                 // consume touch events so that the deviceview can't be dragged while using the slider
@@ -39,7 +46,7 @@ class DeviceConfigView extends GridPane {
                 p.getProperty().bindBidirectional(s.valueProperty());
                 this.add(s, 1, row);
             } else { // p instanceof CategoryParameter
-                CategoryParameter cp = (CategoryParameter)p;
+                ConfigurableCategory cp = (ConfigurableCategory)p;
                 Carousel c = new Carousel(cp.getProperty(), o -> cp.getCurrentValueDisplayName(), cp.getPossibleValues());
                 
                 this.add(c, 1, row);

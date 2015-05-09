@@ -25,8 +25,8 @@ import javafx.beans.property.SimpleObjectProperty;
  */
 public abstract class DeviceBase extends LoggingEntityBase {
 
-    private final List<Parameter> parameters;
-    private final List<Parameter> parametersUnmodifiable;
+    private final List<Configurable> parameters;
+    private final List<Configurable> parametersUnmodifiable;
 
     public DeviceBase(Simulation simulation, String displayName) {
         super(simulation, displayName, QuantityType.POWER);
@@ -113,7 +113,7 @@ public abstract class DeviceBase extends LoggingEntityBase {
      *
      * @return the parameters of this device
      */
-    public List<Parameter> getParameters() {
+    public List<Configurable> getParameters() {
         return parametersUnmodifiable;
     }
 
@@ -122,7 +122,7 @@ public abstract class DeviceBase extends LoggingEntityBase {
      *
      * @param parameter
      */
-    protected final void addParameter(Parameter parameter) {
+    protected final void addParameter(Configurable parameter) {
         if (parameter != null) {
             parameters.add(parameter);
         }
@@ -157,13 +157,13 @@ public abstract class DeviceBase extends LoggingEntityBase {
     }
 
     /**
-     * Describes a parameter that can be configured for a device. These parameters
-     * are intended to be used both by TRIANA and the GUI.
+     * Describes a parameter that can be configured for a device by a user. Used
+     * by {@link SimulationPrediction} to synchronise two devices.
      */
-    public static abstract class Parameter {
+    public static abstract class Configurable {
         private final String displayName;
         
-        public Parameter(String displayName) {
+        public Configurable(String displayName) {
             this.displayName = displayName;
         }
         
@@ -183,13 +183,13 @@ public abstract class DeviceBase extends LoggingEntityBase {
     /**
      * Describes a parameter for a device that have a numeric value
      */
-    public static final class DoubleParameter extends Parameter {
+    public static final class ConfigurableDouble extends Configurable {
         
         private final DoubleProperty property;
         private final double minValue;
         private final double maxValue;
 
-        public DoubleParameter(String displayName, DoubleProperty property, double minValue, double maxValue) {
+        public ConfigurableDouble(String displayName, DoubleProperty property, double minValue, double maxValue) {
             super(displayName);
             this.property = property;
             this.minValue = minValue;
@@ -219,11 +219,11 @@ public abstract class DeviceBase extends LoggingEntityBase {
     /**
      * Describes a parameter for a device that can only be true or false
      */
-    public static final class BooleanParameter extends Parameter {
+    public static final class ConfigurableBoolean extends Configurable {
 
         private final BooleanProperty property;
         
-        public BooleanParameter(String displayName, BooleanProperty property) {
+        public ConfigurableBoolean(String displayName, BooleanProperty property) {
             super(displayName);
             this.property = property;
         }
@@ -240,13 +240,13 @@ public abstract class DeviceBase extends LoggingEntityBase {
      * a numeric value or a boolean
      * @param <T> The type of the category
      */
-    public static final class CategoryParameter<T> extends Parameter {
+    public static final class ConfigurableCategory<T> extends Configurable {
         
         private final ObjectProperty<T> property;
         private final Function<T, String> categoryToString;
         private final T[] possibleValues;
         
-        public CategoryParameter(String displayName, ObjectProperty<T> property, Function<T, String> categoryToString, T... possibleValues) {
+        public ConfigurableCategory(String displayName, ObjectProperty<T> property, Function<T, String> categoryToString, T... possibleValues) {
             super(displayName);
             this.property = property;
             this.categoryToString = categoryToString;

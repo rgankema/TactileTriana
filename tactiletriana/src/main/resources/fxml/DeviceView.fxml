@@ -9,13 +9,13 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<fx:root minHeight="50.0" minWidth="50.0" type="StackPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root minHeight="60.0" minWidth="60.0" type="StackPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <ImageView fx:id="configIcon" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" translateX="15.0" translateY="-15.0" StackPane.alignment="TOP_RIGHT">
          <image>
             <Image url="@../images/config.png" />
          </image>
       </ImageView>
-      <Label fx:id="batteryLabel" maxHeight="30.0" maxWidth="30.0" prefHeight="30.0" prefWidth="30.0" text="0%" textOverrun="CLIP" translateX="-15.0" translateY="-15.0" StackPane.alignment="TOP_LEFT" />
+      <Label fx:id="batteryLabel" text="0%" textOverrun="CLIP" translateX="-15.0" translateY="-15.0" StackPane.alignment="TOP_RIGHT" />
    </children>
 </fx:root>

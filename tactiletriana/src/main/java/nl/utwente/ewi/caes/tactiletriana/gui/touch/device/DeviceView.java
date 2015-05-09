@@ -110,7 +110,7 @@ public class DeviceView extends StackPane {
         viewModel.configPanelShownProperty().addListener(obs -> {
             if (viewModel.isConfigPanelShown()) {
                 if (configPanel == null) {
-                    configPanel = new DeviceConfigView(viewModel.getParameters());
+                    configPanel = new DeviceConfigView(viewModel.getHeader(), viewModel.getParameters());
                 }
                 getChildren().remove(deviceIcon);
                 getChildren().add(0, configPanel);
@@ -121,7 +121,7 @@ public class DeviceView extends StackPane {
         });
         
         // Show/hide battery icon
-        batteryLabel.visibleProperty().bind(viewModel.stateOfChargeProperty().greaterThanOrEqualTo(0));
+        batteryLabel.visibleProperty().bind(viewModel.batteryIconVisibleProperty());
         batteryLabel.textProperty().bind(viewModel.stateOfChargeProperty().multiply(100d).asString("%.0f%%"));
         
         // Show on chart on long press

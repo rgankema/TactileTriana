@@ -8,7 +8,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" type="BorderPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minWidth="140.0" type="BorderPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <left>
       <Polygon fx:id="leftArrow" strokeType="INSIDE" BorderPane.alignment="CENTER">
         <points>
@@ -34,7 +34,7 @@
       </Polygon>
    </right>
    <center>
-      <Label fx:id="valueLabel" text="Label" BorderPane.alignment="CENTER">
+      <Label fx:id="valueLabel" maxWidth="-Infinity" text="Label" textAlignment="CENTER" BorderPane.alignment="CENTER">
          <BorderPane.margin>
             <Insets left="10.0" right="10.0" />
          </BorderPane.margin></Label>

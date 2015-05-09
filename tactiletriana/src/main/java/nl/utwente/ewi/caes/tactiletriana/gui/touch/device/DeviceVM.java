@@ -17,7 +17,7 @@ import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.LoggingEntityVMBase;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseVM;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
-import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase.Parameter;
+import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase.Configurable;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.BufferBase;
 
 /**
@@ -38,7 +38,7 @@ public class DeviceVM extends LoggingEntityVMBase {
         }, model.currentConsumptionProperty()));
 
         // Bind state of charge
-        stateOfCharge.set(-100d);
+        stateOfCharge.set(-1d);
         if (model instanceof BufferBase) {
             BufferBase b = (BufferBase) model;
             stateOfCharge.bind(b.stateOfChargeProperty().divide(b.capacityProperty()));
@@ -60,10 +60,23 @@ public class DeviceVM extends LoggingEntityVMBase {
         configIconShown.bind(Bindings.createBooleanBinding(() -> {
             return !getParameters().isEmpty() && model.getState() != DeviceBase.State.NOT_IN_HOUSE;
         }, model.stateProperty()));
+        
+        // Show battery icon if device is in a house
+        batteryIconVisible.bind(Bindings.createBooleanBinding(() -> {
+            return model.getState() != DeviceBase.State.NOT_IN_HOUSE && model instanceof BufferBase;
+        }, model.stateProperty()));
     }
 
     public DeviceBase getModel() {
         return this.model;
+    }
+    
+    /**
+     * 
+     * @return The text for the header the device view
+     */
+    public final String getHeader() {
+        return model.getDisplayName();
     }
 
     /**
@@ -77,8 +90,8 @@ public class DeviceVM extends LoggingEntityVMBase {
         return load.getReadOnlyProperty();
     }
 
-    public double getLoad() {
-        return load.get();
+    public final double getLoad() {
+        return loadProperty().get();
     }
     
     /**
@@ -139,9 +152,22 @@ public class DeviceVM extends LoggingEntityVMBase {
     }
     
     /**
+     * Whether the configuration panel should be shown
+     */
+    private final ReadOnlyBooleanWrapper batteryIconVisible = new ReadOnlyBooleanWrapper(false);
+
+    public ReadOnlyBooleanProperty batteryIconVisibleProperty() {
+        return batteryIconVisible.getReadOnlyProperty();
+    }
+
+    public boolean isBatteryIconVisible() {
+        return batteryIconVisible.get();
+    }
+    
+    /**
      * @return the parameters that can be configured for the device
      */
-    public final List<Parameter> getParameters() {
+    public final List<Configurable> getParameters() {
         return model.getParameters();
     }
 
