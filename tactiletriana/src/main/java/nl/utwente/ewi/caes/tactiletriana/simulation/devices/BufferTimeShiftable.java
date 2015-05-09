@@ -14,7 +14,6 @@ import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 
@@ -45,7 +44,7 @@ public class BufferTimeShiftable extends DeviceBase {
     // PROPERTIES
     
     /**
-     * Capacitiy of Buffer in Wh
+     * Capacitiy of Buffer in Wh.
      */
     private final DoubleProperty capacity = new SimpleDoubleProperty(1000d) {
         @Override
@@ -98,13 +97,16 @@ public class BufferTimeShiftable extends DeviceBase {
     }
 
     /**
-     * The state of charge in Wh
+     * The state of charge in Wh. Ensures that it's never below 0 and never higher
+     * than {@link capacity}.
      */
     private final ReadOnlyDoubleWrapper stateOfCharge = new ReadOnlyDoubleWrapper(230.0) {
         @Override
         public void set(double value) {
             if (value < 0) {
                 value = 0;
+            } else if (value > getCapacity()) {
+                value = getCapacity();
             }
             super.set(value);
         }
@@ -202,20 +204,20 @@ public class BufferTimeShiftable extends DeviceBase {
     // METHODS
     
     @Override
-    public void tick(Simulation simulation, boolean connected) {
-        super.tick(simulation, connected);
+    public void tick(double timePassed, boolean connected) {
+        super.tick(timePassed, connected);
 
         LocalDateTime time = simulation.getCurrentTime();
         int h = time.getHour();
         
         // Update state of charge
-        chargeBuffer(getCurrentConsumption(), SimulationConfig.SIMULATION_TICK_TIME);
+        chargeBuffer(getCurrentConsumption(), timePassed);
         if ( 8 < h && h < 18) {
             // During working hours the battery drains (fix this, make more sophisticated)
-            chargeBuffer(-10000, SimulationConfig.SIMULATION_TICK_TIME);
+            chargeBuffer(-10000, timePassed);
         }
         
-        // Decide consumption for upcoming tick, can only charge when at home
+        // Decide consumption for upcoming tick, can only charge when at home and not fully charged
         if (!( 8 < h && h < 18) && !isCharged()){
             setCurrentConsumption(getMaxPower());
         } else {
@@ -227,12 +229,6 @@ public class BufferTimeShiftable extends DeviceBase {
     private void chargeBuffer(double power, double timestep){
         if (!isCharged()){
             setStateOfCharge(getStateOfCharge() + power * (timestep/60));
-        }
-        //Make sure charge doesn't exceed capacity and doesn't get below zero
-        if (getStateOfCharge() > getCapacity()){
-            setStateOfCharge(getCapacity());
-        } else if (getStateOfCharge() < 0){
-            setStateOfCharge(0);
         }
     }
     

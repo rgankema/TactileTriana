@@ -102,7 +102,6 @@ public class Cable extends LoggingEntityBase implements IFWBWSEntity {
     }
 
     protected final void setMaximumCurrent(double maximumCurrent) {
-        setAbsoluteMaximum(maximumCurrent);
         this.maximumCurrent.set(maximumCurrent);
     }
 
@@ -140,12 +139,12 @@ public class Cable extends LoggingEntityBase implements IFWBWSEntity {
     }
 
     // METHODS
-    public void tick(Simulation simulation, boolean connected) {
+    public void tick(double timePassed, boolean connected) {
         if (isBroken()) {
             connected = false;
         }
         
-        getChildNode().tick(simulation, connected);
+        getChildNode().tick(timePassed, connected);
     }
 
     /**

@@ -125,7 +125,7 @@ public abstract class DeviceBase extends LoggingEntityBase {
         }
     }
 
-    public void tick(Simulation simulation, boolean connected) {
+    public void tick(double timePassed, boolean connected) {
         if (!connected) {
             setState(DeviceBase.State.DISCONNECTED);
         } else {

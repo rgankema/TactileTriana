@@ -6,11 +6,6 @@
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
@@ -46,14 +41,6 @@ public abstract class LoggingEntityBase {
 
     public final QuantityType getQuantityType() {
         return this.qType;
-    }
-    
-    public final double getAbsoluteMaximum() {
-        return this.absoluteMaximum;
-    }
-
-    protected final void setAbsoluteMaximum(double maximum) {
-        absoluteMaximum = Math.abs(maximum);
     }
 
     public final Simulation getSimulation() {

@@ -81,7 +81,6 @@ public class House extends LoggingEntityBase {
     private final ReadOnlyDoubleWrapper maximumConsumption = new ReadOnlyDoubleWrapper(230 * SimulationConfig.HOUSE_MAX_FUSE_CURRENT) {
         @Override
         public void set(double value) {
-            setAbsoluteMaximum(value);
             super.set(value);
         }
     };
@@ -119,13 +118,13 @@ public class House extends LoggingEntityBase {
         fuseBlown.set(false);
     }
 
-    public void tick(Simulation simulation, boolean connected) {
+    public void tick(double timePassed, boolean connected) {
         if (isFuseBlown()) {
             connected = false;
         }
 
         for (DeviceBase device : getDevices()) {
-            device.tick(simulation, connected);
+            device.tick(timePassed, connected);
         }
 
         setCurrentConsumption(getDevices().stream().mapToDouble(d -> d.getCurrentConsumption()).sum());

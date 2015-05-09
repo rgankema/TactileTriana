@@ -62,12 +62,17 @@ public class Node extends LoggingEntityBase implements IFWBWSEntity {
         return this.house;
     }
 
-    public void tick(Simulation simulation, boolean connected) {
+    /**
+     * 
+     * @param timePassed the amount of time that passed since the last tick
+     * @param connected whether this Node is connected to the root of the network
+     */
+    public void tick(double timePassed, boolean connected) {
         if (getHouse() != null) {
-            getHouse().tick(simulation, connected);
+            getHouse().tick(timePassed, connected);
         }
         for (Cable cable : getCables()) {
-            cable.tick(simulation, connected);
+            cable.tick(timePassed, connected);
         }
     }
 

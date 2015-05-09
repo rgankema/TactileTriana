@@ -6,7 +6,6 @@
 package nl.utwente.ewi.caes.tactiletriana.simulation.devices;
 
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
@@ -105,18 +104,17 @@ public class Buffer extends DeviceBase {
     }
 
     @Override
-    public void tick(Simulation simulation, boolean connected) {
-        super.tick(simulation, connected);
+    public void tick(double timePassed, boolean connected) {
+        super.tick(timePassed, connected);
         
         // Calculate state of charge change based on previous consumption
-        LocalDateTime currentTime = simulation.getCurrentTime();
-        long currentSeconds = currentTime.toEpochSecond(ZoneOffset.UTC);
         if (prevSeconds != -1) {
-            double deltaHours = (double)(currentSeconds - prevSeconds) / 360d;
+            double deltaHours = timePassed / 360d;
             double deltaSOC = getCurrentConsumption() * deltaHours;
             setStateOfCharge(getStateOfCharge() - deltaSOC);
-        } 
-        prevSeconds = currentSeconds;
+        }
+        
+        LocalDateTime currentTime = getSimulation().getCurrentTime();
         
         double consumption;
         // If no planning available, help out parent house

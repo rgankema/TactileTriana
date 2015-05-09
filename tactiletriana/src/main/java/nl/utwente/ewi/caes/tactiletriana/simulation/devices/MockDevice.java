@@ -52,8 +52,8 @@ public class MockDevice extends DeviceBase {
     }
 
     @Override
-    public void tick(Simulation simulation, boolean connected) {
-        super.tick(simulation, connected);
+    public void tick(double timePassed, boolean connected) {
+        super.tick(timePassed, connected);
 
         if (simulation.getController() == null) {
             // do whatever device wants to do

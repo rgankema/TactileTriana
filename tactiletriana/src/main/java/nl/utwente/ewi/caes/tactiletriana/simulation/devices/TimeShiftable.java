@@ -7,9 +7,7 @@ package nl.utwente.ewi.caes.tactiletriana.simulation.devices;
 
 import java.time.LocalDateTime;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 import nl.utwente.ewi.caes.tactiletriana.simulation.*;
 
@@ -94,8 +92,8 @@ public abstract class TimeShiftable extends DeviceBase {
     
     
     @Override
-    public void tick (Simulation simulation, boolean connected){
-        super.tick(simulation,connected);
+    public void tick (double timePassed, boolean connected){
+        super.tick(timePassed, connected);
         
         setCurrentConsumption(getCurrentConsumption(simulation.getCurrentTime()));
     }

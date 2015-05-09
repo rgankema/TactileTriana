@@ -18,8 +18,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
@@ -54,10 +52,6 @@ public class Simulation extends LoggingEntityBase {
         this.setSimulation(this);
         
         this.setState(SimulationState.STOPPED);
-
-        
-        // wat doet dit?
-        setAbsoluteMaximum(250 * 500);
 
         // keep an array of nodes for later reference
         this.lastVoltageByNode = new HashMap<>();
@@ -253,7 +247,7 @@ public class Simulation extends LoggingEntityBase {
     protected final void tick() {
         // Run anything that involves the UI on the JavaFX thread
         runOnJavaFXThreadSynchronously(() -> {
-            getTransformer().tick(this, true);
+            getTransformer().tick(SimulationConfig.SIMULATION_TICK_TIME, true);
         });
         
         // Reset the nodes.
