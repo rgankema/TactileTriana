@@ -6,12 +6,13 @@
 package nl.utwente.ewi.caes.tactiletriana.simulation.prediction;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.function.Consumer;
 import javafx.collections.ListChangeListener;
+import javafx.scene.chart.XYChart.Data;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Cable;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.House;
@@ -77,7 +78,6 @@ public class SimulationPrediction extends Simulation {
                 
                 // Clear the log
                 for (LoggingEntityBase logger : futureByActual.keySet()) {
-                    System.out.println("clear");
                     logger.getLog().clear();
                     // Reset state of charges of all buffers
                     if (logger instanceof BufferBase) {
@@ -91,15 +91,16 @@ public class SimulationPrediction extends Simulation {
                 setCurrentTime(oldValue);
                 
                 // Clear the invalid log values
+                int minuteOfYear = toMinuteOfYear(oldValue);
                 for (LoggingEntityBase logger : futureByActual.values()) {
-                    Set<LocalDateTime> toRemove = new TreeSet<>();
-                    for (LocalDateTime time : logger.getLog().keySet()) {
-                        if (!time.isBefore(oldValue)) {
-                            toRemove.add(time);
+                    List<Data<Integer, Double>> toRemove = new ArrayList<>();
+                    for (Data<Integer, Double> data : logger.getLog()) {
+                        if (data.getXValue() >= minuteOfYear) {
+                            toRemove.add(data);
                         }
                     }
-                    for (LocalDateTime time : toRemove) {
-                        logger.getLog().remove(time);
+                    for (Data<Integer, Double> data : toRemove) {
+                        logger.getLog().remove(data);
                     }
                     
                     // Reset state of charges of all buffers

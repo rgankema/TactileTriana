@@ -27,8 +27,8 @@ public class ChartView extends StackPane {
     @FXML
     private NumberAxis yAxis;
 
-    private Series<Number, Number> actualSeries;
-    private Series<Number, Number> futureSeries;
+    private Series<Integer, Double> actualSeries;
+    private Series<Integer, Double> futureSeries;
     
     private ChartVM viewModel;
 
@@ -71,8 +71,8 @@ public class ChartView extends StackPane {
         
         chart.titleProperty().bind(viewModel.chartTitleProperty());
         
-        
-        chart.getData().add(futureSeries);
         chart.getData().add(actualSeries);
+        chart.getData().add(futureSeries);
+        
     }
 }

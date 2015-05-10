@@ -6,9 +6,9 @@
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
 import java.time.LocalDateTime;
-import java.util.TreeMap;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableMap;
+import javafx.collections.ObservableList;
+import javafx.scene.chart.XYChart.Data;
 
 /**
  * Superclass of any class that needs to log a certain value at a certain time.
@@ -17,7 +17,7 @@ import javafx.collections.ObservableMap;
 public abstract class LoggingEntityBase {
     private final String displayName;
     private final QuantityType qType;
-    private final ObservableMap<LocalDateTime, Double> log;
+    private final ObservableList<Data<Integer, Double>> log;
     
     protected Simulation simulation;
 
@@ -25,7 +25,7 @@ public abstract class LoggingEntityBase {
         this.displayName = displayName;
         this.qType = qType;
         this.simulation = simulation;
-        this.log = FXCollections.observableMap(new TreeMap<>());
+        this.log = FXCollections.observableArrayList();
     }
 
     protected void setSimulation(Simulation simulation) {
@@ -46,17 +46,25 @@ public abstract class LoggingEntityBase {
         return this.simulation;
     }
     
-    public final ObservableMap<LocalDateTime, Double> getLog() {
+    public final ObservableList<Data<Integer, Double>> getLog() {
         return this.log;
     }
 
     // METHODS
     
     protected final void log(double value) {
+        LocalDateTime time = this.simulation.getCurrentTime();
         // Log can be called when Simulation is still initializing, and thus currentTime can be null
-        if (this.simulation.getCurrentTime() != null) {
-            log.put(this.simulation.getCurrentTime(), value);
+        if (time != null) {
+            if (log.size() > 0) {
+                log.add(new Data<>(log.get(log.size() - 1).getXValue(), value));
+            }
+            log.add(new Data<>(toMinuteOfYear(time), value));
         }
+    }
+    
+    protected final int toMinuteOfYear(LocalDateTime time) {
+        return (time.getDayOfYear() - 1) * 24 * 60 + time.getHour() * 60 + time.getMinute();
     }
 
     // ENUMS

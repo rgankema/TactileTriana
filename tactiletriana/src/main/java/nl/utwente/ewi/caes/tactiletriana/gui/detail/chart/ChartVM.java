@@ -5,15 +5,18 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.detail.chart;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
-import javafx.collections.MapChangeListener;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
+import javafx.scene.chart.XYChart.Data;
 import nl.utwente.ewi.caes.tactiletriana.simulation.LoggingEntityBase;
 
 /**
@@ -24,10 +27,10 @@ public class ChartVM {
 
     private LoggingEntityBase actual;
     private LoggingEntityBase future;
-    private MapChangeListener actualLogListener;
-    private MapChangeListener futureLogListener;
-    private final ObservableList<XYChart.Data<Number, Number>> actualSeriesData;
-    private final ObservableList<XYChart.Data<Number, Number>> futureSeriesData;
+    private ListChangeListener actualLogListener;
+    private ListChangeListener futureLogListener;
+    private final ObservableList<XYChart.Data<Integer, Double>> actualSeriesData;
+    private final ObservableList<XYChart.Data<Integer, Double>> futureSeriesData;
     
     public ChartVM() {
         actualSeriesData = FXCollections.observableArrayList();
@@ -83,7 +86,7 @@ public class ChartVM {
      *
      * @return the data for the actual series
      */
-    public ObservableList<XYChart.Data<Number, Number>> getActualSeriesData() {
+    public ObservableList<XYChart.Data<Integer, Double>> getActualSeriesData() {
         return actualSeriesData;
     }
 
@@ -91,17 +94,16 @@ public class ChartVM {
      *
      * @return the data for the future series
      */
-    public ObservableList<XYChart.Data<Number, Number>> getFutureSeriesData() {
+    public ObservableList<XYChart.Data<Integer, Double>> getFutureSeriesData() {
         return futureSeriesData;
     }
     
     // PUBLIC METHODS
     
     public final void setEntity(LoggingEntityBase actual, LoggingEntityBase future) {
-        // Reset chart
         if (this.actual != null) {
             this.actual.getLog().removeListener(actualLogListener);
-            this.future.getLog().removeListener(futureLogListener);           
+            this.future.getLog().removeListener(futureLogListener);
         }
         
         actualSeriesData.clear();
@@ -130,90 +132,61 @@ public class ChartVM {
         xAxisUpperBound.bind(xAxisLowerBound.add(60 * 12));
 
         // Update chart with recorded data
-        for (LocalDateTime time : future.getLog().keySet()) {
-            int minuteOfYear = (time.getDayOfYear() - 1) * 24 * 60 + time.getHour() * 60 + time.getMinute();
-            if (futureSeriesData.size() > 0) {
-                futureSeriesData.add(new XYChart.Data<>(minuteOfYear, futureSeriesData.get(futureSeriesData.size() - 1).getYValue()));
-            }
-            futureSeriesData.add(new XYChart.Data(minuteOfYear, future.getLog().get(time)));
+        for (Data<Integer, Double> data : future.getLog()) {
+            futureSeriesData.add(data);
         }
         
-        for (LocalDateTime time : actual.getLog().keySet()) {
-            int minuteOfYear = (time.getDayOfYear() - 1) * 24 * 60 + time.getHour() * 60 + time.getMinute();
-            if (actualSeriesData.size() > 0) {
-                futureSeriesData.remove(0);
-                actualSeriesData.add(new XYChart.Data<>(minuteOfYear, actualSeriesData.get(actualSeriesData.size() - 1).getYValue()));
-            }
+        for (Data<Integer, Double> data : actual.getLog()) {
             futureSeriesData.remove(0);
-            actualSeriesData.add(new XYChart.Data(minuteOfYear, actual.getLog().get(time)));
+            actualSeriesData.add(data);
         }
         
-        // Update chart when a new value is logged
-        actualLogListener = (MapChangeListener<LocalDateTime, Double>) c -> {
-            LocalDateTime time = c.getKey();
-            int minuteOfYear = (time.getDayOfYear() - 1) * 24 * 60 + time.getHour() * 60 + time.getMinute();
-            
-            if (c.wasRemoved()) {
-                int i = 0;
-                for (; i < actualSeriesData.size(); i++) {
-                    XYChart.Data data = actualSeriesData.get(i);
-                    if (data.getXValue().equals(minuteOfYear) && data.getYValue().equals(c.getValueRemoved())) {
-                        break;
+        actualLogListener = new ListChangeListener<Data<Integer, Double>>() {
+
+            @Override
+            public void onChanged(Change<? extends Data<Integer, Double>> c) {
+                while (c.next()) {
+                    for (Data<Integer, Double> data : c.getAddedSubList()) {
+                        
+                        // Remove all data from the future series that has an X before or equal to the new value
+                        List<Data<Integer, Double>> toRemove = new ArrayList<>();
+                        for (Data<Integer, Double> futureData : futureSeriesData) {
+                            // This only works as long as futureSeriesData is sorted, which is a safe assumption
+                            if (futureData.getXValue() < data.getXValue()) {
+                                toRemove.add(futureData);
+                            } else {
+                                break;
+                            }
+                        }
+                        for (Data<Integer, Double> futureData : toRemove) {
+                            futureSeriesData.remove(futureData);
+                        }
+                        
+                        xAxisLowerBound.set(data.getXValue() - 6 * 60);
+                        actualSeriesData.add(data);
+                    }
+                    for (Data<Integer, Double> data : c.getRemoved()) {
+                        actualSeriesData.remove(data);
                     }
                 }
-                actualSeriesData.remove(i);
-                if (i > 0) {
-                    actualSeriesData.remove(i - 1);
-                }
-            }
-            if (c.wasAdded()) {
-                // Add datapoint with previous value to obtain horizontal lines
-                if (actualSeriesData.size() > 0) {
-                    if (futureSeriesData.size() > 0) {
-                        futureSeriesData.remove(0);
-                    }
-                    actualSeriesData.add(new XYChart.Data<>(minuteOfYear, actualSeriesData.get(actualSeriesData.size() - 1).getYValue()));
-                }
-                if (futureSeriesData.size() > 0) {
-                    futureSeriesData.remove(0);
-                }
-                actualSeriesData.add(new XYChart.Data<>(minuteOfYear, c.getValueAdded()));
-                
-                // Range x axis
-                xAxisLowerBound.set(minuteOfYear - 6 * 60);
             }
         };
         
-        futureLogListener = (MapChangeListener<LocalDateTime, Double>) c -> {
-            LocalDateTime time = c.getKey();
-            int minuteOfYear = (time.getDayOfYear() - 1) * 24 * 60 + time.getHour() * 60 + time.getMinute();
-            
-            if (c.wasRemoved()) {
-                int i = 0;
-                for (; i < futureSeriesData.size(); i++) {
-                    XYChart.Data data = futureSeriesData.get(i);
-                    if (data.getXValue().equals(minuteOfYear) && data.getYValue().equals(c.getValueRemoved())) {
-                        break;
+        futureLogListener = new ListChangeListener<Data<Integer, Double>>() {
+
+            @Override
+            public void onChanged(Change<? extends Data<Integer, Double>> c) {
+                while (c.next()) {
+                    for (Data<Integer, Double> data : c.getAddedSubList()) {
+                        futureSeriesData.add(data);
+                    }
+                    for (Data<Integer, Double> data : c.getRemoved()) {
+                        futureSeriesData.remove(data);
                     }
                 }
-                // Somehow this goes wrong quite often
-                if (i < futureSeriesData.size()) {
-                    futureSeriesData.remove(i);
-                    if (i > 0) {
-                        futureSeriesData.remove(i - 1);
-                    }
-                }
-            }
-            if (c.wasAdded()) {
-                // Add datapoint with previous value to obtain horizontal lines
-                if (futureSeriesData.size() > 0) {
-                    futureSeriesData.add(new XYChart.Data<>(minuteOfYear, futureSeriesData.get(futureSeriesData.size() - 1).getYValue()));
-                }
-                futureSeriesData.add(new XYChart.Data<>(minuteOfYear, c.getValueAdded()));
             }
         };
         
-        // FIXME: Ugly hack for now, it shouldn't be necessary to draw actual on top of future
         actual.getLog().addListener(actualLogListener);
         future.getLog().addListener(futureLogListener);
     }
