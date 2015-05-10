@@ -169,7 +169,9 @@ public class ChartVM {
             if (c.wasAdded()) {
                 // Add datapoint with previous value to obtain horizontal lines
                 if (actualSeriesData.size() > 0) {
-                    futureSeriesData.remove(0);
+                    if (futureSeriesData.size() > 0) {
+                        futureSeriesData.remove(0);
+                    }
                     actualSeriesData.add(new XYChart.Data<>(minuteOfYear, actualSeriesData.get(actualSeriesData.size() - 1).getYValue()));
                 }
                 if (futureSeriesData.size() > 0) {
@@ -194,9 +196,11 @@ public class ChartVM {
                         break;
                     }
                 }
-                futureSeriesData.remove(i);
-                if (i > 0) {
-                    futureSeriesData.remove(i - 1);
+                if (i < futureSeriesData.size()) {
+                    futureSeriesData.remove(i);
+                    if (i > 0) {
+                        futureSeriesData.remove(i - 1);
+                    }
                 }
             }
             if (c.wasAdded()) {

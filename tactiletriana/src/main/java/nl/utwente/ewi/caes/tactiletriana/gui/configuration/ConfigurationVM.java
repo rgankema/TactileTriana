@@ -15,6 +15,7 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
+import nl.utwente.ewi.caes.tactiletriana.gui.configuration.scenario.ScenarioVM;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 
 /**
@@ -25,9 +26,9 @@ public class ConfigurationVM {
 
     private static final SimpleBooleanProperty launched = new SimpleBooleanProperty(false);
     private final ObservableList screenIndexList = FXCollections.observableArrayList();
+    private final ScenarioVM scenarioVM = new ScenarioVM();
     
     private Simulation simulation;
-
     
     public ConfigurationVM(Simulation simulation) {
         this.simulation = simulation;
@@ -74,6 +75,7 @@ public class ConfigurationVM {
     }
 
     // BINDABLE PROPERTIES
+    
     /**
      * The text entered in the port field
      */
@@ -164,6 +166,13 @@ public class ConfigurationVM {
     public ObservableList<Integer> getScreenIndexList() {
         return screenIndexList;
     }
+    
+    /**
+     * @return the VM for the ScenarioView
+     */
+    public ScenarioVM getScenarioVM() {
+        return scenarioVM;
+    }
 
     // METHODS
 
@@ -171,6 +180,10 @@ public class ConfigurationVM {
         StageController.getInstance().setMainStagesVisible(true);
         StageController.getInstance().setLauncherStageVisible(false);
         StageController.getInstance().setScreenIndexStagesVisible(false);
+        
+        if (this.simulation.getState() == Simulation.SimulationState.STOPPED) {
+            this.simulation.setTimeScenario(scenarioVM.build());
+        }
         this.simulation.start();
 
         launched.set(true);

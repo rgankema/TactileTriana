@@ -5,19 +5,9 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
-import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import nl.utwente.ewi.caes.tactiletriana.simulation.TimeScenario.TimeSpan;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -33,7 +23,9 @@ public class SimulationTest {
     @Test
     public void testNetworkInitialization() {
         System.out.println("networkInitialization");
-        Simulation simulation = new Simulation();
+        TimeScenario timeScenario = new TimeScenario();
+        timeScenario.add(new TimeSpan(LocalDateTime.of(2014, 1, 1, 0, 0), LocalDateTime.of(2014, 2, 1, 0, 0)));
+        Simulation simulation = new Simulation(timeScenario);
         Transformer transformer = simulation.getTransformer();
         
         // There's a transformer with one outgoing cable

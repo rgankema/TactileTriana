@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Consumer;
 import javafx.collections.ListChangeListener;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Cable;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
@@ -17,6 +18,8 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.House;
 import nl.utwente.ewi.caes.tactiletriana.simulation.LoggingEntityBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Node;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
+import nl.utwente.ewi.caes.tactiletriana.simulation.TimeScenario;
+import nl.utwente.ewi.caes.tactiletriana.simulation.TimeScenario.TimeSpan;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.*;
 
 /**
@@ -24,24 +27,65 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.devices.*;
  * @author mickvdv
  */
 public class SimulationPrediction extends Simulation {
-    private final static int RUN_AHEAD = 6; // aantal uren dat de prediction voorloopt
+    // Amount of hours that the prediction runs ahead
+    private final static int RUN_AHEAD = 6;
+    // The prediction's tick method shouldn't be affected by a scenario, so use one that runs infinitely
+    private final static TimeScenario PREDICTION_SCENARIO = new TimeScenario();
+    static {
+        PREDICTION_SCENARIO.add(new TimeSpan(LocalDateTime.MIN, LocalDateTime.MAX));
+    }
     
     private final Simulation mainSimulation;
+    private final Map<LoggingEntityBase, LoggingEntityBase> futureByActual = new HashMap<>();
+    
     private boolean mainSimulationChanged = false;
-    public Map<LoggingEntityBase, LoggingEntityBase> futureByActual = new HashMap<>();
+    private boolean timeSpanChanged = false;
 
+    /**
+     * Creates a new SimulationPrediction.
+     * 
+     * @param mainSimulation The real Simulation that this object will predict
+     */
     public SimulationPrediction(Simulation mainSimulation) {
+        super(PREDICTION_SCENARIO);
+        
         this.mainSimulation = mainSimulation;
         setCurrentTime(mainSimulation.getCurrentTime());
 
         // Link this (future) simulation to acual simulation
         futureByActual.put(mainSimulation, this);
         linkNetwork(mainSimulation.getTransformer(), this.getTransformer());
-
+        
+        final Consumer<TimeSpan> timeSpanCallback = (TimeSpan t) -> {
+            timeSpanChanged = true;
+        };
+        
+        mainSimulation.getTimeScenario().addNewTimeSpanStartedCallback(timeSpanCallback);
+        mainSimulation.timeScenarioProperty().addListener((observable, oldValue, newValue) -> {
+            oldValue.removeNewTimeSpanStartedCallback(timeSpanCallback);
+            newValue.addNewTimeSpanStartedCallback(timeSpanCallback);
+        });
+        
         // Zorg dat de simulatie 12 uur vooruit loopt
         this.mainSimulation.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
+            // Main Simulation jumped to new timespan, set time to start of new timespan
+            if (timeSpanChanged) {
+                timeSpanChanged = false;
+                mainSimulationChanged = false;
+                
+                setCurrentTime(newValue);
+                
+                // Clear the log
+                for (LoggingEntityBase logger : futureByActual.keySet()) {
+                    logger.getLog().clear();
+                    // Reset state of charges of all buffers
+                    if (logger instanceof BufferBase) {
+                        ((BufferBase)logger).setStateOfCharge(((BufferBase)getActual(logger)).getStateOfCharge());
+                    }
+                }
+            }
             // Er is iets veranderd. Run de simulation vanaf het huidige punt vooruit
-            if (mainSimulationChanged) {
+            else if (mainSimulationChanged) {
                 mainSimulationChanged = false;
                 setCurrentTime(oldValue);
                 
@@ -71,6 +115,9 @@ public class SimulationPrediction extends Simulation {
         });
     }
     
+    // HELPER METHODS
+    
+    // Walks through the network tree and synchronizes equivalent LoggingEntityBases
     private void linkNetwork(Node actual, Node future) {
         futureByActual.put(actual, future);
         if (actual.getHouse() != null) {
@@ -89,6 +136,7 @@ public class SimulationPrediction extends Simulation {
         }
     }
     
+    // Synchronizes two houses by synchronizing its device list
     private void linkHouse(House actual, House future) {
         futureByActual.put(actual, future);
         actual.getDevices().addListener((ListChangeListener.Change<? extends DeviceBase> c) -> {
@@ -142,10 +190,26 @@ public class SimulationPrediction extends Simulation {
         });
     }
     
+    // PUBLIC METHODS
+    
+    /**
+     * Returns a LoggingEntityBase that represents the future version of the
+     * specified LoggingEntityBase.
+     * 
+     * @param actual the real LoggingEntityBase
+     * @return the future representation
+     */
     public final LoggingEntityBase getFuture(LoggingEntityBase actual) {
         return futureByActual.get(actual);
     }
     
+    /**
+     * Returns the LoggingEntityBase that the specified LoggingEntityBase is the
+     * the future version of.
+     * 
+     * @param future the future representation of a LoggingEntityBase
+     * @return the real LoggingEntityBase
+     */
     public final LoggingEntityBase getActual(LoggingEntityBase future) {
         for (LoggingEntityBase actual : futureByActual.keySet()) {
             if (futureByActual.get(actual).equals(future)) {

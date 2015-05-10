@@ -7,8 +7,9 @@ package nl.utwente.ewi.caes.tactiletriana.simulation;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
@@ -32,6 +33,12 @@ public class Simulation extends LoggingEntityBase {
 
     public static enum SimulationState { RUNNING, PAUSED, STOPPED };
     public static final int NUMBER_OF_HOUSES = 6;
+    
+    private static final TimeScenario DEFAULT_SCENARIO = new TimeScenario();
+    static {
+        DEFAULT_SCENARIO.add(new TimeScenario.TimeSpan(LocalDateTime.of(LocalDate.of(2014, 1, 1), LocalTime.MIN), 
+                LocalDateTime.of(LocalDate.of(2014, 12, 31), LocalTime.MAX)));
+    }
 
     private final Transformer transformer;
     private final Map<Node, Double> lastVoltageByNode;
@@ -44,12 +51,16 @@ public class Simulation extends LoggingEntityBase {
 
     private Node[] internalNodes;
     private Node[] houseNodes;
-    private Cable[] cables;
+    private Cable[] internalCables;
     private House[] houses;
 
     public Simulation() {
+        this(DEFAULT_SCENARIO);
+    }
+    
+    public Simulation(TimeScenario scenario) {
         super(null, "Network", QuantityType.POWER);
-        this.setSimulation(this);
+        this.setSimulation(this);   // LoggingEntityBase needs reference to Simulation for time
         
         this.setState(SimulationState.STOPPED);
 
@@ -60,8 +71,8 @@ public class Simulation extends LoggingEntityBase {
         this.transformer = new Transformer(this);
 
         this.internalNodes = new Node[NUMBER_OF_HOUSES];
+        this.internalCables = new Cable[NUMBER_OF_HOUSES];
         this.houseNodes = new Node[NUMBER_OF_HOUSES];
-        this.cables = new Cable[NUMBER_OF_HOUSES];
         this.houses = new House[NUMBER_OF_HOUSES];
 
         // maak huizen aan met cables en dat soort grappen
@@ -77,11 +88,11 @@ public class Simulation extends LoggingEntityBase {
             Cable houseCable = new Cable(houseNodes[i], 110, 5, this);
             this.internalNodes[i].getCables().add(houseCable);
 
-            this.cables[i] = new Cable(internalNodes[i], 110 + (NUMBER_OF_HOUSES - i) * 60, 20, simulation);
+            this.internalCables[i] = new Cable(internalNodes[i], 110 + (NUMBER_OF_HOUSES - i) * 60, 20, simulation);
             if (i == 0) {
-                transformer.getCables().add(cables[i]);
+                transformer.getCables().add(internalCables[i]);
             } else {
-                internalNodes[i - 1].getCables().add(cables[i]);
+                internalNodes[i - 1].getCables().add(internalCables[i]);
             }
 
             lastVoltageByNode.put(internalNodes[i], 230d);
@@ -89,8 +100,9 @@ public class Simulation extends LoggingEntityBase {
         }
 
         // initialise time
-        setCurrentTime(SimulationConfig.SIMULATION_START_TIME);
-
+        setCurrentTime(scenario.getStart());
+        setTimeScenario(scenario);
+        
         // load KNMI data
         temperatureByTime = new HashMap<>();
         radianceByTime = new HashMap<>();
@@ -138,26 +150,48 @@ public class Simulation extends LoggingEntityBase {
         return this.stateProperty().get();
     }
     
+    /**
+     * The time scenario that this simulation follows.
+     */
+    private final ObjectProperty<TimeScenario> timeScenario = new SimpleObjectProperty<TimeScenario>() {
+        @Override
+        public void set(TimeScenario value) {
+            setCurrentTime(value.getStart());
+            value.addNewTimeSpanStartedCallback(t -> {
+                clearAllLogs();
+            });
+            
+            super.set(value);
+        }
+    };
+    
+    public ObjectProperty<TimeScenario> timeScenarioProperty() {
+        return timeScenario;
+    }
+    
+    public final TimeScenario getTimeScenario() {
+        return timeScenarioProperty().get();
+    }
+    
+    public final void setTimeScenario(TimeScenario timeScenario) {
+        timeScenarioProperty().set(timeScenario);
+    }
 
     /**
      * The current time in the simulation.
      */
-    private final ObjectProperty<LocalDateTime> currentTime = new SimpleObjectProperty<>();
+    private final ReadOnlyObjectWrapper<LocalDateTime> currentTime = new ReadOnlyObjectWrapper<>();
 
-    public ObjectProperty<LocalDateTime> currentTimeProperty() {
-        return currentTime;
+    public ReadOnlyObjectProperty<LocalDateTime> currentTimeProperty() {
+        return currentTime.getReadOnlyProperty();
     }
 
-    public LocalDateTime getCurrentTime() {
+    public final LocalDateTime getCurrentTime() {
         return currentTimeProperty().get();
     }
 
-    protected void setCurrentTime(LocalDateTime time) {
-        // als er een jaar verstreken is. Ga dan weer een jaar terug.
-        if (time.isAfter(SimulationConfig.SIMULATION_START_TIME.plusYears(1))){
-            time = time.minusYears(1);
-        }
-        currentTimeProperty().set(time);
+    protected final void setCurrentTime(LocalDateTime time) {
+        currentTime.set(time);
     }
 
     /**
@@ -210,14 +244,6 @@ public class Simulation extends LoggingEntityBase {
      */
     public Transformer getTransformer() {
         return transformer;
-    }
-    
-    /**
-     *
-     * @return a copy of the array of houses in this simulation
-     */
-    public House[] getHouses() {
-        return Arrays.copyOf(houses, houses.length);
     }
 
     // PUBLIC METHODS
@@ -275,7 +301,7 @@ public class Simulation extends LoggingEntityBase {
             log(transformer.getCables().get(0).getCurrent() * 230d);
 
             // Increment time
-            setCurrentTime((getCurrentTime().plusMinutes(SimulationConfig.SIMULATION_TICK_TIME)));
+            setCurrentTime((getTimeScenario().getNext(getCurrentTime(), SimulationConfig.SIMULATION_TICK_TIME)));
         });
     }
 
@@ -311,23 +337,9 @@ public class Simulation extends LoggingEntityBase {
 
         scheduler.shutdownNow();
 
-        for (House house : houses) {
-            house.getDevices().clear();
-            house.getLog().clear();
-        }
-        for (Node node : internalNodes) {
-            node.getLog().clear();
-            for (Cable cable : node.getCables()) {
-                cable.getLog().clear();
-            }
-        }
-        for (Node node : houseNodes) {
-            node.getLog().clear();
-        }
-        transformer.getLog().clear();
+        clearAllLogs();
 
-        setCurrentTime(SimulationConfig.SIMULATION_START_TIME);
-        getLog().clear();
+        setCurrentTime(getTimeScenario().getStart());
     }
 
     // FORWARD BACKWARD SWEEP METHODS
@@ -373,5 +385,26 @@ public class Simulation extends LoggingEntityBase {
                 throw new RuntimeException(ex);
             }
         }
+    }
+    
+    private void clearAllLogs() {
+        for (House house : houses) {
+            house.getDevices().clear();
+            house.getLog().clear();
+        }
+        for (Node node : internalNodes) {
+            node.getLog().clear();
+            for (Cable cable : node.getCables()) {
+                cable.getLog().clear();
+            }
+        }
+        for (Node node : houseNodes) {
+            node.getLog().clear();
+        }
+        transformer.getLog().clear();
+        for (Cable c : transformer.getCables()) {
+            c.getLog().clear();
+        }
+        this.getLog().clear();
     }
 }

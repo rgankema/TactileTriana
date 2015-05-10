@@ -11,7 +11,9 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
+import nl.utwente.ewi.caes.tactiletriana.gui.configuration.scenario.ScenarioView;
 
 /**
  *
@@ -31,7 +33,10 @@ public class ConfigurationView extends GridPane {
     private Button startButton;
     @FXML
     private Button resetButton;
-
+    @FXML
+    private StackPane scenarioViewContainer;
+    private ScenarioView scenarioView;
+    
     private ConfigurationVM viewModel;
 
     public ConfigurationView() {
@@ -45,6 +50,11 @@ public class ConfigurationView extends GridPane {
 
         this.viewModel = viewModel;
 
+        // Initialize ScenarioView
+        scenarioView = new ScenarioView();
+        scenarioView.setViewModel(viewModel.getScenarioVM());
+        scenarioViewContainer.getChildren().add(scenarioView);
+        
         // Bind control properties to VM
         fullScreenCheckBox.selectedProperty().bindBidirectional(viewModel.fullScreenCheckedProperty());
         fullScreenCheckBox.disableProperty().bind(viewModel.fullScreenCheckBoxDisabledProperty());
