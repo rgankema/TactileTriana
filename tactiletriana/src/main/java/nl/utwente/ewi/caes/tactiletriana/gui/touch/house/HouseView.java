@@ -13,7 +13,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
-import nl.utwente.ewi.caes.tactiletriana.gui.events.TrianaEvents;
+import nl.utwente.ewi.caes.tactiletriana.gui.events.EventUtil;
 
 /**
  *
@@ -53,7 +53,7 @@ public class HouseView extends Pane {
 
 
         // Repair fuse on short press, show on chart for long press
-        TrianaEvents.addShortAndLongPressEventHandler(this, hv -> {
+        EventUtil.addShortAndLongPressEventHandler(this, hv -> {
             viewModel.pressed();
         }, hv -> {
             viewModel.longPressed();

@@ -25,7 +25,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Polygon;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
-import nl.utwente.ewi.caes.tactiletriana.gui.events.TrianaEvents;
+import nl.utwente.ewi.caes.tactiletriana.gui.events.EventUtil;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceVM.State;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.*;
@@ -125,7 +125,7 @@ public class DeviceView extends StackPane {
         batteryLabel.textProperty().bind(viewModel.stateOfChargeProperty().multiply(100d).asString("%.0f%%"));
         
         // Show on chart on long press
-        TrianaEvents.addShortAndLongPressEventHandler(this, null, e -> {
+        EventUtil.addShortAndLongPressEventHandler(this, null, e -> {
             viewModel.longPressed();
         });
         

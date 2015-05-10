@@ -30,7 +30,7 @@ public class APIServer implements Runnable {
     public APIServer(int port, Simulation sim) {
         this.serverPort = port;
         this.simulation = sim;
-        this.serverConnections = new ArrayList<ServerConnection>();
+        this.serverConnections = new ArrayList<>();
     }
     
     /**

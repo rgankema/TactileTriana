@@ -257,11 +257,9 @@ public class Simulation extends LoggingEntityBase {
         if (getState() == SimulationState.STOPPED){            
             scheduler = Executors.newScheduledThreadPool(1);
             scheduler.scheduleAtFixedRate(() -> {
-                // zo lang hij runt doe een tick. Dus als hij PAUSED staat niet.
                 if (this.getState() == SimulationState.RUNNING){
                     tick();
                 }
-
             }, SimulationConfig.SYSTEM_TICK_TIME, SimulationConfig.SYSTEM_TICK_TIME, TimeUnit.MILLISECONDS);
         }
         setState(SimulationState.RUNNING);
@@ -317,9 +315,7 @@ public class Simulation extends LoggingEntityBase {
 
     /**
      * Stops the simulation if it is running or paused. Shuts down the background thread
-     * that is used for the simulation. Because of this, start cannot be called before a call
-     * to reset has been made to spawn a new background thread. This method is intended to be
-     * called only when the application is closing.
+     * that is used for the simulation.
      */
     public void stop() {
         if (getState() != SimulationState.STOPPED) {
@@ -329,13 +325,10 @@ public class Simulation extends LoggingEntityBase {
     }
 
     /**
-     * Resets all values to the initial values, and stops the simulation. Also stops
-     * background thread, and spawns a new one.
+     * Stops the simulation, shuts down background thread, and resets all values to default.
      */
     public void reset() {
-        setState(SimulationState.STOPPED);
-
-        scheduler.shutdownNow();
+        stop();
 
         for (House house : houses) {
             house.getDevices().clear();

@@ -13,7 +13,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
-import nl.utwente.ewi.caes.tactiletriana.gui.events.TrianaEvents;
+import nl.utwente.ewi.caes.tactiletriana.gui.events.EventUtil;
 
 /**
  * FXML Controller class
@@ -45,7 +45,7 @@ public class NodeView extends StackPane {
         }, viewModel.voltageErrorProperty()));
         
         // Show on chart on long press
-        TrianaEvents.addShortAndLongPressEventHandler(this, null, n -> {
+        EventUtil.addShortAndLongPressEventHandler(this, null, n -> {
             viewModel.longPressed();
         });
         
