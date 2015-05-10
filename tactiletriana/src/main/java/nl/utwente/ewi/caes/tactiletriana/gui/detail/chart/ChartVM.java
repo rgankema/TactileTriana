@@ -196,6 +196,7 @@ public class ChartVM {
                         break;
                     }
                 }
+                // Somehow this goes wrong quite often
                 if (i < futureSeriesData.size()) {
                     futureSeriesData.remove(i);
                     if (i > 0) {
@@ -212,6 +213,7 @@ public class ChartVM {
             }
         };
         
+        // FIXME: Ugly hack for now, it shouldn't be necessary to draw actual on top of future
         actual.getLog().addListener(actualLogListener);
         future.getLog().addListener(futureLogListener);
     }

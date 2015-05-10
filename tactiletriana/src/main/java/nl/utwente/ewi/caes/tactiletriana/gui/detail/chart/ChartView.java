@@ -7,12 +7,9 @@ package nl.utwente.ewi.caes.tactiletriana.gui.detail.chart;
 
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
-import javafx.scene.Group;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.StackedAreaChart;
 import javafx.scene.chart.XYChart.Series;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.util.StringConverter;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
@@ -74,7 +71,8 @@ public class ChartView extends StackPane {
         
         chart.titleProperty().bind(viewModel.chartTitleProperty());
         
-        chart.getData().add(actualSeries);
+        
         chart.getData().add(futureSeries);
+        chart.getData().add(actualSeries);
     }
 }

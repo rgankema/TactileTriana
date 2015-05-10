@@ -337,6 +337,9 @@ public class Simulation extends LoggingEntityBase {
 
         scheduler.shutdownNow();
 
+        for (House house : houses) {
+            house.getDevices().clear();
+        }
         clearAllLogs();
 
         setCurrentTime(getTimeScenario().getStart());

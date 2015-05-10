@@ -77,6 +77,7 @@ public class SimulationPrediction extends Simulation {
                 
                 // Clear the log
                 for (LoggingEntityBase logger : futureByActual.keySet()) {
+                    System.out.println("clear");
                     logger.getLog().clear();
                     // Reset state of charges of all buffers
                     if (logger instanceof BufferBase) {
