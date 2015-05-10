@@ -389,7 +389,6 @@ public class Simulation extends LoggingEntityBase {
     
     private void clearAllLogs() {
         for (House house : houses) {
-            house.getDevices().clear();
             house.getLog().clear();
         }
         for (Node node : internalNodes) {
