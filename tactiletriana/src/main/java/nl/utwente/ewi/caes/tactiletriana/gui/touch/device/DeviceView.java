@@ -23,7 +23,6 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 import nl.utwente.ewi.caes.tactiletriana.gui.events.EventUtil;
@@ -50,10 +49,8 @@ public class DeviceView extends StackPane {
         this.type = type;
         
         deviceIcon = null;
-        if (type == BufferTimeShiftable.class)
+        if (type == ElectricVehicle.class)
             deviceIcon = new ImageView(new Image("images/car.png",50,50,false,true));
-        else if (type == MockDevice.class) 
-            deviceIcon = new Polygon(new double[]{0d, 50d, 25d, 0d, 50d, 50d});
         else if (type == SolarPanel.class)
             deviceIcon = new ImageView(new Image("images/solarpanel.png",50,50,false,true));
         else if (type == DishWasher.class)

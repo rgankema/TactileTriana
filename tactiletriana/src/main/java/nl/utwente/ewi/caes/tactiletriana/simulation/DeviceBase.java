@@ -26,28 +26,52 @@ import org.json.simple.JSONObject;
  * @author Richard
  */
 public abstract class DeviceBase extends LoggingEntityBase {
+    private static int DEVICE_ID = 0;
     
     //TODO configurables eruit gooien
     private final List<Configurable> parameters;
     private final List<Configurable> parametersUnmodifiable;
 
+    private final int id;
+    private final String apiDeviceType;
+    
     /*
     Map containing a Device's parameters.
     The key of the Map is the name of the parameter as specified in the API.
     The values are Property objects representing some Property of the device.
     */
-    private HashMap<String, Property> properties;
+    private final HashMap<String, Property> properties;
     
-    public DeviceBase(Simulation simulation, String displayName) {
+    /**
+     * Constructs a new DeviceBase
+     * 
+     * @param simulation    the simulation that this device is part of
+     * @param displayName   the name of the device as it should be shown to the user
+     * @param apiDeviceType    the name of the device as specified in the API
+     */
+    public DeviceBase(Simulation simulation, String displayName, String apiDeviceType) {
         super(simulation, displayName, QuantityType.POWER);
         
-        this.properties = new HashMap<String, Property>();
+        id = DEVICE_ID;
+        DEVICE_ID++;
+        
+        this.apiDeviceType = apiDeviceType;
+        
+        this.properties = new HashMap<>();
         //TODO remove this
         parameters = new ArrayList<>();
         parametersUnmodifiable = Collections.unmodifiableList(parameters);
     }
 
     // PROPERTIES
+    
+    /**
+     * @return a unique identifier for this device
+     */
+    public int getId() {
+        return this.id;
+    }
+    
     /**
      * The amount of power that the device currently consumes
      */
@@ -75,18 +99,6 @@ public abstract class DeviceBase extends LoggingEntityBase {
         currentConsumption.set(value);
     }
     
-    /**
-     * Parameter Properties
-     * 
-     */
-    
-    protected void addProperty(String apiName, Property property) {
-        this.properties.put(apiName, property);
-    }
-    
-    protected void getProperty(String apiName) {
-        this.properties.get(apiName);
-    }
     /**
      * The house that hosts this device
      */
@@ -151,6 +163,8 @@ public abstract class DeviceBase extends LoggingEntityBase {
             parameters.add(parameter);
         }
     }
+    
+    // METHODS
 
     public void tick(double timePassed, boolean connected) {
         if (!connected) {
@@ -158,6 +172,14 @@ public abstract class DeviceBase extends LoggingEntityBase {
         } else {
             setState(DeviceBase.State.CONNECTED);
         }
+    }
+    
+    protected void addProperty(String apiName, Property property) {
+        this.properties.put(apiName, property);
+    }
+    
+    protected void getProperty(String apiName) {
+        this.properties.get(apiName);
     }
 
     // ENUMS AND NESTED CLASSES
@@ -188,7 +210,8 @@ public abstract class DeviceBase extends LoggingEntityBase {
      */
     public JSONObject toJSON() {
         JSONObject result = new JSONObject();
-        result.put("deviceID", this.hashCode());
+        result.put("deviceID", this.id);
+        result.put("deviceType", this.apiDeviceType);
         result.put("consumption", this.getCurrentConsumption());
         //Get the parameters of this Device
         //TODO handle other Property Types

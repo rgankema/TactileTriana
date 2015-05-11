@@ -11,7 +11,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
  *
  * @author niels
  */
-public class DishWasher extends TimeShiftable {        
+public class DishWasher extends TimeShiftableBase {        
 
     public DishWasher(Simulation simulation){
         super(simulation, "DishWasher");

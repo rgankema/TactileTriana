@@ -9,11 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javafx.animation.FadeTransition;
 import javafx.beans.binding.Bindings;
-import javafx.fxml.FXML;
-import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
@@ -159,10 +156,8 @@ public class TouchView extends TactilePane {
             nvh[i].setViewModel(viewModel.getInternalNodes()[i]);
         }
         
-        DeviceView mv = new DeviceView(MockDevice.class);
-        mv.setViewModel(viewModel.getMockVM());
-        DeviceView cv = new DeviceView(BufferTimeShiftable.class);
-        cv.setViewModel(viewModel.getCarVM());
+        DeviceView cv = new DeviceView(ElectricVehicle.class);
+        cv.setViewModel(viewModel.getElectricVehicleVM());
         DeviceView sv = new DeviceView(SolarPanel.class);
         sv.setViewModel(viewModel.getSolarPanelVM());
         DeviceView dv = new DeviceView(DishWasher.class);
@@ -172,12 +167,11 @@ public class TouchView extends TactilePane {
         DeviceView bv = new DeviceView(Buffer.class);
         bv.setViewModel(viewModel.getBufferVM());
         
-        pushDeviceStack(mv, -200);
+        pushDeviceStack(bv, -200);
         pushDeviceStack(cv, -100);
         pushDeviceStack(sv, 0);
         pushDeviceStack(dv, 100);
         pushDeviceStack(wv, 200);
-        pushDeviceStack(bv, 300);
     }
     
     private void pushDeviceStack(DeviceView device, double xOffset) {

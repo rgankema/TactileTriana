@@ -32,15 +32,15 @@ public class SolarPanel extends DeviceBase {
     private static final double MAX_AREA = 50;
 
     public SolarPanel(Simulation simulation) {
-        super(simulation, "Solar Panel");
-        addParameter(new ConfigurableDouble("Area (m²)", "area", solarPanelArea, MIN_AREA, MAX_AREA));
-        setSolarPanelArea((MIN_AREA + MAX_AREA) / 2);
+        super(simulation, "Solar Panel", "SolarPanel");
+        addParameter(new ConfigurableDouble("Area (m²)", "area", area, MIN_AREA, MAX_AREA));
+        setArea((MIN_AREA + MAX_AREA) / 2);
     }
     
     /**
      * The amount of power the device will consume when turned on
      */
-    private final DoubleProperty solarPanelArea = new SimpleDoubleProperty(1000d) {
+    private final DoubleProperty area = new SimpleDoubleProperty(1000d) {
         @Override
         public void set(double value) {
             if (get() == value) {
@@ -56,17 +56,17 @@ public class SolarPanel extends DeviceBase {
             super.set(value);
         }
     };
-
-    public double getSolarPanelArea() {
-        return solarPanelArea.get();
+    
+    public DoubleProperty areaProperty() {
+        return area;
     }
 
-    public void setSolarPanelArea(double consumption) {
-        this.solarPanelArea.set(consumption);
+    public final double getArea() {
+        return area.get();
     }
 
-    public DoubleProperty solarPanelAreaProperty() {
-        return solarPanelArea;
+    public final void setArea(double consumption) {
+        this.area.set(consumption);
     }
 
     @Override
@@ -145,7 +145,7 @@ public class SolarPanel extends DeviceBase {
         double temperaturePV = temperature + (50 * powerSquareMeter / 1367); //Formula not based on anything or whatsover, this part can be improved
         double actualEfficiency = (efficiency * (1 - ((temperaturePV - 25) * temperatureEfficiency) / 100)) / 100;
         
-        double result = getSolarPanelArea() * powerSquareMeter * actualEfficiency;
+        double result = getArea() * powerSquareMeter * actualEfficiency;
            
         //Return the production in W (coming from J/cm2 for a whole hour)
         return result; 

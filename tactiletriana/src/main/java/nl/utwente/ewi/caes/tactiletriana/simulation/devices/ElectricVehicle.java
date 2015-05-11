@@ -15,28 +15,24 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 
 /**
  *
- * @author niels
+ * @author Richard
  */
-public class BufferTimeShiftable extends BufferBase {
+public class ElectricVehicle extends BufferTimeShiftableBase {
     
     /**
      * Constructs a BufferTimeShiftable device (electric vehicle). The model is determined by the model parameter.
      * @param simulation The simulation object of the current simulation.
      * @param model The model of the EV
      */
-    public BufferTimeShiftable(Simulation simulation, Model model) {
-        super(simulation,"Electric Vehicle");
+    public ElectricVehicle(Simulation simulation, Model model) {
+        super(simulation, "Electric Vehicle");
         
         addParameter(new ConfigurableCategory<>("Model", "model", this.model, m -> getModelName(), Model.values()));
         
         setModel(model);
     }
     
-    /**
-     * Constructs a BufferTimeShiftable of a random model
-     * @param simulation 
-     */
-    public BufferTimeShiftable(Simulation simulation) {
+    public ElectricVehicle(Simulation simulation) {
         this(simulation, Model.values()[(int) (Model.values().length * Math.random())]);
     }
     
@@ -110,13 +106,6 @@ public class BufferTimeShiftable extends BufferBase {
     
     private void setModelName(String modelName) {
         this.modelName.set(modelName);
-    }
-    
-    /**
-     * @return whether the battery is charged or not
-     */
-    public boolean isCharged(){
-        return getStateOfCharge() == getCapacity();
     }
     
     // METHODS

@@ -12,16 +12,15 @@ import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 import nl.utwente.ewi.caes.tactiletriana.simulation.*;
 
 /**
- *
  * @author niels
  */
-public abstract class TimeShiftable extends DeviceBase {
+public abstract class TimeShiftableBase extends DeviceBase {
         
     //The usage in W per minute mapped in an array
     protected double[] usageProgram;
 
-    public TimeShiftable(Simulation simulation, String displayName) {
-        super(simulation, displayName);
+    public TimeShiftableBase(Simulation simulation, String displayName) {
+        super(simulation, displayName, "TimeShiftable");
     }
         
     
