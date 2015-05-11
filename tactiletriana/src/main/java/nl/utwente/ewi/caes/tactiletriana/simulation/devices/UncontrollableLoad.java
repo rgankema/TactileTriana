@@ -29,7 +29,7 @@ public class UncontrollableLoad extends DeviceBase {
      * the profile data on which this instance is based
      */
     public UncontrollableLoad(int profileNumber, Simulation simulation) {
-        super(simulation, "Uncontrollable Load");
+        super(simulation, "Uncontrollable Load", "Uncontrollable");
 
         if (profileNumber < 0 || profileNumber > 5) {
             throw new IllegalArgumentException("profileNumber must be in the range of 0 to 5");

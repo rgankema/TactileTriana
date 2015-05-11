@@ -156,11 +156,9 @@ public class SimulationPrediction extends Simulation {
                         if (actualDevice instanceof Buffer) {
                             futureDevice = new Buffer(this);
                         } else if (actualDevice instanceof BufferTimeShiftable) {
-                            futureDevice = new BufferTimeShiftable(this, ((BufferTimeShiftable)actualDevice).getModel());
+                            futureDevice = new ElectricVehicle(this, ((ElectricVehicle)actualDevice).getModel());
                         } else if (actualDevice instanceof DishWasher) {
                             futureDevice = new DishWasher(this);
-                        } else if (actualDevice instanceof MockDevice) {
-                            futureDevice = new MockDevice(this);
                         } else if (actualDevice instanceof SolarPanel) {
                             futureDevice = new SolarPanel(this);
                         } else if (actualDevice instanceof WashingMachine) {

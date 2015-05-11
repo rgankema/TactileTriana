@@ -89,12 +89,10 @@ public class TouchVM {
     }
     
     public DeviceVM getDeviceVM(Class<? extends DeviceBase> deviceClass) {
-        if (deviceClass.equals(MockDevice.class)) {
-            return getMockVM();
-        } else if (deviceClass.equals(SolarPanel.class)) {
+        if (deviceClass.equals(SolarPanel.class)) {
             return getSolarPanelVM();
-        } else if (deviceClass.equals(BufferTimeShiftable.class)) {
-            return getCarVM();
+        } else if (deviceClass.equals(ElectricVehicle.class)) {
+            return getElectricVehicleVM();
         } else if (deviceClass.equals(DishWasher.class)){
             return getDishWasherVM();
         } else if (deviceClass.equals(WashingMachine.class)){
@@ -105,16 +103,12 @@ public class TouchVM {
         return null;
     }
     
-    public DeviceVM getMockVM() {
-        return new DeviceVM(new MockDevice(model));
-    }
-    
     public DeviceVM getSolarPanelVM() {
         return new DeviceVM(new SolarPanel(model));
     }
     
-    public DeviceVM getCarVM() {
-        return new DeviceVM(new BufferTimeShiftable(model));
+    public DeviceVM getElectricVehicleVM() {
+        return new DeviceVM(new ElectricVehicle(model));
     }
     
     public DeviceVM getDishWasherVM(){
