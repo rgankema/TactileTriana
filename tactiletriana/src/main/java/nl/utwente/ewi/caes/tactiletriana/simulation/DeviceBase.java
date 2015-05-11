@@ -162,9 +162,11 @@ public abstract class DeviceBase extends LoggingEntityBase {
      */
     public static abstract class Configurable {
         private final String displayName;
+        private final String apiName;
         
-        public Configurable(String displayName) {
+        public Configurable(String displayName, String apiName) {
             this.displayName = displayName;
+            this.apiName = apiName;
         }
         
         /**
@@ -178,6 +180,14 @@ public abstract class DeviceBase extends LoggingEntityBase {
         public final String getDisplayName() {
             return this.displayName;
         }
+        
+        /**
+         * 
+         * @return the name of the parameter as specified in the API 
+         */
+        public final String getApiName() {
+            return this.apiName;
+        }
     }
     
     /**
@@ -189,8 +199,8 @@ public abstract class DeviceBase extends LoggingEntityBase {
         private final double minValue;
         private final double maxValue;
 
-        public ConfigurableDouble(String displayName, DoubleProperty property, double minValue, double maxValue) {
-            super(displayName);
+        public ConfigurableDouble(String displayName, String apiName, DoubleProperty property, double minValue, double maxValue) {
+            super(displayName, apiName);
             this.property = property;
             this.minValue = minValue;
             this.maxValue = maxValue;
@@ -223,8 +233,8 @@ public abstract class DeviceBase extends LoggingEntityBase {
 
         private final BooleanProperty property;
         
-        public ConfigurableBoolean(String displayName, BooleanProperty property) {
-            super(displayName);
+        public ConfigurableBoolean(String displayName, String apiName, BooleanProperty property) {
+            super(displayName, apiName);
             this.property = property;
         }
         
@@ -246,8 +256,8 @@ public abstract class DeviceBase extends LoggingEntityBase {
         private final Function<T, String> categoryToString;
         private final T[] possibleValues;
         
-        public ConfigurableCategory(String displayName, ObjectProperty<T> property, Function<T, String> categoryToString, T... possibleValues) {
-            super(displayName);
+        public ConfigurableCategory(String displayName, String apiName, ObjectProperty<T> property, Function<T, String> categoryToString, T... possibleValues) {
+            super(displayName, apiName);
             this.property = property;
             this.categoryToString = categoryToString;
             this.possibleValues = possibleValues;
