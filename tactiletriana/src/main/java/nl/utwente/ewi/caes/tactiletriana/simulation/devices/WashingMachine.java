@@ -11,7 +11,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
  *
  * @author niels
  */
-public class WashingMachine extends TimeShiftable{        
+public class WashingMachine extends TimeShiftableBase{        
 
     public WashingMachine(Simulation simulation){
         super(simulation, "WashingMachine");

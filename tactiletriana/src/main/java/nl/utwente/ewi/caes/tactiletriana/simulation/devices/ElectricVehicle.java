@@ -17,7 +17,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
  *
  * @author Richard
  */
-public class ElectricVehicle extends BufferTimeShiftable {
+public class ElectricVehicle extends BufferTimeShiftableBase {
     
     /**
      * Constructs a BufferTimeShiftable device (electric vehicle). The model is determined by the model parameter.

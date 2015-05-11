@@ -155,7 +155,7 @@ public class SimulationPrediction extends Simulation {
                     if (futureDevice == null) {
                         if (actualDevice instanceof Buffer) {
                             futureDevice = new Buffer(this);
-                        } else if (actualDevice instanceof BufferTimeShiftable) {
+                        } else if (actualDevice instanceof BufferTimeShiftableBase) {
                             futureDevice = new ElectricVehicle(this, ((ElectricVehicle)actualDevice).getModel());
                         } else if (actualDevice instanceof DishWasher) {
                             futureDevice = new DishWasher(this);
