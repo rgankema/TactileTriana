@@ -8,6 +8,7 @@ package nl.utwente.ewi.caes.tactiletriana.gui.configuration;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -72,9 +73,27 @@ public class ConfigurationVM {
         resetButtonDisabled.bind(Bindings.createBooleanBinding(() -> { 
             return simulation.getState() == Simulation.SimulationState.STOPPED;
         }, this.simulation.stateProperty()));
+        
+        // scenario is enabled when simulation is stopped
+        scenarioViewDisable.bind(Bindings.createBooleanBinding(() -> { 
+            return simulation.getState() != Simulation.SimulationState.STOPPED;
+        }, this.simulation.stateProperty()));
     }
 
     // BINDABLE PROPERTIES
+    
+    /**
+     * Whether the Scenario view is enabled
+     */
+    private final BooleanProperty scenarioViewDisable = new SimpleBooleanProperty(false);
+    
+    public ReadOnlyBooleanProperty scenarioViewDisableProperty() {
+        return scenarioViewDisable;
+    }
+    
+    public final boolean isScenarioViewDisable() {
+        return scenarioViewDisableProperty().get();
+    }
     
     /**
      * The text entered in the port field

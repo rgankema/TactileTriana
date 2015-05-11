@@ -42,7 +42,7 @@
             <Label text="Touch Screen" GridPane.rowIndex="1" />
          </children>
       </GridPane>
-      <HBox spacing="10.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+      <HBox spacing="10.0" GridPane.columnSpan="2" GridPane.rowIndex="3" GridPane.valignment="CENTER">
          <children>
             <Button fx:id="startButton" mnemonicParsing="false" text="Start Simulation" GridPane.rowIndex="5">
                <HBox.margin>
@@ -56,7 +56,7 @@
             </Button>
          </children>
       </HBox>
-      <StackPane fx:id="scenarioViewContainer" GridPane.columnIndex="2" GridPane.rowIndex="1" GridPane.rowSpan="2" />
+      <StackPane fx:id="scenarioViewContainer" GridPane.columnIndex="2" GridPane.rowIndex="1" GridPane.rowSpan="2147483647" />
    </children>
    <opaqueInsets>
       <Insets />

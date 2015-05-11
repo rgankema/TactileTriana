@@ -68,7 +68,8 @@ public class ConfigurationView extends GridPane {
         startButton.disableProperty().bind(viewModel.startButtonDisabledProperty());
         startButton.textProperty().bind(viewModel.startButtonTextProperty());
         resetButton.disableProperty().bind(viewModel.resetButtonDisabledProperty());
-
+        scenarioView.disableProperty().bind(viewModel.scenarioViewDisableProperty());
+        
         // Event handling
         startButton.setOnAction(e -> viewModel.start());
         resetButton.setOnAction(e -> viewModel.reset());
