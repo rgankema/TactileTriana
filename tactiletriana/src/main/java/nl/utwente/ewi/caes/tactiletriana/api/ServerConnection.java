@@ -427,16 +427,19 @@ public class ServerConnection implements Runnable {
     public void processStartSimulation() {
         log("Processing StartSimulation request...");
         server.getSimulation().start();
+        sendResponse();
     }
     
     public void processStopSimulation() {
         log("Processing StopSimulation request...");
         server.getSimulation().stop();
+        sendResponse();
     }
     
     public void processResetSimulation() {
         log("Processing ResetSimulation request...");
         server.getSimulation().reset();
+        sendResponse();
     }
     
     public void processDeviceParameters() {
@@ -466,14 +469,19 @@ public class ServerConnection implements Runnable {
         log("Processing ReleaseControl request...");
         server.releaseControl(this);
         setClientState(ClientState.CONNECTED);
+        sendResponse();
     }
     
     public void processRequestControl() {
         log("Processing RequestControl request...");
         if(server.requestControl(this)) {
             setClientState(ClientState.CONTROL);
+            sendResponse();
             
+        } else {
+            sendError("RequestControl request denied.");
         }
+        
     }
     
     
