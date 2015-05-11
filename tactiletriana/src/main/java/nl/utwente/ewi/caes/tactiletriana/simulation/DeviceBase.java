@@ -33,6 +33,7 @@ public abstract class DeviceBase extends LoggingEntityBase {
     private final List<Configurable> parametersUnmodifiable;
 
     private final int id;
+    private final String apiDeviceType;
     
     /*
     Map containing a Device's parameters.
@@ -53,6 +54,8 @@ public abstract class DeviceBase extends LoggingEntityBase {
         
         id = DEVICE_ID;
         DEVICE_ID++;
+        
+        this.apiDeviceType = apiDeviceType;
         
         this.properties = new HashMap<>();
         //TODO remove this
@@ -208,6 +211,7 @@ public abstract class DeviceBase extends LoggingEntityBase {
     public JSONObject toJSON() {
         JSONObject result = new JSONObject();
         result.put("deviceID", this.id);
+        result.put("deviceType", this.apiDeviceType);
         result.put("consumption", this.getCurrentConsumption());
         //Get the parameters of this Device
         //TODO handle other Property Types
