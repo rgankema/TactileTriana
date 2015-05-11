@@ -11,8 +11,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.time.LocalDateTime;
 import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
+import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.House;
+import nl.utwente.ewi.caes.tactiletriana.simulation.IController;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -24,7 +27,9 @@ import org.json.simple.parser.ParseException;
  *
  * @author jd
  */
-public class ServerConnection implements Runnable {
+public class ServerConnection implements Runnable, IController {
+
+    
     
     public enum ClientState {
         CONNECTED,
@@ -496,6 +501,11 @@ public class ServerConnection implements Runnable {
             sendError("RequestControl request denied.");
         }
         
+    }
+    
+    @Override
+    public Double getPlannedConsumption(DeviceBase device, LocalDateTime time) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
     

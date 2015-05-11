@@ -133,6 +133,7 @@ public class APIServer implements Runnable {
         synchronized(controllerLock) {
             if(controlConnection == null || !controlConnection.isRunning() ) {
                 controlConnection = s;
+                simulation.setController(s);
                 result = true;
             }
         }
@@ -149,6 +150,7 @@ public class APIServer implements Runnable {
         synchronized(controllerLock) {
             if(controlConnection == s) {
                 controlConnection = null;
+                simulation.setController(null);
             }
         }
     }
