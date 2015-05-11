@@ -18,8 +18,8 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
  */
 public abstract class BufferBase extends DeviceBase {
     
-    public BufferBase(Simulation simulation, String displayName) {
-        super(simulation, displayName);
+    public BufferBase(Simulation simulation, String displayName, String apiDeviceType) {
+        super(simulation, displayName, apiDeviceType);
     }
     
     /**
@@ -103,5 +103,13 @@ public abstract class BufferBase extends DeviceBase {
     // Shouldn't be public in the end
     public void setStateOfCharge(double soc) {
         this.stateOfCharge.set(soc);
+    }
+    
+    
+    /**
+     * @return whether the battery is charged or not
+     */
+    public boolean isCharged(){
+        return getStateOfCharge() == getCapacity();
     }
 }

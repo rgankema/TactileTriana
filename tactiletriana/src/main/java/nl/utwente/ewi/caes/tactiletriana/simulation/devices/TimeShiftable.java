@@ -21,7 +21,7 @@ public abstract class TimeShiftable extends DeviceBase {
     protected double[] usageProgram;
 
     public TimeShiftable(Simulation simulation, String displayName) {
-        super(simulation, displayName);
+        super(simulation, displayName, "TimeShiftable");
     }
         
     

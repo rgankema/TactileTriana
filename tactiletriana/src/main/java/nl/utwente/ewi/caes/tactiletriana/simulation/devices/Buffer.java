@@ -17,7 +17,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 public class Buffer extends BufferBase {
 
     public Buffer(Simulation simulation) {
-        super(simulation, "Buffer");
+        super(simulation, "Buffer", "Buffer");
 
         // initialize values
         this.setMaxPower(3700d);
