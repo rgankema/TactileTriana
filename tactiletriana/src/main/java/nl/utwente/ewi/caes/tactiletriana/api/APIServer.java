@@ -9,6 +9,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.io.IOException;
 import java.util.ArrayList;
+import nl.utwente.ewi.caes.tactiletriana.simulation.IController;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 
 
@@ -142,7 +143,8 @@ public class APIServer implements Runnable {
     }
     
     /**
-     * Unregisters a ServerConnection as the controller. Only works if the given ServerConnection actually was the controller.
+     * Unregisters a ServerConnection as the controller. 
+     * Only works if the given ServerConnection actually was the controller.
      * 
      * @param s ServerConnection that is the current controller of the simulation
      */
@@ -159,6 +161,21 @@ public class APIServer implements Runnable {
         return this.simulation;
     }
     
+    public boolean requestPlanning() {
+        boolean result = true;
+        if(!(controlConnection == null || !controlConnection.isRunning())) {
+            controlConnection.requestPlanning();
+        } else {
+            result = false;
+        }
+            
+       
+        return result;
+    }
+    
+    public IController getController() {
+        return controlConnection;
+    }
     
     public static void main(String args[]) {
         System.out.println("Starting server...");

@@ -175,6 +175,7 @@ public class ServerConnection implements Runnable, IController {
                 log("Error on client socket shutdown.");
             }
         }
+        log("Client disconnected.");
     }
     
     /**
@@ -501,6 +502,18 @@ public class ServerConnection implements Runnable, IController {
             sendError("RequestControl request denied.");
         }
         
+    }
+    
+    /**
+     *
+     * @param timeout
+     * @param time
+     */
+    @Override
+    public boolean retrievePlanning(int timeout, LocalDateTime time) {
+        boolean result = true;
+        
+        return result;
     }
     
     @Override
