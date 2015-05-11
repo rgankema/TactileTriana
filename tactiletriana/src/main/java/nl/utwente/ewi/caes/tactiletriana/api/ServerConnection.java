@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
+import nl.utwente.ewi.caes.tactiletriana.simulation.House;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -57,7 +58,7 @@ public class ServerConnection implements Runnable {
         RESETSIMULATION("ResetSimulation"),
         SIMULATIONINFO("SimulationInfo"),
         DEVICEPARAMETERS("DeviceParameters"),
-        GETDEVICES("GetDevices"),
+        GETHOUSES("GetHouses"),
         SUBMITPLANNING("SubmitPlanning"),
         REQUESTCONTROL("RequestControl"),
         RELEASECONTROL("ReleaseControl"),
@@ -291,8 +292,8 @@ public class ServerConnection implements Runnable {
                 String type_received = (String) json.get("type");
                 if(type_received.equals(MessageType.DEVICEPARAMETERS.toString())) {
                     type = MessageType.DEVICEPARAMETERS;
-                } else if(type_received.equals(MessageType.GETDEVICES.toString())) {
-                    type = MessageType.GETDEVICES;
+                } else if(type_received.equals(MessageType.GETHOUSES.toString())) {
+                    type = MessageType.GETHOUSES;
                 } else if(type_received.equals(MessageType.RELEASECONTROL.toString())) {
                     type = MessageType.RELEASECONTROL;
                 } else if(type_received.equals(MessageType.REQUESTCONTROL.toString())) {
@@ -340,7 +341,8 @@ public class ServerConnection implements Runnable {
             //Check the state of this connection
             if(getClientState() == ClientState.CONNECTED) {
                 switch (type) {
-                    case GETDEVICES:
+                    case GETHOUSES:
+                        processGetHouses();
                         break;
                     case REQUESTCONTROL:
                         processRequestControl();
@@ -354,7 +356,8 @@ public class ServerConnection implements Runnable {
                 }
             } else if (getClientState() == ClientState.CONTROL) {
                 switch (type) {
-                    case GETDEVICES:
+                    case GETHOUSES:
+                        processGetHouses();
                         break;
                     case SIMULATIONINFO:
                         processSimulationInfo();
@@ -381,7 +384,8 @@ public class ServerConnection implements Runnable {
                 }
             } else if (getClientState() == ClientState.WAITING) {
                 switch (type) {
-                    case GETDEVICES:
+                    case GETHOUSES:
+                        processGetHouses();
                         break;
                     case SIMULATIONINFO:
                         processSimulationInfo();
@@ -420,7 +424,17 @@ public class ServerConnection implements Runnable {
         }
     }
     
-    public void processGetDevices() {
+    public void processGetHouses() {
+        log("Processing GetDevices request...");
+        //Get the houses in JSON format
+        House[] houses = server.getSimulation().getHouses();
+        JSONArray housesJSON = new JSONArray();
+        for(House house : houses) {
+            housesJSON.add(house.toJSON());
+        }
+        JSONObject response = new JSONObject();
+        response.put("houses", housesJSON);
+        this.sendMessage(response.toJSONString());
         
     }
     

@@ -7,6 +7,7 @@ package nl.utwente.ewi.caes.tactiletriana.simulation;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
 import javafx.beans.property.BooleanProperty;
@@ -18,19 +19,30 @@ import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
+import org.json.simple.JSONObject;
 
 /**
  *
  * @author Richard
  */
 public abstract class DeviceBase extends LoggingEntityBase {
-
+    
+    //TODO configurables eruit gooien
     private final List<Configurable> parameters;
     private final List<Configurable> parametersUnmodifiable;
 
+    /*
+    Map containing a Device's parameters.
+    The key of the Map is the name of the parameter as specified in the API.
+    The values are Property objects representing some Property of the device.
+    */
+    private HashMap<String, Property> properties;
+    
     public DeviceBase(Simulation simulation, String displayName) {
         super(simulation, displayName, QuantityType.POWER);
-
+        
+        this.properties = new HashMap<String, Property>();
+        //TODO remove this
         parameters = new ArrayList<>();
         parametersUnmodifiable = Collections.unmodifiableList(parameters);
     }
@@ -63,6 +75,18 @@ public abstract class DeviceBase extends LoggingEntityBase {
         currentConsumption.set(value);
     }
     
+    /**
+     * Parameter Properties
+     * 
+     */
+    
+    protected void addProperty(String apiName, Property property) {
+        this.properties.put(apiName, property);
+    }
+    
+    protected void getProperty(String apiName) {
+        this.properties.get(apiName);
+    }
     /**
      * The house that hosts this device
      */
@@ -155,7 +179,38 @@ public abstract class DeviceBase extends LoggingEntityBase {
          */
         DISCONNECTED,
     }
-
+    
+    /**
+     * Convert this Device and its parameters to a JSON representation as specified in the API. 
+     * Subclasses of DeviceBase should override this method and add any information not yet known (e.g. deviceType). 
+     * 
+     * @return 
+     */
+    public JSONObject toJSON() {
+        JSONObject result = new JSONObject();
+        result.put("deviceID", this.hashCode());
+        result.put("consumption", this.getCurrentConsumption());
+        //Get the parameters of this Device
+        //TODO handle other Property Types
+        JSONObject parameters = new JSONObject();
+        for(String param : this.properties.keySet()) {
+            Property p = properties.get(param);
+            if(p instanceof DoubleProperty) {
+                parameters.put(param, p.getValue());
+            } else if (p instanceof BooleanProperty) {
+                parameters.put(param, p.getValue());
+            }
+            
+        }
+        result.put("parameters", parameters);
+        
+        return result;
+        
+    }
+    
+    
+    //TODO remove all things related to Configurables
+    
     /**
      * Describes a parameter that can be configured for a device by a user. Used
      * by {@link SimulationPrediction} to synchronise two devices.

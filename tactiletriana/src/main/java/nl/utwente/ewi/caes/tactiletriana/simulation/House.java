@@ -13,6 +13,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 /**
  *
@@ -137,5 +139,21 @@ public class House extends LoggingEntityBase {
         output += "(House:P=" + getCurrentConsumption() + ")";
 
         return output;
+    }
+    
+    /**
+     * Convert this House and the parameters to a JSON representation as specified in the API
+     * @return 
+     */
+    public JSONObject toJSON() {
+        JSONObject result = new JSONObject();
+        result.put("houseID", this.hashCode());
+        //Add the devices
+        JSONArray devices = new JSONArray();
+        for(DeviceBase device : this.getDevices()) {
+            devices.add(device.toJSON());
+        }
+        result.put("devices", devices);
+        return result;
     }
 }

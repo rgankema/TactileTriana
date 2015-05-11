@@ -17,8 +17,8 @@ public class DishWasher extends TimeShiftable {
         super(simulation, "DishWasher");
         this.usageProgram = dishWasherUsage;
         
-        addParameter(new ConfigurableDouble("Start time (h)", startTime, 0, 24));
-        addParameter(new ConfigurableDouble("Timewindow (min)", timeWindow, usageProgram.length, 24*60));
+        addParameter(new ConfigurableDouble("Start time (h)", "StartTime", startTime, 0, 24));
+        addParameter(new ConfigurableDouble("Timewindow (min)", "TimeWindow", timeWindow, usageProgram.length, 24*60));
         
         setTimeWindow(usageProgram.length);
     }

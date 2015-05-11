@@ -245,7 +245,16 @@ public class Simulation extends LoggingEntityBase {
     public Transformer getTransformer() {
         return transformer;
     }
-
+    
+    /**
+     * Get the houses in the network. 
+     * 
+     * @return array of House object used in the Simulation
+     */
+    public House[] getHouses() {
+        return houses;
+    }
+    
     // PUBLIC METHODS
     
     /**

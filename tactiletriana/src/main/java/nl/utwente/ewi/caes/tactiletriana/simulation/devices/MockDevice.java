@@ -16,7 +16,7 @@ public class MockDevice extends DeviceBase {
 
     public MockDevice(Simulation simulation) {
         super(simulation, "Mock Device");
-        addParameter(new ConfigurableDouble("Consumption", mockDeviceUsage, MIN_CONSUMPTION, MAX_CONSUMPTION));
+        addParameter(new ConfigurableDouble("Consumption", "consumption", mockDeviceUsage, MIN_CONSUMPTION, MAX_CONSUMPTION));
     }
 
     /**
