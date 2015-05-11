@@ -25,7 +25,7 @@ public abstract class BufferBase extends DeviceBase {
     /**
      * Capacitiy of Buffer in Wh.
      */
-    private final DoubleProperty capacity = new SimpleDoubleProperty(1000d) {
+    private final DoubleProperty capacity = new SimpleDoubleProperty(3700d) {
         @Override
         public void set(double value) {
             if (value < 0) {
@@ -79,7 +79,7 @@ public abstract class BufferBase extends DeviceBase {
      * The state of charge in Wh. Ensures that it's never below 0 and never higher
      * than {@link capacity}.
      */
-    private final ReadOnlyDoubleWrapper stateOfCharge = new ReadOnlyDoubleWrapper(230.0) {
+    private final ReadOnlyDoubleWrapper stateOfCharge = new ReadOnlyDoubleWrapper(0) {
         @Override
         public void set(double value) {
             if (value < 0) {

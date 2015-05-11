@@ -24,6 +24,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Rectangle;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 import nl.utwente.ewi.caes.tactiletriana.gui.events.EventUtil;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceVM.State;
@@ -59,6 +60,9 @@ public class DeviceView extends StackPane {
             deviceIcon = new ImageView(new Image("images/dishwasher.png",50,50,false,true));
         else if (type == WashingMachine.class)
             deviceIcon = new ImageView(new Image("images/washingmachine.png",50,50,false,true));
+        else if (type == Buffer.class){
+            deviceIcon = new Rectangle(50,50);
+        }
         else
             throw new UnsupportedOperationException("No DeviceView for type " + type.toString());
         getChildren().add(0, deviceIcon);

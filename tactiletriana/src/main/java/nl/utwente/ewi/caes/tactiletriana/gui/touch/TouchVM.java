@@ -99,6 +99,8 @@ public class TouchVM {
             return getDishWasherVM();
         } else if (deviceClass.equals(WashingMachine.class)){
             return getWashingMachineVM();
+        } else if (deviceClass.equals(Buffer.class)){
+            return getBufferVM();
         }
         return null;
     }
@@ -121,5 +123,9 @@ public class TouchVM {
     
     public DeviceVM getWashingMachineVM(){
         return new DeviceVM(new WashingMachine(model));
+    }
+    
+    public DeviceVM getBufferVM(){
+        return new DeviceVM(new Buffer(model));
     }
 }
