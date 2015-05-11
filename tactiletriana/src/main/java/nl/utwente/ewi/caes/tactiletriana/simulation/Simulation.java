@@ -363,6 +363,15 @@ public class Simulation extends LoggingEntityBase {
         }
         return result;
     }
+    
+    /**
+     * Return the timestep, the time covered in each step of the simulation, currently used in the simulation.
+     * 
+     * @return the timestep of the simulation 
+     */
+    public int getTimeStep() {
+        return SimulationConfig.SIMULATION_TICK_TIME;
+    }
 
     // HELP METHODS
     

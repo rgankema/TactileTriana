@@ -24,4 +24,8 @@ public interface IController {
      * </code> if there is no planning available.
      */
     public Double getPlannedConsumption(DeviceBase device, LocalDateTime time);
+    
+    public boolean retrievePlanning(int timeout, LocalDateTime time);
+    
+    public LocalDateTime lastPlanningTime(); 
 }

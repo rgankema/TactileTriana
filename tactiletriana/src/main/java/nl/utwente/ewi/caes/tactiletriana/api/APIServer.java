@@ -161,17 +161,6 @@ public class APIServer implements Runnable {
         return this.simulation;
     }
     
-    public boolean requestPlanning() {
-        boolean result = true;
-        if(!(controlConnection == null || !controlConnection.isRunning())) {
-            controlConnection.requestPlanning();
-        } else {
-            result = false;
-        }
-            
-       
-        return result;
-    }
     
     public IController getController() {
         return controlConnection;

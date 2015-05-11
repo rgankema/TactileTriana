@@ -236,7 +236,7 @@ public abstract class DeviceBase extends LoggingEntityBase {
     
     /**
      * Describes a parameter that can be configured for a device by a user. Used
-     * by {@link SimulationPrediction} to synchronise two devices.
+     * by {@link SimulationPrediction} to synchronize two devices.
      */
     public static abstract class Configurable {
         private final String displayName;

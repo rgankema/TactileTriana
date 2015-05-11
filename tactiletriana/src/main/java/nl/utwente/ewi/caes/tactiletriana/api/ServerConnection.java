@@ -87,8 +87,10 @@ public class ServerConnection implements Runnable, IController {
     APIServer server = null;
     BufferedReader in;
     BufferedWriter out;
-    //boolean isRunning;
     ClientState state = null;
+    
+    //IController specific variables
+    LocalDateTime lastUpdatedPlanning = null;
     
     
     public ServerConnection(Socket s, APIServer server) {
@@ -165,6 +167,10 @@ public class ServerConnection implements Runnable, IController {
         //Check if this connection is still running (i.e. if this function was called before)
         if (this.isRunning()) {
             try {
+                //If this client is the current controller, deregister it
+                server.releaseControl(this);
+                
+                //Clena up
                 this.state = ClientState.DISCONNECTED;
                 in.close();
                 out.close();
@@ -413,6 +419,7 @@ public class ServerConnection implements Runnable, IController {
                     case DEVICEPARAMETERS:
                         break;
                     case SUBMITPLANNING:
+                        processSubmitPlanning();
                         break;
                     default:
                         sendError(ClientError.TYPENOTACCEPTED.errorMessage());
@@ -505,15 +512,50 @@ public class ServerConnection implements Runnable, IController {
     }
     
     /**
-     *
+     * Returns the last time the planning was updated.
+     * May return null if the planning has never been updated.
+     * 
+     * @return LocalDateTime containing the last time the planning was updated or null
+     */
+    public LocalDateTime lastPlanningTime() {
+        return this.lastUpdatedPlanning;
+    }
+    
+    /**
+     * This method updates the planning. 
+     * The (@code time} argument is used to record the last time the planning was updated.
+     * The {@codetimeout} parameter specifies how long the retrieval of the planning may take.
+     * 
      * @param timeout
      * @param time
      */
-    @Override
     public boolean retrievePlanning(int timeout, LocalDateTime time) {
-        boolean result = true;
         
-        return result;
+        
+        //Send the RequestPlanning request
+        JSONObject response = new JSONObject();
+        Simulation sim = server.getSimulation();
+        response.put("simTime", sim.getCurrentTime().getDayOfYear()*24*60 + sim.getCurrentTime().getHour() * 60 + sim.getCurrentTime().getMinute());
+        response.put("timeStep", sim.getTimeStep());
+        sendMessage(response.toJSONString());
+        
+        //Now wait for the timeout period specified or until a SubmitPlanning request has been recieved. 
+        boolean planningRecieved = false;
+        int looptime = 0;
+        while (!planningRecieved && looptime < timeout) {
+            if(this.lastPlanningTime().equals(time)) {
+                planningRecieved = true;
+            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                
+            }
+            looptime++;
+        }
+        
+        
+        return planningRecieved;
     }
     
     @Override
