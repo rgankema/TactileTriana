@@ -5,11 +5,13 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation.devices;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleObjectProperty;
+import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 import nl.utwente.ewi.caes.tactiletriana.simulation.IController;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 
@@ -18,6 +20,16 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
  * @author Richard
  */
 public class ElectricVehicle extends BufferTimeShiftableBase {
+    
+
+    //Time when this vechicle typically leaves the grid on workdays
+    private double leaveTime;
+    //Time when this vechicle typically returns to the grid on workdays
+    private double returnTime;
+    //The amount of kilomters that can be driven with 1 kWh, used for calculation of battery drainage
+    private double kilometersPerkWh;
+    //Amount of kilometers this vechicle has to drive to work. Used for calculation of battery drainage on work days.
+    private int kilometersToWork;
     
     /**
      * Constructs a BufferTimeShiftable device (electric vehicle). The model is determined by the model parameter.
@@ -33,7 +45,12 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
     }
     
     public ElectricVehicle(Simulation simulation) {
-        this(simulation, Model.values()[(int) (Model.values().length * Math.random())]);
+        this(simulation, Model.values()[(int) (Model.values().length * Math.random())]);       
+                
+        //set the leave time somewhere between 5:30am - 8:30am
+        setLeaveTime(Math.random()*3 + 5.5); 
+        //set the return time somewhere between 4:00 pv and 8:00pm
+        setReturnTime(Math.random()*4 + 16);
     }
     
     // PROPERTIES
@@ -52,29 +69,34 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
                     setModelName("Tesla Model S");
                     setCapacity(85000);
                     setMaxPower(20000);
+                    setKilometersPerkWh(400.0/85.0);
                     break;
                 case AUDI_A3_E_TRON:
                     setModelName("Audi A3 E-tron");
                     setCapacity(8800);
                     setMaxPower(3700);
+                    setKilometersPerkWh(50.0/8.8);
                     break;
                 case FORD_C_MAX:
                     setModelName("Ford C-Max");
                     setCapacity(7500);
                     setMaxPower(3700);
+                    setKilometersPerkWh(44.0/7.5);
                     break;
                 case VOLKSWAGEN_E_GOLF:
                     setModelName("Volkswagen e-Golf");
                     setCapacity(24000);
                     setMaxPower(3700);
+                    setKilometersPerkWh(190.0/24.0);
                     break;
                 case BMW_I3:
                     setModelName("BMW i3");
                     setCapacity(125000);
                     setMaxPower(7400);
+                    setKilometersPerkWh(150.0/125.0);
                     break;
             }
-            
+            setKilometersToWork(determineKilometersToWork());
             super.set(value);
         }
     };
@@ -115,13 +137,16 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
         super.tick(timePassed, connected);
 
         LocalDateTime time = simulation.getCurrentTime();
-        int h = time.getHour();
+        
+        //Convert the time to a double value for easier comparison
+        double h = time.getHour() + (time.getMinute()/60)*100;
         
         // Update state of charge
         chargeBuffer(getCurrentConsumption(), timePassed);
-        if ( 8 < h && h < 18) {
-            // During working hours the battery drains (fix this, make more sophisticated)
-            chargeBuffer(-10000, timePassed);
+        if (!isWeekend(time) && (getLeaveTime() < h && h < getReturnTime())) {
+            //calculate drainage
+            double drainage = (((kilometersToWork*2/getKilometersPerkWh())*1000)/((getReturnTime()-getLeaveTime())));
+            chargeBuffer(-drainage, timePassed);
         }
         
         // Get planning if available
@@ -130,8 +155,8 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
         
         if (plannedConsumption == null) {
             // Decide consumption for upcoming tick, can only charge when at home and not fully charged
-            if (!( 8 < h && h < 18) && !isCharged()){
-                setCurrentConsumption(getMaxPower());
+            if (!( getLeaveTime() < h && h < getReturnTime()) && !isCharged()){
+                setCurrentConsumption(getMaxPower());                 
             } else {
                 setCurrentConsumption(0);
             }
@@ -159,4 +184,66 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
         VOLKSWAGEN_E_GOLF,
         BMW_I3
     }
+    
+    /**
+     * Function that determines if the given time is in the weekend
+     * @param time The time for which has to be determined if it is in the weekend
+     * @return true if the day of the week of time is saturday or sunday, false if it isn't
+     */
+    public boolean isWeekend(LocalDateTime time){
+        
+        DayOfWeek dow = time.getDayOfWeek();
+        
+        return dow == DayOfWeek.SATURDAY || dow == DayOfWeek.SUNDAY;
+    }
+    
+    public double getLeaveTime() {
+        return leaveTime;
+    }
+
+    public void setLeaveTime(double leaveTime) {
+        this.leaveTime = leaveTime;
+    }
+
+    public double getReturnTime() {
+        return returnTime;
+    }
+
+    
+    public void setReturnTime(double returnTime) {
+        this.returnTime = returnTime;
+    }
+    
+    public double getKilometersPerkWh() {
+        return kilometersPerkWh;
+    }
+    
+    public void setKilometersPerkWh(double kilometersPerkWh) {
+        System.out.println("kilometersperkwh: "+kilometersPerkWh);
+        this.kilometersPerkWh = kilometersPerkWh;
+    }
+    
+    public void setKilometersToWork(int kilometersToWork) {
+        System.out.println("kmtowork: "+kilometersToWork);
+        this.kilometersToWork = kilometersToWork;
+    }
+    
+    /**
+     * Function that determines the amount of kilometers this vechicle has to drive on workdays.
+     * The function looks at the range the vechicle has and thus never returns a higher value than the range.
+     * @return the amount of kilometers this vechicle has to drive on workdays.
+               is a value between the max / 2 and the max. 
+     */
+    public int determineKilometersToWork(){
+        
+        //Calculate max amount of kilometers that can be driven with the capacity
+        int maxKm = (int) (getKilometersPerkWh()*getCapacity()/1000);
+        //Little margin so battery is never fully drained
+        maxKm = maxKm - 5;
+        
+        //The amount of kilometers is from maxKm/2 to maxKm divided by 2 bacause of two-way drive
+        return (int)(Math.random()*(maxKm/2)+maxKm/2)/2;
+    }
+
+    
 }
