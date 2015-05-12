@@ -23,7 +23,6 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import javafx.scene.shape.Rectangle;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 import nl.utwente.ewi.caes.tactiletriana.gui.events.EventUtil;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceVM.State;
@@ -57,9 +56,8 @@ public class DeviceView extends StackPane {
             deviceIcon = new ImageView(new Image("images/dishwasher.png",50,50,false,true));
         else if (type == WashingMachine.class)
             deviceIcon = new ImageView(new Image("images/washingmachine.png",50,50,false,true));
-        else if (type == Buffer.class){
+        else if (type == Buffer.class)
             deviceIcon = new ImageView(new Image("images/buffer.png",50,50,false,true));
-        }
         else
             throw new UnsupportedOperationException("No DeviceView for type " + type.toString());
         getChildren().add(0, deviceIcon);
@@ -111,7 +109,7 @@ public class DeviceView extends StackPane {
         viewModel.configPanelShownProperty().addListener(obs -> {
             if (viewModel.isConfigPanelShown()) {
                 if (configPanel == null) {
-                    configPanel = new DeviceConfigView(viewModel.getHeader(), viewModel.getParameters());
+                    configPanel = new DeviceConfigView(viewModel.getModel());
                 }
                 getChildren().remove(deviceIcon);
                 getChildren().add(0, configPanel);

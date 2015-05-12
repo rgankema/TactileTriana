@@ -5,11 +5,9 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
-import java.util.function.Function;
+import java.util.Map;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
@@ -28,10 +26,6 @@ import org.json.simple.JSONObject;
 public abstract class DeviceBase extends LoggingEntityBase {
     private static int DEVICE_ID = 0;
     
-    //TODO configurables eruit gooien
-    private final List<Configurable> parameters;
-    private final List<Configurable> parametersUnmodifiable;
-
     private final int id;
     private final String apiDeviceType;
     
@@ -40,7 +34,7 @@ public abstract class DeviceBase extends LoggingEntityBase {
     The key of the Map is the name of the parameter as specified in the API.
     The values are Property objects representing some Property of the device.
     */
-    private final HashMap<String, Property> properties;
+    private final Map<String, Property> properties;
     
     /**
      * Constructs a new DeviceBase
@@ -58,9 +52,6 @@ public abstract class DeviceBase extends LoggingEntityBase {
         this.apiDeviceType = apiDeviceType;
         
         this.properties = new HashMap<>();
-        //TODO remove this
-        parameters = new ArrayList<>();
-        parametersUnmodifiable = Collections.unmodifiableList(parameters);
     }
 
     // PROPERTIES
@@ -142,26 +133,9 @@ public abstract class DeviceBase extends LoggingEntityBase {
     protected final void setState(State s) {
         this.stateProperty().set(s);
     }
-
-    /**
-     * Returns the parameters of this device. This list is unmodifiable, never
-     * null, and its elements are never null.
-     *
-     * @return the parameters of this device
-     */
-    public List<Configurable> getParameters() {
-        return parametersUnmodifiable;
-    }
-
-    /**
-     * Adds a parameter to the list of parameters
-     *
-     * @param parameter
-     */
-    protected final void addParameter(Configurable parameter) {
-        if (parameter != null) {
-            parameters.add(parameter);
-        }
+    
+    public final Map<String, Property> getProperties() {
+        return Collections.unmodifiableMap(properties);
     }
     
     // METHODS
@@ -230,137 +204,5 @@ public abstract class DeviceBase extends LoggingEntityBase {
         return result;
         
     }
-    
-    
-    //TODO remove all things related to Configurables
-    
-    /**
-     * Describes a parameter that can be configured for a device by a user. Used
-     * by {@link SimulationPrediction} to synchronize two devices.
-     */
-    public static abstract class Configurable {
-        private final String displayName;
-        private final String apiName;
-        
-        public Configurable(String displayName, String apiName) {
-            this.displayName = displayName;
-            this.apiName = apiName;
-        }
-        
-        /**
-         * @return the property holding the parameter's value
-         */
-        public abstract Property getProperty();
-        
-        /**
-         * @return the name of the parameter as it should appear to the user
-         */
-        public final String getDisplayName() {
-            return this.displayName;
-        }
-        
-        /**
-         * 
-         * @return the name of the parameter as specified in the API 
-         */
-        public final String getApiName() {
-            return this.apiName;
-        }
-    }
-    
-    /**
-     * Describes a parameter for a device that have a numeric value
-     */
-    public static final class ConfigurableDouble extends Configurable {
-        
-        private final DoubleProperty property;
-        private final double minValue;
-        private final double maxValue;
-
-        public ConfigurableDouble(String displayName, String apiName, DoubleProperty property, double minValue, double maxValue) {
-            super(displayName, apiName);
-            this.property = property;
-            this.minValue = minValue;
-            this.maxValue = maxValue;
-        }
-
-        @Override
-        public final DoubleProperty getProperty() {
-            return property;
-        }
-        
-        /**
-         * @return the minimum value of the property
-         */
-        public final double getMin() {
-            return minValue;
-        }
-        
-        /**
-         * @return the maximum value of the property
-         */
-        public final double getMax() {
-            return maxValue;
-        }
-    }
-    
-    /**
-     * Describes a parameter for a device that can only be true or false
-     */
-    public static final class ConfigurableBoolean extends Configurable {
-
-        private final BooleanProperty property;
-        
-        public ConfigurableBoolean(String displayName, String apiName, BooleanProperty property) {
-            super(displayName, apiName);
-            this.property = property;
-        }
-        
-        @Override
-        public BooleanProperty getProperty() {
-            return this.property;
-        }
-        
-    }
-    
-    /**
-     * Describes a parameter for a device that cannot be represented by
-     * a numeric value or a boolean
-     * @param <T> The type of the category
-     */
-    public static final class ConfigurableCategory<T> extends Configurable {
-        
-        private final ObjectProperty<T> property;
-        private final Function<T, String> categoryToString;
-        private final T[] possibleValues;
-        
-        public ConfigurableCategory(String displayName, String apiName, ObjectProperty<T> property, Function<T, String> categoryToString, T... possibleValues) {
-            super(displayName, apiName);
-            this.property = property;
-            this.categoryToString = categoryToString;
-            this.possibleValues = possibleValues;
-        }
-
-        @Override
-        public ObjectProperty<T> getProperty() {
-            return this.property;
-        }
-        
-        /**
-         * @return the display name of the currently selected value for this
-         * parameter
-         */
-        public String getCurrentValueDisplayName() {
-            return categoryToString.apply(getProperty().get());
-        }
-        
-        /**
-         * @return the set of values that this parameter may have
-         */
-        public T[] getPossibleValues() {
-            return possibleValues;
-        }
-    }
-    
     
 }

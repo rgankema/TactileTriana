@@ -5,9 +5,7 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import nl.utwente.ewi.caes.tactiletriana.simulation.TimeScenario.TimeSpan;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -23,9 +21,7 @@ public class SimulationTest {
     @Test
     public void testNetworkInitialization() {
         System.out.println("networkInitialization");
-        TimeScenario timeScenario = new TimeScenario();
-        timeScenario.add(new TimeSpan(LocalDateTime.of(2014, 1, 1, 0, 0), LocalDateTime.of(2014, 2, 1, 0, 0)));
-        Simulation simulation = new Simulation(timeScenario);
+        Simulation simulation = new Simulation();
         Transformer transformer = simulation.getTransformer();
         
         // There's a transformer with one outgoing cable

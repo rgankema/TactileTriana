@@ -53,12 +53,8 @@ public class Simulation extends LoggingEntityBase {
     private Node[] houseNodes;
     private Cable[] internalCables;
     private House[] houses;
-
-    public Simulation() {
-        this(DEFAULT_SCENARIO);
-    }
     
-    public Simulation(TimeScenario scenario) {
+    public Simulation() {
         super(null, "Network", QuantityType.POWER);
         this.setSimulation(this);   // LoggingEntityBase needs reference to Simulation for time
         
@@ -100,8 +96,7 @@ public class Simulation extends LoggingEntityBase {
         }
 
         // initialise time
-        setCurrentTime(scenario.getStart());
-        setTimeScenario(scenario);
+        setCurrentTime(getTimeScenario().getStart());
         
         // load KNMI data
         temperatureByTime = new HashMap<>();
@@ -153,10 +148,10 @@ public class Simulation extends LoggingEntityBase {
     /**
      * The time scenario that this simulation follows.
      */
-    private final ObjectProperty<TimeScenario> timeScenario = new SimpleObjectProperty<TimeScenario>() {
+    private final ObjectProperty<TimeScenario> timeScenario = new SimpleObjectProperty<TimeScenario>(DEFAULT_SCENARIO) {
         @Override
         public void set(TimeScenario value) {
-            setCurrentTime(value.getStart());
+            
             value.addNewTimeSpanStartedCallback(t -> {
                 clearAllLogs();
             });

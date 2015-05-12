@@ -14,17 +14,11 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 public class DishWasher extends TimeShiftableBase {        
 
     public DishWasher(Simulation simulation){
-        super(simulation, "DishWasher");
-        this.usageProgram = dishWasherUsage;
-        
-        addParameter(new ConfigurableDouble("Start time (h)", "StartTime", startTime, 0, 24));
-        addParameter(new ConfigurableDouble("Timewindow (min)", "TimeWindow", timeWindow, usageProgram.length, 24*60));
-        
-        setTimeWindow(usageProgram.length);
+        super(simulation, "DishWasher", dishWasherUsage);
     }
     
     //usage of a dishwasher program in 1m steps in W
-    private final double[] dishWasherUsage = {
+    private static final double[] dishWasherUsage = {
         66.229735,
         119.35574,
         162.44595,

@@ -137,7 +137,6 @@ public class ChartVM {
         }
         
         for (Data<Integer, Double> data : actual.getLog()) {
-            futureSeriesData.remove(0);
             actualSeriesData.add(data);
         }
         

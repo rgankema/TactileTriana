@@ -70,6 +70,14 @@ public final class TimeScenario {
             if (!timeSpans.get(index).start.isAfter(currentTime) && !currentTime.isAfter(timeSpans.get(index).end)) {
                 break;
             }
+            if (timeSpans.get(index).start.isAfter(currentTime)) {
+                // Current time didn't fall in one of the timespans
+                currentTime = timeSpans.get(index).start;
+                for (Consumer c : callbacks) {
+                    c.accept(timeSpans.get(index));
+                }
+                break;
+            }
         }
         // Could not find the time span, throw exception
         if (index == timeSpans.size()) {

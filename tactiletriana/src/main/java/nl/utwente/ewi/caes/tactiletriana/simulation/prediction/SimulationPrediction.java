@@ -48,7 +48,8 @@ public class SimulationPrediction extends Simulation {
      * @param mainSimulation The real Simulation that this object will predict
      */
     public SimulationPrediction(Simulation mainSimulation) {
-        super(PREDICTION_SCENARIO);
+        super();
+        setTimeScenario(PREDICTION_SCENARIO);
         
         this.mainSimulation = mainSimulation;
         setCurrentTime(mainSimulation.getCurrentTime());
@@ -59,6 +60,7 @@ public class SimulationPrediction extends Simulation {
         
         final Consumer<TimeSpan> timeSpanCallback = (TimeSpan t) -> {
             timeSpanChanged = true;
+            setCurrentTime(t.getStart());
         };
         
         mainSimulation.getTimeScenario().addNewTimeSpanStartedCallback(timeSpanCallback);
@@ -155,7 +157,7 @@ public class SimulationPrediction extends Simulation {
                     if (futureDevice == null) {
                         if (actualDevice instanceof Buffer) {
                             futureDevice = new Buffer(this);
-                        } else if (actualDevice instanceof BufferTimeShiftableBase) {
+                        } else if (actualDevice instanceof ElectricVehicle) {
                             futureDevice = new ElectricVehicle(this, ((ElectricVehicle)actualDevice).getModel());
                         } else if (actualDevice instanceof DishWasher) {
                             futureDevice = new DishWasher(this);
@@ -173,12 +175,16 @@ public class SimulationPrediction extends Simulation {
                     futureByActual.put(actualDevice, futureDevice);
                     
                     // bind alle parameters
-                    for (int i = 0; i < actualDevice.getParameters().size(); i++) {
-                        futureDevice.getParameters().get(i).getProperty().bind(actualDevice.getParameters().get(i).getProperty());
+                    for (String property : actualDevice.getProperties().keySet()) {
+                        // SOC shouldn't be bound to
+                        if (property.equals("SOC")) {
+                            continue;
+                        }
+                        futureDevice.getProperties().get(property).bind(actualDevice.getProperties().get(property));
                         
                         // als er iets aan de parameters veranderd moet de simulation.setMainSimulationChanged() aangeroepen worden
                         // dit zorgt ervoor dat bij de eerst volgende tick() van de main simulation de prediction opnieuw begint
-                        actualDevice.getParameters().get(i).getProperty().addListener(observable -> {
+                        actualDevice.getProperties().get(property).addListener(observable -> {
                             mainSimulationChanged = true;
                         });
                     }

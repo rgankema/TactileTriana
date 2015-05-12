@@ -11,7 +11,6 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleObjectProperty;
-import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 import nl.utwente.ewi.caes.tactiletriana.simulation.IController;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 
@@ -38,19 +37,16 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
      */
     public ElectricVehicle(Simulation simulation, Model model) {
         super(simulation, "Electric Vehicle");
-        
-        addParameter(new ConfigurableCategory<>("Model", "model", this.model, m -> getModelName(), Model.values()));
-        
         setModel(model);
-    }
-    
-    public ElectricVehicle(Simulation simulation) {
-        this(simulation, Model.values()[(int) (Model.values().length * Math.random())]);       
-                
+        
         //set the leave time somewhere between 5:30am - 8:30am
         setLeaveTime(Math.random()*3 + 5.5); 
         //set the return time somewhere between 4:00 pv and 8:00pm
         setReturnTime(Math.random()*4 + 16);
+    }
+    
+    public ElectricVehicle(Simulation simulation) {
+        this(simulation, Model.values()[(int) (Model.values().length * Math.random())]);   
     }
     
     // PROPERTIES
@@ -109,7 +105,7 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
         return model.get();
     }
     
-    public void setModel(Model model) {
+    public final void setModel(Model model) {
         this.model.set(model);
     }
     
@@ -201,20 +197,20 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
         return leaveTime;
     }
 
-    public void setLeaveTime(double leaveTime) {
+    public final void setLeaveTime(double leaveTime) {
         this.leaveTime = leaveTime;
     }
 
-    public double getReturnTime() {
+    public final double getReturnTime() {
         return returnTime;
     }
 
     
-    public void setReturnTime(double returnTime) {
+    public final void setReturnTime(double returnTime) {
         this.returnTime = returnTime;
     }
     
-    public double getKilometersPerkWh() {
+    public final double getKilometersPerkWh() {
         return kilometersPerkWh;
     }
     

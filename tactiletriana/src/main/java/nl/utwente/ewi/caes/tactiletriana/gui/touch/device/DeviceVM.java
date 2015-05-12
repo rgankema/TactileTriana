@@ -5,7 +5,6 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.touch.device;
 
-import java.util.List;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
@@ -17,7 +16,6 @@ import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.LoggingEntityVMBase;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseVM;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
-import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase.Configurable;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.BufferBase;
 
 /**
@@ -58,10 +56,10 @@ public class DeviceVM extends LoggingEntityVMBase {
 
         // Show config icon if there are parameters to configure, and the device is in a house
         configIconShown.bind(Bindings.createBooleanBinding(() -> {
-            return !getParameters().isEmpty() && model.getState() != DeviceBase.State.NOT_IN_HOUSE;
+            return model.getState() != DeviceBase.State.NOT_IN_HOUSE;
         }, model.stateProperty()));
         
-        // Show battery icon if device is in a house
+        // Show battery icon if device is in a house, and is a BufferBase
         batteryIconVisible.bind(Bindings.createBooleanBinding(() -> {
             return model.getState() != DeviceBase.State.NOT_IN_HOUSE && model instanceof BufferBase;
         }, model.stateProperty()));
@@ -162,13 +160,6 @@ public class DeviceVM extends LoggingEntityVMBase {
 
     public boolean isBatteryIconVisible() {
         return batteryIconVisible.get();
-    }
-    
-    /**
-     * @return the parameters that can be configured for the device
-     */
-    public final List<Configurable> getParameters() {
-        return model.getParameters();
     }
 
     // EVENT HANDLING

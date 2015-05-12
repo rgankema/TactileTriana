@@ -20,6 +20,9 @@ public abstract class BufferTimeShiftableBase extends BufferBase {
      */
     public BufferTimeShiftableBase(Simulation simulation, String displayName) {
         super(simulation, displayName, "BufferTimeShiftable");
+        
+        // register properties
+        
     }
     
     // TODO: Insert start/end time properties

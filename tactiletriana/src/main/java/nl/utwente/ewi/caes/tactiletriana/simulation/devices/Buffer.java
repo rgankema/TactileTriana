@@ -87,7 +87,7 @@ public class Buffer extends BufferBase {
         }
 
         if (nextConsumption * timestep > this.getStateOfCharge()) {
-            System.out.println("Error next consumption > this.getStateOfCharge())");
+            //System.out.println("Error next consumption > this.getStateOfCharge())");
         }
         this.setCurrentConsumption(nextConsumption);
     }

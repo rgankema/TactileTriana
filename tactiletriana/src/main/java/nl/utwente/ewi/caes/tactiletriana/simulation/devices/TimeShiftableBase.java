@@ -6,127 +6,165 @@
 package nl.utwente.ewi.caes.tactiletriana.simulation.devices;
 
 import java.time.LocalDateTime;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 import nl.utwente.ewi.caes.tactiletriana.simulation.*;
 
 /**
- * @author niels
+ * Base class for TimeShiftables.
+ * 
+ * Has the following properties as specified in the API:
+ * <ul>
+ *  <li>startTimes</li>
+ *  <li>endTimes</li>
+ * </ul>
+ * 
+ * Note that the start and end times are in fact not lists, but doubles, because
+ * the simulation doesn't support multiple start end end times as of yet.
  */
 public abstract class TimeShiftableBase extends DeviceBase {
         
-    //The usage in W per minute mapped in an array
-    protected double[] usageProgram;
-
-    public TimeShiftableBase(Simulation simulation, String displayName) {
+    private final double[] profile;    // The program of this device (power consumption for every minute)
+    private int currentMinute = 0;     // The step in the program at which the device currently is
+    private boolean active;            // The device may now do its program
+    private boolean programRemaining;  // Whether the device still has a program to do for the day
+    
+    /**
+     * Constructs a new TimeShiftableBase. Registers the {@code startTimes} and
+     * {@code endTimes} properties as specified in the API.
+     * 
+     * @param simulation    The Simulation this device belogns to
+     * @param displayName   The name of the device as shown to the user
+     * @param profile       The consumption profile of the device
+     */
+    public TimeShiftableBase(Simulation simulation, String displayName, double[] profile) {
         super(simulation, displayName, "TimeShiftable");
-    }
         
-    
-    //time in h when this timeshiftable is ready to operate (0 <= startTime < 24)
-    protected final DoubleProperty startTime = new SimpleDoubleProperty(){
-        @Override
-        public void set(double value) {
-            if (get() == value) {
-                return;
-            }
-            //Can't be smaller than 0
-            if (value < 0) {
-                value = 0;
-            }
-            //Can't be bigger than 24
-            if (value > 24) {
-                value = 24;
-            }
-            super.set(value);
-        } 
-    
-    };
-    
-    public double getStartTime() {
-        return timeWindow.get();
+        // Ugly construction that is necessary to convert delay to endtime,
+        // while still being able to bind both ways
+        DoubleProperty endTime = new SimpleDoubleProperty();
+        DoubleBinding endTimeBinding = Bindings.createDoubleBinding(() -> (getStartTime() + getDelay()) % 24*60, startTime, delay);
+        endTimeBinding.addListener(obs -> endTime.set(endTimeBinding.get()));
+        endTime.addListener(obs -> { 
+            double delayValue = endTime.get() - startTime.get();
+            delayValue = (delayValue >= 0) ? delayValue : delayValue + 24 * 60;
+            setDelay(delayValue);
+        });
+        
+        // register properties
+        addProperty("startTimes", startTime);
+        addProperty("endTimes", endTime);
+        
+        this.profile = profile;
+        this.programRemaining = true;
+        setDelay(profile.length);
     }
-
-    public void setStartTime(double start) {
-        this.timeWindow.set(start);
+    
+    // TODO: must become a (read-only) Property object
+    
+    /**
+     * 
+     * @return the program of this device
+     */
+    public double[] getProgram() {
+        return this.profile;
     }
-
+    
+    /**
+     * The time (in minutes from the start of the day) from which point the device may start operating
+     */
+    private final DoubleProperty startTime = new SimpleDoubleProperty();
+    
     public DoubleProperty startTimeProperty() {
         return startTime;
     }
     
-    //window in which the timeshiftable must operate in minutes, endtime = startTime+timeWindow.
-    //Must be greater than or equal to programUsage.length.
-    protected final DoubleProperty timeWindow = new SimpleDoubleProperty(){
+    public double getStartTime() {
+        return startTimeProperty().get();
+    }
+
+    public void setStartTime(double start) {
+        startTimeProperty().set(start);
+    }
+    
+    
+    /**
+     * Amount of time (in minutes) that the TimeShiftable may delay its operation
+     */
+    protected final DoubleProperty delay = new SimpleDoubleProperty() {
         @Override
         public void set(double value) {
-            if (get() == value) {
-                return;
+            if (value < 0) {
+                throw new IllegalArgumentException("Delay may not be negative");
             }
-            //Can't be smaller than the length of the program
-            if (value < usageProgram.length) {
-                value = usageProgram.length;
+            if (value > (24*60 - profile.length)) {
+                throw new IllegalArgumentException("Delay may not be more than a full day minus the program length");
             }
-            //Can't be bigger than a day?
-            if (value > 24*60) {
-                value = 24*60;
-            }
-
+            
             super.set(value);
-        } 
-    
+        }
     };
     
-    public double getTimeWindow() {
-        return timeWindow.get();
-    }
-
-    public void setTimeWindow(double timewindow) {
-        this.timeWindow.set(timewindow);
-    }
-
-    public DoubleProperty timeWindowProperty() {
-        return timeWindow;
+    public DoubleProperty delayProperty() {
+        return delay;
     }
     
+    public final double getDelay() {
+        return delay.get();
+    }
+
+    public final void setDelay(double timewindow) {
+        this.delay.set(timewindow);
+    }
     
     @Override
     public void tick (double timePassed, boolean connected){
         super.tick(timePassed, connected);
         
-        setCurrentConsumption(getCurrentConsumption(simulation.getCurrentTime()));
+        double consumption = 0;
+        
+        IController controller = getSimulation().getController();
+        LocalDateTime currentDateTime = getSimulation().getCurrentTime();
+        if (controller != null && controller.getPlannedConsumption(this, currentDateTime) != null) {
+            consumption = controller.getPlannedConsumption(this, currentDateTime);
+        } else { // No planning available
+            double currentTime = currentDateTime.getHour() * 60 + currentDateTime.getMinute();
+            
+            if (currentTime - timePassed < 0) {
+                programRemaining = true;
+            }
+            
+            // If not done for this period, check if we may start
+            if (!active && programRemaining) {
+                if (currentTime > getStartTime() || 
+                        // Relevant if start time starts somewhere at the end of the day
+                        currentTime - timePassed <= 0) {
+                    active = true;
+                }
+            }
+            
+            // If active, consume energy until done
+            if (active) {
+                consumption = 0;
+                for (int i = 0; i < SimulationConfig.SIMULATION_TICK_TIME; i++) {
+                    consumption += profile[currentMinute];
+                    currentMinute++;
+                    if (currentMinute >= profile.length) {
+                        currentMinute = 0;
+                        active = false;
+                        programRemaining = false;
+                        break;
+                    }
+                }
+                consumption = consumption / SimulationConfig.SIMULATION_TICK_TIME;
+            }
+        }
+        
+        setCurrentConsumption(consumption);
     }
-
-    public double getCurrentConsumption(LocalDateTime currentTime){
-        double result = 0;
-        int h = currentTime.getHour();
-        //reset on new day
-        //FIXME: change this when triana controller gets implemented
-        if (h == 0){
-            currentMinute = 0;
-        }
-        if (startTime.get() >= h){
-            result = getCurrentConsumptionInProgram();
-        }
-        return result;        
-    }
-    
-    
-    private int currentMinute;
-    
-    //Returns the average consumption that was consumed in the timestep.
-    public double getCurrentConsumptionInProgram(){
-        double result = 0;
-        //Collect #timestep usages, if currentMinute >= programUsage.length, then program is done
-        for (int i=currentMinute; i < usageProgram.length && i < currentMinute+SimulationConfig.SIMULATION_TICK_TIME; i++){
-            result = result + usageProgram[i];
-        }
-        currentMinute = currentMinute+SimulationConfig.SIMULATION_TICK_TIME;
-        //Calculate the average of the #timestep usages
-        result = result / SimulationConfig.SIMULATION_TICK_TIME;
-        return result;
-    }   
     
 }
 

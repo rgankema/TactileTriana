@@ -33,7 +33,6 @@ public class SolarPanel extends DeviceBase {
 
     public SolarPanel(Simulation simulation) {
         super(simulation, "Solar Panel", "SolarPanel");
-        addParameter(new ConfigurableDouble("Area (m²)", "area", area, MIN_AREA, MAX_AREA));
         setArea((MIN_AREA + MAX_AREA) / 2);
     }
     
