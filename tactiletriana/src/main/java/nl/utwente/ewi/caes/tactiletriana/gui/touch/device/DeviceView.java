@@ -58,7 +58,7 @@ public class DeviceView extends StackPane {
         else if (type == WashingMachine.class)
             deviceIcon = new ImageView(new Image("images/washingmachine.png",50,50,false,true));
         else if (type == Buffer.class){
-            deviceIcon = new Rectangle(50,50);
+            deviceIcon = new ImageView(new Image("images/buffer.png",50,50,false,true));
         }
         else
             throw new UnsupportedOperationException("No DeviceView for type " + type.toString());
