@@ -6,8 +6,6 @@
 package nl.utwente.ewi.caes.tactiletriana.simulation.devices;
 
 import java.time.LocalDateTime;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
@@ -43,24 +41,12 @@ public abstract class TimeShiftableBase extends DeviceBase {
     public TimeShiftableBase(Simulation simulation, String displayName, double[] profile) {
         super(simulation, displayName, "TimeShiftable");
         
-        // Ugly construction that is necessary to convert delay to endtime,
-        // while still being able to bind both ways
-        DoubleProperty endTime = new SimpleDoubleProperty();
-        DoubleBinding endTimeBinding = Bindings.createDoubleBinding(() -> (getStartTime() + getDelay()) % 24*60, startTime, delay);
-        endTimeBinding.addListener(obs -> endTime.set(endTimeBinding.get()));
-        endTime.addListener(obs -> { 
-            double delayValue = endTime.get() - startTime.get();
-            delayValue = (delayValue >= 0) ? delayValue : delayValue + 24 * 60;
-            setDelay(delayValue);
-        });
-        
         // register properties
         addProperty("startTimes", startTime);
         addProperty("endTimes", endTime);
         
         this.profile = profile;
         this.programRemaining = true;
-        setDelay(profile.length);
     }
     
     // TODO: must become a (read-only) Property object
@@ -92,32 +78,20 @@ public abstract class TimeShiftableBase extends DeviceBase {
     
     
     /**
-     * Amount of time (in minutes) that the TimeShiftable may delay its operation
+     * Last moment in minutes that the device may start its program
      */
-    protected final DoubleProperty delay = new SimpleDoubleProperty() {
-        @Override
-        public void set(double value) {
-            if (value < 0) {
-                throw new IllegalArgumentException("Delay may not be negative");
-            }
-            if (value > (24*60 - profile.length)) {
-                throw new IllegalArgumentException("Delay may not be more than a full day minus the program length");
-            }
-            
-            super.set(value);
-        }
-    };
+    protected final DoubleProperty endTime = new SimpleDoubleProperty();
     
-    public DoubleProperty delayProperty() {
-        return delay;
+    public DoubleProperty endTimeProperty() {
+        return endTime;
     }
     
-    public final double getDelay() {
-        return delay.get();
+    public final double getEndTime() {
+        return endTime.get();
     }
 
-    public final void setDelay(double timewindow) {
-        this.delay.set(timewindow);
+    public final void setEndTime(double endTime) {
+        this.endTime.set(endTime);
     }
     
     @Override
@@ -139,10 +113,12 @@ public abstract class TimeShiftableBase extends DeviceBase {
             
             // If not done for this period, check if we may start
             if (!active && programRemaining) {
-                if (currentTime > getStartTime() || 
+                if (currentTime >= getStartTime() || 
                         // Relevant if start time starts somewhere at the end of the day
                         currentTime - timePassed <= 0) {
-                    active = true;
+                    if (currentTime <= getEndTime() || getEndTime() < getStartTime()) {
+                        active = true;
+                    }
                 }
             }
             

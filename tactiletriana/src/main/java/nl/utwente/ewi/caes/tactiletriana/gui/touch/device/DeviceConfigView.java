@@ -43,7 +43,7 @@ class DeviceConfigView extends GridPane {
         } else if (device instanceof TimeShiftableBase) {   // WashingMachine and Dishwasher
             TimeShiftableBase timeShiftable = (TimeShiftableBase) device;
             Slider startTime = buildSlider(0, 24*60 - 1, timeShiftable.startTimeProperty());
-            Slider delay = buildSlider(timeShiftable.getProgram().length, 24*60 - timeShiftable.getProgram().length, timeShiftable.delayProperty());
+            Slider delay = buildSlider(timeShiftable.getProgram().length, 24*60 - timeShiftable.getProgram().length, timeShiftable.endTimeProperty());
             addControl("Start Time", startTime);
             addControl("Delay", delay);
         } else if (device instanceof SolarPanel) {  // SolarPanel
