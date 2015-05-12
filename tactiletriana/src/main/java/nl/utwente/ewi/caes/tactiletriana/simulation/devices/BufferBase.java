@@ -13,12 +13,27 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 
 /**
- * Base class for any device that has a buffer
+ * Base class for any device that has a buffer.
+ * 
+ * Has the following properties as specified in the API:
+ * <ul>
+ *  <li>capacity</li>
+ *  <li>max_power</li>
+ *  <li>SOC</li>
+ * </ul>
  * 
  * @author Richard
  */
 public abstract class BufferBase extends DeviceBase {
     
+    /**
+     * Constructs a new BufferBase. Registers the {@code capacity}, 
+     * {@code max_power}, and {@code SOC} properties as specified in the API.
+     * 
+     * @param simulation    the Simulation that this device belongs to
+     * @param displayName   the name of this device as shown to the user
+     * @param apiDeviceType the name of this device as specified in the API
+     */
     public BufferBase(Simulation simulation, String displayName, String apiDeviceType) {
         super(simulation, displayName, apiDeviceType);
         
