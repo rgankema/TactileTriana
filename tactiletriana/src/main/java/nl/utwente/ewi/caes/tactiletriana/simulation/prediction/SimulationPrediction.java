@@ -163,6 +163,8 @@ public class SimulationPrediction extends Simulation {
                             futureDevice = new DishWasher(this);
                         } else if (actualDevice instanceof SolarPanel) {
                             futureDevice = new SolarPanel(this);
+                            // Need to bind here, because area isn't a property defined in the API
+                            ((SolarPanel)futureDevice).areaProperty().bind(((SolarPanel)actualDevice).areaProperty());
                         } else if (actualDevice instanceof WashingMachine) {
                             futureDevice = new WashingMachine(this);
                         } else {
