@@ -108,7 +108,6 @@ public abstract class BufferBase extends DeviceBase {
             } else if (value > getCapacity()) {
                 value = getCapacity();
             }
-            System.out.println(getSimulation().getCurrentTime() + ": " + value);
             super.set(value);
         }
     };

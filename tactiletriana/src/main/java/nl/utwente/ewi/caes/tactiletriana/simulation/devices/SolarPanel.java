@@ -8,7 +8,6 @@ package nl.utwente.ewi.caes.tactiletriana.simulation.devices;
 import java.time.LocalDateTime;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 import nl.utwente.ewi.caes.tactiletriana.simulation.*;
 
 /**
@@ -28,8 +27,8 @@ public class SolarPanel extends DeviceBase {
     //Efficiency degradation due to temperature increase of the solar panel. Percentage degradation for maximum power per degree celcius [percent]
     private double temperatureEfficiency = 0.3;
     //Max and min values for the area
-    private static final double MIN_AREA = 0.5;
-    private static final double MAX_AREA = 50;
+    public static final double MIN_AREA = 0.5;
+    public static final double MAX_AREA = 50;
 
     public SolarPanel(Simulation simulation) {
         super(simulation, "Solar Panel", "SolarPanel");
@@ -72,18 +71,18 @@ public class SolarPanel extends DeviceBase {
     }
 
     @Override
-    public void tick(double timePassed, boolean connected) {
-        super.tick(timePassed, connected);
+    public void tick(boolean connected) {
+        super.tick(connected);
 
         //Set the current consumption according to current temperature, radiation and time
         //Multiplied by -1 because the solarpanel produces and doesn't consume
         setCurrentConsumption(-1*calculateProduction(simulation.getTemperature(), simulation.getRadiance(),
-                SimulationConfig.SIMULATION_LOCATION_LONGITUDE, SimulationConfig.SIMULATION_LOCATION_LATITUDE, simulation.getCurrentTime()));
+                Simulation.LONGITUDE, Simulation.LATITUDE, simulation.getCurrentTime()));
     }
 
     //Returns the production in W
     public double calculateProduction(double temperature, double radiance, double longitude, double latitude, LocalDateTime time) {
-
+        long start = System.nanoTime();
         double PI = 3.14159265359;
 
         double longitudeRadian = longitude * (PI / 180);
@@ -148,7 +147,9 @@ public class SolarPanel extends DeviceBase {
         double actualEfficiency = (efficiency * (1 - ((temperaturePV - 25) * temperatureEfficiency) / 100)) / 100;
         
         double result = getArea() * powerSquareMeter * actualEfficiency;
-           
+        
+        System.out.println((System.nanoTime() - start) / 1000);
+        
         //Return the production in W (coming from J/cm2 for a whole hour)
         return result; 
     }

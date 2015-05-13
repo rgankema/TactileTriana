@@ -45,15 +45,17 @@ class DeviceConfigView extends GridPane {
             Slider startTime = buildSlider(0, 24*60 - 1, timeShiftable.startTimeProperty());
             Slider delay = new Slider();
             delay.setMin(0);
-            delay.setMax(24*60 - timeShiftable.getProgram().length);
+            delay.setMax(24*60 - timeShiftable.getProfile().length);
             delay.valueProperty().addListener(obs -> { 
                 timeShiftable.setEndTime((timeShiftable.getStartTime() + delay.getValue()) % (24 * 60));
             });
+            // consume touch events so that the deviceview can't be dragged while using the slider
+            delay.addEventFilter(TouchEvent.ANY, e -> e.consume());
             addControl("Start Time", startTime);
             addControl("Delay", delay);
         } else if (device instanceof SolarPanel) {  // SolarPanel
             SolarPanel solarPanel = (SolarPanel) device;
-            Slider area = buildSlider(2, 40, solarPanel.areaProperty());
+            Slider area = buildSlider(SolarPanel.MIN_AREA, SolarPanel.MAX_AREA, solarPanel.areaProperty());
             addControl("Area", area);
         } else if (device instanceof ElectricVehicle) { // EV
             ElectricVehicle electricVehicle = (ElectricVehicle) device;

@@ -501,7 +501,7 @@ public class ServerConnection implements Runnable, IController {
         jsonResponse.put("isStarted", (sim.getState() != Simulation.SimulationState.STOPPED));
         //Minute of the year in the simulation.
         jsonResponse.put("simTime", sim.getCurrentTime().getDayOfYear()*24*60 + sim.getCurrentTime().getHour() * 60 + sim.getCurrentTime().getMinute());
-        jsonResponse.put("timeStep", SimulationConfig.SIMULATION_TICK_TIME);
+        jsonResponse.put("timeStep", SimulationConfig.TICK_MINUTES);
         sendMessage(jsonResponse.toJSONString());
     }
     
