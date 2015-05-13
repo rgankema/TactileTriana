@@ -6,6 +6,7 @@
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 
 /**
  *
@@ -25,7 +26,48 @@ public interface IController {
      */
     public Double getPlannedConsumption(DeviceBase device, LocalDateTime time);
     
+    /**
+     * Updates the map of planned consumptions for a device. 
+     * The HashMap given in the argument is used to determine the planned consumption on a given time in the simulation for a device.
+     * 
+     * @param device The DeviceBase for which the planning is updated
+     * @param planning 
+     */    
+    public void updatePlannedConsumption(DeviceBase device, HashMap<LocalDateTime, Integer> planning);
+    
+    /**
+     * Indicates whether a TimeShiftable Device is planned to start at the given time.
+     * 
+     * @param time Time to check if the Device is starting on
+     * @param device The Device that is checked for a planning
+     * @return True if the TimeShiftable Device is planned to start on the given time, false otherwise
+     */    
+    public boolean plannedToStart(LocalDateTime time, DeviceBase device); 
+    
+    /**
+     * Update the time a TimeShiftable Device is planned to start.
+     * 
+     * @param device The Device which receives the planning
+     * @param time The time the Device will start.
+     */
+    public void updatePlannedToStart(DeviceBase device, LocalDateTime time);
+    
+    /**
+     * Update the plans for all Devices from the backend.
+     * 
+     * @param timeout Time to wait on the backend to finish retrieving the plans. 
+     * @param time Simulation time at which will be recorded as the time the plannings where last updated.
+     * @return 
+     */
     public boolean retrievePlanning(int timeout, LocalDateTime time);
     
-    public LocalDateTime lastPlanningTime(); 
+    /**
+     * Returns the time the plannings where last updated.
+     * 
+     * @return 
+     */
+    public LocalDateTime lastPlanningTime();
+    
+    
+    
 }
