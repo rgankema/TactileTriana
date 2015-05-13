@@ -25,7 +25,6 @@ import org.json.simple.JSONObject;
  */
 public abstract class DeviceBase extends LoggingEntityBase {
     private static int DEVICE_ID = 0;
-    
     private final int id;
     private final String apiDeviceType;
     
@@ -50,7 +49,6 @@ public abstract class DeviceBase extends LoggingEntityBase {
         DEVICE_ID++;
         
         this.apiDeviceType = apiDeviceType;
-        
         this.properties = new HashMap<>();
     }
 
