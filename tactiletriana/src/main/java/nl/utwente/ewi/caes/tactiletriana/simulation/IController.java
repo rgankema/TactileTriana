@@ -34,7 +34,7 @@ public interface IController {
      * @param device The DeviceBase for which the planning is updated
      * @param planning 
      */    
-    public void updatePlannedConsumption(DeviceBase device, HashMap<LocalDateTime, Double> planning);
+    public void updatePlannedConsumption(int deviceID, HashMap<LocalDateTime, Double> planning);
     
     /**
      * Indicates whether a TimeShiftable Device is planned to start at the given time.
@@ -51,7 +51,7 @@ public interface IController {
      * @param device The Device which receives the planning
      * @param time The time the Device will start.
      */
-    public void updatePlannedToStart(DeviceBase device, ArrayList<LocalDateTime> time);
+    public void updatePlannedToStart(int deviceID, ArrayList<LocalDateTime> time);
     
     /**
      * Update the plans for all Devices from the backend.

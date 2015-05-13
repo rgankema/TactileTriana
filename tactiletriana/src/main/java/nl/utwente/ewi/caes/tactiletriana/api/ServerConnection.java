@@ -37,6 +37,8 @@ import org.json.simple.parser.ParseException;
 public class ServerConnection implements Runnable, IController {
 
     
+
+    
     
     public enum ClientState {
         CONNECTED,
