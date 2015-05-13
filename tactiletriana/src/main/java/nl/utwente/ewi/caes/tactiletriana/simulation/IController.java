@@ -6,6 +6,7 @@
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -33,7 +34,7 @@ public interface IController {
      * @param device The DeviceBase for which the planning is updated
      * @param planning 
      */    
-    public void updatePlannedConsumption(DeviceBase device, HashMap<LocalDateTime, Integer> planning);
+    public void updatePlannedConsumption(DeviceBase device, HashMap<LocalDateTime, Double> planning);
     
     /**
      * Indicates whether a TimeShiftable Device is planned to start at the given time.
@@ -42,7 +43,7 @@ public interface IController {
      * @param device The Device that is checked for a planning
      * @return True if the TimeShiftable Device is planned to start on the given time, false otherwise
      */    
-    public boolean plannedToStart(LocalDateTime time, DeviceBase device); 
+    public boolean plannedToStart(DeviceBase device, LocalDateTime time); 
     
     /**
      * Update the time a TimeShiftable Device is planned to start.
@@ -50,7 +51,7 @@ public interface IController {
      * @param device The Device which receives the planning
      * @param time The time the Device will start.
      */
-    public void updatePlannedToStart(DeviceBase device, LocalDateTime time);
+    public void updatePlannedToStart(DeviceBase device, ArrayList<LocalDateTime> time);
     
     /**
      * Update the plans for all Devices from the backend.
@@ -67,6 +68,8 @@ public interface IController {
      * @return 
      */
     public LocalDateTime lastPlanningTime();
+    
+    public LocalDateTime lastRequestedPlanningTime();
     
     
     

@@ -11,7 +11,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
  *
  * @author niels
  */
-public abstract class BufferTimeShiftableBase extends BufferBase {
+public abstract class BufferTimeShiftableBase extends BufferBase implements ITimeShiftablePlanning {
     
     /**
      * Constructs a BufferTimeShiftable device.

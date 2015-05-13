@@ -12,11 +12,18 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.House;
 import nl.utwente.ewi.caes.tactiletriana.simulation.IController;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
+import nl.utwente.ewi.caes.tactiletriana.simulation.devices.Buffer;
+import nl.utwente.ewi.caes.tactiletriana.simulation.devices.BufferTimeShiftableBase;
+import nl.utwente.ewi.caes.tactiletriana.simulation.devices.SolarPanel;
+import nl.utwente.ewi.caes.tactiletriana.simulation.devices.TimeShiftableBase;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -44,7 +51,8 @@ public class ServerConnection implements Runnable, IController {
         INVALID_DATATYPE("Invalid data type encountered in JSON message."),
         UNKNOWN_TYPE("Unknown message type."),
         UNKNOWN_CATEGORY("Unknown message category"),
-        TYPENOTACCEPTED("Message type not accepted.")
+        TYPENOTACCEPTED("Message type not accepted."),
+        INVALID_DATA("Data field not accepted.")
         ;
         
         private final String errorMessage;
@@ -91,6 +99,12 @@ public class ServerConnection implements Runnable, IController {
     
     //IController specific variables
     LocalDateTime lastUpdatedPlanning = null;
+    LocalDateTime lastRequestPlanning = null;
+    //Plannings for TimeShiftable devices. Key is the Device ID
+    HashMap<Integer, ArrayList<LocalDateTime>> tsPlannings;
+    //Plannings for other devices
+    HashMap<Integer, HashMap<LocalDateTime, Double>> plannings;
+    
     
     
     public ServerConnection(Socket s, APIServer server) {
@@ -104,6 +118,9 @@ public class ServerConnection implements Runnable, IController {
         //The InputStreamReader converts the Socket's byte stream to a character stream. The BufferedReader ads efficiency.
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+        //Initialize the planning maps
+        this.tsPlannings = new HashMap<Integer, ArrayList<LocalDateTime>>();
+        this.plannings = new HashMap<Integer, HashMap<LocalDateTime, Double>>();
     }
     
     /**
@@ -419,7 +436,7 @@ public class ServerConnection implements Runnable, IController {
                     case DEVICEPARAMETERS:
                         break;
                     case SUBMITPLANNING:
-                        processSubmitPlanning();
+                        processSubmitPlanning(json);
                         break;
                     default:
                         sendError(ClientError.TYPENOTACCEPTED.errorMessage());
@@ -488,8 +505,114 @@ public class ServerConnection implements Runnable, IController {
         sendMessage(jsonResponse.toJSONString());
     }
     
-    public void processSubmitPlanning() {
+    public void processSubmitPlanning(JSONObject json) {
+        //Extract the date part of the JSON message
+        String error = null;
+        JSONObject data = null;
+        try {
+            data = (JSONObject) json.get("data");
+                
+
+        } catch (ClassCastException ce) {
+            error = ClientError.INVALID_DATATYPE + "In 'data field'.";
+
+            log(error);
+            sendError(error);
+            return;
+
+        } catch (Exception ex) {
+            error = ClientError.INVALID_DATA.errorMessage();
+
+            log(error);
+            sendError(error);
+            return;
+        }
         
+        //Extract the time for which the planning was send
+        //The time should match the current simulation time.
+        int intTime = 0;
+        try {
+            intTime = (int) data.get("simTime");
+        } catch (ClassCastException e) {
+            error = "SubmitPlanning failed, invalid simTime parameter.";
+            log(error);
+            sendError(error);
+            return;
+        }
+        //Convert the time in minutes since the start of 2014 to a LocalDateTime instance
+        LocalDateTime time = LocalDateTime.of(2014, 1, 1, 0,0).plusMinutes(intTime);
+        
+        //Check if the submitted planning is for the last requested planning.
+        if(!time.equals(lastRequestedPlanningTime())) {
+            error = "Submitted planning is not for the currently requested simulation time.";
+            log(error);
+            sendError(error);
+            return;
+        }
+        
+        //Extract the houses
+        ArrayList<JSONObject> houses = null;
+        try {
+            
+            houses = (JSONArray) data.get("houses");
+            
+        } catch (Exception e) {
+            error = "SubmitPlanning failed, invalid houses parameter.";
+        }
+        
+        //Check if the houses parameter was not empty
+        if(houses.size() == 0) {
+            //No updated plannings
+            sendResponse();
+            return;
+        }
+        
+        //Retrive all devices
+        ArrayList<JSONObject> devices = new ArrayList<JSONObject>();
+        try {
+            for(JSONObject house : houses) {
+                devices.addAll((JSONArray) house.get("devices"));
+            }
+        } catch(ClassCastException e) {
+            
+        }
+        
+        //Update the planning for all devices
+        try {
+            for(JSONObject device : devices ) {
+                String deviceType = (String) device.get("deviceType");
+                
+                //Distinguish between timeshiftable and other devices
+                if(deviceType.equals("TimeShiftable") || deviceType.equals("BufferTimeShiftable")) {
+                    JSONArray tsPlanning = (JSONArray) device.get("ts_planning");
+                    //Convert the times to LocalDateTimes
+                    ArrayList<LocalDateTime> times = new ArrayList<LocalDateTime>();
+                    for(int x = 0; x < tsPlanning.size(); x++) {
+                        int timeX = (Integer) tsPlanning.get(x);
+                        times.add(LocalDateTime.of(2014,1,1,0,0).plusMinutes(timeX));
+                    }
+                    int deviceID = (int) device.get("deviceID");
+                    updatePlannedToStart(deviceID, times);
+                    sendResponse();
+                } else {
+                    JSONArray planning = (JSONArray) device.get("planning");
+                    HashMap<LocalDateTime, Double> tuples = new HashMap<LocalDateTime, Double>();
+                   for(int i = 0; i < planning.size(); i++) {
+                       JSONObject tuple = (JSONObject) planning.get(i);
+                       tuples.put(LocalDateTime.of(2014,1,1,0,0).plusMinutes((int)tuple.get("timestamp")), (Double) tuple.get("consumption"));
+                   }
+                   int deviceID = (int) device.get("deviceID");
+                   updatePlannedConsumption(deviceID, tuples);
+                   sendResponse();
+                   
+                }
+            }
+        } catch (ClassCastException e) {
+            error = "SubmitPlanning failed, wrong devices parameter in houses";
+            log(error);
+            sendError(error);
+            return;
+        }
     }
     
     public void processReleaseControl() {
@@ -521,6 +644,34 @@ public class ServerConnection implements Runnable, IController {
         return this.lastUpdatedPlanning;
     }
     
+    public LocalDateTime lastRequestedPlanningTime() {
+        return this.lastRequestPlanning;
+    }
+    
+    public boolean plannedToStart(DeviceBase device, LocalDateTime time) {
+        boolean result = false;
+        ArrayList<LocalDateTime> times = tsPlannings.get(device.getId());
+        if(times != null && times.contains(time)) {
+            result = true;
+        }
+        return result;
+    }
+    
+    public void updatePlannedToStart(int deviceID, ArrayList<LocalDateTime> time) {
+        //TODO improve this
+        //Check if the device is a timeshiftable
+        //TODO check if the planned times are possible
+        tsPlannings.put(deviceID, time);
+        
+    }
+    
+    public void updatePlannedConsumption(int deviceID, HashMap<LocalDateTime,Double> planning) {
+        //Chekc if the device should have a planning
+        //TODO improve this
+        plannings.put(deviceID, planning);
+        
+    }
+    
     /**
      * This method updates the planning. 
      * The (@code time} argument is used to record the last time the planning was updated.
@@ -531,6 +682,8 @@ public class ServerConnection implements Runnable, IController {
      */
     public boolean retrievePlanning(int timeout, LocalDateTime time) {
         
+        //Set the time this planning was requested
+        lastRequestPlanning = time;
         
         //Send the RequestPlanning request
         JSONObject response = new JSONObject();
@@ -539,10 +692,13 @@ public class ServerConnection implements Runnable, IController {
         response.put("timeStep", sim.getTimeStep());
         sendMessage(response.toJSONString());
         
+        
+        
         //Now wait for the timeout period specified or until a SubmitPlanning request has been recieved. 
         boolean planningRecieved = false;
         int looptime = 0;
         while (!planningRecieved && looptime < timeout) {
+            //The lastPlanningTime will be updated when the new planning is received
             if(this.lastPlanningTime().equals(time)) {
                 planningRecieved = true;
             }
@@ -560,7 +716,12 @@ public class ServerConnection implements Runnable, IController {
     
     @Override
     public Double getPlannedConsumption(DeviceBase device, LocalDateTime time) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        HashMap<LocalDateTime, Double> cs = plannings.get(device.getId());
+        Double result = null;
+        if(cs != null) {
+            result = cs.get(time);
+        }
+        return result;
     }
     
     
