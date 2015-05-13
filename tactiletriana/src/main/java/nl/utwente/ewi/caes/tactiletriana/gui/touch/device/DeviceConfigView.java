@@ -49,6 +49,8 @@ class DeviceConfigView extends GridPane {
             delay.valueProperty().addListener(obs -> { 
                 timeShiftable.setEndTime((timeShiftable.getStartTime() + delay.getValue()) % (24 * 60));
             });
+            // consume touch events so that the deviceview can't be dragged while using the slider
+            delay.addEventFilter(TouchEvent.ANY, e -> e.consume());
             addControl("Start Time", startTime);
             addControl("Delay", delay);
         } else if (device instanceof SolarPanel) {  // SolarPanel

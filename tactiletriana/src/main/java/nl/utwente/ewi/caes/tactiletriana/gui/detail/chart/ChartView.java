@@ -20,12 +20,9 @@ import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
  */
 public class ChartView extends StackPane {
 
-    @FXML
-    private LineChart chart;
-    @FXML
-    private NumberAxis xAxis;
-    @FXML
-    private NumberAxis yAxis;
+    @FXML private LineChart chart;
+    @FXML private NumberAxis xAxis;
+    @FXML private NumberAxis yAxis;
 
     private Series<Integer, Double> actualSeries;
     private Series<Integer, Double> futureSeries;

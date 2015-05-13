@@ -215,12 +215,12 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
     }
     
     public void setKilometersPerkWh(double kilometersPerkWh) {
-        System.out.println("kilometersperkwh: "+kilometersPerkWh);
+        //System.out.println("kilometersperkwh: "+kilometersPerkWh);
         this.kilometersPerkWh = kilometersPerkWh;
     }
     
     public void setKilometersToWork(int kilometersToWork) {
-        System.out.println("kmtowork: "+kilometersToWork);
+        //System.out.println("kmtowork: "+kilometersToWork);
         this.kilometersToWork = kilometersToWork;
     }
     
