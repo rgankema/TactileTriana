@@ -55,10 +55,9 @@ public class UncontrollableLoad extends DeviceBase {
         }
     }
 
-    //Uncontrollable devices, so load is determined by time.
     @Override
-    public void tick(double timePassed, boolean connected) {
-        super.tick(timePassed, connected);
+    public void tick(boolean connected) {
+        super.tick(connected);
         LocalDateTime t = simulation.getCurrentTime();
         int minuteOfYear = t.getDayOfYear() * 24 * 60 + t.getHour() * 60 + t.getMinute();
         setCurrentConsumption(profile[profileNumber][minuteOfYear]);

@@ -139,12 +139,12 @@ public class Cable extends LoggingEntityBase implements IFWBWSEntity {
     }
 
     // METHODS
-    public void tick(double timePassed, boolean connected) {
+    public void tick(boolean connected) {
         if (isBroken()) {
             connected = false;
         }
         
-        getChildNode().tick(timePassed, connected);
+        getChildNode().tick(connected);
     }
 
     /**

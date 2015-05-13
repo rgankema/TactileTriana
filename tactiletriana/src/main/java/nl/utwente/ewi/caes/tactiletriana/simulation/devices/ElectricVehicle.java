@@ -11,6 +11,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleObjectProperty;
+import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 import nl.utwente.ewi.caes.tactiletriana.simulation.IController;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 
@@ -129,8 +130,8 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
     // METHODS
     
     @Override
-    public void tick(double timePassed, boolean connected) {
-        super.tick(timePassed, connected);
+    public void tick(boolean connected) {
+        super.tick(connected);
 
         LocalDateTime time = simulation.getCurrentTime();
         
@@ -138,11 +139,11 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
         double h = time.getHour() + (time.getMinute()/60)*100;
         
         // Update state of charge
-        chargeBuffer(getCurrentConsumption(), timePassed);
+        chargeBuffer(getCurrentConsumption(), SimulationConfig.TICK_MINUTES);
         if (!isWeekend(time) && (getLeaveTime() < h && h < getReturnTime())) {
             //calculate drainage
             double drainage = (((kilometersToWork*2/getKilometersPerkWh())*1000)/((getReturnTime()-getLeaveTime())));
-            chargeBuffer(-drainage, timePassed);
+            chargeBuffer(-drainage, SimulationConfig.TICK_MINUTES);
         }
         
         // Get planning if available

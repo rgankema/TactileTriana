@@ -11,6 +11,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 import static nl.utwente.ewi.caes.tactiletriana.SimulationConfig.TICK_MINUTES;
 import nl.utwente.ewi.caes.tactiletriana.simulation.*;
 
@@ -116,8 +117,8 @@ public abstract class TimeShiftableBase extends DeviceBase {
     }
     
     @Override
-    public void tick (double timePassed, boolean connected){
-        super.tick(timePassed, connected);
+    public void tick (boolean connected){
+        super.tick(connected);
         
         double consumption = 0;
         
@@ -128,7 +129,7 @@ public abstract class TimeShiftableBase extends DeviceBase {
         } else { // No planning available
             double currentTime = currentDateTime.getHour() * 60 + currentDateTime.getMinute();
             
-            if (currentTime - timePassed < 0) {
+            if (currentTime - SimulationConfig.TICK_MINUTES < 0) {
                 programRemaining = true;
             }
             
@@ -136,7 +137,7 @@ public abstract class TimeShiftableBase extends DeviceBase {
             if (!active && programRemaining) {
                 if (currentTime >= getStartTime() || 
                         // Relevant if start time starts somewhere at the end of the day
-                        currentTime - timePassed <= 0) {
+                        currentTime - SimulationConfig.TICK_MINUTES <= 0) {
                     if (currentTime <= getEndTime() || getEndTime() < getStartTime()) {
                         active = true;
                     }

@@ -115,13 +115,13 @@ public class House extends LoggingEntityBase {
         fuseBlown.set(false);
     }
 
-    public void tick(double timePassed, boolean connected) {
+    public void tick(boolean connected) {
         if (isFuseBlown()) {
             connected = false;
         }
 
         for (DeviceBase device : getDevices()) {
-            device.tick(timePassed, connected);
+            device.tick(connected);
         }
 
         setCurrentConsumption(getDevices().stream().mapToDouble(d -> d.getCurrentConsumption()).sum());

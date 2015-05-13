@@ -71,8 +71,8 @@ public class SolarPanel extends DeviceBase {
     }
 
     @Override
-    public void tick(double timePassed, boolean connected) {
-        super.tick(timePassed, connected);
+    public void tick(boolean connected) {
+        super.tick(connected);
 
         //Set the current consumption according to current temperature, radiation and time
         //Multiplied by -1 because the solarpanel produces and doesn't consume

@@ -276,7 +276,7 @@ public class Simulation extends LoggingEntityBase {
     protected final void tick() {
         // Run anything that involves the UI on the JavaFX thread
         runOnJavaFXThreadSynchronously(() -> {
-            getTransformer().tick(SimulationConfig.TICK_MINUTES, true);
+            getTransformer().tick(true);
         });
         
         // Reset the nodes.
