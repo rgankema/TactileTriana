@@ -30,7 +30,8 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.devices.UncontrollableLoad;
  * @author Richard
  */
 public class Simulation extends LoggingEntityBase {
-
+    public static final double LONGITUDE = 6.897;
+    public static final double LATITUDE = 52.237;
     public static enum SimulationState { RUNNING, PAUSED, STOPPED };
     public static final int NUMBER_OF_HOUSES = 6;
     
@@ -275,7 +276,7 @@ public class Simulation extends LoggingEntityBase {
     protected final void tick() {
         // Run anything that involves the UI on the JavaFX thread
         runOnJavaFXThreadSynchronously(() -> {
-            getTransformer().tick(SimulationConfig.SIMULATION_TICK_TIME, true);
+            getTransformer().tick(SimulationConfig.TICK_MINUTES, true);
         });
         
         // Reset the nodes.
@@ -303,7 +304,7 @@ public class Simulation extends LoggingEntityBase {
             log(transformer.getCables().get(0).getCurrent() * 230d);
 
             // Increment time
-            setCurrentTime((getTimeScenario().getNext(getCurrentTime(), SimulationConfig.SIMULATION_TICK_TIME)));
+            setCurrentTime((getTimeScenario().getNext(getCurrentTime(), SimulationConfig.TICK_MINUTES)));
         });
     }
 
@@ -365,7 +366,7 @@ public class Simulation extends LoggingEntityBase {
      * @return the timestep of the simulation 
      */
     public int getTimeStep() {
-        return SimulationConfig.SIMULATION_TICK_TIME;
+        return SimulationConfig.TICK_MINUTES;
     }
 
     // HELP METHODS

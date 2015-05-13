@@ -28,7 +28,7 @@ public class Buffer extends BufferBase {
     @Override
     public void tick(double timePassed, boolean connected) {
         super.tick(timePassed, connected);
-        int timestep = SimulationConfig.SIMULATION_TICK_TIME;
+        int timestep = SimulationConfig.TICK_MINUTES;
 
         // Calculate state of charge change based on previous nextConsumption
         double deltaHours = timePassed / 60d;
