@@ -45,7 +45,7 @@ class DeviceConfigView extends GridPane {
             Slider startTime = buildSlider(0, 24*60 - 1, timeShiftable.startTimeProperty());
             Slider delay = new Slider();
             delay.setMin(0);
-            delay.setMax(24*60 - timeShiftable.getProfile().length);
+            delay.setMax(24*60 - timeShiftable.getStaticProfile().length);
             delay.valueProperty().addListener(obs -> { 
                 timeShiftable.setEndTime((timeShiftable.getStartTime() + delay.getValue()) % (24 * 60));
             });

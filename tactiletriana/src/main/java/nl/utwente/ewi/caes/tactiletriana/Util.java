@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.Random;
 
 /**
- * Collection of static helper methods.
+ * Collection of static helper methods and constants.
  * 
  * @author Richard
  */
@@ -26,6 +26,7 @@ public class Util {
                 ? 365 * 24 * 60 / tickMinutes 
                 : 365 * 24 * 60 / tickMinutes + 1;
     }
+    
     /**
      * Returns a random integer between 0 (inclusive) and range (exclusive)
      * @param range the maximum integer

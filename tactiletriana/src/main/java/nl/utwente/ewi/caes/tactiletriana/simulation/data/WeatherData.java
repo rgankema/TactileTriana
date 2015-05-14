@@ -9,9 +9,11 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
 import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
+import static nl.utwente.ewi.caes.tactiletriana.Util.TOTAL_TICKS_IN_YEAR;
 
 /**
- *
+ * Data provider for the weather profiles. Uses KNMI data from 2014.
+ * 
  * @author Richard
  */
 public final class WeatherData implements IWeatherDataProvider{
@@ -37,7 +39,7 @@ public final class WeatherData implements IWeatherDataProvider{
         try {
             Stream<String> dataset = Files.lines(Paths.get("src/main/resources/datasets/KNMI_dataset.txt"));
             
-            // Wrapper for hour, because Java's Lambda functions are idiotic
+            // Wrapper for hour, because Java's lambda functions are idiotic
             class Wrapper { int value = 0; }
             Wrapper hourOfYear = new Wrapper();
             dataset.filter(line -> !line.startsWith("#"))
@@ -58,13 +60,11 @@ public final class WeatherData implements IWeatherDataProvider{
         
         // Convert to profile with value per timestep   
         int tickMinutes = SimulationConfig.TICK_MINUTES;
-        int minutesInYear = 365 * 24 * 60;
-        int totalTimeSteps = (minutesInYear % tickMinutes == 0) ? minutesInYear / tickMinutes : minutesInYear / tickMinutes + 1;
         
-        temperatureProfile = new float[totalTimeSteps];
-        radianceProfile = new float[totalTimeSteps];
+        temperatureProfile = new float[TOTAL_TICKS_IN_YEAR];
+        radianceProfile = new float[TOTAL_TICKS_IN_YEAR];
         
-        for (int ts = 0; ts < totalTimeSteps; ts++) {
+        for (int ts = 0; ts < TOTAL_TICKS_IN_YEAR; ts++) {
             int prevHour = ts * tickMinutes / 60;
             int nextHour = (prevHour + 1) % (365 * 24);
             float nextHourWeight = (((ts * tickMinutes) % 60) / 60f);
@@ -92,7 +92,4 @@ public final class WeatherData implements IWeatherDataProvider{
     public float[] getRadianceProfile() {
         return this.radianceProfile;
     }
-    
-    
-    
 }

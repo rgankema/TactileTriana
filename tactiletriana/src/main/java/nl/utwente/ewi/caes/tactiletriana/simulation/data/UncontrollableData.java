@@ -21,10 +21,12 @@ import org.apache.commons.csv.CSVRecord;
 import static nl.utwente.ewi.caes.tactiletriana.Util.*;
 
 /**
- *
+ * Data provider for profiles representing the uncontrollable energy consumption 
+ * of a house over a year.
+ * 
  * @author Richard
  */
-public class UncontrollableData implements IDeviceDataProvider<UncontrollableLoad> {
+public final class UncontrollableData implements IDeviceDataProvider<UncontrollableLoad> {
 
     private static UncontrollableData instance;
     
@@ -38,7 +40,7 @@ public class UncontrollableData implements IDeviceDataProvider<UncontrollableLoa
     private final Map<Integer, float[]> profileByKey = new TreeMap<>();
     private final Future<Void> future;
     
-    public UncontrollableData() {
+    private UncontrollableData() {
         // Load profiles async
         future = Concurrent.getExecutorService().submit(() -> {
             loadProfile();
@@ -84,12 +86,11 @@ public class UncontrollableData implements IDeviceDataProvider<UncontrollableLoa
         // Convert to profile with value per timestep   
         int tickMinutes = SimulationConfig.TICK_MINUTES;
         int minutesInYear = 365 * 24 * 60;
-        int totalTimeSteps = (minutesInYear % tickMinutes == 0) ? (minutesInYear / tickMinutes) : (minutesInYear / tickMinutes) + 1;
         
         for (int key = 0; key < 6; key++) {
-            float[] profile = new float[totalTimeSteps];
+            float[] profile = new float[TOTAL_TICKS_IN_YEAR];
             // Get average of all minutes in timestep
-            for (int ts = 0; ts < totalTimeSteps; ts++) {
+            for (int ts = 0; ts < TOTAL_TICKS_IN_YEAR; ts++) {
                 profile[ts] = 0;
                 int minutesInTimeStep = 0;
                 for (int min = ts * tickMinutes; min < (ts + 1) * tickMinutes && min < minutesInYear; min++) {

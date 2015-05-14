@@ -8,11 +8,9 @@ package nl.utwente.ewi.caes.tactiletriana.simulation.devices;
 import java.time.LocalDateTime;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
-import static nl.utwente.ewi.caes.tactiletriana.SimulationConfig.TICK_MINUTES;
 import nl.utwente.ewi.caes.tactiletriana.simulation.*;
 
 /**
@@ -40,48 +38,37 @@ public abstract class TimeShiftableBase extends DeviceBase {
      * 
      * @param simulation    The Simulation this device belongs to
      * @param displayName   The name of the device as shown to the user
-     * @param program       The consumption program of the device, with a
-     *                      consumption value for every minute
+     * @param profile       The consumption profile of the device, with a
+     *                      consumption value for every tick
      */
-    public TimeShiftableBase(Simulation simulation, String displayName, double[] program) {
+    public TimeShiftableBase(Simulation simulation, String displayName, float[] profile) {
         super(simulation, displayName, "TimeShiftable");
         
-        // Map given profile of consumption per every minute to profile of consumption per timestep
-        int profileLength = (program.length % TICK_MINUTES == 0) ? program.length / TICK_MINUTES : program.length / TICK_MINUTES + 1;
-        setProfile(new double[profileLength]);
-        for (int i = 0; i < getProfile().length; i++) {
-            getProfile()[i] = 0;
-            int minutesPerTick = 0;
-            for (int j = i * TICK_MINUTES; j < (i+1) * TICK_MINUTES && j < program.length; j++) {
-                getProfile()[i] += program[j] / TICK_MINUTES;
-                minutesPerTick++;
-            }
-            getProfile()[i] /= minutesPerTick;
-        }
+        setStaticProfile(profile);
         
         // register properties
         addProperty("startTimes", startTime);
         addProperty("endTimes", endTime);
-        addProperty("profile", profile);
+        addProperty("static_profile", staticProfile);
         
         this.programRemaining = true;
     }
     
     /**
-     * The consumption in watt for every time step.
+     * The consumption in watt for every time step from start to finish.
      */
-    private final ObjectProperty<double[]> profile = new SimpleObjectProperty<>();
+    private final ObjectProperty<float[]> staticProfile = new SimpleObjectProperty<>();
     
-    public ReadOnlyObjectProperty<double[]> profileProperty() {
-        return this.profile;
+    public ObjectProperty<float[]> staticProfileProperty() {
+        return this.staticProfile;
     }
     
-    public final double[] getProfile() {
-        return profileProperty().get();
+    public final float[] getStaticProfile() {
+        return staticProfileProperty().get();
     }
     
-    protected final void setProfile(double[] profile) {
-        this.profile.set(profile);
+    protected final void setStaticProfile(float[] profile) {
+        this.staticProfile.set(profile);
     }
     
     /**
@@ -149,9 +136,9 @@ public abstract class TimeShiftableBase extends DeviceBase {
             
             // If active, consume energy until done
             if (active) {
-                consumption = getProfile()[currentMinute];
+                consumption = getStaticProfile()[currentMinute];
                 currentMinute++;
-                if (currentMinute >= getProfile().length) {
+                if (currentMinute >= getStaticProfile().length) {
                     currentMinute = 0;
                     active = false;
                     programRemaining = false;
