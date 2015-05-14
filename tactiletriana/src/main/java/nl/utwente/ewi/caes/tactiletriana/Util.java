@@ -17,6 +17,16 @@ public class Util {
     private static final Random random = new Random();
     
     /**
+     * The total amount of ticks that make up one year.
+     */
+    public static final int TOTAL_TICKS_IN_YEAR;
+    static {
+        int tickMinutes = SimulationConfig.TICK_MINUTES;
+        TOTAL_TICKS_IN_YEAR = (365 * 24 * 60 % tickMinutes == 0 ) 
+                ? 365 * 24 * 60 / tickMinutes 
+                : 365 * 24 * 60 / tickMinutes + 1;
+    }
+    /**
      * Returns a random integer between 0 (inclusive) and range (exclusive)
      * @param range the maximum integer
      * @return the random integer
