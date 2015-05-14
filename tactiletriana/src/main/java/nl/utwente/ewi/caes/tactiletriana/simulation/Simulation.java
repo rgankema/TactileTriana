@@ -5,24 +5,22 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
+import nl.utwente.ewi.caes.tactiletriana.Concurrent;
 import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
+import static nl.utwente.ewi.caes.tactiletriana.Util.toTimeStep;
+import nl.utwente.ewi.caes.tactiletriana.simulation.data.WeatherData;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.UncontrollableLoad;
 
 /**
@@ -30,8 +28,6 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.devices.UncontrollableLoad;
  * @author Richard
  */
 public class Simulation extends LoggingEntityBase {
-    public static final double LONGITUDE = 6.897;
-    public static final double LATITUDE = 52.237;
     public static enum SimulationState { RUNNING, PAUSED, STOPPED };
     public static final int NUMBER_OF_HOUSES = 6;
     
@@ -43,17 +39,13 @@ public class Simulation extends LoggingEntityBase {
 
     private final Transformer transformer;
     private final Map<Node, Double> lastVoltageByNode;
-    private final Map<LocalDateTime, Double> temperatureByTime;
-    private final Map<LocalDateTime, Double> radianceByTime;
-
-    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     private IController controller;
 
-    private Node[] internalNodes;
-    private Node[] houseNodes;
-    private Cable[] internalCables;
-    private House[] houses;
+    private final Node[] internalNodes;
+    private final Node[] houseNodes;
+    private final Cable[] internalCables;
+    private final House[] houses;
     
     public Simulation() {
         super(null, "Network", QuantityType.POWER);
@@ -98,36 +90,18 @@ public class Simulation extends LoggingEntityBase {
 
         // initialise time
         setCurrentTime(getTimeScenario().getStart());
-        
-        // load KNMI data
-        temperatureByTime = new HashMap<>();
-        radianceByTime = new HashMap<>();
-
-        try {
-            Stream<String> dataset = Files.lines(Paths.get("src/main/resources/datasets/KNMI_dataset.txt"));
-            dataset.filter(line -> !line.startsWith("#"))
-                    .forEachOrdered(line -> {
-                        String[] tokens = line.split(",");
-                        // tokens[1] = YYYYMMDD, tokens[2] = hour, tokens[3] = temperature, tokens[4] = radiance
-                        int year = Integer.valueOf(tokens[1].trim().substring(0, 4));
-                        int month = Integer.valueOf(tokens[1].trim().substring(4, 6));
-                        int day = Integer.valueOf(tokens[1].trim().substring(6));
-                        int hour = Integer.valueOf(tokens[2].trim());
-                        double temperature = Double.valueOf(tokens[3].trim());
-                        double radiance = Double.valueOf(tokens[4].trim());
-
-                        LocalDateTime date = LocalDateTime.of(year, month, day, hour - 1, 0, 0);
-
-                        temperatureByTime.put(date, temperature);
-                        radianceByTime.put(date, radiance);
-                    });
-        } catch (Exception e) {
-            throw new RuntimeException("Could not load KNMI dataset", e);
-        }
 
     }
 
     // PROPERTIES
+    
+    public float getRadiance() {
+        return WeatherData.getInstance().getRadianceProfile()[toTimeStep(getCurrentTime())];
+    }
+    
+    public float getTemperature() {
+        return WeatherData.getInstance().getTemperatureProfile()[toTimeStep(getCurrentTime())];
+    }
     
     /**
      * The state of the simulation.
@@ -191,36 +165,6 @@ public class Simulation extends LoggingEntityBase {
     }
 
     /**
-     *
-     * @return the temperature right now, in degrees Celsius
-     */
-    public double getTemperature() {
-        LocalDateTime currentTime = getCurrentTime();
-        LocalDateTime prevHour, nextHour;
-        int minutes = currentTime.getMinute();
-        prevHour = currentTime.minusMinutes(minutes);
-        nextHour = currentTime.plusMinutes(60 - minutes);
-        double prevHourWeight = ((double) (60 - minutes)) / 60d;
-        double nextHourWeight = ((double) minutes) / 60d;
-        return prevHourWeight * (temperatureByTime.get(prevHour) / 10d) + nextHourWeight * (temperatureByTime.get(nextHour) / 10d);
-    }
-
-    /**
-     *
-     * @return the radiance right now, in J/cm^2
-     */
-    public double getRadiance() {
-        LocalDateTime currentTime = getCurrentTime();
-        LocalDateTime prevHour, nextHour;
-        int minutes = currentTime.getMinute();
-        prevHour = currentTime.minusMinutes(minutes);
-        nextHour = currentTime.plusMinutes(60 - minutes);
-        double prevHourWeight = ((double) (60 - minutes)) / 60d;
-        double nextHourWeight = ((double) minutes) / 60d;
-        return prevHourWeight * radianceByTime.get(prevHour) + nextHourWeight * radianceByTime.get(nextHour);
-    }
-
-    /**
      * The Controller that controls the devices in this simulation. May be null.
      *
      * @return
@@ -252,6 +196,7 @@ public class Simulation extends LoggingEntityBase {
     }
     
     // PUBLIC METHODS
+    private boolean startedOnce = false;
     
     /**
      * Starts the simulation if it is stopped, or resumes it if it is paused.
@@ -259,9 +204,9 @@ public class Simulation extends LoggingEntityBase {
      * on.
      */
     public void start() {
-        if (getState() == SimulationState.STOPPED){            
-            scheduler = Executors.newScheduledThreadPool(1);
-            scheduler.scheduleAtFixedRate(() -> {
+        if (!startedOnce && getState() == SimulationState.STOPPED){      
+            startedOnce = true;
+            Concurrent.getExecutorService().scheduleAtFixedRate(() -> {
                 if (this.getState() == SimulationState.RUNNING){
                     tick();
                 }
@@ -313,33 +258,28 @@ public class Simulation extends LoggingEntityBase {
      * shut down the simulation thread.
      */
     public void pause() {
-        if (getState() != SimulationState.STOPPED) {
-            setState(SimulationState.PAUSED);
-        }
+        setState(SimulationState.PAUSED);
     }
 
     /**
-     * Stops the simulation if it is running or paused. Shuts down the background thread
-     * that is used for the simulation.
+     * Stops the simulation if it is running or paused.
+     * 
+     * @deprecated stop doesn't have a function anymore, as it doesn't keep its
+     * own background thread
      */
+    @Deprecated
     public void stop() {
-        if (getState() != SimulationState.STOPPED) {
-            scheduler.shutdownNow();
-            setState(SimulationState.STOPPED);
-        }
+        setState(SimulationState.STOPPED);
     }
 
     /**
-     * Stops the simulation, shuts down background thread, and resets all values to default.
+     * Resets all values to default.
      */
     public void reset() {
-        stop();
-
         for (House house : houses) {
             house.getDevices().clear();
         }
         clearAllLogs();
-
         setCurrentTime(getTimeScenario().getStart());
     }
 

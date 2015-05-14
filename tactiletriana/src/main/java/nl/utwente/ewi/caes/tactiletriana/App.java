@@ -8,6 +8,7 @@ package nl.utwente.ewi.caes.tactiletriana;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
+import nl.utwente.ewi.caes.tactiletriana.simulation.data.UncontrollableData;
 
 /**
  *
@@ -17,6 +18,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        UncontrollableData.getInstance();
         StageController.initialize(stage);
         StageController.getInstance().setLauncherStageVisible(true);
         StageController.getInstance().setScreenIndexStagesVisible(true);
@@ -25,6 +27,7 @@ public class App extends Application {
     @Override
     public void stop() {
         StageController.getInstance().getSimulation().stop();
+        Concurrent.getExecutorService().shutdownNow();
     }
 
     public static void main(String[] args) {
