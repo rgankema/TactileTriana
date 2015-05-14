@@ -26,8 +26,9 @@ public class UncontrollableLoad extends DeviceBase {
     
     /**
      *
-     * @param profileNumber - A number between 0 and 5 (inclusive) which selects
+     * @param profileNumber a number between 0 and 5 (inclusive) which selects
      * the profile data on which this instance is based
+     * @param simulation the Simulation this device belongs to
      */
     public UncontrollableLoad(int profileNumber, Simulation simulation) {
         super(simulation, "Uncontrollable Load", "Uncontrollable");
@@ -39,11 +40,12 @@ public class UncontrollableLoad extends DeviceBase {
         this.profileNumber = profileNumber;
         this.data = UncontrollableData.getInstance();
         
-        updateProfile();
-        
         addProperty("profile", profile);
     }
     
+    /**
+     * The consumption profile for the coming day
+     */
     private final ObjectProperty<float[]> profile = new SimpleObjectProperty<>();
     
     public ObjectProperty<float[]> profileProperty() {
