@@ -49,11 +49,14 @@ public abstract class TimeShiftableBase extends DeviceBase {
         // Map given profile of consumption per every minute to profile of consumption per timestep
         int profileLength = (program.length % TICK_MINUTES == 0) ? program.length / TICK_MINUTES : program.length / TICK_MINUTES + 1;
         setProfile(new double[profileLength]);
-        for (int i = 0; i < program.length; i++) {
+        for (int i = 0; i < getProfile().length; i++) {
             getProfile()[i] = 0;
-            for (int j = i * TICK_MINUTES; j < (i+1) * TICK_MINUTES; j++) {
+            int minutesPerTick = 0;
+            for (int j = i * TICK_MINUTES; j < (i+1) * TICK_MINUTES && j < program.length; j++) {
                 getProfile()[i] += program[j] / TICK_MINUTES;
+                minutesPerTick++;
             }
+            getProfile()[i] /= minutesPerTick;
         }
         
         // register properties

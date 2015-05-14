@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import nl.utwente.ewi.caes.tactiletriana.simulation.*;
+import nl.utwente.ewi.caes.tactiletriana.simulation.data.WeatherData;
+import static nl.utwente.ewi.caes.tactiletriana.Util.*;
 
 /**
  *
@@ -73,16 +75,16 @@ public class SolarPanel extends DeviceBase {
     @Override
     public void tick(boolean connected) {
         super.tick(connected);
-
+        WeatherData weather = WeatherData.getInstance();
+        int timeStep = toTimeStep(getSimulation().getCurrentTime());
         //Set the current consumption according to current temperature, radiation and time
         //Multiplied by -1 because the solarpanel produces and doesn't consume
-        setCurrentConsumption(-1*calculateProduction(simulation.getTemperature(), simulation.getRadiance(),
-                Simulation.LONGITUDE, Simulation.LATITUDE, simulation.getCurrentTime()));
+        setCurrentConsumption(-1*calculateProduction(weather.getTemperatureProfile()[timeStep], weather.getRadianceProfile()[timeStep],
+                weather.getLongitude(), weather.getLatitude(), simulation.getCurrentTime()));
     }
 
     //Returns the production in W
     public double calculateProduction(double temperature, double radiance, double longitude, double latitude, LocalDateTime time) {
-        long start = System.nanoTime();
         double PI = 3.14159265359;
 
         double longitudeRadian = longitude * (PI / 180);
@@ -147,8 +149,6 @@ public class SolarPanel extends DeviceBase {
         double actualEfficiency = (efficiency * (1 - ((temperaturePV - 25) * temperatureEfficiency) / 100)) / 100;
         
         double result = getArea() * powerSquareMeter * actualEfficiency;
-        
-        System.out.println((System.nanoTime() - start) / 1000);
         
         //Return the production in W (coming from J/cm2 for a whole hour)
         return result; 
