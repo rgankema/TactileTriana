@@ -12,12 +12,11 @@
 <?import nl.utwente.ewi.caes.tactiletriana.gui.detail.chart.*?>
 <?import nl.utwente.ewi.caes.tactiletriana.gui.detail.weather.*?>
 
-<fx:root minHeight="900" minWidth="1600" type="BorderPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
-
+<fx:root styleClass="detail-view" minHeight="900" minWidth="1600" type="BorderPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
     
     <!-- HEADER -->
     <top>
-        <StackPane fx:id="header">
+        <StackPane fx:id="header" id="header">
            <children>
                <ImageView fx:id="trianaLogo" fitHeight="200" fitWidth="200" preserveRatio="true" StackPane.alignment="CENTER_LEFT">
                    <image>
@@ -32,7 +31,7 @@
         </StackPane>
     </top>
    <center>
-      <GridPane BorderPane.alignment="CENTER">
+      <GridPane BorderPane.alignment="CENTER" id="chart-grid">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" percentWidth="33.3" />
           <ColumnConstraints hgrow="SOMETIMES" percentWidth="33.3" />
@@ -44,10 +43,10 @@
         </rowConstraints>
         
         <children>
-            <ChartView fx:id="mainChart" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="0" />
-            <ChartView fx:id="subChart1" axisLabelsVisible="false" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-            <ChartView fx:id="subChart2" axisLabelsVisible="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <ChartView fx:id="subChart3" axisLabelsVisible="false" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <ChartView fx:id="mainChart" id="chart-main" styleClass="big" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="0" />
+            <ChartView fx:id="subChart1" id="chart-1" styleClass="small" axisLabelsVisible="false" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+            <ChartView fx:id="subChart2" id="chart-2" styleClass="small" axisLabelsVisible="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <ChartView fx:id="subChart3" id="chart-3" styleClass="small" axisLabelsVisible="false" GridPane.columnIndex="2" GridPane.rowIndex="1" />
         </children>
          <BorderPane.margin>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />

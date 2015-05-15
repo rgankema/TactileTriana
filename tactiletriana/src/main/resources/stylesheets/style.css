@@ -1,0 +1,54 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 15-May-2015, 15:19:26
+    Author     : Richard
+*/
+
+// TIME
+
+.date-time-view .time-label {
+    -fx-font-size: 80px;
+}
+
+.date-time-view .date-label {
+    -fx-font-size: 30px;
+}
+
+// WEATHER
+
+.weather-view .label {
+    -fx-font-size: 30px;
+}
+
+// NOTIFICATIONS
+
+.notification-view {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #333333;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+}
+
+// CHARTS
+
+.chart-view .axis {
+    -fx-tick-label-font-size: 20px;
+}
+
+.chart-view .axis-label {
+    -fx-font-size: 20px;
+}
+
+.chart-view.big .chart-title {
+    -fx-font-size: 40px;
+}
+
+.chart-view.small .chart-title {
+    -fx-font-size: 30px;
+}
+
+

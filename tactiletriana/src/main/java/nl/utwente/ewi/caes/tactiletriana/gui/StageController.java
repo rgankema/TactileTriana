@@ -108,6 +108,29 @@ public final class StageController {
         configurationStage.setTitle("TactileTriana");
     }
 
+    // PROPERTIES
+    
+    public Simulation getSimulation() {
+        return this.simulation;
+    }
+    
+    public ObservableList<Integer> getScreenIndexList() {
+        return screenIndexList;
+    }
+    
+    /**
+     *
+     * @param index the screen index
+     * @return the Screen associated with the index as shown in the ComboBoxes
+     */
+    public Screen getScreenByIndex(Integer index) {
+        if (index == null || index <= 0) {
+            return Screen.getPrimary();
+        } else {
+            return this.screens.get(index - 1);
+        }
+    }
+    
     // METHODS
     
     public void setLauncherStageVisible(boolean visible) {
@@ -132,6 +155,10 @@ public final class StageController {
                 if (e.getCode() == KeyCode.ESCAPE) {
                     simulation.pause();
                     setLauncherStageVisible(true);
+                }
+                // For debugging purposes
+                if (e.getCode() == KeyCode.F5) {
+                    reloadStyleSheets();
                 }
             });
 
@@ -158,7 +185,19 @@ public final class StageController {
             DetailView dv = new DetailView();
             dv.setViewModel(detailVM);
 
-            detailStage.setScene(new Scene(dv));
+            Scene detailScene = new Scene(dv);
+            detailScene.setOnKeyPressed(e -> {
+                if (e.getCode() == KeyCode.ESCAPE) {
+                    simulation.pause();
+                    setLauncherStageVisible(true);
+                }
+                // For debugging purposes
+                if (e.getCode() == KeyCode.F5) {
+                    reloadStyleSheets();
+                }
+            });
+            
+            detailStage.setScene(detailScene);
             detailStage.setOnCloseRequest(e -> closeAllStages());
 
             if (configurationVM.fullScreenCheckedProperty().get()) {
@@ -206,27 +245,6 @@ public final class StageController {
             detailStage.close();
         }
     }
-    
-    public ObservableList<Integer> getScreenIndexList() {
-        return screenIndexList;
-    }
-    
-    /**
-     *
-     * @param index the screen index
-     * @return the Screen associated with the index as shown in the ComboBoxes
-     */
-    public Screen getScreenByIndex(Integer index) {
-        if (index == null || index <= 0) {
-            return Screen.getPrimary();
-        } else {
-            return this.screens.get(index - 1);
-        }
-    }
-
-    public Simulation getSimulation() {
-        return this.simulation;
-    }
 
     public void showOnChart(LoggingEntityVMBase logger, LoggingEntityBase entity) {
         logger.setShownOnChart(true);
@@ -241,5 +259,20 @@ public final class StageController {
     public void resetSimulation() {
         this.simulation.reset();
         this.simulationPrediction.reset();
+    }
+    
+    // HELPER METHODS
+    
+    private void addMasterStyleSheet(Scene scene) {
+        scene.getStylesheets().add(getClass().getResource("/stylesheets/style.css").toExternalForm()); 
+    }
+    
+    // DEBUG
+    
+    private void reloadStyleSheets() {
+        touchStage.getScene().getStylesheets().clear();
+        addMasterStyleSheet(touchStage.getScene());
+        detailStage.getScene().getStylesheets().clear();
+        addMasterStyleSheet(detailStage.getScene());
     }
 }
