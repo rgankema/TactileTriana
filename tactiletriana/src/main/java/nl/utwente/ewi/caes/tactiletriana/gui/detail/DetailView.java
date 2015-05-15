@@ -30,7 +30,10 @@ public class DetailView extends BorderPane {
 
     @FXML private StackPane header;
     @FXML private DateTimeView dateTimeView;
-    @FXML private ChartView chartView;
+    @FXML private ChartView mainChart;
+    @FXML private ChartView subChart1;
+    @FXML private ChartView subChart2;
+    @FXML private ChartView subChart3;
     @FXML private WeatherView weatherView;
     @FXML private ImageView trianaLogo;
     
@@ -53,15 +56,19 @@ public class DetailView extends BorderPane {
         this.viewModel = viewModel;
 
         dateTimeView.setViewModel(viewModel.getDateTimeVM());
-        chartView.setViewModel(viewModel.getChartVM());
+        mainChart.setViewModel(viewModel.getChartVM());
         weatherView.setViewModel(viewModel.getWeatherVM());
         
+        subChart1.setViewModel(viewModel.getSubChartVM(0));
+        subChart2.setViewModel(viewModel.getSubChartVM(1));
+        subChart3.setViewModel(viewModel.getSubChartVM(2));
+        
         // Fade in and out when a the simulation shifts to a new timespan
-        final FadeTransition fadeOut = new FadeTransition(Duration.millis(200), chartView);
+        final FadeTransition fadeOut = new FadeTransition(Duration.millis(200), mainChart);
         fadeOut.setFromValue(1.0);
         fadeOut.setToValue(0.0);
         
-        final FadeTransition fadeIn = new FadeTransition(Duration.millis(300), chartView);
+        final FadeTransition fadeIn = new FadeTransition(Duration.millis(300), mainChart);
         fadeIn.setFromValue(0.0);
         fadeIn.setToValue(1.0);
         

@@ -153,7 +153,7 @@ public class TouchView extends TactilePane {
             cvi[i].setViewModel(viewModel.getInternalCables()[i]);
             cvh[i].setViewModel(viewModel.getHouseCables()[i]);
             nvi[i].setViewModel(viewModel.getInternalNodes()[i]);
-            nvh[i].setViewModel(viewModel.getInternalNodes()[i]);
+            nvh[i].setViewModel(viewModel.getHouseNodes()[i]);
         }
         
         DeviceView cv = new DeviceView(ElectricVehicle.class);

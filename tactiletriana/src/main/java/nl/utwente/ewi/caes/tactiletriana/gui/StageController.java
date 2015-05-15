@@ -143,6 +143,8 @@ public final class StageController {
 
                 tv.setMinSize(touchScreen.getBounds().getWidth(), 
                         touchScreen.getBounds().getHeight());
+                tv.setMaxSize(touchScreen.getBounds().getWidth(),
+                        touchScreen.getBounds().getHeight());
                 touchStage.setX(touchScreen.getBounds().getMinX());
                 touchStage.setY(touchScreen.getBounds().getMinY());
 
@@ -164,13 +166,15 @@ public final class StageController {
 
                 dv.setMinSize(detailScreen.getBounds().getWidth(),
                         detailScreen.getBounds().getHeight());
+                dv.setMaxSize(detailScreen.getBounds().getWidth(),
+                        detailScreen.getBounds().getHeight());
                 detailStage.setX(detailScreen.getBounds().getMinX());
                 detailStage.setY(detailScreen.getBounds().getMinY());
 
                 detailStage.initStyle(StageStyle.UNDECORATED);
             }
             
-            showOnChart(touchVM.getTransformer(), simulation);
+            detailVM.getChartVM().setEntity(simulation, simulationPrediction);
         }
 
         if (visible) {
@@ -225,21 +229,13 @@ public final class StageController {
     }
 
     public void showOnChart(LoggingEntityVMBase logger, LoggingEntityBase entity) {
-        if (vmOnChart != null) vmOnChart.setShownOnChart(false);
-        
-        if (logger == null && entity == null) {
-            logger = touchVM.getTransformer();
-            entity = simulation;
-        }
-        
-        this.vmOnChart = logger;
-        
-        vmOnChart.setShownOnChart(true);
-        detailVM.getChartVM().setEntity(entity, simulationPrediction.getFuture(entity));
+        logger.setShownOnChart(true);
+        LoggingEntityVMBase old = detailVM.showOnChart(logger, entity, simulationPrediction.getFuture(entity));
+        if (old != null) old.setShownOnChart(false);
     }
     
     public void showNotification(String message) {
-        detailVM.notify(message);
+        detailVM.showNotification(message);
     }
     
     public void resetSimulation() {

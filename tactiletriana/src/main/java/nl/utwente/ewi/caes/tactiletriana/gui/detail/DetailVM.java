@@ -14,6 +14,8 @@ import nl.utwente.ewi.caes.tactiletriana.gui.detail.chart.ChartVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.detail.datetime.DateTimeVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.detail.notification.NotificationVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.detail.weather.WeatherVM;
+import nl.utwente.ewi.caes.tactiletriana.gui.touch.LoggingEntityVMBase;
+import nl.utwente.ewi.caes.tactiletriana.simulation.LoggingEntityBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 import nl.utwente.ewi.caes.tactiletriana.simulation.TimeScenario.TimeSpan;
 
@@ -27,15 +29,24 @@ public class DetailVM {
     private final DateTimeVM dateTimeVM;
     private final WeatherVM weatherVM;
     private final ChartVM chartVM;
+    private final ChartVM[] subChartVMs;
+    private final LoggingEntityVMBase[] loggersOnCharts;
+    int subChartIndex = 0;
     
     private final ObservableList<NotificationVM> notificationQueue;
     private final ObservableList<NotificationVM> notificationQueueUnmodifiable;
+    
     public DetailVM(Simulation simulation) {
         this.simulation = simulation;
 
         dateTimeVM = new DateTimeVM(simulation);
         chartVM = new ChartVM();
         weatherVM = new WeatherVM(simulation);
+        subChartVMs = new ChartVM[3];
+        for (int i = 0; i < 3; i++) {
+            subChartVMs[i] = new ChartVM();
+        }
+        loggersOnCharts = new LoggingEntityVMBase[3];
         
         notificationQueue = FXCollections.observableArrayList();
         notificationQueueUnmodifiable = FXCollections.unmodifiableObservableList(notificationQueue);
@@ -57,18 +68,35 @@ public class DetailVM {
     // METHODS
     
     /**
-     * Calling notify will cause a popup to be shown on the screen with the given
-     * message.
+     * Shows a pop-up notification on the screen with the given message.
      * 
      * @param message the notification message
      */
-    public void notify(String message) {
+    public void showNotification(String message) {
         NotificationVM notification = new NotificationVM(message);
         notificationQueue.add(notification);
         // Remove the notification after 5000ms
         Concurrent.getExecutorService().schedule(() -> { 
             notificationQueue.remove(notification);
         }, 5000, TimeUnit.MILLISECONDS);
+    }
+    
+    /**
+     * Shows a LoggingEntityBase on a chart.
+     * 
+     * @param loggerVM the VM for the LoggingEntityBase
+     * @param actual the actual LoggingEntityBase to be shown on a chart
+     * @param future the future LoggingEntityBase to be shown on a chart
+     * @return the LoggingEntityBase that was removed from a chart to make room
+     * for the new one. {@code null} if none were removed.
+     */
+    public LoggingEntityVMBase showOnChart(LoggingEntityVMBase loggerVM, LoggingEntityBase actual, LoggingEntityBase future) {
+        LoggingEntityVMBase old = loggersOnCharts[subChartIndex];
+        loggersOnCharts[subChartIndex] = loggerVM;
+        subChartVMs[subChartIndex].setEntity(actual, future);
+        subChartIndex++;
+        subChartIndex = (subChartIndex == subChartVMs.length) ? 0 : subChartIndex;
+        return old;
     }
     
     // CALLBACKS FOR VIEW
@@ -99,5 +127,9 @@ public class DetailVM {
 
     public WeatherVM getWeatherVM() {
         return weatherVM;
+    }
+    
+    public ChartVM getSubChartVM(int index) {
+        return subChartVMs[index];
     }
 }

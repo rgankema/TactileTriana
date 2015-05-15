@@ -6,6 +6,8 @@
 package nl.utwente.ewi.caes.tactiletriana.gui.detail.chart;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -31,6 +33,12 @@ public class ChartView extends StackPane {
 
     public ChartView() {
         ViewLoader.load(this);
+        
+        // Get label text as defined in FXML
+        final String xAxisLabelText = xAxis.getLabel();
+        xAxis.labelProperty().bind(Bindings.createStringBinding(() -> (isAxisLabelsVisible()) ? xAxisLabelText : "", axisLabelsVisible));
+        xAxis.tickLabelsVisibleProperty().bind(axisLabelsVisible);
+        yAxis.tickLabelsVisibleProperty().bind(axisLabelsVisible);
     }
 
     public void setViewModel(ChartVM viewModel) {
@@ -46,7 +54,12 @@ public class ChartView extends StackPane {
         Bindings.bindContent(futureSeries.getData(), viewModel.getFutureSeriesData());
         
         yAxis.setAutoRanging(true);
-        yAxis.labelProperty().bind(viewModel.seriesNameProperty());
+        yAxis.labelProperty().bind(Bindings.createStringBinding(() -> { 
+            if (isAxisLabelsVisible()) {
+                return viewModel.seriesNameProperty().get();
+            }
+            return "";
+        }, viewModel.seriesNameProperty(), axisLabelsVisible));
         
         xAxis.lowerBoundProperty().bind(viewModel.xAxisLowerBoundProperty());
         xAxis.upperBoundProperty().bind(viewModel.xAxisUpperBoundProperty());
@@ -71,5 +84,24 @@ public class ChartView extends StackPane {
         chart.getData().add(actualSeries);
         chart.getData().add(futureSeries);
         
+    }
+    
+    // PROPERTIES
+    
+    /**
+     * Whether the axis labels are visible for this chartview
+     */
+    private final BooleanProperty axisLabelsVisible = new SimpleBooleanProperty(true);
+    
+    public BooleanProperty axisLabelsVisibleProperty() {
+        return axisLabelsVisible;
+    }
+    
+    public final boolean isAxisLabelsVisible() {
+        return axisLabelsVisibleProperty().get();
+    }
+    
+    public final void setAxisLabelsVisible(boolean visible) {
+        axisLabelsVisibleProperty().set(visible);
     }
 }

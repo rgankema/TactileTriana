@@ -12,26 +12,46 @@
 <?import nl.utwente.ewi.caes.tactiletriana.gui.detail.chart.*?>
 <?import nl.utwente.ewi.caes.tactiletriana.gui.detail.weather.*?>
 
-<fx:root minHeight="900"  minWidth="1600" type="BorderPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root minHeight="900" minWidth="1600" type="BorderPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
 
     
     <!-- HEADER -->
     <top>
         <StackPane fx:id="header">
-            <ImageView fx:id ="trianaLogo" fitHeight="200" fitWidth="200" preserveRatio="true" StackPane.alignment="CENTER_LEFT"  >
-                <image>
-                    <Image url="images/triana.png"/>
-                </image>
-            </ImageView>
-
-            <DateTimeView fx:id="dateTimeView" StackPane.alignment="CENTER"  />
-
-            <WeatherView fx:id="weatherView" StackPane.alignment="CENTER_RIGHT"   />
+           <children>
+               <ImageView fx:id="trianaLogo" fitHeight="200" fitWidth="200" preserveRatio="true" StackPane.alignment="CENTER_LEFT">
+                   <image>
+                       <Image url="images/triana.png" />
+                   </image>
+               </ImageView>
+   
+               <DateTimeView fx:id="dateTimeView" StackPane.alignment="CENTER" />
+   
+               <WeatherView fx:id="weatherView" StackPane.alignment="CENTER_RIGHT" />
+           </children>
         </StackPane>
     </top>
-    
-    <!-- MAIN CONTENT -->
-    <center>
-        <ChartView fx:id="chartView"  />
-    </center>
+   <center>
+      <GridPane BorderPane.alignment="CENTER">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" percentWidth="33.3" />
+          <ColumnConstraints hgrow="SOMETIMES" percentWidth="33.3" />
+          <ColumnConstraints hgrow="SOMETIMES" percentWidth="33.3" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints percentHeight="66.6" vgrow="SOMETIMES" />
+          <RowConstraints percentHeight="33.3" vgrow="SOMETIMES" />
+        </rowConstraints>
+        
+        <children>
+            <ChartView fx:id="mainChart" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="0" />
+            <ChartView fx:id="subChart1" axisLabelsVisible="false" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+            <ChartView fx:id="subChart2" axisLabelsVisible="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <ChartView fx:id="subChart3" axisLabelsVisible="false" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+        </children>
+         <BorderPane.margin>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </BorderPane.margin>
+      </GridPane>
+   </center>
 </fx:root>
