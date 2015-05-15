@@ -40,6 +40,12 @@ public class SolarPanel extends DeviceBase {
     public static final double MIN_AREA = 0.5;
     public static final double MAX_AREA = 50;
 
+    /**
+     * Constructs a new SolarPanel. Registers the {@code area} and {@code profile}
+     * properties.
+     * 
+     * @param simulation the Simulation this SolarPanel belongs to
+     */
     public SolarPanel(Simulation simulation) {
         super(simulation, "Solar Panel", "SolarPanel");
         
