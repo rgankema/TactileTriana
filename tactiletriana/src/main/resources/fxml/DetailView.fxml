@@ -14,9 +14,10 @@
 
 <fx:root minHeight="900"  minWidth="1600" type="BorderPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
 
+    
     <!-- HEADER -->
     <top>
-        <StackPane>
+        <StackPane fx:id="header">
             <ImageView fx:id ="trianaLogo" fitHeight="200" fitWidth="200" preserveRatio="true" StackPane.alignment="CENTER_LEFT"  >
                 <image>
                     <Image url="images/triana.png"/>

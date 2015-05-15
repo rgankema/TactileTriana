@@ -6,7 +6,6 @@
 package nl.utwente.ewi.caes.tactiletriana.gui.touch.cable;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
@@ -42,6 +41,12 @@ public class CableVM  extends LoggingEntityVMBase {
             }
             return Direction.NONE;
         }, model.brokenProperty(), model.currentProperty()));
+        
+        model.brokenProperty().addListener((observable, wasBroken, isBroken) -> {
+            if (isBroken) {
+                StageController.getInstance().showNotification("A cable is broken due to heavy load!");
+            }
+        });
     }
 
     public Cable getModel() {

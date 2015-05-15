@@ -238,6 +238,10 @@ public final class StageController {
         detailVM.getChartVM().setEntity(entity, simulationPrediction.getFuture(entity));
     }
     
+    public void showNotification(String message) {
+        detailVM.notify(message);
+    }
+    
     public void resetSimulation() {
         this.simulation.reset();
         this.simulationPrediction.reset();
