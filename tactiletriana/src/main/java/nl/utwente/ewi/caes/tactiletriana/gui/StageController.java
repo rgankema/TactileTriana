@@ -102,7 +102,10 @@ public final class StageController {
         configurationVM.getScreenIndexList().addAll(screenIndexList);
         cv.setViewModel(configurationVM);
 
-        configurationStage.setScene(new Scene(cv));
+        Scene configurationScene = new Scene(cv);
+        addMasterStyleSheet(configurationScene);
+        
+        configurationStage.setScene(configurationScene);
         configurationStage.setOnCloseRequest(e -> closeAllStages());
         configurationStage.getIcons().add(new Image("images/triana.png"));
         configurationStage.setTitle("TactileTriana");
@@ -151,6 +154,7 @@ public final class StageController {
             tv.setViewModel(touchVM);
             
             Scene touchScene = new Scene(tv);
+            addMasterStyleSheet(touchScene);
             touchScene.setOnKeyPressed(e -> {
                 if (e.getCode() == KeyCode.ESCAPE) {
                     simulation.pause();
@@ -186,6 +190,7 @@ public final class StageController {
             dv.setViewModel(detailVM);
 
             Scene detailScene = new Scene(dv);
+            addMasterStyleSheet(detailScene);
             detailScene.setOnKeyPressed(e -> {
                 if (e.getCode() == KeyCode.ESCAPE) {
                     simulation.pause();
@@ -269,10 +274,16 @@ public final class StageController {
     
     // DEBUG
     
+    /**
+     * Reloads the master style sheet for the touch, detail, and configuration
+     * scenes.
+     */
     private void reloadStyleSheets() {
         touchStage.getScene().getStylesheets().clear();
         addMasterStyleSheet(touchStage.getScene());
         detailStage.getScene().getStylesheets().clear();
         addMasterStyleSheet(detailStage.getScene());
+        configurationStage.getScene().getStylesheets().clear();
+        addMasterStyleSheet(configurationStage.getScene());
     }
 }

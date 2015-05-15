@@ -8,6 +8,12 @@ and open the template in the editor.
     Author     : Richard
 */
 
+// CONFIGURATION VIEW
+
+.title {
+    -fx-font-size: 32px;
+}
+
 // TIME
 
 .date-time-view .time-label {
@@ -50,5 +56,3 @@ and open the template in the editor.
 .chart-view.small .chart-title {
     -fx-font-size: 30px;
 }
-
-
