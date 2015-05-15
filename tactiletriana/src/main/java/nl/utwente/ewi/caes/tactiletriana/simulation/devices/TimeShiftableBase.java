@@ -20,7 +20,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.*;
  * <ul>
  *  <li>startTimes</li>
  *  <li>endTimes</li>
- *  <li>profile</li>
+ *  <li>static_profile</li>
  * </ul>
  * 
  * Note that the start and end times are in fact not lists, but doubles, because
@@ -34,7 +34,7 @@ public abstract class TimeShiftableBase extends DeviceBase {
     
     /**
      * Constructs a new TimeShiftableBase. Registers the {@code startTimes},
-     * {@code endTimes} and {@code profile} properties as specified in the API.
+     * {@code endTimes} and {@code static_profile} properties as specified in the API.
      * 
      * @param simulation    The Simulation this device belongs to
      * @param displayName   The name of the device as shown to the user

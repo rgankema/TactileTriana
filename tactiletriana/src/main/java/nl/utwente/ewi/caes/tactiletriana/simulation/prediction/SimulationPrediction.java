@@ -176,8 +176,8 @@ public class SimulationPrediction extends Simulation {
                     
                     // bind alle parameters
                     for (String property : actualDevice.getProperties().keySet()) {
-                        // SOC shouldn't be bound to
-                        if (property.equals("SOC")) {
+                        // SOC and profile shouldn't be bound to
+                        if (property.equals("SOC") || property.equals("profile")) {
                             continue;
                         }
                         futureDevice.getProperties().get(property).bind(actualDevice.getProperties().get(property));
