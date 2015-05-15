@@ -7,7 +7,10 @@ package nl.utwente.ewi.caes.tactiletriana.simulation.devices;
 
 import java.time.LocalDateTime;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 import nl.utwente.ewi.caes.tactiletriana.simulation.*;
 import nl.utwente.ewi.caes.tactiletriana.simulation.data.WeatherData;
 import static nl.utwente.ewi.caes.tactiletriana.Util.*;
@@ -17,7 +20,12 @@ import static nl.utwente.ewi.caes.tactiletriana.Util.*;
  * @author niels
  */
 public class SolarPanel extends DeviceBase {
-
+    
+    private float[] profileSquareMeter;
+    
+    // The tick of the year where the profile starts
+    private int profileTickOffset;
+    
     //FIXME: Make (all?) these constants editable
     
     //Elevation of the panel in degrees
@@ -36,14 +44,17 @@ public class SolarPanel extends DeviceBase {
         super(simulation, "Solar Panel", "SolarPanel");
         
         addProperty("area", area);
+        addProperty("profile", profile);
         
         setArea((MIN_AREA + MAX_AREA) / 2);
     }
     
+    // PROPERTIES
+    
     /**
      * The amount of power the device will consume when turned on
      */
-    private final DoubleProperty area = new SimpleDoubleProperty(1000d) {
+    private final DoubleProperty area = new SimpleDoubleProperty(25d) {
         @Override
         public void set(double value) {
             if (get() == value) {
@@ -71,20 +82,103 @@ public class SolarPanel extends DeviceBase {
     public final void setArea(double consumption) {
         this.area.set(consumption);
     }
+    
+    /**
+     * The profile of the solar panel from the current time until the next day
+     */
+    private final ObjectProperty<float[]> profile = new SimpleObjectProperty<>();
 
+    public ObjectProperty<float[]> profileProperty() {
+        return profile;
+    }
+    
+    public float[] getProfile() {
+        return profileProperty().get();
+    }
+    
+    public void setProfile(float[] profile) {
+        profileProperty().set(profile);
+    }
+    
+    // METHODS
+    
     @Override
     public void tick(boolean connected) {
+        // Lots of double code, could be more elegant
         super.tick(connected);
+        
+        // Update profile
         WeatherData weather = WeatherData.getInstance();
-        int timeStep = toTimeStep(getSimulation().getCurrentTime());
-        //Set the current consumption according to current temperature, radiation and time
-        //Multiplied by -1 because the solarpanel produces and doesn't consume
-        setCurrentConsumption(-1*calculateProduction(weather.getTemperatureProfile()[timeStep], weather.getRadianceProfile()[timeStep],
-                weather.getLongitude(), weather.getLatitude(), simulation.getCurrentTime()));
+        float[] radianceProfile = weather.getRadianceProfile();
+        float[] tempProfile = weather.getTemperatureProfile();
+        LocalDateTime time = getSimulation().getCurrentTime();
+        int timeStepsInDay = (24 * 60) / SimulationConfig.TICK_MINUTES;
+        
+        if (profileSquareMeter == null) {
+            // No profile yet, calculate the whole thing
+            
+            profileSquareMeter = new float[timeStepsInDay];
+            
+            profileTickOffset = toTimeStep(time);
+            for (int ts = 0; ts < timeStepsInDay; ts++) {
+                int timeStepInYear = (ts + profileTickOffset) % TOTAL_TICKS_IN_YEAR;
+                float temp = tempProfile[timeStepInYear];
+                float radiance = radianceProfile[timeStepInYear];
+                profileSquareMeter[ts] = (float) -calculateProductionSquareMeter(temp, radiance, weather.getLongitude(), weather.getLatitude(), time);
+                time = time.plusMinutes(SimulationConfig.TICK_MINUTES);
+            }
+        } else {
+            int oldProfileTickOffset = profileTickOffset;
+            profileTickOffset = toTimeStep(time);
+            int deltaTimeSteps = profileTickOffset - oldProfileTickOffset;
+            
+            // If the new time is before the last one, just calculate the whole profile again
+            if (deltaTimeSteps < 0) {
+                for (int ts = 0; ts < profileSquareMeter.length; ts++) {
+                    int timeStepInYear = (ts + profileTickOffset) % TOTAL_TICKS_IN_YEAR;
+                    float temp = tempProfile[timeStepInYear];
+                    float radiance = radianceProfile[timeStepInYear];
+                    profileSquareMeter[ts] = (float) -calculateProductionSquareMeter(temp, radiance, weather.getLongitude(), weather.getLatitude(), time);
+                    time = time.plusMinutes(SimulationConfig.TICK_MINUTES);
+                }
+            } else {
+                // Shift the array
+                int ts = 0;
+                for (; ts < profileSquareMeter.length - deltaTimeSteps; ts++) {
+                    profileSquareMeter[ts] = profileSquareMeter[ts + deltaTimeSteps];
+                }
+                // Calculate the timesteps we haven't done yet
+                for (; ts < profileSquareMeter.length; ts++) {
+                    int timeStepInYear = (ts + profileTickOffset) % TOTAL_TICKS_IN_YEAR;
+                    float temp = tempProfile[timeStepInYear];
+                    float radiance = radianceProfile[timeStepInYear];
+                    profileSquareMeter[ts] = (float) -calculateProductionSquareMeter(temp, radiance, weather.getLongitude(), weather.getLatitude(), time);
+                    time = time.plusMinutes(SimulationConfig.TICK_MINUTES);
+                }
+            }
+        }
+        
+        float[] finalProfile = new float[timeStepsInDay];
+        for (int i = 0; i < profileSquareMeter.length; i++) {
+            finalProfile[i] = profileSquareMeter[i] * (float) getArea();
+        }
+        
+        setProfile(finalProfile);
+        setCurrentConsumption(getProfile()[0]);
     }
 
-    //Returns the production in W
-    public double calculateProduction(double temperature, double radiance, double longitude, double latitude, LocalDateTime time) {
+    /**
+     * Calculates the production per square meter of this solar panel given the
+     * temperature, radiance, longitude and latitude and time.
+     * 
+     * @param temperature the temperature at the location of the panel
+     * @param radiance the radiance at the location of the panel
+     * @param longitude the longitude of the panel coordinates
+     * @param latitude the latitude of the panel coordinates
+     * @param time the time in the simulation
+     * @return amount of watt that the device produces per square meter
+     */
+    private double calculateProductionSquareMeter(double temperature, double radiance, double longitude, double latitude, LocalDateTime time) {
         double PI = 3.14159265359;
 
         double longitudeRadian = longitude * (PI / 180);
@@ -148,7 +242,7 @@ public class SolarPanel extends DeviceBase {
         double temperaturePV = temperature + (50 * powerSquareMeter / 1367); //Formula not based on anything or whatsover, this part can be improved
         double actualEfficiency = (efficiency * (1 - ((temperaturePV - 25) * temperatureEfficiency) / 100)) / 100;
         
-        double result = getArea() * powerSquareMeter * actualEfficiency;
+        double result = powerSquareMeter * actualEfficiency;
         
         //Return the production in W (coming from J/cm2 for a whole hour)
         return result; 
