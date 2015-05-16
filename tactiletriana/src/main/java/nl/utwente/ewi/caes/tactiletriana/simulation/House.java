@@ -90,10 +90,11 @@ public class House extends LoggingEntityBase {
         return maximumConsumptionProperty().get();
     }
 
+    // Package private so SimulationPrediction can use it
     /**
      * Whether the fuse is blown or not.
      */
-    private final ReadOnlyBooleanWrapper fuseBlown = new ReadOnlyBooleanWrapper(false);
+    final ReadOnlyBooleanWrapper fuseBlown = new ReadOnlyBooleanWrapper(false);
 
     public ReadOnlyBooleanProperty fuseBlownProperty() {
         return fuseBlown.getReadOnlyProperty();
@@ -104,7 +105,7 @@ public class House extends LoggingEntityBase {
     }
 
     
-    public void setFuseBlown(boolean fuseBlown) {
+    private void setFuseBlown(boolean fuseBlown) {
         this.fuseBlown.set(fuseBlown);
     }
 

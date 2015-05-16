@@ -105,10 +105,11 @@ public class Cable extends LoggingEntityBase implements IFWBWSEntity {
         this.maximumCurrent.set(maximumCurrent);
     }
 
+    // Package private so SimulationPrediction can use it
     /**
      * Whether the cable is broken or not
      */
-    private final ReadOnlyBooleanWrapper broken = new ReadOnlyBooleanWrapper(false) {
+    final ReadOnlyBooleanWrapper broken = new ReadOnlyBooleanWrapper(false) {
         @Override
         public void set(boolean value) {
             if (value) {
