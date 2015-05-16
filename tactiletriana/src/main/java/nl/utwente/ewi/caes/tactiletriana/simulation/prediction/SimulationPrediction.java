@@ -150,8 +150,8 @@ public class SimulationPrediction extends Simulation {
         // bind the fuse property from actualHouse to futureHouse
         actualHouse.fuseBlownProperty().addListener(new ChangeListener<Boolean>() {
             @Override
-            public void changed(ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) {
-                futureHouse.setFuseBlown(t1);
+            public void changed(ObservableValue<? extends Boolean> ov, Boolean oldValue, Boolean newValue) {
+                futureHouse.setFuseBlown(newValue);
             }
         });
         
