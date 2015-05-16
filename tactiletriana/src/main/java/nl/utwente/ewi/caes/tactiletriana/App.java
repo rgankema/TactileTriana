@@ -18,6 +18,9 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        //Config File laden
+        SimulationConfig.LoadProperties();
+        
         UncontrollableData.getInstance();
         StageController.initialize(stage);
         StageController.getInstance().setLauncherStageVisible(true);
