@@ -5,18 +5,62 @@
  */
 package nl.utwente.ewi.caes.tactiletriana;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Properties;
+
 /**
  *
  * @author Mick
  */
 public final class SimulationConfig {
 
-    public static final int HOUSE_MAX_FUSE_CURRENT = 3 * 35;
+    public static Properties properties = new Properties();
+    public static final String CONFIG_FILE = "tactiletriana.config";
 
     //public static final int SIMULATION_NUMBER_OF_HOUSES = 6;   // number of houses
-    public static final int TICK_MINUTES = 5;   // time in minutes that passes in the simulation with each tick
-    public static final int SYSTEM_TICK_TIME = 200;        // time between ticks in ms
-    public static final boolean SIMULATION_UNCONTROLABLE_LOAD_ENABLED = true; // staat de uncontrolable load aan?
+    public static int TICK_MINUTES;   // time in minutes that passes in the simulation with each tick
+    public static int SYSTEM_TICK_TIME;       // time between ticks in ms
+    public static boolean SIMULATION_UNCONTROLABLE_LOAD_ENABLED; // staat de uncontrolable load aan?
+    public static int HOUSE_MAX_FUSE_CURRENT;
 
-    
+    public static String LoadProperty(String title) throws IOException {
+        // load the property
+        properties.load(new FileInputStream(CONFIG_FILE));
+        return properties.getProperty(title);
+
+    }
+
+    public static void LoadProperties() {
+        try{
+            TICK_MINUTES = Integer.parseInt(LoadProperty("TICK_MINUTES"));
+            SYSTEM_TICK_TIME = Integer.parseInt(LoadProperty("SYSTEM_TICK_TIME"));
+            SIMULATION_UNCONTROLABLE_LOAD_ENABLED = Boolean.parseBoolean(LoadProperty("SIMULATION_UNCONTROLABLE_LOAD_ENABLED"));
+            HOUSE_MAX_FUSE_CURRENT = Integer.parseInt(LoadProperty("HOUSE_MAX_FUSE_CURRENT"));
+        }
+        catch (Exception e){
+            System.out.println("Error: Could not read the config file.");
+            TICK_MINUTES = 5;
+            SYSTEM_TICK_TIME = 200;
+            SIMULATION_UNCONTROLABLE_LOAD_ENABLED = true;
+            HOUSE_MAX_FUSE_CURRENT = 3 * 35;
+        }        
+    }
+    public static void SaveProperties(){
+        SaveProperty("TICK_MINUTES", String.valueOf(TICK_MINUTES));
+        SaveProperty("SYSTEM_TICK_TIME", String.valueOf(SYSTEM_TICK_TIME));
+        SaveProperty("SIMULATION_UNCONTROLABLE_LOAD_ENABLED", String.valueOf(SIMULATION_UNCONTROLABLE_LOAD_ENABLED));
+        SaveProperty("HOUSE_MAX_FUSE_CURRENT", String.valueOf(HOUSE_MAX_FUSE_CURRENT));   
+    }
+
+    public static void SaveProperty(String title, String value) {
+        try {
+            properties.setProperty(title, value);
+            properties.store(new FileOutputStream(CONFIG_FILE), null);
+        } catch (IOException e) {
+            System.out.println("Error config file could not be written");
+        }
+    }
+
 }
