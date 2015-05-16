@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.scene.chart.XYChart.Data;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Cable;
@@ -141,13 +143,23 @@ public class SimulationPrediction extends Simulation {
     }
     
     // Synchronizes two houses by synchronizing its device list
-    private void linkHouse(House actual, House future) {
-        futureByActual.put(actual, future);
-        actual.getDevices().addListener((ListChangeListener.Change<? extends DeviceBase> c) -> {
+    private void linkHouse(House actualHouse, House futureHouse) {
+        futureByActual.put(actualHouse, futureHouse);
+        //futureDevice.getProperties().get(property).bind(actualDevice.getProperties().get(property));
+        
+        // bind the fuse property from actualHouse to futureHouse
+        actualHouse.fuseBlownProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) {
+                futureHouse.setFuseBlown(t1);
+            }
+        });
+        
+        actualHouse.getDevices().addListener((ListChangeListener.Change<? extends DeviceBase> c) -> {
             while (c.next()) {
                 for (DeviceBase item : c.getRemoved()) {
                     mainSimulationChanged = true;
-                    future.getDevices().remove((DeviceBase)futureByActual.get(item));
+                    futureHouse.getDevices().remove((DeviceBase)futureByActual.get(item));
                 }
                 for (DeviceBase actualDevice : c.getAddedSubList()) {
                     mainSimulationChanged = true;
@@ -190,7 +202,7 @@ public class SimulationPrediction extends Simulation {
                     }
                     
                     // voeg het toe aan dit huis
-                    future.getDevices().add(futureDevice);
+                    futureHouse.getDevices().add(futureDevice);
                 }
             }
         });

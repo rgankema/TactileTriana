@@ -103,7 +103,8 @@ public class House extends LoggingEntityBase {
         return fuseBlownProperty().get();
     }
 
-    protected void setFuseBlown(boolean fuseBlown) {
+    
+    public void setFuseBlown(boolean fuseBlown) {
         this.fuseBlown.set(fuseBlown);
     }
 
