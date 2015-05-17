@@ -405,7 +405,8 @@ public class ServerConnection implements Runnable, IController {
                     case RELEASECONTROL:
                         processReleaseControl();
                         break;
-                    case SIMTIME: 
+                    case SIMTIME:
+                        processSimTime();
                         break;
                     case DEVICEPARAMETERS:
                         break;
@@ -433,7 +434,8 @@ public class ServerConnection implements Runnable, IController {
                     case RELEASECONTROL:
                         processReleaseControl();
                         break;
-                    case SIMTIME: 
+                    case SIMTIME:
+                        processSimTime();
                         break;
                     case DEVICEPARAMETERS:
                         break;
@@ -552,31 +554,26 @@ public class ServerConnection implements Runnable, IController {
             return;
         }
         
-        //Extract the houses
-        ArrayList<JSONObject> houses = null;
+        //Extract the devices, if no devices parameter exists no plannings are updated
+        ArrayList<JSONObject> devices = null;
         try {
-            
-            houses = (JSONArray) data.get("houses");
+            Object devicesRaw = data.get("devices");
+            if(devicesRaw != null) {
+                devices = (JSONArray) devicesRaw;
+            } else {
+                //No updated plannings
+                sendResponse();
+            }
             
         } catch (Exception e) {
-            error = "SubmitPlanning failed, invalid houses parameter.";
+            error = "SubmitPlanning failed, invalid devices parameter.";
         }
         
-        //Check if the houses parameter was not empty
-        if(houses.size() == 0) {
+        //Check if the devices parameter was not empty
+        if(devices.size() == 0) {
             //No updated plannings
             sendResponse();
             return;
-        }
-        
-        //Retrive all devices
-        ArrayList<JSONObject> devices = new ArrayList<JSONObject>();
-        try {
-            for(JSONObject house : houses) {
-                devices.addAll((JSONArray) house.get("devices"));
-            }
-        } catch(ClassCastException e) {
-            
         }
         
         //Update the planning for all devices
@@ -615,6 +612,11 @@ public class ServerConnection implements Runnable, IController {
             sendError(error);
             return;
         }
+    }
+    
+    public void processSimTime() {
+        log("Processing SimTime request... NOOP");
+        
     }
     
     public void processReleaseControl() {
