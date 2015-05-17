@@ -473,7 +473,7 @@ public class ServerConnection implements Runnable, IController {
     
     public void processStopSimulation() {
         log("Processing StopSimulation request...");
-        server.getSimulation().stop();
+        server.getSimulation().pause();
         sendResponse();
     }
     
