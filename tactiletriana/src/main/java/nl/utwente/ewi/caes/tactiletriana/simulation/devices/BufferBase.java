@@ -12,6 +12,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
+import static nl.utwente.ewi.caes.tactiletriana.Util.toLocalDateTime;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.SimulationBase;
 import org.json.simple.JSONArray;
@@ -47,7 +48,7 @@ public abstract class BufferBase extends DeviceBase {
         // register properties for prediction
         registerProperty(capacity);
         registerProperty(maxPower);
-        registerProperty(planning);
+        //registerProperty(planning); dit moet anders voor simprediction
     }
     
     // PROPERTIES
@@ -177,5 +178,27 @@ public abstract class BufferBase extends DeviceBase {
         result.put(API_MAX_POWER, getMaxPower());
         result.put(API_STATE_OF_CHARGE, getStateOfCharge());
         return result;
+    }
+    
+    @Override
+    public void updateParameter(String parameter, Object value) {
+        if (parameter.equals(API_CAPACITY)) {
+            setCapacity((double) value);
+        } else if (parameter.equals(API_MAX_POWER)) {
+            setMaxPower((double) value);
+        } else if (parameter.equals(API_PLANNING)) { 
+            JSONArray jsonPlanning = (JSONArray) value;
+            for (Object o : jsonPlanning) {
+                JSONObject planningEntry = (JSONObject) o;
+                LocalDateTime date =  toLocalDateTime((int)planningEntry.get("timestamp"));
+                double consumption = (double) planningEntry.get("consumption");
+                getPlanning().put(date, consumption);
+            }
+        } else if (parameter.equals(API_STATE_OF_CHARGE)) {
+            setStateOfCharge((double) value);
+        } else {
+            // Don't know the parameter, let super class handle it
+            super.updateParameter(parameter, value);
+        }
     }
 }

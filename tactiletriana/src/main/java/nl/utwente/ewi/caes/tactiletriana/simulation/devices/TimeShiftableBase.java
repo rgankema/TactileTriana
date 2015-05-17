@@ -55,7 +55,7 @@ public abstract class TimeShiftableBase extends DeviceBase {
         registerProperty(startTime);
         registerProperty(endTime);
         registerProperty(staticProfile);
-        registerProperty(planning);
+        //registerProperty(planning); dit moet anders voor simprediction
     }
     
     // PROPERTIES

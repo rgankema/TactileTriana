@@ -55,4 +55,14 @@ public class Util {
     public static int toTimeStep(LocalDateTime localDateTime) {
         return toMinuteOfYear(localDateTime) / SimulationConfig.TICK_MINUTES;
     }
+    
+    /**
+     * Converts the given minute of the year to a LocalDateTime with year 2014.
+     * 
+     * @param minuteOfYear the minute of the year
+     * @return the LocalDateTime
+     */
+    public static LocalDateTime toLocalDateTime(int minuteOfYear) {
+        return LocalDateTime.of(2014, 0, 0, 0, 0).plusMinutes(minuteOfYear);
+    }
 }
