@@ -39,10 +39,10 @@ public abstract class BufferBase extends DeviceBase {
         super(simulation, displayName, apiDeviceType);
         
         // register properties for API
-        registerAPIProperty(API_CAPACITY);
-        registerAPIProperty(API_MAX_POWER);
-        registerAPIProperty(API_STATE_OF_CHARGE);
-        registerAPIProperty(API_PLANNING);
+        registerAPIParameter(API_CAPACITY);
+        registerAPIParameter(API_MAX_POWER);
+        registerAPIParameter(API_STATE_OF_CHARGE);
+        registerAPIParameter(API_PLANNING);
         
         // register properties for prediction
         registerProperty(capacity);

@@ -28,7 +28,7 @@ public abstract class DeviceBase extends LoggingEntityBase {
     private static int DEVICE_ID = 0;
     private final int id;
     private final String apiDeviceType;
-    private final Set<String> apiProperties;
+    private final Set<String> apiParameters;
     private final List<Property> properties;
     
     /**
@@ -45,7 +45,7 @@ public abstract class DeviceBase extends LoggingEntityBase {
         DEVICE_ID++;
         
         this.apiDeviceType = apiDeviceType;
-        this.apiProperties = new HashSet<>();
+        this.apiParameters = new HashSet<>();
         this.properties = new ArrayList<>();
     }
 
@@ -137,7 +137,7 @@ public abstract class DeviceBase extends LoggingEntityBase {
      * @return the set of property keys
      */
     public final Set<String> getAPIProperties() {
-        return Collections.unmodifiableSet(apiProperties);
+        return Collections.unmodifiableSet(apiParameters);
     }
     
     /**
@@ -161,8 +161,8 @@ public abstract class DeviceBase extends LoggingEntityBase {
         }
     }
     
-    protected final void registerAPIProperty(String apiProperty) {
-        this.apiProperties.add(apiProperty);
+    protected final void registerAPIParameter(String parameterName) {
+        this.apiParameters.add(parameterName);
     }
     
     protected final void registerProperty(Property property) {
@@ -199,56 +199,56 @@ public abstract class DeviceBase extends LoggingEntityBase {
     /**
      * Sets a property to a certain value.
      * 
-     * @param property  the key of the property to be set (the JSON property name)
+     * @param parameter  the key of the property to be set (the JSON parameter name)
      * @param value     the value that the property should be set to
-     * @throws IllegalArgumentException if the device does not know the given property, or cannot apply the given value to it.
+     * @throws IllegalArgumentException if the device does not know the given parameter, or cannot apply the given value to it.
      */
-    public void setProperty(String property, boolean value) {
-        throw new IllegalArgumentException("Cannot set property " + property);
+    public void updateParameter(String parameter, boolean value) {
+        throw new IllegalArgumentException("Cannot update parameter " + parameter);
     }
     
     /**
      * Sets a property to a certain value.
      * 
-     * @param property  the key of the property to be set (the JSON property name)
+     * @param parameter  the key of the property to be set (the JSON parameter name)
      * @param value     the value that the property should be set to
-     * @throws IllegalArgumentException if the device does not know the given property, or cannot apply the given value to it.
+     * @throws IllegalArgumentException if the device does not know the given parameter, or cannot apply the given value to it.
      */
-    public void setProperty(String property, double value) {
-        throw new IllegalArgumentException("Cannot set property " + property);
+    public void updateParameter(String parameter, double value) {
+        throw new IllegalArgumentException("Cannot set parameter " + parameter);
     }
     
     /**
      * Sets a property to a certain value.
      * 
-     * @param property  the key of the property to be set (the JSON property name)
+     * @param parameter  the key of the property to be set (the JSON parameter name)
      * @param value     the value that the property should be set to
-     * @throws IllegalArgumentException if the device does not know the given property, or cannot apply the given value to it.
+     * @throws IllegalArgumentException if the device does not know the given parameter, or cannot apply the given value to it.
      */
-    public void setProperty(String property, int value) {
-        throw new IllegalArgumentException("Cannot set property " + property);
+    public void updateParameter(String parameter, int value) {
+        throw new IllegalArgumentException("Cannot set parameter " + parameter);
     }
     
     /**
      * Sets a property to a certain value.
      * 
-     * @param property  the key of the property to be set (the JSON property name)
+     * @param parameter  the key of the property to be set (the JSON parameter name)
      * @param value     the value that the property should be set to
-     * @throws IllegalArgumentException if the device does not know the given property, or cannot apply the given value to it.
+     * @throws IllegalArgumentException if the device does not know the given parameter, or cannot apply the given value to it.
      */
-    public void setProperty(String property, JSONArray value) {
-        throw new IllegalArgumentException("Cannot set property " + property);
+    public void updateParameter(String parameter, JSONArray value) {
+        throw new IllegalArgumentException("Cannot set parameter " + parameter);
     }
     
     /**
      * Sets a property to a certain value.
      * 
-     * @param property  the key of the property to be set (the JSON property name)
+     * @param parameter  the key of the property to be set (the JSON parameter name)
      * @param value     the value that the property should be set to
-     * @throws IllegalArgumentException if the device does not know the given property, or cannot apply the given value to it.
+     * @throws IllegalArgumentException if the device does not know the given parameter, or cannot apply the given value to it.
      */
-    public void setProperty(String property, JSONObject value) {
-        throw new IllegalArgumentException("Cannot set property " + property);
+    public void updateParameter(String parameter, JSONObject value) {
+        throw new IllegalArgumentException("Cannot set parameter " + parameter);
     }
     
     // ENUMS AND NESTED CLASSES

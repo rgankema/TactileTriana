@@ -45,11 +45,11 @@ public class SolarPanel extends DeviceBase {
         super(simulation, "Solar Panel", "SolarPanel");
         
         // Register properties for API
-        registerAPIProperty(API_AREA);
-        registerAPIProperty(API_EFFICIENCY);
-        registerAPIProperty(API_ELEVATION);
-        registerAPIProperty(API_ORIENTATION);
-        registerAPIProperty(API_PROFILE);
+        registerAPIParameter(API_AREA);
+        registerAPIParameter(API_EFFICIENCY);
+        registerAPIParameter(API_ELEVATION);
+        registerAPIParameter(API_ORIENTATION);
+        registerAPIParameter(API_PROFILE);
         
         // Register properties for prediction
         registerProperty(area);

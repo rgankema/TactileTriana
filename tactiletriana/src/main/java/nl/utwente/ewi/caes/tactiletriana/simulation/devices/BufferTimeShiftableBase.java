@@ -30,8 +30,8 @@ public abstract class BufferTimeShiftableBase extends BufferBase {
         super(simulation, displayName, "BufferTimeShiftable");
         
         // register properties for API
-        registerAPIProperty(API_TIMES);
-        registerAPIProperty(API_VEHICLE2GRID);
+        registerAPIParameter(API_TIMES);
+        registerAPIParameter(API_VEHICLE2GRID);
         
         // register properties for prediction
         registerProperty(startTime);

@@ -46,10 +46,10 @@ public abstract class TimeShiftableBase extends DeviceBase {
         this.programRemaining = true;
         
         // Register properties for API
-        registerAPIProperty(API_TIMES);
-        registerAPIProperty(API_STATIC_PROFILE);
-        registerAPIProperty(API_STARTED_ON);
-        registerAPIProperty(API_TS_PLANNING);
+        registerAPIParameter(API_TIMES);
+        registerAPIParameter(API_STATIC_PROFILE);
+        registerAPIParameter(API_STARTED_ON);
+        registerAPIParameter(API_TS_PLANNING);
         
         // Register properties for prediction
         registerProperty(startTime);

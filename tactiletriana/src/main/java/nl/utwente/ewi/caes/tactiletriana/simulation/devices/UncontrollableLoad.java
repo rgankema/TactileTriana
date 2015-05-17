@@ -44,7 +44,7 @@ public class UncontrollableLoad extends DeviceBase {
         this.data = UncontrollableData.getInstance();
         
         // Register API properties
-        registerAPIProperty(API_PROFILE);
+        registerAPIParameter(API_PROFILE);
     }
     
     /**
