@@ -5,6 +5,7 @@
  */
 package nl.utwente.ewi.caes.tactiletriana;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.Random;
 
@@ -37,6 +38,17 @@ public class Util {
     }
     
     /**
+     * Determines if the given date is in the weekend.
+     * 
+     * @param time The date for which it has to be determined whether it is in the weekend
+     * @return {@code true} if the day of the week is Saturday or Sunday, {@code false} otherwise.
+     */
+    public static boolean isWeekend(LocalDateTime time){
+        DayOfWeek dow = time.getDayOfWeek();
+        return dow == DayOfWeek.SATURDAY || dow == DayOfWeek.SUNDAY;
+    }
+    
+    /**
      * Returns the minute of the year the specified LocalDateTime is in.
      * 
      * @param localDateTime the LocalDateTime to get the minute of
@@ -54,5 +66,15 @@ public class Util {
      */
     public static int toTimeStep(LocalDateTime localDateTime) {
         return toMinuteOfYear(localDateTime) / SimulationConfig.TICK_MINUTES;
+    }
+    
+    /**
+     * Converts the given minute of the year to a LocalDateTime with year 2014.
+     * 
+     * @param minuteOfYear the minute of the year
+     * @return the LocalDateTime
+     */
+    public static LocalDateTime toLocalDateTime(int minuteOfYear) {
+        return LocalDateTime.of(2014, 0, 0, 0, 0).plusMinutes(minuteOfYear);
     }
 }

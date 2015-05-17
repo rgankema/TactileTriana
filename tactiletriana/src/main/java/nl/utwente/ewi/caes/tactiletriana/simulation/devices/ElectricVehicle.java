@@ -5,13 +5,13 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation.devices;
 
-import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
+import static nl.utwente.ewi.caes.tactiletriana.Util.isWeekend;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 import nl.utwente.ewi.caes.tactiletriana.simulation.SimulationBase;
 
@@ -174,18 +174,6 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
         BMW_I3
     }
     
-    /**
-     * Function that determines if the given time is in the weekend
-     * @param time The time for which has to be determined if it is in the weekend
-     * @return true if the day of the week of time is saturday or sunday, false if it isn't
-     */
-    public boolean isWeekend(LocalDateTime time){
-        
-        DayOfWeek dow = time.getDayOfWeek();
-        
-        return dow == DayOfWeek.SATURDAY || dow == DayOfWeek.SUNDAY;
-    }
-    
     public double getLeaveTime() {
         return leaveTime;
     }
@@ -197,7 +185,6 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
     public final double getReturnTime() {
         return returnTime;
     }
-
     
     public final void setReturnTime(double returnTime) {
         this.returnTime = returnTime;
@@ -210,6 +197,10 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
     public void setKilometersPerkWh(double kilometersPerkWh) {
         //System.out.println("kilometersperkwh: "+kilometersPerkWh);
         this.kilometersPerkWh = kilometersPerkWh;
+    }
+    
+    public final int getKilometersToWork() {
+        return this.kilometersToWork;
     }
     
     public void setKilometersToWork(int kilometersToWork) {

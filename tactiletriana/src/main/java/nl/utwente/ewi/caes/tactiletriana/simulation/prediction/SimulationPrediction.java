@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import javafx.beans.Observable;
+import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.scene.chart.XYChart.Data;
 import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
@@ -193,6 +195,18 @@ public class SimulationPrediction extends SimulationBase {
                     for (int i = 0; i < actualDevice.getProperties().size(); i++) {
                         futureDevice.getProperties().get(i).bind(actualDevice.getProperties().get(i));
                         actualDevice.getProperties().get(i).addListener(observable -> {
+                            mainSimulationChanged = true;
+                        });
+                    }
+                    for (int i = 0; i < actualDevice.getLists().size(); i++) {
+                        Bindings.bindContent(futureDevice.getLists().get(i), actualDevice.getLists().get(i));
+                        actualDevice.getLists().get(i).addListener((Observable observable) -> {
+                            mainSimulationChanged = true;
+                        });
+                    }
+                    for (int i = 0; i < actualDevice.getMaps().size(); i++) {
+                        Bindings.bindContent(futureDevice.getMaps().get(i), actualDevice.getMaps().get(i));
+                        actualDevice.getMaps().get(i).addListener((Observable observable) -> {
                             mainSimulationChanged = true;
                         });
                     }

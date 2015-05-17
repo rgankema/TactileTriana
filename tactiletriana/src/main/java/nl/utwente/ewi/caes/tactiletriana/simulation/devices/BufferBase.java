@@ -6,12 +6,12 @@
 package nl.utwente.ewi.caes.tactiletriana.simulation.devices;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
+import static nl.utwente.ewi.caes.tactiletriana.Util.toLocalDateTime;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.SimulationBase;
 import org.json.simple.JSONArray;
@@ -28,6 +28,8 @@ public abstract class BufferBase extends DeviceBase {
     public static final String API_STATE_OF_CHARGE = "SOC";
     public static final String API_PLANNING = "planning";
     
+    private final ObservableMap<LocalDateTime, Double> planning;
+    
     /**
      * Constructs a new BufferBase.
      * 
@@ -38,6 +40,8 @@ public abstract class BufferBase extends DeviceBase {
     public BufferBase(SimulationBase simulation, String displayName, String apiDeviceType) {
         super(simulation, displayName, apiDeviceType);
         
+        planning = FXCollections.observableMap(new HashMap<LocalDateTime, Double>());
+        
         // register properties for API
         registerAPIParameter(API_CAPACITY);
         registerAPIParameter(API_MAX_POWER);
@@ -47,26 +51,16 @@ public abstract class BufferBase extends DeviceBase {
         // register properties for prediction
         registerProperty(capacity);
         registerProperty(maxPower);
-        registerProperty(planning);
+        registerMap(planning);
     }
     
     // PROPERTIES
     
     /**
-     * The planning for this device
+     * @return the planning for this device
      */
-    private final ObjectProperty<ObservableMap<LocalDateTime, Double>> planning = new SimpleObjectProperty<>(FXCollections.observableHashMap());
-    
-    public ObjectProperty<ObservableMap<LocalDateTime, Double>> planningProperty() {
-        return planning;
-    }
-    
     public final ObservableMap<LocalDateTime, Double> getPlanning() {
-        return planningProperty().get();
-    }
-    
-    public final void setPlanning(ObservableMap<LocalDateTime, Double> planning) {
-        planningProperty().set(planning);
+        return planning;
     }
     
     /**
@@ -177,5 +171,27 @@ public abstract class BufferBase extends DeviceBase {
         result.put(API_MAX_POWER, getMaxPower());
         result.put(API_STATE_OF_CHARGE, getStateOfCharge());
         return result;
+    }
+    
+    @Override
+    public void updateParameter(String parameter, Object value) {
+        if (parameter.equals(API_CAPACITY)) {
+            setCapacity((double) value);
+        } else if (parameter.equals(API_MAX_POWER)) {
+            setMaxPower((double) value);
+        } else if (parameter.equals(API_PLANNING)) { 
+            JSONArray jsonPlanning = (JSONArray) value;
+            for (Object o : jsonPlanning) {
+                JSONObject planningEntry = (JSONObject) o;
+                LocalDateTime date =  toLocalDateTime((int)planningEntry.get("timestamp"));
+                double consumption = (double) planningEntry.get("consumption");
+                getPlanning().put(date, consumption);
+            }
+        } else if (parameter.equals(API_STATE_OF_CHARGE)) {
+            setStateOfCharge((double) value);
+        } else {
+            // Don't know the parameter, let super class handle it
+            super.updateParameter(parameter, value);
+        }
     }
 }
