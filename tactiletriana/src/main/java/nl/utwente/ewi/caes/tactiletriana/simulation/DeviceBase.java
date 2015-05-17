@@ -167,8 +167,36 @@ public abstract class DeviceBase extends LoggingEntityBase {
     protected final void registerProperty(Property property) {
         this.properties.add(property);
     }
+    
+    // API
+    
+    /**
+     * Convert this Device and its parameters to a JSON representation as specified 
+     * in the API.
+     * 
+     * @return the JSON representation of the device
+     */
+    public final JSONObject toJSON() {
+        JSONObject result = new JSONObject();
+        result.put("deviceID", this.id);
+        result.put("deviceType", this.apiDeviceType);
+        result.put("consumption", this.getCurrentConsumption());
+        
+        result.put("parameters", parametersToJSON());
+        
+        return result;
+    }
+    
+    /**
+     * Creates a JSON representation of the parameters of this device as specified
+     * in the API.
+     * 
+     * @return the JSON representation of the device's parameters
+     */
+    protected abstract JSONObject parametersToJSON();
 
     // ENUMS AND NESTED CLASSES
+    
     /**
      * Describes the state of a device
      */
@@ -187,26 +215,4 @@ public abstract class DeviceBase extends LoggingEntityBase {
          */
         DISCONNECTED,
     }
-    
-    // API
-    
-    /**
-     * Convert this Device and its parameters to a JSON representation as specified in the API. 
-     * Subclasses of DeviceBase should override this method and add any information not yet known (e.g. deviceType). 
-     * 
-     * @return 
-     */
-    public JSONObject toJSON() {
-        JSONObject result = new JSONObject();
-        result.put("deviceID", this.id);
-        result.put("deviceType", this.apiDeviceType);
-        result.put("consumption", this.getCurrentConsumption());
-        
-        result.put("parameters", parametersToJSON());
-        
-        return result;
-    }
-    
-    protected abstract JSONObject parametersToJSON();
-    
 }
