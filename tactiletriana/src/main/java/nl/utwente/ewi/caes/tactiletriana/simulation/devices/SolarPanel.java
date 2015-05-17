@@ -14,63 +14,58 @@ import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 import nl.utwente.ewi.caes.tactiletriana.simulation.*;
 import nl.utwente.ewi.caes.tactiletriana.simulation.data.WeatherData;
 import static nl.utwente.ewi.caes.tactiletriana.Util.*;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 /**
  *
  * @author niels
  */
 public class SolarPanel extends DeviceBase {
+    public final static String API_ORIENTATION = "orientation";
+    public final static String API_EFFICIENCY = "efficiency";
+    public final static String API_ELEVATION = "elevation";
+    public final static String API_AREA = "area";
+    public final static String API_PROFILE = "profile";
     
     private double[] profileSquareMeter;
     
     // The tick of the year where the profile starts
     private int profileTickOffset;
     
-    //FIXME: Make (all?) these constants editable
-    
-    //Elevation of the panel in degrees
-    private double elevation = 45;
-    //Azimuth orientation of the panel in degrees, 0 = south, 90 = west, 180 = north & 270 = east
-    private double azimuth = 0;
-    //Effiency of the solar panel in percentage
-    private double efficiency = 21.5;
     //Efficiency degradation due to temperature increase of the solar panel. Percentage degradation for maximum power per degree celcius [percent]
-    private double temperatureEfficiency = 0.3;
-    //Max and min values for the area
-    public static final double MIN_AREA = 0.5;
-    public static final double MAX_AREA = 50;
+    private static final double temperatureEfficiency = 0.3;
 
     /**
-     * Constructs a new SolarPanel. Registers the {@code area} and {@code profile}
-     * properties.
-     * 
      * @param simulation the Simulation this SolarPanel belongs to
      */
-    public SolarPanel(Simulation simulation) {
+    public SolarPanel(SimulationBase simulation) {
         super(simulation, "Solar Panel", "SolarPanel");
         
-        addProperty("area", area);
-        addProperty("profile", profile);
+        // Register properties for API
+        registerAPIProperty(API_AREA);
+        registerAPIProperty(API_EFFICIENCY);
+        registerAPIProperty(API_ELEVATION);
+        registerAPIProperty(API_ORIENTATION);
+        registerAPIProperty(API_PROFILE);
         
-        setArea((MIN_AREA + MAX_AREA) / 2);
+        // Register properties for prediction
+        registerProperty(area);
+        registerProperty(efficiency);
+        registerProperty(elevation);
+        registerProperty(orientation);
     }
     
     // PROPERTIES
     
     /**
-     * The amount of power the device will consume when turned on
+     * The area of the solar panel. May not be negative.
      */
     private final DoubleProperty area = new SimpleDoubleProperty(25d) {
         @Override
         public void set(double value) {
-            if (get() == value) {
-                return;
-            }
-            if (value < MIN_AREA) {
-                value = MIN_AREA;
-            }
-            if (value > MAX_AREA) {
-                value = MAX_AREA;
+            if (value < 0) {
+                throw new IllegalArgumentException("Area may not be a negative value");
             }
 
             super.set(value);
@@ -90,6 +85,88 @@ public class SolarPanel extends DeviceBase {
     }
     
     /**
+     * The elevation of the solar panel in degrees. Must be between 0 and 90.
+     */
+    private final DoubleProperty elevation = new SimpleDoubleProperty(45) {
+        @Override
+        public void set(double value) {
+            if (value < 0) {
+                throw new IllegalArgumentException("Elevation may not be below 0 degrees");
+            } else if (value > 90) {
+                throw new IllegalArgumentException("Elevation may not be higher than 90 degrees");
+            }
+            super.set(value);
+        }
+    };
+    
+    public DoubleProperty elevationProperty() {
+        return elevation;
+    }
+    
+    public final double getElevation() {
+        return elevationProperty().get();
+    }
+    
+    public final void setElevation(double elevation) {
+        elevationProperty().set(elevation);
+    }
+    
+    /**
+     * The orientation (azimuth) of the solar panel. Can be set to any value, but
+     * the end result will always be between 0 and 360. 0 degrees is south, 90
+     * degrees is west, and so on.
+     */
+    private final DoubleProperty orientation = new SimpleDoubleProperty(0) {
+        @Override
+        public void set(double value) {
+            value = value % 360;
+            if (value < 0) {
+                value += 360;
+            }
+            super.set(value);
+        }
+    };
+    
+    public DoubleProperty orientationProperty() {
+        return orientation;
+    }
+    
+    public final double getOrientation() {
+        return orientationProperty().get();
+    }
+    
+    public final void setOrientation(double orientation) {
+        orientationProperty().set(orientation);
+    }
+    
+    /**
+     * The efficiency of the solar panel in percents. Must be between 0 and 100.
+     */
+    private final DoubleProperty efficiency = new SimpleDoubleProperty(21.5) {
+        @Override
+        public void set(double value) {
+            if (value < 0) {
+                throw new IllegalArgumentException("Efficiecny may not be below 0%");
+            } else if (value > 100) {
+                throw new IllegalArgumentException("Efficiecny may not be higher than 100%");
+            }
+            super.set(value);
+        }
+    };
+    
+    public DoubleProperty efficiencyProperty() {
+        return efficiency;
+    }
+    
+    public final double getEfficiency() {
+        return efficiencyProperty().get();
+    }
+    
+    public final void setEfficiency(double efficiency) {
+        efficiencyProperty().set(efficiency);
+    }
+    
+    /**
      * The profile of the solar panel from the current time until the next day
      */
     private final ObjectProperty<double[]> profile = new SimpleObjectProperty<>();
@@ -102,7 +179,7 @@ public class SolarPanel extends DeviceBase {
         return profileProperty().get();
     }
     
-    public void setProfile(double[] profile) {
+    private void setProfile(double[] profile) {
         profileProperty().set(profile);
     }
     
@@ -189,8 +266,8 @@ public class SolarPanel extends DeviceBase {
 
         double longitudeRadian = longitude * (PI / 180);
         double latitudeRadian = latitude * (PI / 180);
-        double elevationRadian = elevation * (PI / 180);	//Angle of the panel
-        double azimuthRadian = azimuth * (PI / 180);
+        double elevationRadian = getElevation() * (PI / 180);	//Angle of the panel
+        double azimuthRadian = getOrientation() * (PI / 180);
 
         double rho_gnd = 0.2; //constant
 
@@ -246,12 +323,27 @@ public class SolarPanel extends DeviceBase {
 
         //Guess for the PV temperature that affects the efficiency.
         double temperaturePV = temperature + (50 * powerSquareMeter / 1367); //Formula not based on anything or whatsover, this part can be improved
-        double actualEfficiency = (efficiency * (1 - ((temperaturePV - 25) * temperatureEfficiency) / 100)) / 100;
+        double actualEfficiency = (getEfficiency() * (1 - ((temperaturePV - 25) * temperatureEfficiency) / 100)) / 100;
         
         double result = powerSquareMeter * actualEfficiency;
         
         //Return the production in W (coming from J/cm2 for a whole hour)
         return result; 
+    }
+
+    @Override
+    protected JSONObject parametersToJSON() {
+        JSONObject result = new JSONObject();
+        result.put(API_AREA, getArea());
+        result.put(API_EFFICIENCY, getEfficiency());
+        result.put(API_ELEVATION, getElevation());
+        result.put(API_ORIENTATION, getOrientation());
+        JSONArray jsonProfile = new JSONArray();
+        for (int i = 0; i < getProfile().length; i++) {
+            jsonProfile.add(getProfile()[i]);
+        }
+        result.put(API_PROFILE, jsonProfile);
+        return result;
     }
 
 }

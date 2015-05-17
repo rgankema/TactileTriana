@@ -3,9 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package nl.utwente.ewi.caes.tactiletriana.simulation;
+package nl.utwente.ewi.caes.tactiletriana.simulation.prediction;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,13 +12,14 @@ import java.util.Map;
 import java.util.function.Consumer;
 import javafx.collections.ListChangeListener;
 import javafx.scene.chart.XYChart.Data;
+import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Cable;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.House;
 import nl.utwente.ewi.caes.tactiletriana.simulation.LoggingEntityBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Node;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
-import nl.utwente.ewi.caes.tactiletriana.simulation.TimeScenario;
+import nl.utwente.ewi.caes.tactiletriana.simulation.SimulationBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.TimeScenario.TimeSpan;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.*;
 
@@ -27,14 +27,9 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.devices.*;
  *
  * @author mickvdv
  */
-public class SimulationPrediction extends Simulation {
+public class SimulationPrediction extends SimulationBase {
     // Amount of hours that the prediction runs ahead
     private final static int RUN_AHEAD = 6;
-    // The prediction's tick method shouldn't be affected by a scenario, so use one that runs infinitely
-    private final static TimeScenario PREDICTION_SCENARIO = new TimeScenario();
-    static {
-        PREDICTION_SCENARIO.add(new TimeSpan(LocalDateTime.MIN, LocalDateTime.MAX));
-    }
     
     private final Simulation mainSimulation;
     private final Map<LoggingEntityBase, LoggingEntityBase> futureByActual = new HashMap<>();
@@ -49,7 +44,6 @@ public class SimulationPrediction extends Simulation {
      */
     public SimulationPrediction(Simulation mainSimulation) {
         super();
-        setTimeScenario(PREDICTION_SCENARIO);
         
         this.mainSimulation = mainSimulation;
         setCurrentTime(mainSimulation.getCurrentTime());
@@ -119,6 +113,13 @@ public class SimulationPrediction extends Simulation {
         });
     }
     
+    // SIMULATIONBASE
+    
+    @Override
+    protected void incrementTime() {
+        setCurrentTime(getCurrentTime().plusMinutes(SimulationConfig.TICK_MINUTES));
+    }
+    
     // HELPER METHODS
     
     // Walks through the network tree and synchronizes equivalent LoggingEntityBases
@@ -130,7 +131,11 @@ public class SimulationPrediction extends Simulation {
         for (int i = 0; i < actual.getCables().size(); i++) {
             Cable actualCable = actual.getCables().get(i);
             Cable futureCable = future.getCables().get(i);
-            futureCable.broken.bind(actualCable.broken);
+            actualCable.brokenProperty().addListener((observable, wasBroken, isBroken) -> {
+                if (!isBroken) {
+                    futureCable.repair();
+                }
+            });
             // Bind length
             actualCable.lengthProperty().addListener(obs -> { 
                 futureCable.setLength(actualCable.getLength());
@@ -147,7 +152,11 @@ public class SimulationPrediction extends Simulation {
         //futureDevice.getProperties().get(property).bind(actualDevice.getProperties().get(property));
         
         // bind the fuse property from actualHouse to futureHouse
-        futureHouse.fuseBlown.bind(actualHouse.fuseBlown);
+        actualHouse.fuseBlownProperty().addListener((observable, wasBroken, isBroken) -> { 
+            if (!isBroken) {
+                futureHouse.repairFuse();
+            }
+        });
         
         actualHouse.getDevices().addListener((ListChangeListener.Change<? extends DeviceBase> c) -> {
             while (c.next()) {
@@ -181,16 +190,9 @@ public class SimulationPrediction extends Simulation {
                     futureByActual.put(actualDevice, futureDevice);
                     
                     // bind alle parameters
-                    for (String property : actualDevice.getProperties().keySet()) {
-                        // SOC and profile shouldn't be bound to
-                        if (property.equals("SOC") || property.equals("profile")) {
-                            continue;
-                        }
-                        futureDevice.getProperties().get(property).bind(actualDevice.getProperties().get(property));
-                        
-                        // als er iets aan de parameters veranderd moet de simulation.setMainSimulationChanged() aangeroepen worden
-                        // dit zorgt ervoor dat bij de eerst volgende tick() van de main simulation de prediction opnieuw begint
-                        actualDevice.getProperties().get(property).addListener(observable -> {
+                    for (int i = 0; i < actualDevice.getProperties().size(); i++) {
+                        futureDevice.getProperties().get(i).bind(actualDevice.getProperties().get(i));
+                        actualDevice.getProperties().get(i).addListener(observable -> {
                             mainSimulationChanged = true;
                         });
                     }
@@ -230,4 +232,6 @@ public class SimulationPrediction extends Simulation {
         }
         return null;
     }
+
+    
 }

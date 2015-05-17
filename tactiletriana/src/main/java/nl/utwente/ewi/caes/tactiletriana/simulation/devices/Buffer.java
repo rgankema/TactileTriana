@@ -6,25 +6,60 @@
 package nl.utwente.ewi.caes.tactiletriana.simulation.devices;
 
 import java.time.LocalDateTime;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableMap;
 import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
-import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
+import nl.utwente.ewi.caes.tactiletriana.simulation.SimulationBase;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 /**
  *
  * @author mickvdv
  */
 public class Buffer extends BufferBase {
-
-    public Buffer(Simulation simulation) {
+    public static final String API_PLANNING = "planning";
+    
+    public Buffer(SimulationBase simulation) {
         super(simulation, "Buffer", "Buffer");
 
         // initialize values
         this.setMaxPower(3700d);
         this.setCapacity(10000d);
         this.setStateOfCharge(0d);
+        
+        // register properties for API
+        registerAPIProperty(API_PLANNING);
+        
+        // register properties for prediction
+        registerProperty(planning);
+        
     }
 
+    // PROPERTIES
+    
+    /**
+     * The planning for this device
+     */
+    private final ObjectProperty<ObservableMap<LocalDateTime, Double>> planning = new SimpleObjectProperty<>(FXCollections.observableHashMap());
+    
+    public ObjectProperty<ObservableMap<LocalDateTime, Double>> planningProperty() {
+        return planning;
+    }
+    
+    public final ObservableMap<LocalDateTime, Double> getPlanning() {
+        return planningProperty().get();
+    }
+    
+    public final void setPlanning(ObservableMap<LocalDateTime, Double> planning) {
+        planningProperty().set(planning);
+    }
+    
+    // METHODS
+    
     @Override
     public void tick(boolean connected) {
         super.tick(connected);
@@ -40,7 +75,7 @@ public class Buffer extends BufferBase {
         double nextConsumption;
 
         // If no planning available, help out parent house
-        if (simulation.getController() == null || simulation.getController().getPlannedConsumption(this, currentTime) == null) {
+        if (getPlanning() == null || getPlanning().get(currentTime) == null) {
             // Likely to change, tick time is probably going to be variable
 
             
@@ -83,12 +118,26 @@ public class Buffer extends BufferBase {
                 // test:
             }
         } else {
-            nextConsumption = simulation.getController().getPlannedConsumption(this, currentTime);
+            nextConsumption = getPlanning().get(currentTime);
         }
 
         if (nextConsumption * timestep > this.getStateOfCharge()) {
             //System.out.println("Error next consumption > this.getStateOfCharge())");
         }
         this.setCurrentConsumption(nextConsumption);
+    }
+
+    @Override
+    protected JSONObject parametersToJSON() {
+        JSONObject result = super.parametersToJSON();
+        JSONArray jsonPlanning = new JSONArray();
+        for (LocalDateTime time : getPlanning().keySet()) {
+            JSONObject interval = new JSONObject();
+            interval.put("timestamp", toMinuteOfYear(time));
+            interval.put("consumption", getPlanning().get(time));
+            jsonPlanning.add(interval);
+        }
+        result.put(API_PLANNING, jsonPlanning);
+        return result;
     }
 }

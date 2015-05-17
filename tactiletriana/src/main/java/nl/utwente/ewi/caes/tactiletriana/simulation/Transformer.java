@@ -13,7 +13,7 @@ public class Transformer extends Node implements IFWBWSEntity {
 
     public final double TRANSFORMER_CURRENT = 230.0;
 
-    public Transformer(Simulation simulation) {
+    public Transformer(SimulationBase simulation) {
         super(null, simulation);
         setVoltage(230);
     }

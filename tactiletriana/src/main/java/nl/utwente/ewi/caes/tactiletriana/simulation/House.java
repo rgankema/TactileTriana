@@ -24,7 +24,7 @@ public class House extends LoggingEntityBase {
 
     private final ObservableList<DeviceBase> devices;
 
-    public House(Simulation simulation) {
+    public House(SimulationBase simulation) {
         super(simulation, "House", QuantityType.POWER);
         devices = FXCollections.observableArrayList();
         devices.addListener((ListChangeListener.Change<? extends DeviceBase> c) -> {
@@ -90,11 +90,10 @@ public class House extends LoggingEntityBase {
         return maximumConsumptionProperty().get();
     }
 
-    // Package private so SimulationPrediction can use it
     /**
      * Whether the fuse is blown or not.
      */
-    final ReadOnlyBooleanWrapper fuseBlown = new ReadOnlyBooleanWrapper(false);
+    private final ReadOnlyBooleanWrapper fuseBlown = new ReadOnlyBooleanWrapper(false);
 
     public ReadOnlyBooleanProperty fuseBlownProperty() {
         return fuseBlown.getReadOnlyProperty();

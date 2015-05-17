@@ -5,7 +5,7 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.touch.device;
 
-import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.Property;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -47,7 +47,7 @@ class DeviceConfigView extends GridPane {
             delay.setMin(0);
             delay.setMax(24*60 - timeShiftable.getStaticProfile().length);
             delay.valueProperty().addListener(obs -> { 
-                timeShiftable.setEndTime((timeShiftable.getStartTime() + delay.getValue()) % (24 * 60));
+                timeShiftable.setEndTime((int) ((timeShiftable.getStartTime() + delay.getValue()) % (24 * 60)));
             });
             // consume touch events so that the deviceview can't be dragged while using the slider
             delay.addEventFilter(TouchEvent.ANY, e -> e.consume());
@@ -55,7 +55,7 @@ class DeviceConfigView extends GridPane {
             addControl("Delay", delay);
         } else if (device instanceof SolarPanel) {  // SolarPanel
             SolarPanel solarPanel = (SolarPanel) device;
-            Slider area = buildSlider(SolarPanel.MIN_AREA, SolarPanel.MAX_AREA, solarPanel.areaProperty());
+            Slider area = buildSlider(1, 50, solarPanel.areaProperty());
             addControl("Area", area);
         } else if (device instanceof ElectricVehicle) { // EV
             ElectricVehicle electricVehicle = (ElectricVehicle) device;
@@ -64,7 +64,7 @@ class DeviceConfigView extends GridPane {
         }
     }
     
-    private Slider buildSlider(double min, double max, DoubleProperty property) {
+    private Slider buildSlider(double min, double max, Property<Number> property) {
         Slider result = new Slider();
         result.setMin(min);
         result.setMax(max);

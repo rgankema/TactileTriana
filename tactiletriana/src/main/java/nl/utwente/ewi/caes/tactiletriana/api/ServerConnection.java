@@ -12,7 +12,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
@@ -20,10 +19,6 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.House;
 import nl.utwente.ewi.caes.tactiletriana.simulation.IController;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
-import nl.utwente.ewi.caes.tactiletriana.simulation.devices.Buffer;
-import nl.utwente.ewi.caes.tactiletriana.simulation.devices.BufferTimeShiftableBase;
-import nl.utwente.ewi.caes.tactiletriana.simulation.devices.SolarPanel;
-import nl.utwente.ewi.caes.tactiletriana.simulation.devices.TimeShiftableBase;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -480,7 +475,7 @@ public class ServerConnection implements Runnable, IController {
     
     public void processStopSimulation() {
         log("Processing StopSimulation request...");
-        server.getSimulation().stop();
+        server.getSimulation().pause();
         sendResponse();
     }
     
@@ -693,7 +688,7 @@ public class ServerConnection implements Runnable, IController {
         JSONObject response = new JSONObject();
         Simulation sim = server.getSimulation();
         response.put("simTime", sim.getCurrentTime().getDayOfYear()*24*60 + sim.getCurrentTime().getHour() * 60 + sim.getCurrentTime().getMinute());
-        response.put("timeStep", sim.getTimeStep());
+        response.put("timeStep", SimulationConfig.TICK_MINUTES);
         sendMessage(response.toJSONString());
         
         
