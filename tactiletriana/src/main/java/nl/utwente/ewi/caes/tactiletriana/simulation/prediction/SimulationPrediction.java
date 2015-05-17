@@ -190,16 +190,9 @@ public class SimulationPrediction extends SimulationBase {
                     futureByActual.put(actualDevice, futureDevice);
                     
                     // bind alle parameters
-                    for (String property : actualDevice.getProperties().keySet()) {
-                        // SOC and profile shouldn't be bound to
-                        if (property.equals("SOC") || property.equals("profile")) {
-                            continue;
-                        }
-                        futureDevice.getProperties().get(property).bind(actualDevice.getProperties().get(property));
-                        
-                        // als er iets aan de parameters veranderd moet de simulation.setMainSimulationChanged() aangeroepen worden
-                        // dit zorgt ervoor dat bij de eerst volgende tick() van de main simulation de prediction opnieuw begint
-                        actualDevice.getProperties().get(property).addListener(observable -> {
+                    for (int i = 0; i < actualDevice.getProperties().size(); i++) {
+                        futureDevice.getProperties().get(i).bind(actualDevice.getProperties().get(i));
+                        actualDevice.getProperties().get(i).addListener(observable -> {
                             mainSimulationChanged = true;
                         });
                     }

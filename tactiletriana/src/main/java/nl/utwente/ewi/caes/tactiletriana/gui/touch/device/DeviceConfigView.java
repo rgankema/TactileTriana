@@ -55,7 +55,7 @@ class DeviceConfigView extends GridPane {
             addControl("Delay", delay);
         } else if (device instanceof SolarPanel) {  // SolarPanel
             SolarPanel solarPanel = (SolarPanel) device;
-            Slider area = buildSlider(SolarPanel.MIN_AREA, SolarPanel.MAX_AREA, solarPanel.areaProperty());
+            Slider area = buildSlider(1, 50, solarPanel.areaProperty());
             addControl("Area", area);
         } else if (device instanceof ElectricVehicle) { // EV
             ElectricVehicle electricVehicle = (ElectricVehicle) device;
