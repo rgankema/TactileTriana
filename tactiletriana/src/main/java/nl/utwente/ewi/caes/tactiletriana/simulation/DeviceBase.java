@@ -17,6 +17,7 @@ import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 /**
@@ -194,7 +195,62 @@ public abstract class DeviceBase extends LoggingEntityBase {
      * @return the JSON representation of the device's parameters
      */
     protected abstract JSONObject parametersToJSON();
-
+    
+    /**
+     * Sets a property to a certain value.
+     * 
+     * @param property  the key of the property to be set (the JSON property name)
+     * @param value     the value that the property should be set to
+     * @throws IllegalArgumentException if the device does not know the given property, or cannot apply the given value to it.
+     */
+    public void setProperty(String property, boolean value) {
+        throw new IllegalArgumentException("Cannot set property " + property);
+    }
+    
+    /**
+     * Sets a property to a certain value.
+     * 
+     * @param property  the key of the property to be set (the JSON property name)
+     * @param value     the value that the property should be set to
+     * @throws IllegalArgumentException if the device does not know the given property, or cannot apply the given value to it.
+     */
+    public void setProperty(String property, double value) {
+        throw new IllegalArgumentException("Cannot set property " + property);
+    }
+    
+    /**
+     * Sets a property to a certain value.
+     * 
+     * @param property  the key of the property to be set (the JSON property name)
+     * @param value     the value that the property should be set to
+     * @throws IllegalArgumentException if the device does not know the given property, or cannot apply the given value to it.
+     */
+    public void setProperty(String property, int value) {
+        throw new IllegalArgumentException("Cannot set property " + property);
+    }
+    
+    /**
+     * Sets a property to a certain value.
+     * 
+     * @param property  the key of the property to be set (the JSON property name)
+     * @param value     the value that the property should be set to
+     * @throws IllegalArgumentException if the device does not know the given property, or cannot apply the given value to it.
+     */
+    public void setProperty(String property, JSONArray value) {
+        throw new IllegalArgumentException("Cannot set property " + property);
+    }
+    
+    /**
+     * Sets a property to a certain value.
+     * 
+     * @param property  the key of the property to be set (the JSON property name)
+     * @param value     the value that the property should be set to
+     * @throws IllegalArgumentException if the device does not know the given property, or cannot apply the given value to it.
+     */
+    public void setProperty(String property, JSONObject value) {
+        throw new IllegalArgumentException("Cannot set property " + property);
+    }
+    
     // ENUMS AND NESTED CLASSES
     
     /**
