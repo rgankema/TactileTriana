@@ -17,7 +17,6 @@ import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 /**
@@ -197,58 +196,17 @@ public abstract class DeviceBase extends LoggingEntityBase {
     protected abstract JSONObject parametersToJSON();
     
     /**
-     * Sets a property to a certain value.
+     * Sets a property to a certain value. Must be overridden by subclasses to
+     * set actual parameters. Calling DeviceBase's version will always throw
+     * an IllegalArgumentException, and should be called by the subclass if it
+     * doesn't know how what to do with the given arguments.
      * 
      * @param parameter  the key of the property to be set (the JSON parameter name)
      * @param value     the value that the property should be set to
      * @throws IllegalArgumentException if the device does not know the given parameter, or cannot apply the given value to it.
      */
-    public void updateParameter(String parameter, boolean value) {
+    public void updateParameter(String parameter, Object value) {
         throw new IllegalArgumentException("Cannot update parameter " + parameter);
-    }
-    
-    /**
-     * Sets a property to a certain value.
-     * 
-     * @param parameter  the key of the property to be set (the JSON parameter name)
-     * @param value     the value that the property should be set to
-     * @throws IllegalArgumentException if the device does not know the given parameter, or cannot apply the given value to it.
-     */
-    public void updateParameter(String parameter, double value) {
-        throw new IllegalArgumentException("Cannot set parameter " + parameter);
-    }
-    
-    /**
-     * Sets a property to a certain value.
-     * 
-     * @param parameter  the key of the property to be set (the JSON parameter name)
-     * @param value     the value that the property should be set to
-     * @throws IllegalArgumentException if the device does not know the given parameter, or cannot apply the given value to it.
-     */
-    public void updateParameter(String parameter, int value) {
-        throw new IllegalArgumentException("Cannot set parameter " + parameter);
-    }
-    
-    /**
-     * Sets a property to a certain value.
-     * 
-     * @param parameter  the key of the property to be set (the JSON parameter name)
-     * @param value     the value that the property should be set to
-     * @throws IllegalArgumentException if the device does not know the given parameter, or cannot apply the given value to it.
-     */
-    public void updateParameter(String parameter, JSONArray value) {
-        throw new IllegalArgumentException("Cannot set parameter " + parameter);
-    }
-    
-    /**
-     * Sets a property to a certain value.
-     * 
-     * @param parameter  the key of the property to be set (the JSON parameter name)
-     * @param value     the value that the property should be set to
-     * @throws IllegalArgumentException if the device does not know the given parameter, or cannot apply the given value to it.
-     */
-    public void updateParameter(String parameter, JSONObject value) {
-        throw new IllegalArgumentException("Cannot set parameter " + parameter);
     }
     
     // ENUMS AND NESTED CLASSES
