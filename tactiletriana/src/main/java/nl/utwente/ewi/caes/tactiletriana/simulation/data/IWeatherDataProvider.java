@@ -30,10 +30,10 @@ public interface IWeatherDataProvider {
     /**
      * @return the temperature profile for one year
      */
-    public float[] getTemperatureProfile();
+    public double[] getTemperatureProfile();
     
     /**
      * @return the radiance profile for one year
      */
-    public float[] getRadianceProfile();
+    public double[] getRadianceProfile();
 }

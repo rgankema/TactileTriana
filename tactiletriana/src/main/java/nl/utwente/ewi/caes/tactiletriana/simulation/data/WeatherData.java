@@ -29,13 +29,13 @@ public final class WeatherData implements IWeatherDataProvider{
         return instance;
     }
     
-    private final float[] temperatureProfile;
-    private final float[] radianceProfile;
+    private final double[] temperatureProfile;
+    private final double[] radianceProfile;
     
     private WeatherData() {
         // Get data from KNMI
-        float[] tempByHour = new float[365*24];
-        float[] radianceByHour = new float[365*24];
+        double[] tempByHour = new double[365*24];
+        double[] radianceByHour = new double[365*24];
         try {
             Stream<String> dataset = Files.lines(Paths.get("src/main/resources/datasets/KNMI_dataset.txt"));
             
@@ -61,8 +61,8 @@ public final class WeatherData implements IWeatherDataProvider{
         // Convert to profile with value per timestep   
         int tickMinutes = SimulationConfig.TICK_MINUTES;
         
-        temperatureProfile = new float[TOTAL_TICKS_IN_YEAR];
-        radianceProfile = new float[TOTAL_TICKS_IN_YEAR];
+        temperatureProfile = new double[TOTAL_TICKS_IN_YEAR];
+        radianceProfile = new double[TOTAL_TICKS_IN_YEAR];
         
         for (int ts = 0; ts < TOTAL_TICKS_IN_YEAR; ts++) {
             int prevHour = ts * tickMinutes / 60;
@@ -84,12 +84,12 @@ public final class WeatherData implements IWeatherDataProvider{
     }
 
     @Override
-    public float[] getTemperatureProfile() {
+    public double[] getTemperatureProfile() {
         return this.temperatureProfile;
     }
 
     @Override
-    public float[] getRadianceProfile() {
+    public double[] getRadianceProfile() {
         return this.radianceProfile;
     }
 }

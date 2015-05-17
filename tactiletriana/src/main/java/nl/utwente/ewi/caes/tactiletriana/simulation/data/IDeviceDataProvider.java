@@ -21,7 +21,7 @@ public interface IDeviceDataProvider<T extends DeviceBase> {
      * 
      * @return a power consumption profile
      */
-    public float[] getProfile();
+    public double[] getProfile();
     
     /**
      * Returns a profile for the device, given a key. During the execution of the
@@ -31,5 +31,5 @@ public interface IDeviceDataProvider<T extends DeviceBase> {
      * @param key a key that maps to a certain profile
      * @return a power consumption profile
      */
-    public float[] getProfile(Object key);
+    public double[] getProfile(Object key);
 }

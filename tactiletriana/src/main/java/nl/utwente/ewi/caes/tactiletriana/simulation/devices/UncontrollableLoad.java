@@ -46,13 +46,13 @@ public class UncontrollableLoad extends DeviceBase {
     /**
      * The consumption profile for the coming day
      */
-    private final ObjectProperty<float[]> profile = new SimpleObjectProperty<>();
+    private final ObjectProperty<double[]> profile = new SimpleObjectProperty<>();
     
-    public ObjectProperty<float[]> profileProperty() {
+    public ObjectProperty<double[]> profileProperty() {
         return profile;
     }
     
-    public final float[] getProfile() {
+    public final double[] getProfile() {
         return profile.get();
     }
 
@@ -71,7 +71,7 @@ public class UncontrollableLoad extends DeviceBase {
         int timeStep = toTimeStep(time);
         // This is extremely inefficient, but really the only way if you want
         // profile to be a property that can be bound to.
-        float[] newProfile = new float[24*60];
+        double[] newProfile = new double[24*60];
         for (int i = 0, j = timeStep; i < 24 * 60; i++, j++) {
             newProfile[i] = data.getProfile(profileNumber)[(j % TOTAL_TICKS_IN_YEAR)];
         }

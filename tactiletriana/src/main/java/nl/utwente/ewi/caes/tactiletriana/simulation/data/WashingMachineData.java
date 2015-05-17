@@ -17,7 +17,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.devices.WashingMachine;
  * @author Richard
  */
 public class WashingMachineData implements IDeviceDataProvider<WashingMachine>{
-    private static float[] profile;
+    private static double[] profile;
     
     private static WashingMachineData instance;
     
@@ -29,7 +29,7 @@ public class WashingMachineData implements IDeviceDataProvider<WashingMachine>{
     }
     
     private WashingMachineData() {
-        float[] minuteProfile = new float[72];
+        double[] minuteProfile = new double[72];
         
         try {
             Stream<String> dataset = Files.lines(Paths.get("src/main/resources/datasets/washing_machine_dataset.txt"));
@@ -49,7 +49,7 @@ public class WashingMachineData implements IDeviceDataProvider<WashingMachine>{
         int profileLength = (minuteProfile.length % TICK_MINUTES == 0) 
                 ? minuteProfile.length / TICK_MINUTES 
                 : minuteProfile.length / TICK_MINUTES + 1;
-        profile = new float[profileLength];
+        profile = new double[profileLength];
         for (int i = 0; i < profile.length; i++) {
             profile[i] = 0;
             int minutesPerTick = 0;
@@ -62,12 +62,12 @@ public class WashingMachineData implements IDeviceDataProvider<WashingMachine>{
     }
     
     @Override
-    public float[] getProfile() {
+    public double[] getProfile() {
         return profile;
     }
 
     @Override
-    public float[] getProfile(Object key) {
+    public double[] getProfile(Object key) {
         return profile;
     }
     

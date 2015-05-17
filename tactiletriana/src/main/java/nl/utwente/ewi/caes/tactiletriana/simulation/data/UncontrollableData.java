@@ -37,7 +37,7 @@ public final class UncontrollableData implements IDeviceDataProvider<Uncontrolla
         return instance;
     }
     
-    private final Map<Integer, float[]> profileByKey = new TreeMap<>();
+    private final Map<Integer, double[]> profileByKey = new TreeMap<>();
     private final Future<Void> future;
     
     private UncontrollableData() {
@@ -50,12 +50,12 @@ public final class UncontrollableData implements IDeviceDataProvider<Uncontrolla
     }
     
     @Override
-    public float[] getProfile() {
+    public double[] getProfile() {
         return getProfile(nextRandomInt(6));
     }
 
     @Override
-    public float[] getProfile(Object key) {
+    public double[] getProfile(Object key) {
         try {
             // Wait until profiles are loaded
             future.get();
@@ -69,14 +69,14 @@ public final class UncontrollableData implements IDeviceDataProvider<Uncontrolla
     private void loadProfile() {
         long start = System.nanoTime();
         //Load the profile data into an array from the CSV file containing power consumptions for 6 houses.
-        float[][] profiles = new float[6][525608];
+        double[][] profiles = new double[6][525608];
         try {
             File csvData = new File("src/main/resources/datasets/house_profiles.csv");
             CSVFormat format = CSVFormat.DEFAULT.withDelimiter(';');
             CSVParser parser = CSVParser.parse(csvData, Charset.defaultCharset(), format);
             for (CSVRecord csvRecord : parser) {
                 for (int p = 0; p < 6; p++) {
-                    profiles[p][(int)parser.getRecordNumber()] = Float.parseFloat(csvRecord.get(p));
+                    profiles[p][(int)parser.getRecordNumber()] = Double.parseDouble(csvRecord.get(p));
                 }
             }
         } catch (IOException e) {
@@ -88,7 +88,7 @@ public final class UncontrollableData implements IDeviceDataProvider<Uncontrolla
         int minutesInYear = 365 * 24 * 60;
         
         for (int key = 0; key < 6; key++) {
-            float[] profile = new float[TOTAL_TICKS_IN_YEAR];
+            double[] profile = new double[TOTAL_TICKS_IN_YEAR];
             // Get average of all minutes in timestep
             for (int ts = 0; ts < TOTAL_TICKS_IN_YEAR; ts++) {
                 profile[ts] = 0;

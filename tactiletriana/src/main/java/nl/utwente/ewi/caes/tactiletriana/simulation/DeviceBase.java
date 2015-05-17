@@ -190,10 +190,10 @@ public abstract class DeviceBase extends LoggingEntityBase {
         JSONObject parameters = new JSONObject();
         for(String param : this.properties.keySet()) {
             Property p = properties.get(param);
-            if(p instanceof DoubleProperty) {
-                parameters.put(param, p.getValue());
+            if (p instanceof DoubleProperty) {
+                parameters.put(param, (double) p.getValue());
             } else if (p instanceof BooleanProperty) {
-                parameters.put(param, p.getValue());
+                parameters.put(param, (boolean) p.getValue());
             }
             
         }

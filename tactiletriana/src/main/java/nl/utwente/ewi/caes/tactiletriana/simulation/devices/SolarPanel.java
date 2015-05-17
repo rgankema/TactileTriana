@@ -21,7 +21,7 @@ import static nl.utwente.ewi.caes.tactiletriana.Util.*;
  */
 public class SolarPanel extends DeviceBase {
     
-    private float[] profileSquareMeter;
+    private double[] profileSquareMeter;
     
     // The tick of the year where the profile starts
     private int profileTickOffset;
@@ -92,17 +92,17 @@ public class SolarPanel extends DeviceBase {
     /**
      * The profile of the solar panel from the current time until the next day
      */
-    private final ObjectProperty<float[]> profile = new SimpleObjectProperty<>();
+    private final ObjectProperty<double[]> profile = new SimpleObjectProperty<>();
 
-    public ObjectProperty<float[]> profileProperty() {
+    public ObjectProperty<double[]> profileProperty() {
         return profile;
     }
     
-    public float[] getProfile() {
+    public double[] getProfile() {
         return profileProperty().get();
     }
     
-    public void setProfile(float[] profile) {
+    public void setProfile(double[] profile) {
         profileProperty().set(profile);
     }
     
@@ -115,21 +115,21 @@ public class SolarPanel extends DeviceBase {
         
         // Update profile
         WeatherData weather = WeatherData.getInstance();
-        float[] radianceProfile = weather.getRadianceProfile();
-        float[] tempProfile = weather.getTemperatureProfile();
+        double[] radianceProfile = weather.getRadianceProfile();
+        double[] tempProfile = weather.getTemperatureProfile();
         LocalDateTime time = getSimulation().getCurrentTime();
         int timeStepsInDay = (24 * 60) / SimulationConfig.TICK_MINUTES;
         
         if (profileSquareMeter == null) {
             // No profile yet, calculate the whole thing
             
-            profileSquareMeter = new float[timeStepsInDay];
+            profileSquareMeter = new double[timeStepsInDay];
             
             profileTickOffset = toTimeStep(time);
             for (int ts = 0; ts < timeStepsInDay; ts++) {
                 int timeStepInYear = (ts + profileTickOffset) % TOTAL_TICKS_IN_YEAR;
-                float temp = tempProfile[timeStepInYear];
-                float radiance = radianceProfile[timeStepInYear];
+                double temp = tempProfile[timeStepInYear];
+                double radiance = radianceProfile[timeStepInYear];
                 profileSquareMeter[ts] = (float) -calculateProductionSquareMeter(temp, radiance, weather.getLongitude(), weather.getLatitude(), time);
                 time = time.plusMinutes(SimulationConfig.TICK_MINUTES);
             }
@@ -142,8 +142,8 @@ public class SolarPanel extends DeviceBase {
             if (deltaTimeSteps < 0) {
                 for (int ts = 0; ts < profileSquareMeter.length; ts++) {
                     int timeStepInYear = (ts + profileTickOffset) % TOTAL_TICKS_IN_YEAR;
-                    float temp = tempProfile[timeStepInYear];
-                    float radiance = radianceProfile[timeStepInYear];
+                    double temp = tempProfile[timeStepInYear];
+                    double radiance = radianceProfile[timeStepInYear];
                     profileSquareMeter[ts] = (float) -calculateProductionSquareMeter(temp, radiance, weather.getLongitude(), weather.getLatitude(), time);
                     time = time.plusMinutes(SimulationConfig.TICK_MINUTES);
                 }
@@ -156,17 +156,17 @@ public class SolarPanel extends DeviceBase {
                 // Calculate the timesteps we haven't done yet
                 for (; ts < profileSquareMeter.length; ts++) {
                     int timeStepInYear = (ts + profileTickOffset) % TOTAL_TICKS_IN_YEAR;
-                    float temp = tempProfile[timeStepInYear];
-                    float radiance = radianceProfile[timeStepInYear];
+                    double temp = tempProfile[timeStepInYear];
+                    double radiance = radianceProfile[timeStepInYear];
                     profileSquareMeter[ts] = (float) -calculateProductionSquareMeter(temp, radiance, weather.getLongitude(), weather.getLatitude(), time);
                     time = time.plusMinutes(SimulationConfig.TICK_MINUTES);
                 }
             }
         }
         
-        float[] finalProfile = new float[timeStepsInDay];
+        double[] finalProfile = new double[timeStepsInDay];
         for (int i = 0; i < profileSquareMeter.length; i++) {
-            finalProfile[i] = profileSquareMeter[i] * (float) getArea();
+            finalProfile[i] = profileSquareMeter[i] * getArea();
         }
         
         setProfile(finalProfile);

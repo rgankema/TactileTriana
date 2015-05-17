@@ -41,7 +41,7 @@ public abstract class TimeShiftableBase extends DeviceBase {
      * @param profile       The consumption profile of the device, with a
      *                      consumption value for every tick
      */
-    public TimeShiftableBase(Simulation simulation, String displayName, float[] profile) {
+    public TimeShiftableBase(Simulation simulation, String displayName, double[] profile) {
         super(simulation, displayName, "TimeShiftable");
         
         setStaticProfile(profile);
@@ -57,17 +57,17 @@ public abstract class TimeShiftableBase extends DeviceBase {
     /**
      * The consumption in watt for every time step from start to finish.
      */
-    private final ObjectProperty<float[]> staticProfile = new SimpleObjectProperty<>();
+    private final ObjectProperty<double[]> staticProfile = new SimpleObjectProperty<>();
     
-    public ObjectProperty<float[]> staticProfileProperty() {
+    public ObjectProperty<double[]> staticProfileProperty() {
         return this.staticProfile;
     }
     
-    public final float[] getStaticProfile() {
+    public final double[] getStaticProfile() {
         return staticProfileProperty().get();
     }
     
-    protected final void setStaticProfile(float[] profile) {
+    protected final void setStaticProfile(double[] profile) {
         this.staticProfile.set(profile);
     }
     

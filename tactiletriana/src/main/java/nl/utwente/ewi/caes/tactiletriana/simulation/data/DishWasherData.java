@@ -18,7 +18,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.devices.DishWasher;
  */
 public class DishWasherData implements IDeviceDataProvider<DishWasher>{
     
-    private static float[] profile;
+    private static double[] profile;
     
     private static DishWasherData instance;
     
@@ -50,7 +50,7 @@ public class DishWasherData implements IDeviceDataProvider<DishWasher>{
         int profileLength = (minuteProfile.length % TICK_MINUTES == 0) 
                 ? minuteProfile.length / TICK_MINUTES 
                 : minuteProfile.length / TICK_MINUTES + 1;
-        profile = new float[profileLength];
+        profile = new double[profileLength];
         for (int i = 0; i < profile.length; i++) {
             profile[i] = 0;
             int minutesPerTick = 0;
@@ -63,12 +63,12 @@ public class DishWasherData implements IDeviceDataProvider<DishWasher>{
     }
 
     @Override
-    public float[] getProfile() {
+    public double[] getProfile() {
         return profile;
     }
 
     @Override
-    public float[] getProfile(Object key) {
+    public double[] getProfile(Object key) {
         return profile;
     }
 }

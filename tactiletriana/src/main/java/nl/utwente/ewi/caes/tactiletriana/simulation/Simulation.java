@@ -95,11 +95,11 @@ public class Simulation extends LoggingEntityBase {
 
     // PROPERTIES
     
-    public float getRadiance() {
+    public double getRadiance() {
         return WeatherData.getInstance().getRadianceProfile()[toTimeStep(getCurrentTime())];
     }
     
-    public float getTemperature() {
+    public double getTemperature() {
         return WeatherData.getInstance().getTemperatureProfile()[toTimeStep(getCurrentTime())];
     }
     
