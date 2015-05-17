@@ -6,11 +6,10 @@
 package nl.utwente.ewi.caes.tactiletriana.simulation.devices;
 
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ReadOnlyDoubleProperty;
-import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.SimpleDoubleProperty;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.SimulationBase;
+import org.json.simple.JSONObject;
 
 /**
  * Base class for any device that has a buffer.
@@ -25,6 +24,9 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.SimulationBase;
  * @author Richard
  */
 public abstract class BufferBase extends DeviceBase {
+    public static final String API_CAPACITY = "capacity";
+    public static final String API_MAX_POWER = "max_power";
+    public static final String API_STATE_OF_CHARGE = "SOC";
     
     /**
      * Constructs a new BufferBase. Registers the {@code capacity}, 
@@ -38,10 +40,16 @@ public abstract class BufferBase extends DeviceBase {
         super(simulation, displayName, apiDeviceType);
         
         // register properties for API
-        addProperty("capacity", capacity);
-        addProperty("max_power", maxPower);
-        addProperty("SOC", stateOfCharge);
+        registerAPIProperty(API_CAPACITY);
+        registerAPIProperty(API_MAX_POWER);
+        registerAPIProperty(API_STATE_OF_CHARGE);
+        
+        // register properties for prediction
+        registerProperty(capacity);
+        registerProperty(maxPower);
     }
+    
+    // PROPERTIES
     
     /**
      * Capacitiy of Buffer in Wh.
@@ -100,7 +108,7 @@ public abstract class BufferBase extends DeviceBase {
      * The state of charge in Wh. Ensures that it's never below 0 and never higher
      * than {@link capacity}.
      */
-    private final ReadOnlyDoubleWrapper stateOfCharge = new ReadOnlyDoubleWrapper(0) {
+    private final DoubleProperty stateOfCharge = new SimpleDoubleProperty(0) {
         @Override
         public void set(double value) {
             if (value < 0) {
@@ -112,25 +120,33 @@ public abstract class BufferBase extends DeviceBase {
         }
     };
 
-    public ReadOnlyDoubleProperty stateOfChargeProperty() {
-        return stateOfCharge.getReadOnlyProperty();
+    public DoubleProperty stateOfChargeProperty() {
+        return stateOfCharge;
     }
 
     public final double getStateOfCharge() {
         return stateOfChargeProperty().get();
     }
 
-    // Temporary solution for buffers not working correctly after SimPrediction reset
-    // Shouldn't be public in the end
-    public void setStateOfCharge(double soc) {
+    public final void setStateOfCharge(double soc) {
         this.stateOfCharge.set(soc);
     }
-    
     
     /**
      * @return whether the battery is charged or not
      */
-    public boolean isCharged(){
+    public final boolean isCharged(){
         return getStateOfCharge() == getCapacity();
+    }
+    
+    // METHODS
+    
+    @Override
+    protected JSONObject parametersToJSON() {
+        JSONObject result = new JSONObject();
+        result.put(API_CAPACITY, getCapacity());
+        result.put(API_MAX_POWER, getMaxPower());
+        result.put(API_STATE_OF_CHARGE, getStateOfCharge());
+        return result;
     }
 }

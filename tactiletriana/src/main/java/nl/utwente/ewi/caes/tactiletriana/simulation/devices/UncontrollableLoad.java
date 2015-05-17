@@ -14,13 +14,16 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.SimulationBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.data.IDeviceDataProvider;
 import nl.utwente.ewi.caes.tactiletriana.simulation.data.UncontrollableData;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 /**
  *
  * @author jd
  */
 public class UncontrollableLoad extends DeviceBase {
-
+    public static final String API_PROFILE = "profile";
+    
     private final int profileNumber;
     private final IDeviceDataProvider<UncontrollableLoad> data;
     
@@ -40,7 +43,8 @@ public class UncontrollableLoad extends DeviceBase {
         this.profileNumber = profileNumber;
         this.data = UncontrollableData.getInstance();
         
-        addProperty("profile", profile);
+        // Register API properties
+        registerAPIProperty(API_PROFILE);
     }
     
     /**
@@ -76,5 +80,16 @@ public class UncontrollableLoad extends DeviceBase {
             newProfile[i] = data.getProfile(profileNumber)[(j % TOTAL_TICKS_IN_YEAR)];
         }
         profile.set(newProfile);
+    }
+
+    @Override
+    protected JSONObject parametersToJSON() {
+        JSONObject result = new JSONObject();
+        JSONArray jsonProfile = new JSONArray();
+        for (int i = 0; i < getProfile().length; i++) {
+            jsonProfile.add(getProfile()[i]);
+        }
+        result.put(API_PROFILE, jsonProfile);
+        return result;
     }
 }

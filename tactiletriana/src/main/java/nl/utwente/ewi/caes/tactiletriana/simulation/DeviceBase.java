@@ -5,11 +5,11 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.DoubleProperty;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyDoubleProperty;
@@ -27,13 +27,8 @@ public abstract class DeviceBase extends LoggingEntityBase {
     private static int DEVICE_ID = 0;
     private final int id;
     private final String apiDeviceType;
-    
-    /*
-    Map containing a Device's parameters.
-    The key of the Map is the name of the parameter as specified in the API.
-    The values are Property objects representing some Property of the device.
-    */
-    private final Map<String, Property> properties;
+    private final Set<String> apiProperties;
+    private final List<Property> properties;
     
     /**
      * Constructs a new DeviceBase
@@ -49,7 +44,8 @@ public abstract class DeviceBase extends LoggingEntityBase {
         DEVICE_ID++;
         
         this.apiDeviceType = apiDeviceType;
-        this.properties = new HashMap<>();
+        this.apiProperties = new HashSet<>();
+        this.properties = new ArrayList<>();
     }
 
     // PROPERTIES
@@ -132,8 +128,26 @@ public abstract class DeviceBase extends LoggingEntityBase {
         this.stateProperty().set(s);
     }
     
-    public final Map<String, Property> getProperties() {
-        return Collections.unmodifiableMap(properties);
+    /**
+     * Returns the set of property keys that the device has, as specified in the 
+     * API documentation. These are they key values for the JSON representation
+     * of this device.
+     * 
+     * @return the set of property keys
+     */
+    public final Set<String> getAPIProperties() {
+        return Collections.unmodifiableSet(apiProperties);
+    }
+    
+    /**
+     * Returns the set of properties of this device that may change over the 
+     * course over the Simulation. Used by SimulationPrediction to track changes
+     * in a device.
+     * 
+     * @return the set of properties
+     */
+    public final List<Property> getProperties() {
+        return Collections.unmodifiableList(properties);
     }
     
     // METHODS
@@ -146,12 +160,12 @@ public abstract class DeviceBase extends LoggingEntityBase {
         }
     }
     
-    protected void addProperty(String apiName, Property property) {
-        this.properties.put(apiName, property);
+    protected final void registerAPIProperty(String apiProperty) {
+        this.apiProperties.add(apiProperty);
     }
     
-    protected void getProperty(String apiName) {
-        this.properties.get(apiName);
+    protected final void registerProperty(Property property) {
+        this.properties.add(property);
     }
 
     // ENUMS AND NESTED CLASSES
@@ -174,6 +188,8 @@ public abstract class DeviceBase extends LoggingEntityBase {
         DISCONNECTED,
     }
     
+    // API
+    
     /**
      * Convert this Device and its parameters to a JSON representation as specified in the API. 
      * Subclasses of DeviceBase should override this method and add any information not yet known (e.g. deviceType). 
@@ -185,22 +201,12 @@ public abstract class DeviceBase extends LoggingEntityBase {
         result.put("deviceID", this.id);
         result.put("deviceType", this.apiDeviceType);
         result.put("consumption", this.getCurrentConsumption());
-        //Get the parameters of this Device
-        //TODO handle other Property Types
-        JSONObject parameters = new JSONObject();
-        for(String param : this.properties.keySet()) {
-            Property p = properties.get(param);
-            if (p instanceof DoubleProperty) {
-                parameters.put(param, (double) p.getValue());
-            } else if (p instanceof BooleanProperty) {
-                parameters.put(param, (boolean) p.getValue());
-            }
-            
-        }
-        result.put("parameters", parameters);
+        
+        result.put("parameters", parametersToJSON());
         
         return result;
-        
     }
+    
+    protected abstract JSONObject parametersToJSON();
     
 }

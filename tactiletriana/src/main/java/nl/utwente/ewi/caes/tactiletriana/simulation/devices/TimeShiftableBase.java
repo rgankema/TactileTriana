@@ -8,10 +8,14 @@ package nl.utwente.ewi.caes.tactiletriana.simulation.devices;
 import java.time.LocalDateTime;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 import nl.utwente.ewi.caes.tactiletriana.simulation.*;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 /**
  * Base class for TimeShiftables.
@@ -27,7 +31,10 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.*;
  * the simulation doesn't support multiple start end end times as of yet.
  */
 public abstract class TimeShiftableBase extends DeviceBase {
-        
+    public static final String API_TIMES = "times";
+    public static final String API_STATIC_PROFILE = "static_profile";
+    public static final String API_STARTED_ON = "started_on";
+    
     private int currentMinute = 0;     // The step in the program at which the device currently is
     private boolean active;            // The device may now do its program
     private boolean programRemaining;  // Whether the device still has a program to do for the day
@@ -45,13 +52,17 @@ public abstract class TimeShiftableBase extends DeviceBase {
         super(simulation, displayName, "TimeShiftable");
         
         setStaticProfile(profile);
-        
-        // register properties
-        addProperty("startTimes", startTime);
-        addProperty("endTimes", endTime);
-        addProperty("static_profile", staticProfile);
-        
         this.programRemaining = true;
+        
+        // Register properties for API
+        registerAPIProperty(API_TIMES);
+        registerAPIProperty(API_STATIC_PROFILE);
+        registerAPIProperty(API_STARTED_ON);
+        
+        // Register properties for prediction
+        registerProperty(startTime);
+        registerProperty(endTime);
+        registerProperty(staticProfile);
     }
     
     /**
@@ -92,7 +103,7 @@ public abstract class TimeShiftableBase extends DeviceBase {
     /**
      * Last moment in minutes that the device may start its program
      */
-    protected final DoubleProperty endTime = new SimpleDoubleProperty();
+    private final DoubleProperty endTime = new SimpleDoubleProperty();
     
     public DoubleProperty endTimeProperty() {
         return endTime;
@@ -106,8 +117,27 @@ public abstract class TimeShiftableBase extends DeviceBase {
         this.endTime.set(endTime);
     }
     
+    /**
+     * Last time this device started its program
+     */
+    protected final ReadOnlyObjectWrapper<LocalDateTime> startedOn = new ReadOnlyObjectWrapper<>();
+    
+    public ReadOnlyObjectProperty<LocalDateTime> startedOnProperty() {
+        return startedOn.getReadOnlyProperty();
+    }
+    
+    public final LocalDateTime getStartedOn() {
+        return startedOn.get();
+    }
+    
+    protected final void setStartedOn(LocalDateTime time) {
+        startedOn.set(time);
+    }
+    
+    // METHODS
+    
     @Override
-    public void tick (boolean connected){
+    public void tick(boolean connected){
         super.tick(connected);
         
         double consumption = 0;
@@ -149,6 +179,34 @@ public abstract class TimeShiftableBase extends DeviceBase {
         setCurrentConsumption(consumption);
     }
     
+    // Static profile won't change during the course of the Simulation, so only
+    // make this once.
+    private JSONArray staticProfileJSON;
+    
+    @Override
+    public JSONObject parametersToJSON() {
+        JSONObject result = new JSONObject();
+        
+        // Build static profile
+        if (staticProfileJSON == null) {
+            staticProfileJSON = new JSONArray();
+            for (int i = 0; i < getStaticProfile().length; i++) {
+                staticProfileJSON.add(getStaticProfile()[i]);
+            }
+        }
+        
+        // Build times
+        JSONObject interval = new JSONObject();
+        interval.put("start_time", getStartTime());
+        interval.put("end_time", getEndTime());
+        JSONArray times = new JSONArray();
+        times.add(interval);
+        
+        result.put(API_STATIC_PROFILE, staticProfileJSON);
+        result.put(API_TIMES, times);
+        result.put(API_STARTED_ON, toMinuteOfYear(getStartedOn()));
+        return result;
+    }
 }
 
 
