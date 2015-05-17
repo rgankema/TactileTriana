@@ -5,21 +5,20 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation.devices;
 
+import java.time.LocalDateTime;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableMap;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.SimulationBase;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 /**
  * Base class for any device that has a buffer.
- * 
- * Has the following properties as specified in the API:
- * <ul>
- *  <li>capacity</li>
- *  <li>max_power</li>
- *  <li>SOC</li>
- * </ul>
  * 
  * @author Richard
  */
@@ -27,10 +26,10 @@ public abstract class BufferBase extends DeviceBase {
     public static final String API_CAPACITY = "capacity";
     public static final String API_MAX_POWER = "max_power";
     public static final String API_STATE_OF_CHARGE = "SOC";
+    public static final String API_PLANNING = "planning";
     
     /**
-     * Constructs a new BufferBase. Registers the {@code capacity}, 
-     * {@code max_power}, and {@code SOC} properties as specified in the API.
+     * Constructs a new BufferBase.
      * 
      * @param simulation    the Simulation that this device belongs to
      * @param displayName   the name of this device as shown to the user
@@ -43,13 +42,32 @@ public abstract class BufferBase extends DeviceBase {
         registerAPIProperty(API_CAPACITY);
         registerAPIProperty(API_MAX_POWER);
         registerAPIProperty(API_STATE_OF_CHARGE);
+        registerAPIProperty(API_PLANNING);
         
         // register properties for prediction
         registerProperty(capacity);
         registerProperty(maxPower);
+        registerProperty(planning);
     }
     
     // PROPERTIES
+    
+    /**
+     * The planning for this device
+     */
+    private final ObjectProperty<ObservableMap<LocalDateTime, Double>> planning = new SimpleObjectProperty<>(FXCollections.observableHashMap());
+    
+    public ObjectProperty<ObservableMap<LocalDateTime, Double>> planningProperty() {
+        return planning;
+    }
+    
+    public final ObservableMap<LocalDateTime, Double> getPlanning() {
+        return planningProperty().get();
+    }
+    
+    public final void setPlanning(ObservableMap<LocalDateTime, Double> planning) {
+        planningProperty().set(planning);
+    }
     
     /**
      * Capacitiy of Buffer in Wh.
@@ -144,6 +162,17 @@ public abstract class BufferBase extends DeviceBase {
     @Override
     protected JSONObject parametersToJSON() {
         JSONObject result = new JSONObject();
+        
+        // Convert planning to JSON
+        JSONArray jsonPlanning = new JSONArray();
+        for (LocalDateTime time : getPlanning().keySet()) {
+            JSONObject interval = new JSONObject();
+            interval.put("timestamp", toMinuteOfYear(time));
+            interval.put("consumption", getPlanning().get(time));
+            jsonPlanning.add(interval);
+        }
+        
+        result.put(API_PLANNING, jsonPlanning);
         result.put(API_CAPACITY, getCapacity());
         result.put(API_MAX_POWER, getMaxPower());
         result.put(API_STATE_OF_CHARGE, getStateOfCharge());

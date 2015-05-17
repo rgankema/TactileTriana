@@ -37,6 +37,8 @@ public class SolarPanel extends DeviceBase {
     private static final double temperatureEfficiency = 0.3;
 
     /**
+     * Constructs a new SolarPanel.
+     * 
      * @param simulation the Simulation this SolarPanel belongs to
      */
     public SolarPanel(SimulationBase simulation) {

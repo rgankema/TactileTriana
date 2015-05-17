@@ -6,22 +6,15 @@
 package nl.utwente.ewi.caes.tactiletriana.simulation.devices;
 
 import java.time.LocalDateTime;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableMap;
 import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.SimulationBase;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
 /**
  *
  * @author mickvdv
  */
 public class Buffer extends BufferBase {
-    public static final String API_PLANNING = "planning";
     
     public Buffer(SimulationBase simulation) {
         super(simulation, "Buffer", "Buffer");
@@ -31,31 +24,6 @@ public class Buffer extends BufferBase {
         this.setCapacity(10000d);
         this.setStateOfCharge(0d);
         
-        // register properties for API
-        registerAPIProperty(API_PLANNING);
-        
-        // register properties for prediction
-        registerProperty(planning);
-        
-    }
-
-    // PROPERTIES
-    
-    /**
-     * The planning for this device
-     */
-    private final ObjectProperty<ObservableMap<LocalDateTime, Double>> planning = new SimpleObjectProperty<>(FXCollections.observableHashMap());
-    
-    public ObjectProperty<ObservableMap<LocalDateTime, Double>> planningProperty() {
-        return planning;
-    }
-    
-    public final ObservableMap<LocalDateTime, Double> getPlanning() {
-        return planningProperty().get();
-    }
-    
-    public final void setPlanning(ObservableMap<LocalDateTime, Double> planning) {
-        planningProperty().set(planning);
     }
     
     // METHODS
@@ -127,17 +95,4 @@ public class Buffer extends BufferBase {
         this.setCurrentConsumption(nextConsumption);
     }
 
-    @Override
-    protected JSONObject parametersToJSON() {
-        JSONObject result = super.parametersToJSON();
-        JSONArray jsonPlanning = new JSONArray();
-        for (LocalDateTime time : getPlanning().keySet()) {
-            JSONObject interval = new JSONObject();
-            interval.put("timestamp", toMinuteOfYear(time));
-            interval.put("consumption", getPlanning().get(time));
-            jsonPlanning.add(interval);
-        }
-        result.put(API_PLANNING, jsonPlanning);
-        return result;
-    }
 }
