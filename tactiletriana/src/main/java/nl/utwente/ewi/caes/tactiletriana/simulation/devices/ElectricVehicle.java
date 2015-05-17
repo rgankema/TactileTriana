@@ -12,7 +12,6 @@ import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
-import nl.utwente.ewi.caes.tactiletriana.simulation.IController;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 import nl.utwente.ewi.caes.tactiletriana.simulation.SimulationBase;
 
@@ -147,19 +146,11 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
             chargeBuffer(-drainage, SimulationConfig.TICK_MINUTES);
         }
         
-        // Get planning if available
-        IController controller = getSimulation().getController();
-        Double plannedConsumption = (controller != null) ? controller.getPlannedConsumption(this, simulation.getCurrentTime()) : null;
-        
-        if (plannedConsumption == null) {
-            // Decide consumption for upcoming tick, can only charge when at home and not fully charged
-            if (!( getLeaveTime() < h && h < getReturnTime()) && !isCharged()){
-                setCurrentConsumption(getMaxPower());                 
-            } else {
-                setCurrentConsumption(0);
-            }
+        // Decide consumption for upcoming tick, can only charge when at home and not fully charged
+        if (!( getLeaveTime() < h && h < getReturnTime()) && !isCharged()){
+            setCurrentConsumption(getMaxPower());                 
         } else {
-            setCurrentConsumption(plannedConsumption);
+            setCurrentConsumption(0);
         }
     }
     
