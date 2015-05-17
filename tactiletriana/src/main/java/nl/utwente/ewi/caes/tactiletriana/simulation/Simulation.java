@@ -15,6 +15,7 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import nl.utwente.ewi.caes.tactiletriana.Concurrent;
 import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
+import nl.utwente.ewi.caes.tactiletriana.simulation.devices.UncontrollableLoad;
 
 /**
  *
@@ -115,9 +116,12 @@ public class Simulation extends SimulationBase {
      */
     public void reset() {
         setState(SimulationState.STOPPED);
+        int i = 0;
         for (House house : houses) {
-            house.getDevices().clear();
             house.repairFuse();
+            house.getDevices().clear();
+            house.getDevices().add(new UncontrollableLoad(i, this));
+            i++;
         }
         for (Cable cable : internalCables) {
             cable.repair();
