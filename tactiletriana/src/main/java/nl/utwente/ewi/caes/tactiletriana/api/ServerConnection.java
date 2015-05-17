@@ -14,6 +14,7 @@ import java.net.Socket;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.House;
@@ -97,10 +98,7 @@ public class ServerConnection implements Runnable, IController {
     //IController specific variables
     LocalDateTime lastUpdatedPlanning = null;
     LocalDateTime lastRequestPlanning = null;
-    //Plannings for TimeShiftable devices. Key is the Device ID
-    HashMap<Integer, ArrayList<LocalDateTime>> tsPlannings;
-    //Plannings for other devices
-    HashMap<Integer, HashMap<LocalDateTime, Double>> plannings;
+    
     
     
     
@@ -115,9 +113,7 @@ public class ServerConnection implements Runnable, IController {
         //The InputStreamReader converts the Socket's byte stream to a character stream. The BufferedReader ads efficiency.
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-        //Initialize the planning maps
-        this.tsPlannings = new HashMap<Integer, ArrayList<LocalDateTime>>();
-        this.plannings = new HashMap<Integer, HashMap<LocalDateTime, Double>>();
+        
     }
     
     /**
@@ -404,6 +400,7 @@ public class ServerConnection implements Runnable, IController {
                         processSimTime();
                         break;
                     case DEVICEPARAMETERS:
+                        processDeviceParameters(json);
                         break;
                     default:
                         sendError(ClientError.TYPENOTACCEPTED.errorMessage());
@@ -433,6 +430,7 @@ public class ServerConnection implements Runnable, IController {
                         processSimTime();
                         break;
                     case DEVICEPARAMETERS:
+                        processDeviceParameters(json);
                         break;
                     case SUBMITPLANNING:
                         processSubmitPlanning(json);
@@ -485,7 +483,76 @@ public class ServerConnection implements Runnable, IController {
         sendResponse();
     }
     
-    public void processDeviceParameters() {
+    public void processDeviceParameters(JSONObject json) {
+        //Extract the date part of the JSON message
+        String error = null;
+        JSONObject data = null;
+        try {
+            data = (JSONObject) json.get("data");
+                
+
+        } catch (ClassCastException ce) {
+            error = ClientError.INVALID_DATATYPE + "In 'data field'.";
+
+            log(error);
+            sendError(error);
+            return;
+
+        } catch (Exception ex) {
+            error = ClientError.INVALID_DATA.errorMessage();
+
+            log(error);
+            sendError(error);
+            return;
+        }
+        
+        //Get the devices JSON
+        ArrayList<JSONObject> devices = null;
+        try {
+            devices = (JSONArray) data.get("devices");
+        } catch (ClassCastException e) {
+            error = "GetDevices: wrong devices parameter in data field.";
+            log(error);
+            sendError(error);
+            return;
+        }
+        
+        //Loop through the devices and update the parameters
+        boolean hasError = false;
+        //Update the planning for all devices
+        
+        for(JSONObject deviceJSON : devices ) {
+                try {
+                //Get the deviceID
+                int deviceID = (int) deviceJSON.get("deviceID");
+
+                //Get the device
+                DeviceBase device = server.getSimulation().getDeviceByID(deviceID);
+                //Check if the device exists.
+                if(device == null) {
+                    hasError = true;
+                    error = error + " Device with id " + deviceID + " does not exist.";
+                    break;
+                }
+
+                //Get the parameters
+                HashMap<String,JSONObject> parameters = (JSONObject) deviceJSON.get("parameters");
+                
+                //Update each parameter
+                //TODO handle errors
+                for(String parameter: parameters.keySet()) {
+                    device.updateParameter(parameter, parameters.get(parameter));
+                }
+
+                
+            } catch (ClassCastException e) {
+                error = "SubmitPlanning failed, wrong devices parameter";
+                log(error);
+                sendError(error);
+                return;
+            }
+
+        }
         
     }
     
@@ -562,6 +629,9 @@ public class ServerConnection implements Runnable, IController {
             
         } catch (Exception e) {
             error = "SubmitPlanning failed, invalid devices parameter.";
+            log(error);
+            sendError(error);
+            return;
         }
         
         //Check if the devices parameter was not empty
@@ -571,42 +641,46 @@ public class ServerConnection implements Runnable, IController {
             return;
         }
         
+        boolean hasError = false;
         //Update the planning for all devices
-        try {
-            for(JSONObject device : devices ) {
-                String deviceType = (String) device.get("deviceType");
-                
-                //Distinguish between timeshiftable and other devices
-                if(deviceType.equals("TimeShiftable") || deviceType.equals("BufferTimeShiftable")) {
-                    JSONArray tsPlanning = (JSONArray) device.get("ts_planning");
-                    //Convert the times to LocalDateTimes
-                    ArrayList<LocalDateTime> times = new ArrayList<LocalDateTime>();
-                    for(int x = 0; x < tsPlanning.size(); x++) {
-                        int timeX = (Integer) tsPlanning.get(x);
-                        times.add(LocalDateTime.of(2014,1,1,0,0).plusMinutes(timeX));
-                    }
-                    int deviceID = (int) device.get("deviceID");
-                    updatePlannedToStart(deviceID, times);
-                    sendResponse();
-                } else {
-                    JSONArray planning = (JSONArray) device.get("planning");
-                    HashMap<LocalDateTime, Double> tuples = new HashMap<LocalDateTime, Double>();
-                   for(int i = 0; i < planning.size(); i++) {
-                       JSONObject tuple = (JSONObject) planning.get(i);
-                       tuples.put(LocalDateTime.of(2014,1,1,0,0).plusMinutes((int)tuple.get("timestamp")), (Double) tuple.get("consumption"));
-                   }
-                   int deviceID = (int) device.get("deviceID");
-                   updatePlannedConsumption(deviceID, tuples);
-                   sendResponse();
-                   
+        
+        for(JSONObject deviceJSON : devices ) {
+                try {
+                //Get the deviceID
+                int deviceID = (int) deviceJSON.get("deviceID");
+
+                //Get the device
+                DeviceBase device = server.getSimulation().getDeviceByID(deviceID);
+                //Check if the device exists.
+                if(device == null) {
+                    hasError = true;
+                    error = error + " Device with id " + deviceID + " does not exist.";
+                    break;
                 }
+
+                //Get the parameters
+                JSONObject parameters = (JSONObject) deviceJSON.get("parameters");
+                Set<String> availableParameters = device.getAPIProperties();
+
+                //Update the planning
+                //TODO catch errors in updateParameters()
+                if(parameters.containsKey("planning")) {
+                    device.updateParameter("planning", parameters.get("planning"));
+                } else if (parameters.containsKey("ts_planning")) {
+                    device.updateParameter("ts_planning", parameters.get("ts_planning"));
+                } else {
+                    hasError = true;
+                    error = error + "No valid planning parameter for device with id " + deviceID + ".";
+                }
+            } catch (ClassCastException e) {
+                error = "SubmitPlanning failed, wrong devices parameter";
+                log(error);
+                sendError(error);
+                return;
             }
-        } catch (ClassCastException e) {
-            error = "SubmitPlanning failed, wrong devices parameter in houses";
-            log(error);
-            sendError(error);
-            return;
+
         }
+        
     }
     
     public void processSimTime() {
@@ -647,29 +721,7 @@ public class ServerConnection implements Runnable, IController {
         return this.lastRequestPlanning;
     }
     
-    public boolean plannedToStart(DeviceBase device, LocalDateTime time) {
-        boolean result = false;
-        ArrayList<LocalDateTime> times = tsPlannings.get(device.getId());
-        if(times != null && times.contains(time)) {
-            result = true;
-        }
-        return result;
-    }
     
-    public void updatePlannedToStart(int deviceID, ArrayList<LocalDateTime> time) {
-        //TODO improve this
-        //Check if the device is a timeshiftable
-        //TODO check if the planned times are possible
-        tsPlannings.put(deviceID, time);
-        
-    }
-    
-    public void updatePlannedConsumption(int deviceID, HashMap<LocalDateTime,Double> planning) {
-        //Chekc if the device should have a planning
-        //TODO improve this
-        plannings.put(deviceID, planning);
-        
-    }
     
     /**
      * This method updates the planning. 
@@ -713,15 +765,7 @@ public class ServerConnection implements Runnable, IController {
         return planningRecieved;
     }
     
-    @Override
-    public Double getPlannedConsumption(DeviceBase device, LocalDateTime time) {
-        HashMap<LocalDateTime, Double> cs = plannings.get(device.getId());
-        Double result = null;
-        if(cs != null) {
-            result = cs.get(time);
-        }
-        return result;
-    }
+   
     
     
     public void log(String s) {

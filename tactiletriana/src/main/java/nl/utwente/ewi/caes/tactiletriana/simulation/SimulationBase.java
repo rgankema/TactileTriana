@@ -6,6 +6,7 @@
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -145,6 +146,42 @@ public abstract class SimulationBase extends LoggingEntityBase {
      */
     public House[] getHouses() {
         return houses;
+    }
+    
+    /**
+     * Get the Devices in the network
+     * 
+     * @return ArrayList of Devices in the simulation 
+     */
+    public ArrayList<DeviceBase> getDevices() {
+        ArrayList<DeviceBase> result = new ArrayList<DeviceBase>();
+        for (House house : houses) {
+            result.addAll(house.getDevices());
+        }
+        
+        return result;
+    }
+    
+    
+    /**
+     * Get a device by its ID
+     * 
+     * @param id the ID of a device
+     * @return The device with the given ID or null when it does not exist
+     */
+    public DeviceBase getDeviceByID(int id) {
+        DeviceBase result = null;
+        ArrayList<DeviceBase> devices = getDevices();
+        boolean found = false;
+        for(int i = 0; i < devices.size() && !found; i++) {
+            DeviceBase device = devices.get(i);
+            if(device.getId() == id) {
+                result = device;
+                found = true;
+            }
+        }
+        
+        return result;
     }
     
     // METHODS
