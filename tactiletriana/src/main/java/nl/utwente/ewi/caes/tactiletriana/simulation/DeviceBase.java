@@ -17,6 +17,8 @@ import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import org.json.simple.JSONObject;
 
 /**
@@ -29,6 +31,8 @@ public abstract class DeviceBase extends LoggingEntityBase {
     private final String apiDeviceType;
     private final Set<String> apiParameters;
     private final List<Property> properties;
+    private final List<ObservableList> lists;
+    private final List<ObservableMap> maps;
     
     /**
      * Constructs a new DeviceBase
@@ -46,6 +50,8 @@ public abstract class DeviceBase extends LoggingEntityBase {
         this.apiDeviceType = apiDeviceType;
         this.apiParameters = new HashSet<>();
         this.properties = new ArrayList<>();
+        this.lists = new ArrayList<>();
+        this.maps = new ArrayList<>();
     }
 
     // PROPERTIES
@@ -140,14 +146,36 @@ public abstract class DeviceBase extends LoggingEntityBase {
     }
     
     /**
-     * Returns the set of properties of this device that may change over the 
-     * course over the Simulation. Used by SimulationPrediction to track changes
+     * Returns the properties of this device that may change over the 
+     * course of the Simulation. Used by SimulationPrediction to track changes
      * in a device.
      * 
-     * @return the set of properties
+     * @return the list of properties
      */
     public final List<Property> getProperties() {
         return Collections.unmodifiableList(properties);
+    }
+    
+    /**
+     * Returns the lists of this device that may change over the course of the
+     * Simulation. Used by SimulationPrediction to track changes
+     * in a device.
+     * 
+     * @return the list of lists
+     */
+    public final List<ObservableList> getLists() {
+        return Collections.unmodifiableList(lists);
+    }
+    
+    /**
+     * Returns the maps of this device that may change over the course of the
+     * Simulation. Used by SimulationPrediction to track changes
+     * in a device.
+     * 
+     * @return the list of maps
+     */
+    public final List<ObservableMap> getMaps() {
+        return Collections.unmodifiableList(maps);
     }
     
     // METHODS
@@ -166,6 +194,14 @@ public abstract class DeviceBase extends LoggingEntityBase {
     
     protected final void registerProperty(Property property) {
         this.properties.add(property);
+    }
+    
+    protected final void registerList(ObservableList list) {
+        this.lists.add(list);
+    }
+    
+    protected final void registerMap(ObservableMap map) {
+        this.maps.add(map);
     }
     
     // API

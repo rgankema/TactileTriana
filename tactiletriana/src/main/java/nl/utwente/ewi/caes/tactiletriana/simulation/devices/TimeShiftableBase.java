@@ -12,6 +12,7 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 import nl.utwente.ewi.caes.tactiletriana.simulation.*;
@@ -26,6 +27,8 @@ public abstract class TimeShiftableBase extends DeviceBase {
     public static final String API_STATIC_PROFILE = "static_profile";
     public static final String API_STARTED_ON = "started_on";
     public static final String API_TS_PLANNING = "ts_planning";
+    
+    private final ObservableList<LocalDateTime> planning;
     
     private int currentTimeStep = 0;   // The step in the program at which the device currently is
     private boolean active;            // The device may now do its program
@@ -42,6 +45,7 @@ public abstract class TimeShiftableBase extends DeviceBase {
     public TimeShiftableBase(SimulationBase simulation, String displayName, double[] profile) {
         super(simulation, displayName, "TimeShiftable");
         
+        this.planning = FXCollections.observableArrayList();
         setStaticProfile(profile);
         this.programRemaining = true;
         
@@ -55,7 +59,7 @@ public abstract class TimeShiftableBase extends DeviceBase {
         registerProperty(startTime);
         registerProperty(endTime);
         registerProperty(staticProfile);
-        //registerProperty(planning); dit moet anders voor simprediction
+        registerList(planning);
     }
     
     // PROPERTIES
@@ -78,20 +82,10 @@ public abstract class TimeShiftableBase extends DeviceBase {
     }
     
     /**
-     * A list of times when the device is scheduled to start its program.
+     * @return a list of times when the device is scheduled to start its program.
      */
-    private final ObjectProperty<ObservableList<LocalDateTime>> planning = new SimpleObjectProperty<>();
-    
-    public ObjectProperty<ObservableList<LocalDateTime>> planningProperty() {
-        return planning;
-    }
-    
     public final ObservableList<LocalDateTime> getPlanning() {
-        return planningProperty().get();
-    }
-    
-    public final void setPlanning(ObservableList<LocalDateTime> planning) {
-        planningProperty().set(planning);
+        return planning;
     }
     
     /**

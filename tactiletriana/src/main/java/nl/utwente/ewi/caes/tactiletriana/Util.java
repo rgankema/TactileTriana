@@ -5,6 +5,7 @@
  */
 package nl.utwente.ewi.caes.tactiletriana;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.Random;
 
@@ -34,6 +35,17 @@ public class Util {
      */
     public static int nextRandomInt(int range) {
         return random.nextInt(range);
+    }
+    
+    /**
+     * Determines if the given date is in the weekend.
+     * 
+     * @param time The date for which it has to be determined whether it is in the weekend
+     * @return {@code true} if the day of the week is Saturday or Sunday, {@code false} otherwise.
+     */
+    public static boolean isWeekend(LocalDateTime time){
+        DayOfWeek dow = time.getDayOfWeek();
+        return dow == DayOfWeek.SATURDAY || dow == DayOfWeek.SUNDAY;
     }
     
     /**
