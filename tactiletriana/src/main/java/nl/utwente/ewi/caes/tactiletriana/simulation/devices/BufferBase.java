@@ -10,7 +10,7 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.SimpleDoubleProperty;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
-import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
+import nl.utwente.ewi.caes.tactiletriana.simulation.SimulationBase;
 
 /**
  * Base class for any device that has a buffer.
@@ -34,7 +34,7 @@ public abstract class BufferBase extends DeviceBase {
      * @param displayName   the name of this device as shown to the user
      * @param apiDeviceType the name of this device as specified in the API
      */
-    public BufferBase(Simulation simulation, String displayName, String apiDeviceType) {
+    public BufferBase(SimulationBase simulation, String displayName, String apiDeviceType) {
         super(simulation, displayName, apiDeviceType);
         
         // register properties for API

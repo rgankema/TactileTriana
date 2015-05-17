@@ -46,7 +46,7 @@ public class SolarPanel extends DeviceBase {
      * 
      * @param simulation the Simulation this SolarPanel belongs to
      */
-    public SolarPanel(Simulation simulation) {
+    public SolarPanel(SimulationBase simulation) {
         super(simulation, "Solar Panel", "SolarPanel");
         
         addProperty("area", area);

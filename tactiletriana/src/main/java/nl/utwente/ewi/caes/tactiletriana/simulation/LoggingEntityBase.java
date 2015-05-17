@@ -19,16 +19,16 @@ public abstract class LoggingEntityBase {
     private final QuantityType qType;
     private final ObservableList<Data<Integer, Double>> log;
     
-    protected Simulation simulation;
+    protected SimulationBase simulation;
 
-    public LoggingEntityBase(Simulation simulation, String displayName, QuantityType qType) {
+    public LoggingEntityBase(SimulationBase simulation, String displayName, QuantityType qType) {
         this.displayName = displayName;
         this.qType = qType;
         this.simulation = simulation;
         this.log = FXCollections.observableArrayList();
     }
 
-    protected void setSimulation(Simulation simulation) {
+    protected void setSimulation(SimulationBase simulation) {
         this.simulation = simulation;
     }
 
@@ -42,7 +42,7 @@ public abstract class LoggingEntityBase {
         return this.qType;
     }
 
-    public final Simulation getSimulation() {
+    public final SimulationBase getSimulation() {
         return this.simulation;
     }
     

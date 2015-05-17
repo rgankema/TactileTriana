@@ -14,6 +14,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 import nl.utwente.ewi.caes.tactiletriana.simulation.IController;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
+import nl.utwente.ewi.caes.tactiletriana.simulation.SimulationBase;
 
 /**
  *
@@ -36,7 +37,7 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
      * @param simulation The simulation object of the current simulation.
      * @param model The model of the EV
      */
-    public ElectricVehicle(Simulation simulation, Model model) {
+    public ElectricVehicle(SimulationBase simulation, Model model) {
         super(simulation, "Electric Vehicle");
         setModel(model);
         

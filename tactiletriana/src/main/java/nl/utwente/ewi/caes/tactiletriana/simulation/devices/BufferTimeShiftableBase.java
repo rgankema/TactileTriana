@@ -5,7 +5,7 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation.devices;
 
-import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
+import nl.utwente.ewi.caes.tactiletriana.simulation.SimulationBase;
 
 /**
  *
@@ -18,7 +18,7 @@ public abstract class BufferTimeShiftableBase extends BufferBase implements ITim
      * @param simulation The simulation object of the current simulation.
      * @param displayName The name of the device as shown to the user.
      */
-    public BufferTimeShiftableBase(Simulation simulation, String displayName) {
+    public BufferTimeShiftableBase(SimulationBase simulation, String displayName) {
         super(simulation, displayName, "BufferTimeShiftable");
         
         // register properties

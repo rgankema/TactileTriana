@@ -11,7 +11,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import static nl.utwente.ewi.caes.tactiletriana.Util.TOTAL_TICKS_IN_YEAR;
 import static nl.utwente.ewi.caes.tactiletriana.Util.toTimeStep;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
-import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
+import nl.utwente.ewi.caes.tactiletriana.simulation.SimulationBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.data.IDeviceDataProvider;
 import nl.utwente.ewi.caes.tactiletriana.simulation.data.UncontrollableData;
 
@@ -30,7 +30,7 @@ public class UncontrollableLoad extends DeviceBase {
      * the profile data on which this instance is based
      * @param simulation the Simulation this device belongs to
      */
-    public UncontrollableLoad(int profileNumber, Simulation simulation) {
+    public UncontrollableLoad(int profileNumber, SimulationBase simulation) {
         super(simulation, "Uncontrollable Load", "Uncontrollable");
 
         if (profileNumber < 0 || profileNumber > 5) {

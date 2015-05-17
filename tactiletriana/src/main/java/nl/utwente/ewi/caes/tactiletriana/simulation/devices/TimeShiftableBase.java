@@ -41,7 +41,7 @@ public abstract class TimeShiftableBase extends DeviceBase {
      * @param profile       The consumption profile of the device, with a
      *                      consumption value for every tick
      */
-    public TimeShiftableBase(Simulation simulation, String displayName, double[] profile) {
+    public TimeShiftableBase(SimulationBase simulation, String displayName, double[] profile) {
         super(simulation, displayName, "TimeShiftable");
         
         setStaticProfile(profile);

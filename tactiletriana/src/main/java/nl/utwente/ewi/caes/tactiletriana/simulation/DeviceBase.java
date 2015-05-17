@@ -42,7 +42,7 @@ public abstract class DeviceBase extends LoggingEntityBase {
      * @param displayName   the name of the device as it should be shown to the user
      * @param apiDeviceType    the name of the device as specified in the API
      */
-    public DeviceBase(Simulation simulation, String displayName, String apiDeviceType) {
+    public DeviceBase(SimulationBase simulation, String displayName, String apiDeviceType) {
         super(simulation, displayName, QuantityType.POWER);
         
         id = DEVICE_ID;

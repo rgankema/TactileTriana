@@ -8,7 +8,7 @@ package nl.utwente.ewi.caes.tactiletriana.simulation.devices;
 import java.time.LocalDateTime;
 import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
-import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
+import nl.utwente.ewi.caes.tactiletriana.simulation.SimulationBase;
 
 /**
  *
@@ -16,7 +16,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
  */
 public class Buffer extends BufferBase {
 
-    public Buffer(Simulation simulation) {
+    public Buffer(SimulationBase simulation) {
         super(simulation, "Buffer", "Buffer");
 
         // initialize values

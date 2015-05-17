@@ -29,7 +29,6 @@ public class App extends Application {
 
     @Override
     public void stop() {
-        StageController.getInstance().getSimulation().stop();
         Concurrent.getExecutorService().shutdownNow();
     }
 

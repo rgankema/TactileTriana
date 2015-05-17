@@ -26,7 +26,7 @@ public class Cable extends LoggingEntityBase implements IFWBWSEntity {
      * @param childNode The node away from the transformer
      * @param maxCurrent The maximum current that can flow through the cable
      */
-    public Cable(Node childNode, double maxCurrent, double length, Simulation simulation) {
+    public Cable(Node childNode, double maxCurrent, double length, SimulationBase simulation) {
         super(simulation, "Cable", QuantityType.CURRENT);
         this.childNode = childNode;
         this.resistance = 0.00005;
@@ -105,11 +105,10 @@ public class Cable extends LoggingEntityBase implements IFWBWSEntity {
         this.maximumCurrent.set(maximumCurrent);
     }
 
-    // Package private so SimulationPrediction can use it
     /**
      * Whether the cable is broken or not
      */
-    final ReadOnlyBooleanWrapper broken = new ReadOnlyBooleanWrapper(false) {
+    private final ReadOnlyBooleanWrapper broken = new ReadOnlyBooleanWrapper(false) {
         @Override
         public void set(boolean value) {
             if (value) {
