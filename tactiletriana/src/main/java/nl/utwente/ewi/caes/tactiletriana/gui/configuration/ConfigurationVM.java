@@ -208,7 +208,11 @@ public class ConfigurationVM {
             this.simulation.setTimeScenario(scenarioVM.build());
         }
         
-        // save the configuration to a file
+        
+        // save the configured timescenario
+        SimulationConfig.SaveProperty("timescenario", this.simulation.getTimeScenario().toString());
+        
+        // save the configuration
         SimulationConfig.SaveProperties();       
         
         this.simulation.start();
