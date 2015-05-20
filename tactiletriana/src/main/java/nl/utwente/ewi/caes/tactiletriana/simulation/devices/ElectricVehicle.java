@@ -6,9 +6,11 @@
 package nl.utwente.ewi.caes.tactiletriana.simulation.devices;
 
 import java.time.LocalDateTime;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 import static nl.utwente.ewi.caes.tactiletriana.Util.isWeekend;
@@ -21,15 +23,9 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.SimulationBase;
  */
 public class ElectricVehicle extends BufferTimeShiftableBase {
     
-
-    //Time when this vechicle typically leaves the grid on workdays
-    private double leaveTime;
-    //Time when this vechicle typically returns to the grid on workdays
-    private double returnTime;
     //The amount of kilomters that can be driven with 1 kWh, used for calculation of battery drainage
     private double kilometersPerkWh;
-    //Amount of kilometers this vechicle has to drive to work. Used for calculation of battery drainage on work days.
-    private int kilometersToWork;
+    
     
     /**
      * Constructs a BufferTimeShiftable device (electric vehicle). The model is determined by the model parameter.
@@ -44,6 +40,10 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
         setLeaveTime(Math.random()*3 + 5.5); 
         //set the return time somewhere between 4:00 pv and 8:00pm
         setReturnTime(Math.random()*4 + 16);
+        
+        registerProperty(leaveTime);
+        registerProperty(returnTime);
+        registerProperty(kilometersToWork);
     }
     
     public ElectricVehicle(Simulation simulation) {
@@ -51,6 +51,58 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
     }
     
     // PROPERTIES
+    
+        /**
+     * Time when this vechicle typically leaves the grid on workdays
+     */
+    private final DoubleProperty leaveTime = new SimpleDoubleProperty();
+    
+    public DoubleProperty leaveTimeProperty() {
+        return leaveTime;
+    }
+    
+    public double getLeaveTime() {
+        return leaveTimeProperty().get();
+    }
+
+    public void setLeaveTime(double leave) {
+        leaveTimeProperty().set(leave);
+    }
+    
+     /**
+     * Time when this vechicle typically returns to the grid on workdays
+     */
+    private final DoubleProperty returnTime = new SimpleDoubleProperty();
+    
+    public DoubleProperty returnTimeProperty() {
+        return returnTime;
+    }
+    
+    public double getReturnTime() {
+        return returnTimeProperty().get();
+    }
+
+    public void setReturnTime(double r) {
+        returnTimeProperty().set(r);
+    }
+    
+    /**
+     * Amount of kilometers this vechicle has to drive to work. Used for calculation of battery drainage on work days.
+     */
+    private final DoubleProperty kilometersToWork = new SimpleDoubleProperty();
+    
+    public DoubleProperty kilometersToWorkProperty() {
+        return kilometersToWork;
+    }
+    
+    public double getKilometersToWork() {
+        return kilometersToWorkProperty().get();
+    }
+
+    public void setKilometersToWork(double km) {
+        kilometersToWorkProperty().set(km);
+    }
+    
     
     /**
      * The model of the EV
@@ -142,7 +194,7 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
         chargeBuffer(getCurrentConsumption(), SimulationConfig.TICK_MINUTES);
         if (!isWeekend(time) && (getLeaveTime() < h && h < getReturnTime())) {
             //calculate drainage
-            double drainage = (((kilometersToWork*2/getKilometersPerkWh())*1000)/((getReturnTime()-getLeaveTime())));
+            double drainage = (((getKilometersToWork()*2/getKilometersPerkWh())*1000)/((getReturnTime()-getLeaveTime())));
             chargeBuffer(-drainage, SimulationConfig.TICK_MINUTES);
         }
         
@@ -174,21 +226,6 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
         BMW_I3
     }
     
-    public double getLeaveTime() {
-        return leaveTime;
-    }
-
-    public final void setLeaveTime(double leaveTime) {
-        this.leaveTime = leaveTime;
-    }
-
-    public final double getReturnTime() {
-        return returnTime;
-    }
-    
-    public final void setReturnTime(double returnTime) {
-        this.returnTime = returnTime;
-    }
     
     public final double getKilometersPerkWh() {
         return kilometersPerkWh;
@@ -199,14 +236,6 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
         this.kilometersPerkWh = kilometersPerkWh;
     }
     
-    public final int getKilometersToWork() {
-        return this.kilometersToWork;
-    }
-    
-    public void setKilometersToWork(int kilometersToWork) {
-        //System.out.println("kmtowork: "+kilometersToWork);
-        this.kilometersToWork = kilometersToWork;
-    }
     
     /**
      * Function that determines the amount of kilometers this vechicle has to drive on workdays.

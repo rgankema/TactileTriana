@@ -14,6 +14,7 @@ import javafx.collections.ObservableList;
 import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 import nl.utwente.ewi.caes.tactiletriana.gui.configuration.scenario.timespan.TimeSpanVM;
 import nl.utwente.ewi.caes.tactiletriana.simulation.TimeScenario;
+import nl.utwente.ewi.caes.tactiletriana.simulation.TimeScenario.TimeSpan;
 
 /**
  *
@@ -26,7 +27,19 @@ public class ScenarioVM {
     
     public ScenarioVM() {
         this.timeSpans = FXCollections.observableArrayList();
-        timeSpans.add(new TimeSpanVM(SimulationConfig.MIN_DATE, SimulationConfig.MAX_DATE));
+        
+        try{
+            TimeScenario ts = TimeScenario.parseTimeScenario(SimulationConfig.LoadProperty("timescenario"));
+            for (TimeSpan span : ts.getTimeSpans()){
+                timeSpans.add(new TimeSpanVM(span.getStart().toLocalDate(), span.getEnd().toLocalDate()));
+            }
+        }
+        catch (Exception e){
+            System.err.print(e.toString());
+            // er is nog niks gedeclared
+            timeSpans.add(new TimeSpanVM(SimulationConfig.MIN_DATE, SimulationConfig.MAX_DATE));
+        }
+        
     }
     
     public ObservableList<TimeSpanVM> getTimeSpans() {
