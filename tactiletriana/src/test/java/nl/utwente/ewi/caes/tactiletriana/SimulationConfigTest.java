@@ -28,6 +28,7 @@ public class SimulationConfigTest {
         assertEquals(SimulationConfig.HOUSE_MAX_FUSE_CURRENT, 0);
         SimulationConfig.LoadProperties();
         assertThat(SimulationConfig.HOUSE_MAX_FUSE_CURRENT, is(not(0)));
+        assertTrue(SimulationConfig.MAX_DATE.isAfter(SimulationConfig.MIN_DATE) );
     }
     
     @Test
