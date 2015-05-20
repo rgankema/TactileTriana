@@ -85,13 +85,14 @@ public class HouseTest {
         
         // Mock device
         DeviceBase device = mock(DeviceBase.class);
-        when(device.currentConsumptionProperty()).thenReturn(new SimpleDoubleProperty(Double.MAX_VALUE));
+        when(device.currentConsumptionProperty()).thenReturn(new SimpleDoubleProperty(instance.getMaximumConsumption()+1));
         when(device.stateProperty()).thenReturn(new SimpleObjectProperty<>(DeviceBase.State.CONNECTED));
         instance.getDevices().add(device);
         
         instance.tick(true);
         
         assertTrue(instance.isFuseBlown());
+        assertEquals(0, instance.getCurrentConsumption(), 0.01);
     }
     
     @Test
