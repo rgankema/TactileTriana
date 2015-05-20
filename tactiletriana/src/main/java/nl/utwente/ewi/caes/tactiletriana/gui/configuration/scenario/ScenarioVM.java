@@ -11,22 +11,35 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 import nl.utwente.ewi.caes.tactiletriana.gui.configuration.scenario.timespan.TimeSpanVM;
 import nl.utwente.ewi.caes.tactiletriana.simulation.TimeScenario;
+import nl.utwente.ewi.caes.tactiletriana.simulation.TimeScenario.TimeSpan;
 
 /**
  *
  * @author Richard
  */
 public class ScenarioVM {
-    private static final LocalDate MIN_DATE = LocalDate.of(2014, 1, 1);
-    private static final LocalDate MAX_DATE = LocalDate.of(2014, 12, 31);
+   
    
     private final ObservableList<TimeSpanVM> timeSpans;
     
     public ScenarioVM() {
         this.timeSpans = FXCollections.observableArrayList();
-        timeSpans.add(new TimeSpanVM(MIN_DATE, MAX_DATE));
+        
+        try{
+            TimeScenario ts = TimeScenario.parseTimeScenario(SimulationConfig.LoadProperty("timescenario"));
+            for (TimeSpan span : ts.getTimeSpans()){
+                timeSpans.add(new TimeSpanVM(span.getStart().toLocalDate(), span.getEnd().toLocalDate()));
+            }
+        }
+        catch (Exception e){
+            System.err.print(e.toString());
+            // er is nog niks gedeclared
+            timeSpans.add(new TimeSpanVM(SimulationConfig.MIN_DATE, SimulationConfig.MAX_DATE));
+        }
+        
     }
     
     public ObservableList<TimeSpanVM> getTimeSpans() {
@@ -56,11 +69,11 @@ public class ScenarioVM {
     public void addTimeSpan() {
         TimeSpanVM last = timeSpans.get(timeSpans.size() - 1);
         // Don't add TimeSpan if there is no room for one
-        if (!last.getEndDate().isBefore(MAX_DATE.minusDays(1))) {
+        if (!last.getEndDate().isBefore(SimulationConfig.MAX_DATE.minusDays(1))) {
             return;
         }
         
-        TimeSpanVM timeSpanVM = new TimeSpanVM(last.getEndDate().plusDays(1), MAX_DATE);
+        TimeSpanVM timeSpanVM = new TimeSpanVM(last.getEndDate().plusDays(1), SimulationConfig.MAX_DATE);
         // New time span must start at least one day after last time span
         timeSpanVM.minStartDateProperty().bind(Bindings.createObjectBinding(() -> { 
             return last.getEndDate().plusDays(1);
@@ -85,7 +98,7 @@ public class ScenarioVM {
             if (index > 0) {
                 prev = timeSpans.get(index - 1);
                 prev.maxEndDateProperty().unbind();
-                prev.maxEndDateProperty().set(MAX_DATE);
+                prev.maxEndDateProperty().set(SimulationConfig.MAX_DATE);
                 timeSpanVM.minStartDateProperty().unbind();
             }
             
@@ -94,7 +107,7 @@ public class ScenarioVM {
             if (index < timeSpans.size()) {
                 next = timeSpans.get(index);
                 next.minStartDateProperty().unbind();
-                next.minStartDateProperty().set(MIN_DATE);
+                next.minStartDateProperty().set(SimulationConfig.MIN_DATE);
                 timeSpanVM.maxEndDateProperty().unbind();
             }
             

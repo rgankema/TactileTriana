@@ -26,6 +26,11 @@ public class House extends LoggingEntityBase {
 
     public House(SimulationBase simulation) {
         super(simulation, "House", QuantityType.POWER);
+        
+        // fuse blow met false initializeren
+        this.setFuseBlown(false);
+        
+        
         devices = FXCollections.observableArrayList();
         devices.addListener((ListChangeListener.Change<? extends DeviceBase> c) -> {
             while (c.next()) {

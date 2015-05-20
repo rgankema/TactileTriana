@@ -174,24 +174,34 @@ public abstract class BufferBase extends DeviceBase {
     }
     
     @Override
-    public void updateParameter(String parameter, Object value) {
-        if (parameter.equals(API_CAPACITY)) {
-            setCapacity((double) value);
-        } else if (parameter.equals(API_MAX_POWER)) {
-            setMaxPower((double) value);
-        } else if (parameter.equals(API_PLANNING)) { 
-            JSONArray jsonPlanning = (JSONArray) value;
-            for (Object o : jsonPlanning) {
-                JSONObject planningEntry = (JSONObject) o;
-                LocalDateTime date =  toLocalDateTime((int)planningEntry.get("timestamp"));
-                double consumption = (double) planningEntry.get("consumption");
-                getPlanning().put(date, consumption);
+    public boolean updateParameter(String parameter, Object value) {
+        boolean result = false;
+        try {
+            if (parameter.equals(API_CAPACITY)) {
+                setCapacity((double) value);
+                result = true;
+            } else if (parameter.equals(API_MAX_POWER)) {
+                setMaxPower((double) value);
+                result = true;
+            } else if (parameter.equals(API_PLANNING)) { 
+                JSONArray jsonPlanning = (JSONArray) value;
+                for (Object o : jsonPlanning) {
+                    JSONObject planningEntry = (JSONObject) o;
+                    LocalDateTime date =  toLocalDateTime((int)planningEntry.get("timestamp"));
+                    double consumption = (double) planningEntry.get("consumption");
+                    getPlanning().put(date, consumption);
+                }
+                result = true;
+            } else if (parameter.equals(API_STATE_OF_CHARGE)) {
+                setStateOfCharge((double) value);
+                result = true;
+            } else {
+                // Don't know the parameter, let super class handle it
+                result = super.updateParameter(parameter, value);
             }
-        } else if (parameter.equals(API_STATE_OF_CHARGE)) {
-            setStateOfCharge((double) value);
-        } else {
-            // Don't know the parameter, let super class handle it
-            super.updateParameter(parameter, value);
+        } catch (ClassCastException e) {
+            
         }
+        return result;
     }
 }

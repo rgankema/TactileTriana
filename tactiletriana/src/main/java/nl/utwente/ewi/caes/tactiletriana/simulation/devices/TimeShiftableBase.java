@@ -6,6 +6,10 @@
 package nl.utwente.ewi.caes.tactiletriana.simulation.devices;
 
 import java.time.LocalDateTime;
+import java.time.Month;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.stream.Stream;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -79,6 +83,15 @@ public abstract class TimeShiftableBase extends DeviceBase {
     
     protected final void setStaticProfile(double[] profile) {
         this.staticProfile.set(profile);
+    }
+    
+    /**
+     * Adds times to the planning.
+     * 
+     * @param times An ArrayList of LocalDateTimes which will be added to the current list
+     */
+    protected void updatePlanning(ArrayList<LocalDateTime> times) {
+        planning.addAll(times);
     }
     
     /**
@@ -185,6 +198,71 @@ public abstract class TimeShiftableBase extends DeviceBase {
             }
             setCurrentConsumption(consumption);
         }
+    }
+    
+    @Override
+    public boolean updateParameter(String parameterName, Object value) {
+        boolean result = false;
+        
+        //Check if the parameter is in the available parameters list.
+        Set<String> availableParameters = this.getAPIProperties();
+        if(availableParameters.contains(parameterName)) {
+            //Parse the parameter value based on the parameterName
+            switch (parameterName) {
+                case API_TIMES:
+                    //TODO fix dit als duidelijk is of in de API ook maar 1 starttijd en eindtijd wordt gebruikt
+                    break;
+                case API_STATIC_PROFILE:
+                    //The JSON format of a static_profile is [double,double,...] with the doubles being consumption values
+                    try {
+                        //Cast the value to the type it should be. Value is actually a JSONArray which is a subclass of ArrayList
+                        ArrayList<Double> profile = (ArrayList<Double>) value;
+                        Double[] profileArray = profile.toArray(new Double[0]);
+                        //TODO fix this, always use ArrayList<Double> or something for the profile property
+                        //converting from a double[] to Double[] cannot be done automatically, UGH
+                        //
+                        double[] profileArray2 = Stream.of(profileArray).mapToDouble(Double::doubleValue).toArray();
+                        setStaticProfile(profileArray2);
+                        result = true;
+                    } catch(ClassCastException e) {
+                       //TODO log the error or something
+                    }
+                    break;
+                case API_STARTED_ON:
+                    //The value for this parameter is an Integer respresenting the minutes since the start of the simulation
+                    try {
+                        int startedOnMinutes = (Integer) value;
+                        //Convert the time in minutes since the start of the simulation to a LocalDateTime
+                        LocalDateTime startedOn = LocalDateTime.of(2014, 1, 1, 0, 0).plusMinutes(startedOnMinutes);
+                        setStartedOn(startedOn);
+                        result = true;
+                        
+                    } catch (ClassCastException e) {
+                        
+                    }
+                    break;
+                case API_TS_PLANNING:
+                    //The value should be an ArrayList of integers representing minutes since the start of the simulation
+                    try {
+                        ArrayList<Integer> timesInt = (ArrayList<Integer>) value;
+                        //Convert the Integers to LocalDateTimes
+                        ArrayList<LocalDateTime> times = new ArrayList<LocalDateTime>();
+                        for(Integer time: timesInt) {
+                            times.add(LocalDateTime.of(2014,1,1,0,0).plusMinutes(time));
+                        }
+                        //update the planning
+                        updatePlanning(times);
+                        result = true;
+                        
+                    } catch (ClassCastException e) {
+                        
+                    }
+                    break;
+            }
+            
+        }
+        
+        return result;
     }
     
     // Static profile won't change during the course of the Simulation, so only

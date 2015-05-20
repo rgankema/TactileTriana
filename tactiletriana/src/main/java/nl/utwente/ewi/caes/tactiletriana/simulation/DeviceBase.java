@@ -188,6 +188,12 @@ public abstract class DeviceBase extends LoggingEntityBase {
         }
     }
     
+    /**
+     * Register an API parameter. Registered API parameters can be updated using the updateParameters() method.
+     * See the API documentation for the parameters that should be available for each Device.
+     * 
+     * @param parameterName The name of the API parameter
+     */
     protected final void registerAPIParameter(String parameterName) {
         this.apiParameters.add(parameterName);
     }
@@ -241,7 +247,7 @@ public abstract class DeviceBase extends LoggingEntityBase {
      * @param value     the value that the property should be set to
      * @throws IllegalArgumentException if the device does not know the given parameter, or cannot apply the given value to it.
      */
-    public void updateParameter(String parameter, Object value) {
+    public boolean updateParameter(String parameter, Object value) {
         throw new IllegalArgumentException("Cannot update parameter " + parameter);
     }
     

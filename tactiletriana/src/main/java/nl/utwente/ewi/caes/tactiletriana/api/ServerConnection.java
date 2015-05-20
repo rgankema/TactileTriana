@@ -533,15 +533,22 @@ public class ServerConnection implements Runnable, IController {
                     hasError = true;
                     error = error + " Device with id " + deviceID + " does not exist.";
                     break;
+                    
                 }
-
+                               
+                
                 //Get the parameters
                 HashMap<String,JSONObject> parameters = (JSONObject) deviceJSON.get("parameters");
                 
                 //Update each parameter
                 //TODO handle errors
+                
                 for(String parameter: parameters.keySet()) {
-                    device.updateParameter(parameter, parameters.get(parameter));
+                    if (!device.updateParameter(parameter, parameters.get(parameter))) {
+                        hasError = true;
+                        error = error + "SubmitPlanning: updating paramter '" + parameter +"' failed.";
+                        
+                    }
                 }
 
                 
@@ -552,6 +559,12 @@ public class ServerConnection implements Runnable, IController {
                 return;
             }
 
+        }
+        
+        //Check for errors that happened in the loop
+        if(hasError) {
+            log(error);
+            sendError(error);
         }
         
     }

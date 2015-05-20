@@ -5,6 +5,7 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,39 @@ import java.util.function.Consumer;
 public final class TimeScenario {
     private final List<TimeSpan> timeSpans;
     private final List<Consumer<TimeSpan>> callbacks;
+    
+    public List<TimeSpan> getTimeSpans(){
+        return timeSpans;
+    }
+
+    /**
+     * Parse a representation of a TimeScenario:
+     * Format: DateBegin,DateEnd|DateBegin,DateEnd| etc
+     * @param input
+     * @return 
+     */
+    public static TimeScenario parseTimeScenario(String input){
+        TimeScenario result = new TimeScenario();
+        String[] timespans = input.split("[|]");
+        
+        for(int i = 0; i < timespans.length; i++){
+            String ts = timespans[i];
+            String[] data = ts.split(",");
+            LocalDateTime begin = LocalDateTime.parse(data[0]);
+            LocalDateTime end = LocalDateTime.parse(data[1]);
+            TimeSpan timespan = new TimeSpan(begin, end);
+            result.add(timespan);
+        }
+        return result;
+    }
+    @Override
+    public String toString(){
+        String output = "";
+        for (TimeSpan s : this.timeSpans){
+            output = output + s.getStart() + "," + s.getEnd() + "|";
+        }
+        return output;
+    }
     
     /**
      * Creates a new TimeScenario
