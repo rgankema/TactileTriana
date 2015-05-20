@@ -22,10 +22,16 @@ import org.json.simple.JSONObject;
  */
 public class House extends LoggingEntityBase {
 
+    private static int houseID = 0;
+    
     private final ObservableList<DeviceBase> devices;
-
+    private final int id;
+    
     public House(SimulationBase simulation) {
         super(simulation, "House", QuantityType.POWER);
+        
+        //set the id
+        this.id = houseID++;
         
         // fuse blow met false initializeren
         this.setFuseBlown(false);
@@ -52,7 +58,16 @@ public class House extends LoggingEntityBase {
     public ObservableList<DeviceBase> getDevices() {
         return devices;
     }
-
+    
+    /**
+     * Returns the ID of the house.
+     * 
+     * @return integer representing the ID of the house. 
+     */
+    public int getId() {
+        return id;
+    }
+    
     /*
      * The amount of power the house currently consumes. A negative number means
      * the house is producing energy.
@@ -153,7 +168,7 @@ public class House extends LoggingEntityBase {
      */
     public JSONObject toJSON() {
         JSONObject result = new JSONObject();
-        result.put("houseID", this.hashCode());
+        result.put("houseID", this.getId());
         //Add the devices
         JSONArray devices = new JSONArray();
         for(DeviceBase device : this.getDevices()) {
