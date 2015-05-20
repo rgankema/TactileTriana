@@ -15,6 +15,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
 import nl.utwente.ewi.caes.tactiletriana.gui.configuration.scenario.ScenarioVM;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
@@ -196,13 +197,20 @@ public class ConfigurationVM {
     // METHODS
 
     public void start() {
+        
+        
         StageController.getInstance().setMainStagesVisible(true);
         StageController.getInstance().setLauncherStageVisible(false);
         StageController.getInstance().setScreenIndexStagesVisible(false);
         
         if (this.simulation.getState() == Simulation.SimulationState.STOPPED) {
+            
             this.simulation.setTimeScenario(scenarioVM.build());
         }
+        
+        // save the configuration to a file
+        SimulationConfig.SaveProperties();       
+        
         this.simulation.start();
 
         launched.set(true);
