@@ -51,7 +51,7 @@ public class HouseTest {
         System.out.println("currentConsumptionPropertyMultipleDevices");
         
         int nDevices = 5;
-        double deviceConsumption = 50.0;
+        double deviceConsumption = instance.getMaximumConsumption()/5;
         for (int i = 0; i < nDevices; i++) {
             // Mock devices
             DeviceBase device = mock(DeviceBase.class);
@@ -71,7 +71,7 @@ public class HouseTest {
         
         // Mock device
         DeviceBase device = mock(DeviceBase.class);
-        when(device.currentConsumptionProperty()).thenReturn(new SimpleDoubleProperty(200d));
+        when(device.currentConsumptionProperty()).thenReturn(new SimpleDoubleProperty(instance.getMaximumConsumption()-1));
         instance.getDevices().add(device);
         
         instance.tick(true);
