@@ -365,7 +365,7 @@ public class SolarPanel extends DeviceBase {
             setOrientation(v);
             result = true;
         } else {            
-            throw new IllegalArgumentException("Cannot update parameter " + parameter);
+            result = super.updateParameter(parameter, value);
         }
         
         return result;
