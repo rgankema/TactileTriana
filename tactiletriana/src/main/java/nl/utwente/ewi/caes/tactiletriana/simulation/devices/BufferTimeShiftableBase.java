@@ -99,7 +99,18 @@ public abstract class BufferTimeShiftableBase extends BufferBase {
     /**
      * 
      */
-    protected final DoubleProperty desiredCharge = new SimpleDoubleProperty();
+    protected final DoubleProperty desiredCharge = new SimpleDoubleProperty(){
+        @Override
+        public void set(double value) {
+            if (get() == value) {
+                return;
+            }
+            if (value < 0) {
+                value = 0;
+            }
+            super.set(value);
+        }
+    };
     
     public DoubleProperty desiredChargeProperty() {
         return desiredCharge;
