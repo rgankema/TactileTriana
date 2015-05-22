@@ -347,5 +347,28 @@ public class SolarPanel extends DeviceBase {
         result.put(API_PROFILE, jsonProfile);
         return result;
     }
+    
+    @Override
+    public boolean updateParameter(String parameter, Object value){
+        boolean result = false;
+        double v = (double) value;
+        if(parameter.equals(API_AREA)){
+            setArea(v);
+            result = true;
+        } else if(parameter.equals(API_EFFICIENCY)){
+            setEfficiency(v);
+            result = true;
+        } else if(parameter.equals(API_ELEVATION)){
+            setElevation(v);
+            result = true;
+        } else if (parameter.equals(API_ORIENTATION)){
+            setOrientation(v);
+            result = true;
+        } else {
+            result = super.updateParameter(parameter, value);
+        }
+        
+        return result;
+    }
 
 }
