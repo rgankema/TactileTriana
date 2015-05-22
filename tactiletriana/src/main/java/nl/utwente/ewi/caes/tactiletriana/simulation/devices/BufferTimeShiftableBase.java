@@ -121,8 +121,8 @@ public abstract class BufferTimeShiftableBase extends BufferBase {
         }else if (parameter.equals(API_VEHICLE2GRID)){
             setVehicle2Grid((boolean)value);
             result = true;
-        }else {
-            result = super.updateParameter(parameter, value);
+        }else {                      
+            throw new IllegalArgumentException("Cannot update parameter " + parameter);
         }
         
         return result;
