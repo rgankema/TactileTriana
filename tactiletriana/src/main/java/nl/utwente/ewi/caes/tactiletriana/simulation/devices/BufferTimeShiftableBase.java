@@ -110,4 +110,21 @@ public abstract class BufferTimeShiftableBase extends BufferBase {
         result.put(API_VEHICLE2GRID, isVehicle2Grid());
         return result;
     }
+    
+    @Override
+    public boolean updateParameter(String parameter, Object value){
+        boolean result = false;
+        if(parameter.equals(API_TIMES)){
+            JSONObject times = (JSONObject) value;
+            setStartTime((double)times.get("start_time"));            
+            setEndTime((double)times.get("end_time"));
+        }else if (parameter.equals(API_VEHICLE2GRID)){
+            setVehicle2Grid((boolean)value);
+            result = true;
+        }else {
+            result = super.updateParameter(parameter, value);
+        }
+        
+        return result;
+    }
 }
