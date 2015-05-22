@@ -38,7 +38,7 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
         
         //set the leave time somewhere between 5:30am - 8:30am
         setLeaveTime(Math.random()*3 + 5.5); 
-        //set the return time somewhere between 4:00 pv and 8:00pm
+        //set the return time somewhere between 4:00pm and 8:00pm
         setReturnTime(Math.random()*4 + 16);
         //Initial desired charge is 100%
         setDesiredCharge(getCapacity());
@@ -200,11 +200,21 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
             chargeBuffer(-drainage, SimulationConfig.TICK_MINUTES);
         }
         
-        // Decide consumption for upcoming tick, can only charge when at home and not fully charged
-        if (!( getLeaveTime() < h && h < getReturnTime()) && !isCharged()){
-            setCurrentConsumption(getMaxPower());                 
-        } else {
-            setCurrentConsumption(0);
+        //If there's no planning available, charge full power
+        if (getPlanning() == null || getPlanning().get(time) == null) {
+            // Decide consumption for upcoming tick, can only charge when at home and not fully charged
+            if (!( getLeaveTime() < h && h < getReturnTime()) && !isCharged()){
+                setCurrentConsumption(getMaxPower());                 
+            } else {
+                setCurrentConsumption(0);
+            }
+        //Else charge according to planning
+        }else {
+            if (!( getLeaveTime() < h && h < getReturnTime()) && !isCharged()){
+                setCurrentConsumption(getPlanning().get(time));                 
+            } else {
+                setCurrentConsumption(0);
+            }
         }
     }
     
