@@ -20,6 +20,7 @@ import org.json.simple.JSONObject;
 public abstract class BufferTimeShiftableBase extends BufferBase {
     public static final String API_TIMES = "times";
     public static final String API_VEHICLE2GRID = "vehicle2grid";
+    public static final String API_DESIREDCHARGE = "desired_charge";
     
     /**
      * Constructs a BufferTimeShiftable device.
@@ -32,11 +33,13 @@ public abstract class BufferTimeShiftableBase extends BufferBase {
         // register properties for API
         registerAPIParameter(API_TIMES);
         registerAPIParameter(API_VEHICLE2GRID);
+        registerAPIParameter(API_DESIREDCHARGE);
         
         // register properties for prediction
         registerProperty(startTime);
         registerProperty(endTime);
         registerProperty(vehicle2Grid);
+        registerProperty(desiredCharge);
     }
     
     // PROPERTIES
@@ -93,6 +96,23 @@ public abstract class BufferTimeShiftableBase extends BufferBase {
         this.endTime.set(endTime);
     }
     
+    /**
+     * 
+     */
+    protected final DoubleProperty desiredCharge = new SimpleDoubleProperty();
+    
+    public DoubleProperty desiredChargeProperty() {
+        return desiredCharge;
+    }
+    
+    public final double getDesiredCharge() {
+        return desiredCharge.get();
+    }
+
+    public final void setDesiredCharge(double dc) {
+        this.desiredCharge.set(dc);
+    }
+    
     // METHODS
     
     @Override
@@ -108,6 +128,7 @@ public abstract class BufferTimeShiftableBase extends BufferBase {
         
         result.put(API_TIMES, times);
         result.put(API_VEHICLE2GRID, isVehicle2Grid());
+        result.put(API_DESIREDCHARGE, getDesiredCharge());
         return result;
     }
     
@@ -118,8 +139,11 @@ public abstract class BufferTimeShiftableBase extends BufferBase {
             JSONObject times = (JSONObject) value;
             setStartTime((double)times.get("start_time"));            
             setEndTime((double)times.get("end_time"));
-        }else if (parameter.equals(API_VEHICLE2GRID)){
+        } else if (parameter.equals(API_VEHICLE2GRID)){
             setVehicle2Grid((boolean)value);
+            result = true;
+        }else if (parameter.equals(API_DESIREDCHARGE)){
+            setDesiredCharge((double) value);
             result = true;
         }else {                      
             result = super.updateParameter(parameter, value);

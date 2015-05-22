@@ -40,6 +40,8 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
         setLeaveTime(Math.random()*3 + 5.5); 
         //set the return time somewhere between 4:00 pv and 8:00pm
         setReturnTime(Math.random()*4 + 16);
+        //Initial desired charge is 100%
+        setDesiredCharge(getCapacity());
         
         registerProperty(leaveTime);
         registerProperty(returnTime);
@@ -209,8 +211,12 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
     //Charge the buffer with an amount of power times timestep, can also be negative (draining the battery)
     private void chargeBuffer(double power, double timestep){
         if (power == 0) return;
-
-        setStateOfCharge(getStateOfCharge() + power * (timestep/60));
+        
+        if (power > 0 && getStateOfCharge() < getDesiredCharge()){
+            setStateOfCharge(getStateOfCharge() + power * (timestep/60));
+        } else if (power < 0){
+            setStateOfCharge(getStateOfCharge() + power * (timestep/60));
+        }
     }
     
     // NESTED ENUMS
