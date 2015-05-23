@@ -247,7 +247,7 @@ public abstract class DeviceBase extends LoggingEntityBase {
      * @param value     the value that the property should be set to
      * @throws IllegalArgumentException if the device does not know the given parameter, or cannot apply the given value to it.
      */
-    public boolean updateParameter(String parameter, Object value) {
+    public boolean updateParameter(String parameter, Object value){        
         throw new IllegalArgumentException("Cannot update parameter " + parameter);
     }
     
