@@ -73,7 +73,7 @@ public class CableView extends Group {
             double load = viewModel.getLoad();
             return Color.DARKGRAY.interpolate(Color.RED, load);//new Color(load, 1.0 - load, 0, 1.0);
         }, viewModel.loadProperty(), viewModel.brokenProperty()));
-
+        
         // Bind diameter of cables to direction in viewmodel
         DoubleBinding diameterBinding = Bindings.createDoubleBinding(() -> {
             double current = viewModel.getMaximumCurrent();
@@ -140,6 +140,7 @@ public class CableView extends Group {
                             circle.setTranslateY(0 - circle.getTranslateY());
                         });
 
+                        circle.getStyleClass().add("electricity");
                         circle.setFill(Color.YELLOW);
                         circle.setEffect(new Glow(0.7));
                     }

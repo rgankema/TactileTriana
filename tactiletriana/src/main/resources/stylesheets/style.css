@@ -65,3 +65,7 @@ application.
 .cable-view.on-chart {
     -fx-effect: dropshadow(gaussian, black, 10, 0.3, 0, 0);
 }
+
+.electricity {
+    -fx-fill: #eeff00;
+}

@@ -49,18 +49,22 @@ public class DeviceView extends StackPane {
 
         this.type = type;
         
-        if (type == ElectricVehicle.class)
+        if (type == ElectricVehicle.class) {
             deviceIcon.setImage(new Image("images/car.png",50,50,false,true));
-        else if (type == SolarPanel.class)
+            getStyleClass().add("electric-vehicle");
+        } else if (type == SolarPanel.class) {
             deviceIcon.setImage(new Image("images/solarpanel.png",50,50,false,true));
-        else if (type == DishWasher.class)
+            getStyleClass().add("solar-panel");
+        } else if (type == DishWasher.class) {
             deviceIcon.setImage(new Image("images/dishwasher.png",50,50,false,true));
-        else if (type == WashingMachine.class)
+            getStyleClass().add("dish-washer");
+        } else if (type == WashingMachine.class) {
             deviceIcon.setImage(new Image("images/washingmachine.png",50,50,false,true));
-        else if (type == Buffer.class)
+            getStyleClass().add("washing-machine");
+        } else if (type == Buffer.class) {
             deviceIcon.setImage(new Image("images/buffer.png",50,50,false,true));
-        else
-            throw new UnsupportedOperationException("No DeviceView for type " + type.toString());
+            getStyleClass().add("buffer");
+        } else throw new UnsupportedOperationException("No DeviceView for type " + type.toString());
 
         this.setBackground(new Background(new BackgroundFill(Color.GREY, CornerRadii.EMPTY, Insets.EMPTY)));
         this.setBorder(buildBorder(Color.DARKGREY));
