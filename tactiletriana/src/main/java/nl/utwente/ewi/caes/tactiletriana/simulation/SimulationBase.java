@@ -190,10 +190,6 @@ public abstract class SimulationBase extends LoggingEntityBase {
      * Called at the start of each tick
      */
     protected final void tick() {
-        if (getController() != null) {
-            getController().retrievePlanning(50, getCurrentTime());
-        }
-        
         // Run anything that involves the UI on the JavaFX thread
         runOnJavaFXThreadSynchronously(() -> {
             getTransformer().tick(true);
@@ -226,6 +222,11 @@ public abstract class SimulationBase extends LoggingEntityBase {
             // Increment time
             incrementTime();
         });
+        
+        if (getController() != null) {
+            System.out.println("as");
+            getController().retrievePlanning(50, getCurrentTime());
+        }
     }
     
     /**

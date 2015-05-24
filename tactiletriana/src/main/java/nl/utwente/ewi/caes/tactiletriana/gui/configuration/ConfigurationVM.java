@@ -15,7 +15,9 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import nl.utwente.ewi.caes.tactiletriana.Concurrent;
 import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
+import nl.utwente.ewi.caes.tactiletriana.api.APIServer;
 import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
 import nl.utwente.ewi.caes.tactiletriana.gui.configuration.scenario.ScenarioVM;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
@@ -204,11 +206,12 @@ public class ConfigurationVM {
         StageController.getInstance().setScreenIndexStagesVisible(false);
         
         if (this.simulation.getState() == Simulation.SimulationState.STOPPED) {
-            
             this.simulation.setTimeScenario(scenarioVM.build());
         }
         
-        
+        APIServer server = new APIServer(Integer.parseInt(portFieldTextProperty().get()), simulation);
+        Concurrent.getExecutorService().submit(server);
+                
         // save the configured timescenario
         SimulationConfig.SaveProperty("timescenario", this.simulation.getTimeScenario().toString());
         
