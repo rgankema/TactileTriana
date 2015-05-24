@@ -24,6 +24,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import nl.utwente.ewi.caes.tactiletriana.Concurrent;
 
 
 /**
@@ -448,6 +449,9 @@ public class ServerConnection implements Runnable, IController {
             this.sendMessage("{\"succes\" : false, \"error\" : \"Invalid JSON request received.\"}");
             log("Invalid message received.");
            
+        } catch (ClassCastException e) {
+            this.sendMessage("{\"succes\" : false, \"error\" : \"Invalid JSON request received.\"}");
+            log("Invalid message received.");
         }
     }
     
@@ -544,8 +548,12 @@ public class ServerConnection implements Runnable, IController {
                 //TODO handle errors
                 
                 for(String parameter: parameters.keySet()) {
-                    try { 
-                        device.updateParameter(parameter, parameters.get(parameter));
+                    try {
+                        //Run updateParameters on the JavaFX thread because it might change something in the GUI
+                        Concurrent.runOnJavaFXThreadSynchronously(() -> {
+                            device.updateParameter(parameter, parameters.get(parameter));
+                        });
+                        
                     } catch (Exception e) {
                         hasError = true;
                         error = error + "SubmitPlanning: updating paramter '" + parameter +"' failed.";
@@ -679,7 +687,11 @@ public class ServerConnection implements Runnable, IController {
                 //Update the planning
                 //TODO catch errors in updateParameters()
                 if(parameters.containsKey("planning")) {
-                    device.updateParameter("planning", parameters.get("planning"));
+                    //Run updateParameters on JavaFX thread, because it might change something in the GUI
+                    Concurrent.runOnJavaFXThreadSynchronously(() -> {
+                        device.updateParameter("planning", parameters.get("planning"));
+                    });
+                    
                 } else if (parameters.containsKey("ts_planning")) {
                     device.updateParameter("ts_planning", parameters.get("ts_planning"));
                 } else {
@@ -694,6 +706,10 @@ public class ServerConnection implements Runnable, IController {
             }
 
         }
+        
+        //Update the last updated planning time on succes
+        this.lastUpdatedPlanning = time;
+        log("Controller update planning.");
         
     }
     
@@ -742,40 +758,53 @@ public class ServerConnection implements Runnable, IController {
      * The (@code time} argument is used to record the last time the planning was updated.
      * The {@codetimeout} parameter specifies how long the retrieval of the planning may take.
      * 
-     * @param timeout
-     * @param time
+     * @param timeout Timeout in 100 millisecond units
+     * @param time  
      */
     public boolean retrievePlanning(int timeout, LocalDateTime time) {
         
         //Set the time this planning was requested
-        lastRequestPlanning = time;
+        this.lastRequestPlanning = time;
         
         //Send the RequestPlanning request
         JSONObject response = new JSONObject();
         Simulation sim = server.getSimulation();
+        response.put("category", "request");
+        response.put("type", "RequestPlanning");
         response.put("simTime", sim.getCurrentTime().getDayOfYear()*24*60 + sim.getCurrentTime().getHour() * 60 + sim.getCurrentTime().getMinute());
         response.put("timeStep", SimulationConfig.TICK_MINUTES);
         sendMessage(response.toJSONString());
-        
+        log("Sent request for planning...");
         
         
         //Now wait for the timeout period specified or until a SubmitPlanning request has been recieved. 
         boolean planningRecieved = false;
+        log("a");
         int looptime = 0;
         while (!planningRecieved && looptime < timeout) {
+            log(planningRecieved + " " + looptime + " " + timeout);
             //The lastPlanningTime will be updated when the new planning is received
-            if(this.lastPlanningTime().equals(time)) {
+            log("b");
+            if(this.lastUpdatedPlanning.equals(this.lastRequestPlanning)) {
                 planningRecieved = true;
             }
+            log("c");
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
-                
+                log("Sleep interrupted");
             }
+            
             looptime++;
+            
         }
-        
-        
+        log("d");
+        if(planningRecieved) {
+            log("Received planning from Controller.");
+        } else {
+            log("Failed to receive planning from Controller. Timeout expired...");
+        }
+        log("e");
         return planningRecieved;
     }
     
