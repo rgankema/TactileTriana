@@ -54,15 +54,12 @@ public class BufferConverter extends BufferBase {
     }
     
     @Override
-    public boolean updateParameter(String parameter, Object value){
-        boolean result = false;
+    public void updateParameter(String parameter, Object value){
         if(parameter.equals(API_COP)){
             setCOP((double) value);
-            result = true;
         } else {                      
-            result = super.updateParameter(parameter, value);
+            super.updateParameter(parameter, value);
         }        
-        return result;
     }
     
 }
