@@ -544,10 +544,11 @@ public class ServerConnection implements Runnable, IController {
                 //TODO handle errors
                 
                 for(String parameter: parameters.keySet()) {
-                    if (!device.updateParameter(parameter, parameters.get(parameter))) {
+                    try { 
+                        device.updateParameter(parameter, parameters.get(parameter));
+                    } catch (Exception e) {
                         hasError = true;
                         error = error + "SubmitPlanning: updating paramter '" + parameter +"' failed.";
-                        
                     }
                 }
 
