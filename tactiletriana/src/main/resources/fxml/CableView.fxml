@@ -12,7 +12,5 @@
 <fx:root fx:id="root" styleClass="cable-view" type="Group" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Line fx:id="line" endX="100.0" stroke="#6b6b6b" strokeWidth="10.0" />
-      <CableDirectionView fx:id="directionStart" rotate="270.0" />
-      <CableDirectionView fx:id="directionEnd" rotate="90.0" />
    </children>
 </fx:root>

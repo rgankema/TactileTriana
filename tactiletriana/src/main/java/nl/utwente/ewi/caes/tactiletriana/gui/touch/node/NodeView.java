@@ -7,16 +7,16 @@ package nl.utwente.ewi.caes.tactiletriana.gui.touch.node;
 
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 import nl.utwente.ewi.caes.tactiletriana.gui.events.EventUtil;
 
 /**
- * FXML Controller class
+ * The view for a single node.
+ * 
+ * CSS class: node-view
  *
  * @author Richard
  */
@@ -51,9 +51,9 @@ public class NodeView extends StackPane {
         
         viewModel.shownOnChartProperty().addListener(obs -> {
             if (viewModel.isShownOnChart()) {
-                this.setEffect(new DropShadow());
+                getStyleClass().add("on-chart");
             } else {
-                this.setEffect(null);
+                getStyleClass().remove("on-chart");
             }
         });
     }

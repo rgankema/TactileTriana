@@ -5,13 +5,10 @@
  */
 package nl.utwente.ewi.caes.tactiletriana;
 
-import java.io.IOException;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.TimeShiftableBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.WashingMachine;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -39,7 +36,7 @@ public class UpdateParameterTest {
             fail();
         }
         
-        assertTrue(washingmachine.updateParameter("static_profile", profile));
+        washingmachine.updateParameter("static_profile", profile);
         assertEquals(30.0, washingmachine.getStaticProfile()[0]);
         assertEquals(40.0, washingmachine.getStaticProfile()[0]);
         

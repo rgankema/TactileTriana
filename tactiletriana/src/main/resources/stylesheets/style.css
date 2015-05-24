@@ -51,3 +51,17 @@ application.
 .chart-view.small .chart-title {
     -fx-font-size: 30px;
 }
+
+// TOUCH
+
+.device-view #config-icon {
+    -fx-image: url("../images/config.png");
+}
+
+.node-view.on-chart,
+.transformer-view.on-chart,
+.house-view.on-chart,
+.device-view.on-chart,
+.cable-view.on-chart {
+    -fx-effect: dropshadow(gaussian, black, 10, 0.3, 0, 0);
+}

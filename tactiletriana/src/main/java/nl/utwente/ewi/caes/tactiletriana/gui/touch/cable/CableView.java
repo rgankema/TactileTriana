@@ -17,7 +17,6 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Glow;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -26,18 +25,16 @@ import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 import nl.utwente.ewi.caes.tactiletriana.gui.events.EventUtil;
 
 /**
- * FXML Controller class
+ * The view for a single cable.
+ * 
+ * CSS class: cable-view
  *
  * @author Richard
  */
 public class CableView extends Group {
 
-    @FXML
-    private Line line;
-    @FXML
-    private CableDirectionView directionStart;
-    @FXML
-    private CableDirectionView directionEnd;
+    @FXML private Line line;
+    
     private CableVM viewModel;
 
     public CableView() {
@@ -50,14 +47,6 @@ public class CableView extends Group {
             a = (a + 90 + 360) % 360;
             return a;
         }, line.startXProperty(), line.startYProperty(), line.endXProperty(), line.startYProperty());
-
-        directionStart.layoutXProperty().bind(line.startXProperty().subtract(30));
-        directionStart.layoutYProperty().bind(line.startYProperty().subtract(30));
-        directionStart.rotateProperty().bind(angle.subtract(180));
-
-        directionEnd.layoutXProperty().bind(line.endXProperty().subtract(30));
-        directionEnd.layoutYProperty().bind(line.endYProperty().subtract(30));
-        directionEnd.rotateProperty().bind(angle);
     }
 
     /**
@@ -94,17 +83,6 @@ public class CableView extends Group {
         }, viewModel.loadProperty());
 
         line.strokeWidthProperty().bind(diameterBinding.divide(1.5));
-        directionStart.scaleXProperty().bind(diameterBinding.divide(15d));
-        directionStart.scaleYProperty().bind(diameterBinding.divide(15d));
-        directionEnd.scaleXProperty().bind(diameterBinding.divide(15d));
-        directionEnd.scaleYProperty().bind(diameterBinding.divide(15d));
-
-        // Bind visibility of direction views to direction in viewmodel
-        directionEnd.setVisible(false);
-        directionStart.setVisible(false);
-        
-        //directionStart.visibleProperty().bind(viewModel.directionProperty().isEqualTo(CableVM.Direction.START));
-        //directionEnd.visibleProperty().bind(viewModel.directionProperty().isEqualTo(CableVM.Direction.END));
 
         // Repair cable on short press, show on chart for long press
         EventUtil.addShortAndLongPressEventHandler(line, l -> {
@@ -115,9 +93,9 @@ public class CableView extends Group {
         
         viewModel.shownOnChartProperty().addListener(obs -> {
             if (viewModel.isShownOnChart()) {
-                line.setEffect(new DropShadow());
+                getStyleClass().add("on-chart");
             } else {
-                line.setEffect(null);
+                getStyleClass().remove("on-chart");
             }
         });
         
@@ -142,38 +120,33 @@ public class CableView extends Group {
                     }   
                     return;
                 }
-                if (last == -1) {
-                    last = now;
-                    return;
-                } else {
-                    if ((now - last) / 1000000 >= (3000 - 2950 * viewModel.getLoad())) {
-                        Circle circle;
-                        if (removed.size() > 0) {
-                            circle = removed.get(0);
-                            circle.setTranslateX(0);
-                            circle.setTranslateY(0);
-                            removed.remove(0);
-                        } else {
-                            circle = new Circle(line.getStrokeWidth() * 0.3);
-                            circle.layoutXProperty().bind(Bindings.createDoubleBinding(() -> { 
-                                return (viewModel.getDirection() == CableVM.Direction.END) ? line.getStartX() : line.getEndX();
-                            }, viewModel.directionProperty(), line.startXProperty(), line.endXProperty()));
-                            circle.layoutYProperty().bind(Bindings.createDoubleBinding(() -> { 
-                                return (viewModel.getDirection() == CableVM.Direction.END) ? line.getStartY() : line.getEndY();
-                            }, viewModel.directionProperty(), line.startYProperty(), line.endYProperty()));
-                            viewModel.directionProperty().addListener((obs, oldV, newV) -> { 
-                                circle.setTranslateX(0 - circle.getTranslateX());
-                                circle.setTranslateY(0 - circle.getTranslateY());
-                            });
-                            
-                            circle.setFill(Color.YELLOW);
-                            circle.setEffect(new Glow(0.7));
-                        }
-                        getChildren().add(circle);
-                        circles.add(circle);
-                        
-                        last = now;
+                if (last == -1 || (now - last) / 1000000 >= (3000 - 2950 * viewModel.getLoad())) {
+                    Circle circle;
+                    if (removed.size() > 0) {
+                        circle = removed.get(0);
+                        circle.setTranslateX(0);
+                        circle.setTranslateY(0);
+                        removed.remove(0);
+                    } else {
+                        circle = new Circle(line.getStrokeWidth() * 0.3);
+                        circle.layoutXProperty().bind(Bindings.createDoubleBinding(() -> { 
+                            return (viewModel.getDirection() == CableVM.Direction.END) ? line.getStartX() : line.getEndX();
+                        }, viewModel.directionProperty(), line.startXProperty(), line.endXProperty()));
+                        circle.layoutYProperty().bind(Bindings.createDoubleBinding(() -> { 
+                            return (viewModel.getDirection() == CableVM.Direction.END) ? line.getStartY() : line.getEndY();
+                        }, viewModel.directionProperty(), line.startYProperty(), line.endYProperty()));
+                        viewModel.directionProperty().addListener((obs, oldV, newV) -> { 
+                            circle.setTranslateX(0 - circle.getTranslateX());
+                            circle.setTranslateY(0 - circle.getTranslateY());
+                        });
+
+                        circle.setFill(Color.YELLOW);
+                        circle.setEffect(new Glow(0.7));
                     }
+                    getChildren().add(circle);
+                    circles.add(circle);
+
+                    last = now;
                 }
                 for (Circle circle : circles) {
                     double speed = 1.5 + 3.0 * viewModel.getLoad();

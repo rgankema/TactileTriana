@@ -6,7 +6,6 @@
 package nl.utwente.ewi.caes.tactiletriana;
 
 import java.io.IOException;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 import org.junit.Test;
@@ -28,7 +27,6 @@ public class SimulationConfigTest {
         assertEquals(SimulationConfig.HOUSE_MAX_FUSE_CURRENT, 0);
         SimulationConfig.LoadProperties();
         assertThat(SimulationConfig.HOUSE_MAX_FUSE_CURRENT, is(not(0)));
-        assertTrue(SimulationConfig.MAX_DATE.isAfter(SimulationConfig.MIN_DATE) );
     }
     
     @Test
