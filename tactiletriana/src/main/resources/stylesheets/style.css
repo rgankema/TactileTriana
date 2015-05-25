@@ -55,7 +55,6 @@ application.
 // TOUCH
 
 .touch-view {
-    
     -fx-background-image: url("../images/background.jpg");
     -fx-background-repeat: stretch;
 }
@@ -69,7 +68,7 @@ application.
 .house-view.on-chart,
 .device-view.on-chart,
 .cable-view.on-chart {
-    -fx-effect: dropshadow(gaussian, black, 10, 0.3, 0, 0);
+    -fx-effect: dropshadow(gaussian, white, 10, 0.3, 0, 0);
 }
 
 .electricity {
