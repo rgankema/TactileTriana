@@ -60,6 +60,12 @@ public abstract class LoggingEntityBase {
                 log.add(new Data<>(log.get(log.size() - 1).getXValue(), value));
             }
             log.add(new Data<>(toMinuteOfYear(time), value));
+            
+            // Discard values that won't be shown anymore.
+            //if (log.size() > 12 * 60 / SimulationConfig.TICK_MINUTES) {
+            //    log.remove(0);
+            //    log.remove(0);
+            //}
         }
     }
     

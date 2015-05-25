@@ -11,7 +11,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.Pane;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 import nl.utwente.ewi.caes.tactiletriana.gui.configuration.scenario.ScenarioView;
 
@@ -21,20 +21,14 @@ import nl.utwente.ewi.caes.tactiletriana.gui.configuration.scenario.ScenarioView
  */
 public class ConfigurationView extends GridPane {
 
-    @FXML
-    private TextField portField;
-    @FXML
-    private ComboBox touchScreenComboBox;
-    @FXML
-    private ComboBox detailScreenComboBox;
-    @FXML
-    private CheckBox fullScreenCheckBox;
-    @FXML
-    private Button startButton;
-    @FXML
-    private Button resetButton;
-    @FXML
-    private StackPane scenarioViewContainer;
+    @FXML private TextField portField;
+    @FXML private ComboBox touchScreenComboBox;
+    @FXML private ComboBox detailScreenComboBox;
+    @FXML private CheckBox fullScreenCheckBox;
+    @FXML private Button startButton;
+    @FXML private Button resetButton;
+    @FXML private Pane scenarioViewContainer;
+    
     private ScenarioView scenarioView;
     
     private ConfigurationVM viewModel;
