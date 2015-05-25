@@ -31,9 +31,9 @@ public class ScenarioVM {
         this.timeSpans = FXCollections.observableArrayList();
         
         try{
-            TimeScenario ts = TimeScenario.parseTimeScenario(SimulationConfig.LoadProperty("timescenario"));
+            TimeScenario ts = TimeScenario.parse(SimulationConfig.LoadProperty("timescenario"));
             for (TimeSpan span : ts.getTimeSpans()){
-                timeSpans.add(new TimeSpanVM(span.getStart().toLocalDate(), span.getEnd().toLocalDate()));
+                timeSpans.add(new TimeSpanVM(span.getStart(), span.getEnd()));
             }
         }
         catch (Exception e){

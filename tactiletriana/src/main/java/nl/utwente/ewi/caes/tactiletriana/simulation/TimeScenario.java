@@ -7,6 +7,7 @@ package nl.utwente.ewi.caes.tactiletriana.simulation;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -28,15 +29,15 @@ public final class TimeScenario {
      * @param input
      * @return 
      */
-    public static TimeScenario parseTimeScenario(String input){
+    public static TimeScenario parse(String input){
         TimeScenario result = new TimeScenario();
         String[] timespans = input.split("[|]");
         
         for(int i = 0; i < timespans.length; i++){
             String ts = timespans[i];
             String[] data = ts.split(",");
-            LocalDateTime begin = LocalDateTime.parse(data[0]);
-            LocalDateTime end = LocalDateTime.parse(data[1]);
+            LocalDate begin = LocalDate.parse(data[0]);
+            LocalDate end = LocalDate.parse(data[1]);
             TimeSpan timespan = new TimeSpan(begin, end);
             result.add(timespan);
         }
@@ -79,9 +80,9 @@ public final class TimeScenario {
     
     /**
      * 
-     * @return the current time in the scenario
+     * @return the start date of the scenario
      */
-    public LocalDateTime getStart() {
+    public LocalDate getStart() {
         return timeSpans.get(0).start;
     }
     
@@ -101,12 +102,12 @@ public final class TimeScenario {
         // Find time span we're currently in
         int index = 0;
         for (index = 0; index < timeSpans.size(); index++) {
-            if (!timeSpans.get(index).start.isAfter(currentTime) && !currentTime.isAfter(timeSpans.get(index).end)) {
+            if (!timeSpans.get(index).start.isAfter(currentTime.toLocalDate()) && !currentTime.toLocalDate().isAfter(timeSpans.get(index).end)) {
                 break;
             }
-            if (timeSpans.get(index).start.isAfter(currentTime)) {
+            if (timeSpans.get(index).start.isAfter(currentTime.toLocalDate())) {
                 // Current time didn't fall in one of the timespans
-                currentTime = timeSpans.get(index).start;
+                currentTime = LocalDateTime.of(timeSpans.get(index).start, LocalTime.MIN);
                 for (Consumer c : callbacks) {
                     c.accept(timeSpans.get(index));
                 }
@@ -119,12 +120,12 @@ public final class TimeScenario {
         }
         // If the next time is after the current time span, start the next time span
         LocalDateTime nextTime = currentTime.plusMinutes(deltaMinutes);
-        if (nextTime.isAfter(timeSpans.get(index).end)) {
+        if (nextTime.toLocalDate().isAfter(timeSpans.get(index).end)) {
             index++;
             if (index == timeSpans.size()) {
                 index = 0;
             }
-            nextTime = timeSpans.get(index).start;
+            nextTime = LocalDateTime.of(timeSpans.get(index).start, LocalTime.MIN);
             for (Consumer c : callbacks) {
                 c.accept(timeSpans.get(index));
             }
@@ -154,23 +155,23 @@ public final class TimeScenario {
      * Represents a time span between two dates
      */
     public static final class TimeSpan {
-        private final LocalDateTime start;
-        private final LocalDateTime end;
+        private final LocalDate start;
+        private final LocalDate end;
         
-        public TimeSpan(LocalDateTime start, LocalDateTime end) {
-            if (!start.isBefore(end)) {
-                throw new IllegalArgumentException("Start must be before end");
+        public TimeSpan(LocalDate start, LocalDate end) {
+            if (start.isAfter(end)) {
+                throw new IllegalArgumentException("Start may not be after end");
             }
             
             this.start = start;
             this.end = end;
         }
         
-        public LocalDateTime getStart() {
+        public LocalDate getStart() {
             return this.start;
         }
         
-        public LocalDateTime getEnd() {
+        public LocalDate getEnd() {
             return this.end;
         }
     }

@@ -120,7 +120,7 @@ public class CableView extends Group {
                     }   
                     return;
                 }
-                if (last == -1 || (now - last) / 1000000 >= (3000 - 2950 * viewModel.getLoad())) {
+                if (last == -1 || ((now - last) / 1000000) * viewModel.getLoad() >= 50) {
                     Circle circle;
                     if (removed.size() > 0) {
                         circle = removed.get(0);

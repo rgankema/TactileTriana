@@ -5,6 +5,8 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation.prediction;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,7 +58,7 @@ public class SimulationPrediction extends SimulationBase {
         
         final Consumer<TimeSpan> timeSpanCallback = (TimeSpan t) -> {
             timeSpanChanged = true;
-            setCurrentTime(t.getStart());
+            setCurrentTime(LocalDateTime.of(t.getStart(), LocalTime.MIN));
         };
         
         mainSimulation.getTimeScenario().addNewTimeSpanStartedCallback(timeSpanCallback);

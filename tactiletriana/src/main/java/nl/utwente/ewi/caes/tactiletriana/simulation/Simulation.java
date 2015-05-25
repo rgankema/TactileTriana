@@ -24,15 +24,14 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.devices.UncontrollableLoad;
 public class Simulation extends SimulationBase {
     private static final TimeScenario DEFAULT_SCENARIO = new TimeScenario();
     static {
-        DEFAULT_SCENARIO.add(new TimeScenario.TimeSpan(LocalDateTime.of(LocalDate.of(2014, 1, 1), LocalTime.MIN), 
-                LocalDateTime.of(LocalDate.of(2014, 12, 31), LocalTime.MAX)));
+        DEFAULT_SCENARIO.add(new TimeScenario.TimeSpan(LocalDate.of(2014, 1, 1), LocalDate.of(2014, 12, 31)));
     }
     
     public Simulation() {
         this.setState(SimulationState.STOPPED);
 
         // Initialise time
-        setCurrentTime(getTimeScenario().getStart());
+        setCurrentTime(LocalDateTime.of(getTimeScenario().getStart(), LocalTime.MIN));
     }
 
     // PROPERTIES
@@ -130,7 +129,7 @@ public class Simulation extends SimulationBase {
             cable.repair();
         }
         clearAllLogs();
-        setCurrentTime(getTimeScenario().getStart());
+        setCurrentTime(LocalDateTime.of(getTimeScenario().getStart(), LocalTime.MIN));
     }
     
     /**
