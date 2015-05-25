@@ -17,7 +17,7 @@ import javafx.scene.chart.XYChart.Data;
 public abstract class LoggingEntityBase {
     private final String displayName;
     private final QuantityType qType;
-    private final ObservableList<Data<Integer, Double>> log;
+    private final ObservableList<Data<Integer, Float>> log;
     
     protected SimulationBase simulation;
 
@@ -46,7 +46,7 @@ public abstract class LoggingEntityBase {
         return this.simulation;
     }
     
-    public final ObservableList<Data<Integer, Double>> getLog() {
+    public final ObservableList<Data<Integer, Float>> getLog() {
         return this.log;
     }
 
@@ -57,15 +57,15 @@ public abstract class LoggingEntityBase {
         // Log can be called when Simulation is still initializing, and thus currentTime can be null
         if (time != null) {
             if (log.size() > 0) {
-                log.add(new Data<>(log.get(log.size() - 1).getXValue(), value));
+                log.add(new Data<>(log.get(log.size() - 1).getXValue(), (float) value));
             }
-            log.add(new Data<>(toMinuteOfYear(time), value));
+            log.add(new Data<>(toMinuteOfYear(time), (float) value));
             
             // Discard values that won't be shown anymore.
-            //if (log.size() > 12 * 60 / SimulationConfig.TICK_MINUTES) {
-            //    log.remove(0);
-            //    log.remove(0);
-            //}
+            if (log.size() > 12 * 60) {
+                log.remove(0);
+                log.remove(0);
+            }
         }
     }
     

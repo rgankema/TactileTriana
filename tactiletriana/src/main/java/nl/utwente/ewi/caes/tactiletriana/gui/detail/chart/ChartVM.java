@@ -29,8 +29,8 @@ public class ChartVM {
     private LoggingEntityBase future;
     private ListChangeListener actualLogListener;
     private ListChangeListener futureLogListener;
-    private final ObservableList<XYChart.Data<Integer, Double>> actualSeriesData;
-    private final ObservableList<XYChart.Data<Integer, Double>> futureSeriesData;
+    private final ObservableList<XYChart.Data<Integer, Float>> actualSeriesData;
+    private final ObservableList<XYChart.Data<Integer, Float>> futureSeriesData;
     
     public ChartVM() {
         actualSeriesData = FXCollections.observableArrayList();
@@ -86,7 +86,7 @@ public class ChartVM {
      *
      * @return the data for the actual series
      */
-    public ObservableList<XYChart.Data<Integer, Double>> getActualSeriesData() {
+    public ObservableList<XYChart.Data<Integer, Float>> getActualSeriesData() {
         return actualSeriesData;
     }
 
@@ -94,7 +94,7 @@ public class ChartVM {
      *
      * @return the data for the future series
      */
-    public ObservableList<XYChart.Data<Integer, Double>> getFutureSeriesData() {
+    public ObservableList<XYChart.Data<Integer, Float>> getFutureSeriesData() {
         return futureSeriesData;
     }
     
@@ -132,24 +132,24 @@ public class ChartVM {
         xAxisUpperBound.bind(xAxisLowerBound.add(60 * 12));
 
         // Update chart with recorded data
-        for (Data<Integer, Double> data : future.getLog()) {
+        for (Data<Integer, Float> data : future.getLog()) {
             futureSeriesData.add(data);
         }
         
-        for (Data<Integer, Double> data : actual.getLog()) {
+        for (Data<Integer, Float> data : actual.getLog()) {
             actualSeriesData.add(data);
         }
         
-        actualLogListener = new ListChangeListener<Data<Integer, Double>>() {
+        actualLogListener = new ListChangeListener<Data<Integer, Float>>() {
 
             @Override
-            public void onChanged(Change<? extends Data<Integer, Double>> c) {
+            public void onChanged(Change<? extends Data<Integer, Float>> c) {
                 while (c.next()) {
-                    for (Data<Integer, Double> data : c.getAddedSubList()) {
+                    for (Data<Integer, Float> data : c.getAddedSubList()) {
                         
                         // Remove all data from the future series that has an X before or equal to the new value
-                        List<Data<Integer, Double>> toRemove = new ArrayList<>();
-                        for (Data<Integer, Double> futureData : futureSeriesData) {
+                        List<Data<Integer, Float>> toRemove = new ArrayList<>();
+                        for (Data<Integer, Float> futureData : futureSeriesData) {
                             // This only works as long as futureSeriesData is sorted, which is a safe assumption
                             if (futureData.getXValue() < data.getXValue()) {
                                 toRemove.add(futureData);
@@ -157,29 +157,29 @@ public class ChartVM {
                                 break;
                             }
                         }
-                        for (Data<Integer, Double> futureData : toRemove) {
+                        for (Data<Integer, Float> futureData : toRemove) {
                             futureSeriesData.remove(futureData);
                         }
                         
                         xAxisLowerBound.set(data.getXValue() - 6 * 60);
                         actualSeriesData.add(data);
                     }
-                    for (Data<Integer, Double> data : c.getRemoved()) {
+                    for (Data<Integer, Float> data : c.getRemoved()) {
                         actualSeriesData.remove(data);
                     }
                 }
             }
         };
         
-        futureLogListener = new ListChangeListener<Data<Integer, Double>>() {
+        futureLogListener = new ListChangeListener<Data<Integer, Float>>() {
 
             @Override
-            public void onChanged(Change<? extends Data<Integer, Double>> c) {
+            public void onChanged(Change<? extends Data<Integer, Float>> c) {
                 while (c.next()) {
-                    for (Data<Integer, Double> data : c.getAddedSubList()) {
+                    for (Data<Integer, Float> data : c.getAddedSubList()) {
                         futureSeriesData.add(data);
                     }
-                    for (Data<Integer, Double> data : c.getRemoved()) {
+                    for (Data<Integer, Float> data : c.getRemoved()) {
                         futureSeriesData.remove(data);
                     }
                 }

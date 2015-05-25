@@ -91,13 +91,13 @@ public class SimulationPrediction extends SimulationBase {
                 // Clear the invalid log values
                 int minuteOfYear = toMinuteOfYear(oldValue);
                 for (LoggingEntityBase logger : futureByActual.values()) {
-                    List<Data<Integer, Double>> toRemove = new ArrayList<>();
-                    for (Data<Integer, Double> data : logger.getLog()) {
+                    List<Data<Integer, Float>> toRemove = new ArrayList<>();
+                    for (Data<Integer, Float> data : logger.getLog()) {
                         if (data.getXValue() >= minuteOfYear) {
                             toRemove.add(data);
                         }
                     }
-                    for (Data<Integer, Double> data : toRemove) {
+                    for (Data<Integer, Float> data : toRemove) {
                         logger.getLog().remove(data);
                     }
                     
