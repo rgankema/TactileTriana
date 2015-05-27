@@ -51,3 +51,31 @@ application.
 .chart-view.small .chart-title {
     -fx-font-size: 30px;
 }
+
+// TOUCH
+
+.touch-view {
+    -fx-background-image: url("../images/background.jpg");
+    -fx-background-repeat: stretch;
+}
+
+.device-view #config-icon {
+    -fx-image: url("../images/config.png");
+}
+
+.cable-view {
+    -fx-effect: dropshadow(gaussian, black, 5, 0.2, 0, 0);
+}
+
+.electricity {
+    -fx-fill: #eeff00;
+    -fx-effect: dropshadow(gaussian, #eeff00, 10, 0.5, 0, 0);
+}
+
+.node-view.on-chart,
+.transformer-view.on-chart,
+.house-view.on-chart,
+.device-view.on-chart,
+.cable-view.on-chart {
+    -fx-effect: dropshadow(gaussian, white, 10, 0.3, 0, 0);
+}

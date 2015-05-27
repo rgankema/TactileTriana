@@ -6,8 +6,6 @@
 package nl.utwente.ewi.caes.tactiletriana.gui.configuration.scenario.timespan;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import nl.utwente.ewi.caes.tactiletriana.simulation.TimeScenario.TimeSpan;
@@ -140,8 +138,6 @@ public class TimeSpanVM {
      * @return a new TimeSpan
      */
     public TimeSpan build() {
-        LocalDateTime start = LocalDateTime.of(getStartDate(), LocalTime.MIN);
-        LocalDateTime end = LocalDateTime.of(getEndDate(), LocalTime.MAX);
-        return new TimeSpan(start, end);
+        return new TimeSpan(getStartDate(), getEndDate());
     }
 }

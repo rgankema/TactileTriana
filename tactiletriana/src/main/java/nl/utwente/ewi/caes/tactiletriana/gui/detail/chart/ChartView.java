@@ -26,8 +26,8 @@ public class ChartView extends StackPane {
     @FXML private NumberAxis xAxis;
     @FXML private NumberAxis yAxis;
 
-    private Series<Integer, Double> actualSeries;
-    private Series<Integer, Double> futureSeries;
+    private Series<Integer, Float> actualSeries;
+    private Series<Integer, Float> futureSeries;
     
     private ChartVM viewModel;
 

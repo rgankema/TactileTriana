@@ -5,6 +5,8 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation.prediction;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,7 +58,7 @@ public class SimulationPrediction extends SimulationBase {
         
         final Consumer<TimeSpan> timeSpanCallback = (TimeSpan t) -> {
             timeSpanChanged = true;
-            setCurrentTime(t.getStart());
+            setCurrentTime(LocalDateTime.of(t.getStart(), LocalTime.MIN));
         };
         
         mainSimulation.getTimeScenario().addNewTimeSpanStartedCallback(timeSpanCallback);
@@ -91,13 +93,13 @@ public class SimulationPrediction extends SimulationBase {
                 // Clear the invalid log values
                 int minuteOfYear = toMinuteOfYear(oldValue);
                 for (LoggingEntityBase logger : futureByActual.values()) {
-                    List<Data<Integer, Double>> toRemove = new ArrayList<>();
-                    for (Data<Integer, Double> data : logger.getLog()) {
+                    List<Data<Integer, Float>> toRemove = new ArrayList<>();
+                    for (Data<Integer, Float> data : logger.getLog()) {
                         if (data.getXValue() >= minuteOfYear) {
                             toRemove.add(data);
                         }
                     }
-                    for (Data<Integer, Double> data : toRemove) {
+                    for (Data<Integer, Float> data : toRemove) {
                         logger.getLog().remove(data);
                     }
                     

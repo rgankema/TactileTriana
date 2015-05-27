@@ -29,7 +29,9 @@ import nl.utwente.ewi.caes.tactiletriana.gui.touch.transformer.TransformerView;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.*;
 
 /**
- * FXML Controller class
+ * The root view for the touch screen.
+ * 
+ * CSS class: touch-view
  *
  * @author Richard
  */

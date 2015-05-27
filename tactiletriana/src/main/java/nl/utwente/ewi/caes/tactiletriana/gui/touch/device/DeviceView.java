@@ -10,7 +10,6 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
@@ -30,13 +29,16 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.*;
 
 /**
- *
+ * The view for a single device.
+ * 
+ * CSS class: device-view
+ * 
  * @author Richard
  */
 public class DeviceView extends StackPane {
     @FXML private Node configIcon;
     @FXML private Label batteryLabel;
-    private Node deviceIcon;
+    @FXML private ImageView deviceIcon;
     private DeviceConfigView configPanel;
 
     private DeviceVM viewModel;
@@ -47,20 +49,22 @@ public class DeviceView extends StackPane {
 
         this.type = type;
         
-        deviceIcon = null;
-        if (type == ElectricVehicle.class)
-            deviceIcon = new ImageView(new Image("images/car.png",50,50,false,true));
-        else if (type == SolarPanel.class)
-            deviceIcon = new ImageView(new Image("images/solarpanel.png",50,50,false,true));
-        else if (type == DishWasher.class)
-            deviceIcon = new ImageView(new Image("images/dishwasher.png",50,50,false,true));
-        else if (type == WashingMachine.class)
-            deviceIcon = new ImageView(new Image("images/washingmachine.png",50,50,false,true));
-        else if (type == Buffer.class)
-            deviceIcon = new ImageView(new Image("images/buffer.png",50,50,false,true));
-        else
-            throw new UnsupportedOperationException("No DeviceView for type " + type.toString());
-        getChildren().add(0, deviceIcon);
+        if (type == ElectricVehicle.class) {
+            deviceIcon.setImage(new Image("images/car.png",50,50,false,true));
+            getStyleClass().add("electric-vehicle");
+        } else if (type == SolarPanel.class) {
+            deviceIcon.setImage(new Image("images/solarpanel.png",50,50,false,true));
+            getStyleClass().add("solar-panel");
+        } else if (type == DishWasher.class) {
+            deviceIcon.setImage(new Image("images/dishwasher.png",50,50,false,true));
+            getStyleClass().add("dish-washer");
+        } else if (type == WashingMachine.class) {
+            deviceIcon.setImage(new Image("images/washingmachine.png",50,50,false,true));
+            getStyleClass().add("washing-machine");
+        } else if (type == Buffer.class) {
+            deviceIcon.setImage(new Image("images/buffer.png",50,50,false,true));
+            getStyleClass().add("buffer");
+        } else throw new UnsupportedOperationException("No DeviceView for type " + type.toString());
 
         this.setBackground(new Background(new BackgroundFill(Color.GREY, CornerRadii.EMPTY, Insets.EMPTY)));
         this.setBorder(buildBorder(Color.DARKGREY));
@@ -130,9 +134,9 @@ public class DeviceView extends StackPane {
         
         viewModel.shownOnChartProperty().addListener(obs -> {
             if (viewModel.isShownOnChart()) {
-                this.setEffect(new DropShadow());
+                getStyleClass().add("on-chart");
             } else {
-                this.setEffect(null);
+                getStyleClass().remove("on-chart");
             }
         });
     }

@@ -222,6 +222,11 @@ public abstract class SimulationBase extends LoggingEntityBase {
             // Increment time
             incrementTime();
         });
+        
+        if (getController() != null) {
+            System.out.println("as");
+            getController().retrievePlanning(50, getCurrentTime());
+        }
     }
     
     /**

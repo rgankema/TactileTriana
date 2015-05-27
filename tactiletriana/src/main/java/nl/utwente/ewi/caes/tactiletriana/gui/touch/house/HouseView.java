@@ -7,16 +7,17 @@ package nl.utwente.ewi.caes.tactiletriana.gui.touch.house;
 
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 import nl.utwente.ewi.caes.tactiletriana.gui.events.EventUtil;
 
 /**
- *
+ * The view for a single house.
+ * 
+ * CSS class: house-view
+ * 
  * @author Richard
  */
 public class HouseView extends Pane {
@@ -61,9 +62,9 @@ public class HouseView extends Pane {
         
         viewModel.shownOnChartProperty().addListener(obs -> {
             if (viewModel.isShownOnChart()) {
-                this.setEffect(new DropShadow());
+                getStyleClass().add("on-chart");
             } else {
-                this.setEffect(null);
+                getStyleClass().remove("on-chart");
             }
         });
     }

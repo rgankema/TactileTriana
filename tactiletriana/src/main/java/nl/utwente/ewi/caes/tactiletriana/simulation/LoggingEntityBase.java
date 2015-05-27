@@ -18,7 +18,7 @@ public abstract class LoggingEntityBase {
 
     private final String displayName;
     private final QuantityType qType;
-    private final ObservableList<Data<Integer, Double>> log;
+    private final ObservableList<Data<Integer, Float>> log;
 
     protected SimulationBase simulation;
 
@@ -45,8 +45,8 @@ public abstract class LoggingEntityBase {
     public final SimulationBase getSimulation() {
         return this.simulation;
     }
-
-    public final ObservableList<Data<Integer, Double>> getLog() {
+   
+    public final ObservableList<Data<Integer, Float>> getLog() {
         return this.log;
     }
 
@@ -55,17 +55,17 @@ public abstract class LoggingEntityBase {
         LocalDateTime time = this.simulation.getCurrentTime();
         // Log can be called when Simulation is still initializing, and thus currentTime can be null
 
-        // Garbage collection voor de grafiek punten, verwijder het punt dat nu v/d grafiek af zal vallen.
-        // @Richard kan je die 6*60 veranderen voor de constante van het groote vh window?
-        if (log.get(0).XValueProperty().get() < toMinuteOfYear(time) - 6 * 60) {
-            log.remove(0);
-        }
-
         if (time != null) {
             if (log.size() > 0) {
-                log.add(new Data<>(log.get(log.size() - 1).getXValue(), value));
+                log.add(new Data<>(log.get(log.size() - 1).getXValue(), (float) value));
             }
-            log.add(new Data<>(toMinuteOfYear(time), value));
+            log.add(new Data<>(toMinuteOfYear(time), (float) value));
+            
+            // Discard values that won't be shown anymore.
+            if (log.size() > 12 * 60) {
+                log.remove(0);
+                log.remove(0);
+            }
         }
     }
 
