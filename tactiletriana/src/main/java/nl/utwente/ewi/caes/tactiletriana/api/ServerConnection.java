@@ -142,7 +142,7 @@ public class ServerConnection implements Runnable, IController {
      */
     public synchronized void sendError(String s) {
          try {
-            out.write("{\"succes\" : false, \"error\" : \"" + s + "\"" + "}\n");
+            out.write("{\"success\" : false, \"error\" : \"" + s + "\"" + "}\n");
             out.flush();
             
         } catch (IOException e) {
@@ -158,7 +158,7 @@ public class ServerConnection implements Runnable, IController {
      */
     public synchronized void sendResponse() {
          try {
-            out.write("{\"succes\" : true, \"error\" : \"\"" + "}\n");
+            out.write("{\"success\" : true, \"error\" : \"\"" + "}\n");
             out.flush();
             
         } catch (IOException e) {
@@ -446,11 +446,11 @@ public class ServerConnection implements Runnable, IController {
             
             
         } catch(ParseException e) {
-            this.sendMessage("{\"succes\" : false, \"error\" : \"Invalid JSON request received.\"}");
+            this.sendMessage("{\"success\" : false, \"error\" : \"Invalid JSON request received.\"}");
             log("Invalid message received.");
            
         } catch (ClassCastException e) {
-            this.sendMessage("{\"succes\" : false, \"error\" : \"Invalid JSON request received.\"}");
+            this.sendMessage("{\"success\" : false, \"error\" : \"Invalid JSON request received.\"}");
             log("Invalid message received.");
         }
     }
@@ -588,7 +588,7 @@ public class ServerConnection implements Runnable, IController {
         jsonResponse.put("isRunning", (sim.getState() == Simulation.SimulationState.RUNNING));
         jsonResponse.put("isStarted", (sim.getState() != Simulation.SimulationState.STOPPED));
         //Minute of the year in the simulation.
-        jsonResponse.put("simTime", sim.getCurrentTime().getDayOfYear()*24*60 + sim.getCurrentTime().getHour() * 60 + sim.getCurrentTime().getMinute());
+        jsonResponse.put("simTime", (sim.getCurrentTime().getDayOfYear()-1)*24*60 + sim.getCurrentTime().getHour() * 60 + sim.getCurrentTime().getMinute());
         jsonResponse.put("timeStep", SimulationConfig.TICK_MINUTES);
         sendMessage(jsonResponse.toJSONString());
     }
@@ -620,13 +620,14 @@ public class ServerConnection implements Runnable, IController {
         //The time should match the current simulation time.
         int intTime = 0;
         try {
-            intTime = (int) data.get("simTime");
+            intTime = (int)((long) data.get("simTime"));
         } catch (ClassCastException e) {
             error = "SubmitPlanning failed, invalid simTime parameter.";
             log(error);
             sendError(error);
             return;
         }
+        
         //Convert the time in minutes since the start of 2014 to a LocalDateTime instance
         LocalDateTime time = LocalDateTime.of(2014, 1, 1, 0,0).plusMinutes(intTime);
         
@@ -638,6 +639,8 @@ public class ServerConnection implements Runnable, IController {
             return;
         }
         
+        this.lastUpdatedPlanning = time;
+        
         //Extract the devices, if no devices parameter exists no plannings are updated
         ArrayList<JSONObject> devices = null;
         try {
@@ -647,6 +650,7 @@ public class ServerConnection implements Runnable, IController {
             } else {
                 //No updated plannings
                 sendResponse();
+                return;
             }
             
         } catch (Exception e) {
@@ -657,7 +661,7 @@ public class ServerConnection implements Runnable, IController {
         }
         
         //Check if the devices parameter was not empty
-        if(devices.size() == 0) {
+        if(devices != null && devices.size() == 0) {
             //No updated plannings
             sendResponse();
             return;
@@ -707,7 +711,7 @@ public class ServerConnection implements Runnable, IController {
 
         }
         
-        //Update the last updated planning time on succes
+        //Update the last updated planning time on success
         this.lastUpdatedPlanning = time;
         log("Controller update planning.");
         
@@ -774,22 +778,22 @@ public class ServerConnection implements Runnable, IController {
         Simulation sim = server.getSimulation();
         response.put("category", "request");
         response.put("type", "RequestPlanning");
-        response.put("simTime", sim.getCurrentTime().getDayOfYear()*24*60 + sim.getCurrentTime().getHour() * 60 + sim.getCurrentTime().getMinute());
+        response.put("simTime", (sim.getCurrentTime().getDayOfYear()-1)*24*60 + sim.getCurrentTime().getHour() * 60 + sim.getCurrentTime().getMinute());
         response.put("timeStep", SimulationConfig.TICK_MINUTES);
         sendMessage(response.toJSONString());
         log("Sent request for planning...");
         
         
-        //Now wait for the timeout period specified or until a SubmitPlanning request has been recieved. 
-        boolean planningRecieved = false;
+        //Now wait for the timeout period specified or until a SubmitPlanning request has been received. 
+        boolean planningReceived = false;
         log("a");
         int looptime = 0;
-        while (!planningRecieved && looptime < timeout) {
-            log(planningRecieved + " " + looptime + " " + timeout);
+        while (!planningReceived && looptime < timeout) {
+            log(planningReceived + " " + looptime + " " + timeout);
             //The lastPlanningTime will be updated when the new planning is received
             log("b");
             if(this.lastUpdatedPlanning.equals(this.lastRequestPlanning)) {
-                planningRecieved = true;
+                planningReceived = true;
             }
             log("c");
             try {
@@ -802,7 +806,7 @@ public class ServerConnection implements Runnable, IController {
             
         }
         log("d");
-        if(planningRecieved) {
+        if(planningReceived) {
             //Planning accepted, going back to Control
             setClientState(ClientState.CONTROL);
             log("Received planning from Controller.");
@@ -811,7 +815,7 @@ public class ServerConnection implements Runnable, IController {
         }
         log("e");
         
-        return planningRecieved;
+        return planningReceived;
     }
     
    
