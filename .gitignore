@@ -2,3 +2,6 @@
 /tactiletriana-gui-test/target/
 *.class
 *.class
+Thumbs.db
+*.config
+tactiletriana/tactiletriana.config

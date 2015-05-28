@@ -15,10 +15,11 @@ import javafx.scene.chart.XYChart.Data;
  * Needs an instance of Simulation to attain the current time.
  */
 public abstract class LoggingEntityBase {
+
     private final String displayName;
     private final QuantityType qType;
     private final ObservableList<Data<Integer, Float>> log;
-    
+
     protected SimulationBase simulation;
 
     public LoggingEntityBase(SimulationBase simulation, String displayName, QuantityType qType) {
@@ -33,7 +34,6 @@ public abstract class LoggingEntityBase {
     }
 
     // PROPERTIES
-    
     public final String getDisplayName() {
         return this.displayName;
     }
@@ -45,16 +45,16 @@ public abstract class LoggingEntityBase {
     public final SimulationBase getSimulation() {
         return this.simulation;
     }
-    
+   
     public final ObservableList<Data<Integer, Float>> getLog() {
         return this.log;
     }
 
     // METHODS
-    
     protected final void log(double value) {
         LocalDateTime time = this.simulation.getCurrentTime();
         // Log can be called when Simulation is still initializing, and thus currentTime can be null
+
         if (time != null) {
             if (log.size() > 0) {
                 log.add(new Data<>(log.get(log.size() - 1).getXValue(), (float) value));
@@ -68,17 +68,17 @@ public abstract class LoggingEntityBase {
             }
         }
     }
-    
+
     protected final int toMinuteOfYear(LocalDateTime time) {
         return (time.getDayOfYear() - 1) * 24 * 60 + time.getHour() * 60 + time.getMinute();
     }
 
     // ENUMS
-    
     /**
      * Describes a physical quantity that may be logged.
      */
     public static enum QuantityType {
+
         CURRENT, POWER, VOLTAGE
     }
 }
