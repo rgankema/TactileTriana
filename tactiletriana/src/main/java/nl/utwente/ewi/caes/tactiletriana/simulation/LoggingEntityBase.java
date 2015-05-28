@@ -62,7 +62,7 @@ public abstract class LoggingEntityBase {
             log.add(new Data<>(toMinuteOfYear(time), (float) value));
             
             // Discard values that won't be shown anymore.
-            if (log.size() > 12 * 60) {
+            if (log.size() > 6 * 60) {
                 log.remove(0);
                 log.remove(0);
             }
