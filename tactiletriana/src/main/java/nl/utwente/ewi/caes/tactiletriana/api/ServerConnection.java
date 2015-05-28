@@ -766,6 +766,9 @@ public class ServerConnection implements Runnable, IController {
         //Set the time this planning was requested
         this.lastRequestPlanning = time;
         
+        //Set the ClientState
+        setClientState(ClientState.WAITING);
+        
         //Send the RequestPlanning request
         JSONObject response = new JSONObject();
         Simulation sim = server.getSimulation();
@@ -800,11 +803,14 @@ public class ServerConnection implements Runnable, IController {
         }
         log("d");
         if(planningRecieved) {
+            //Planning accepted, going back to Control
+            setClientState(ClientState.CONTROL);
             log("Received planning from Controller.");
         } else {
             log("Failed to receive planning from Controller. Timeout expired...");
         }
         log("e");
+        
         return planningRecieved;
     }
     
