@@ -142,7 +142,7 @@ public class ServerConnection implements Runnable, IController {
      */
     public synchronized void sendError(String s) {
          try {
-            out.write("{\"succes\" : false, \"error\" : \"" + s + "\"" + "\n");
+            out.write("{\"succes\" : false, \"error\" : \"" + s + "\"" + "}\n");
             out.flush();
             
         } catch (IOException e) {
@@ -158,7 +158,7 @@ public class ServerConnection implements Runnable, IController {
      */
     public synchronized void sendResponse() {
          try {
-            out.write("{\"succes\" : true, \"error\" : \"\"" + "\n");
+            out.write("{\"succes\" : true, \"error\" : \"\"" + "}\n");
             out.flush();
             
         } catch (IOException e) {
