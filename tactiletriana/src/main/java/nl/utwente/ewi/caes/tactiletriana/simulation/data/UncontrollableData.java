@@ -67,22 +67,21 @@ public final class UncontrollableData implements IDeviceDataProvider<Uncontrolla
     
     // HELPER METHODS
     private void loadProfile() {
-        long start = System.nanoTime();
         //Load the profile data into an array from the CSV file containing power consumptions for 6 houses.
         double[][] profiles = new double[6][525608];
-        try {
-            File csvData = new File("src/main/resources/datasets/house_profiles.csv");
-            CSVFormat format = CSVFormat.DEFAULT.withDelimiter(';');
-            CSVParser parser = CSVParser.parse(csvData, Charset.defaultCharset(), format);
+        
+        File csvData = new File("src/main/resources/datasets/house_profiles.csv");
+        CSVFormat format = CSVFormat.DEFAULT.withDelimiter(';');
+        try (CSVParser parser = CSVParser.parse(csvData, Charset.defaultCharset(), format)) {
             for (CSVRecord csvRecord : parser) {
                 for (int p = 0; p < 6; p++) {
                     profiles[p][(int)parser.getRecordNumber()] = Double.parseDouble(csvRecord.get(p));
                 }
-            }
+            }  
         } catch (IOException e) {
             throw new RuntimeException("Error while parsing house profile dataset", e);
         }
-        System.out.println(System.nanoTime() - start);
+        
         // Convert to profile with value per timestep   
         int tickMinutes = SimulationConfig.TICK_MINUTES;
         int minutesInYear = 365 * 24 * 60;
@@ -101,7 +100,6 @@ public final class UncontrollableData implements IDeviceDataProvider<Uncontrolla
             }
             profileByKey.put(key, profile);
         }
-        System.out.println(System.nanoTime() - start);
     }
     
 }

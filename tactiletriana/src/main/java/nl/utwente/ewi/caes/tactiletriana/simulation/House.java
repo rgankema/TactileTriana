@@ -79,7 +79,6 @@ public class House extends LoggingEntityBase {
                 value = 0;
                 setFuseBlown(true);
             }
-            log(value);
             super.set(value);
         }
     };
