@@ -103,9 +103,12 @@ public class CableView extends Group {
     }
 
     private void animate() {
-        final List<Circle> circles = new ArrayList<>();
-        final List<Circle> removed = new ArrayList<>();
+        
         AnimationTimer timer = new AnimationTimer() {
+            
+            final List<Circle> circles = new ArrayList<>();
+            final List<Circle> removed = new ArrayList<>();
+            
             long last = -1;
             
             @Override
@@ -146,12 +149,11 @@ public class CableView extends Group {
                     }
                     getChildren().add(circle);
                     circles.add(circle);
-
                     last = now;
                 }
                 for (Circle circle : circles) {
                     double speed = 1.5 + 3.0 * viewModel.getLoad();
-
+                    
                     Point2D end;
                     if (viewModel.getDirection() == CableVM.Direction.END) {
                         end = new Point2D(line.getEndX() - line.getStartX(), line.getEndY() - line.getStartY());
