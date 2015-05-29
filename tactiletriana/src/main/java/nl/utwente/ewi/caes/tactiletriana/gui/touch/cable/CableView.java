@@ -151,29 +151,29 @@ public class CableView extends Group {
                     circles.add(circle);
                     last = now;
                 }
+                
+                Point2D end = (viewModel.getDirection() == CableVM.Direction.END) ?
+                    new Point2D(line.getEndX() - line.getStartX(), line.getEndY() - line.getStartY()) : 
+                    new Point2D(line.getStartX() - line.getEndX(), line.getStartY() - line.getEndY());
+                Point2D direction = end.normalize();
+                
+                
                 for (Circle circle : circles) {
                     double speed = 1.5 + 3.0 * viewModel.getLoad();
-                    
-                    Point2D end;
-                    if (viewModel.getDirection() == CableVM.Direction.END) {
-                        end = new Point2D(line.getEndX() - line.getStartX(), line.getEndY() - line.getStartY());
-                    } else {
-                        end = new Point2D(line.getStartX() - line.getEndX(), line.getStartY() - line.getEndY());
-                    }
-                    Point2D current = new Point2D(circle.getTranslateX(), circle.getTranslateY());
 
-                    Point2D delta = end.subtract(current);
-                    if (delta.magnitude() < 2.0) {
+                    double x = circle.getTranslateX() + direction.getX() * speed;
+                    double y = circle.getTranslateY() + direction.getY() * speed;
+                    
+                    if (Math.abs(x) > Math.abs(end.getX()) || Math.abs(y) > Math.abs(end.getY())) {
                         removed.add(circle);
                         getChildren().remove(circle);
                         continue;
                     }
-
-                    Point2D direction = delta.normalize();
-
-                    circle.setTranslateX(circle.getTranslateX() + direction.getX() * speed);
-                    circle.setTranslateY(circle.getTranslateY() + direction.getY() * speed);
+                    
+                    circle.setTranslateX(x);
+                    circle.setTranslateY(y);
                 }
+                
                 for (Circle circle : removed) {
                     circles.remove(circle);
                 }
