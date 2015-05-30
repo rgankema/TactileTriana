@@ -8,6 +8,8 @@ package nl.utwente.ewi.caes.tactiletriana.simulation;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -22,10 +24,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.devices.UncontrollableLoad;
  * @author Richard
  */
 public class Simulation extends SimulationBase {
-    private static final TimeScenario DEFAULT_SCENARIO = new TimeScenario();
-    static {
-        DEFAULT_SCENARIO.add(new TimeScenario.TimeSpan(LocalDate.of(2014, 1, 1), LocalDate.of(2014, 12, 31)));
-    }
+    private static final TimeScenario DEFAULT_SCENARIO = new TimeScenario(new TimeScenario.TimeSpan(LocalDate.of(2014, 1, 1), LocalDate.of(2014, 12, 31)));
     
     public Simulation() {
         this.setState(SimulationState.STOPPED);
@@ -56,17 +55,7 @@ public class Simulation extends SimulationBase {
     /**
      * The time scenario that this simulation follows.
      */
-    private final ObjectProperty<TimeScenario> timeScenario = new SimpleObjectProperty<TimeScenario>(DEFAULT_SCENARIO) {
-        @Override
-        public void set(TimeScenario value) {
-            
-            value.addNewTimeSpanStartedCallback(t -> {
-                clearAllLogs();
-            });
-            
-            super.set(value);
-        }
-    };
+    private final ObjectProperty<TimeScenario> timeScenario = new SimpleObjectProperty<>(DEFAULT_SCENARIO);
     
     public ObjectProperty<TimeScenario> timeScenarioProperty() {
         return timeScenario;
@@ -79,6 +68,18 @@ public class Simulation extends SimulationBase {
     public final void setTimeScenario(TimeScenario timeScenario) {
         timeScenarioProperty().set(timeScenario);
     }
+    
+    // EVENT HANDLING
+    private final List<Runnable> timeSpanShiftedCallbacks = new ArrayList<>();
+    
+    public final void addOnTimeSpanShiftedHandler(Runnable handler) {
+        timeSpanShiftedCallbacks.add(handler);
+    }
+    
+    public final void removeOnTimeSpanShiftedHandler(Runnable handler) {
+        timeSpanShiftedCallbacks.remove(handler);
+    }
+    
     
     // PUBLIC METHODS
     
@@ -138,7 +139,13 @@ public class Simulation extends SimulationBase {
      */
     @Override
     protected void incrementTime() {
-        setCurrentTime((getTimeScenario().getNext(getCurrentTime(), SimulationConfig.TICK_MINUTES)));
+        boolean timeSpanShifted = getTimeScenario().next(SimulationConfig.TICK_MINUTES);
+        setCurrentTime(getTimeScenario().getCurrentTime());
+        if (timeSpanShifted) {
+            for (Runnable callback : timeSpanShiftedCallbacks) {
+                callback.run();
+            }
+        }
     }
 
     // HELP METHODS

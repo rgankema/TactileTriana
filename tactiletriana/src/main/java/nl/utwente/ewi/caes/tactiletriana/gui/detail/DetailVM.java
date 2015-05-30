@@ -6,7 +6,6 @@
 package nl.utwente.ewi.caes.tactiletriana.gui.detail;
 
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import nl.utwente.ewi.caes.tactiletriana.Concurrent;
@@ -17,7 +16,6 @@ import nl.utwente.ewi.caes.tactiletriana.gui.detail.weather.WeatherVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.LoggingEntityVMBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.LoggingEntityBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
-import nl.utwente.ewi.caes.tactiletriana.simulation.TimeScenario.TimeSpan;
 
 /**
  *
@@ -109,12 +107,8 @@ public class DetailVM {
      * 
      * @param callback the function that should be called
      */
-    public void setOnSimulationTimeSpanChange(Consumer<TimeSpan> callback) {
-        this.simulation.getTimeScenario().addNewTimeSpanStartedCallback(callback);
-        this.simulation.timeScenarioProperty().addListener((obs, oV, nV) -> { 
-            oV.removeNewTimeSpanStartedCallback(callback);
-            nV.addNewTimeSpanStartedCallback(callback);
-        });
+    public void setOnSimulationTimeSpanChange(Runnable callback) {
+        this.simulation.addOnTimeSpanShiftedHandler(callback);
     }
 
     // Child VMs

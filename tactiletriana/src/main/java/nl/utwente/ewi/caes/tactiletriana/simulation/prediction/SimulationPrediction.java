@@ -5,13 +5,10 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation.prediction;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
@@ -24,7 +21,6 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.LoggingEntityBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Node;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 import nl.utwente.ewi.caes.tactiletriana.simulation.SimulationBase;
-import nl.utwente.ewi.caes.tactiletriana.simulation.TimeScenario.TimeSpan;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.*;
 
 /**
@@ -56,15 +52,9 @@ public class SimulationPrediction extends SimulationBase {
         futureByActual.put(mainSimulation, this);
         linkNetwork(mainSimulation.getTransformer(), this.getTransformer());
         
-        final Consumer<TimeSpan> timeSpanCallback = (TimeSpan t) -> {
+        mainSimulation.addOnTimeSpanShiftedHandler(() -> { 
             timeSpanChanged = true;
-            setCurrentTime(LocalDateTime.of(t.getStart(), LocalTime.MIN));
-        };
-        
-        mainSimulation.getTimeScenario().addNewTimeSpanStartedCallback(timeSpanCallback);
-        mainSimulation.timeScenarioProperty().addListener((observable, oldValue, newValue) -> {
-            oldValue.removeNewTimeSpanStartedCallback(timeSpanCallback);
-            newValue.addNewTimeSpanStartedCallback(timeSpanCallback);
+            setCurrentTime(mainSimulation.getCurrentTime());
         });
         
         // Zorg dat de simulatie 12 uur vooruit loopt

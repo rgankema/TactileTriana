@@ -59,11 +59,15 @@ public class ScenarioVM {
     // METHODS
     
     public TimeScenario build() {
-        TimeScenario scenario = new TimeScenario();
-        for (TimeSpanVM tsvm : timeSpans) {
-            scenario.add(tsvm.build());
+        
+        TimeSpan[] timeSpans = new TimeSpan[this.timeSpans.size()];
+        int i = 0;
+        for (TimeSpanVM tsvm : this.timeSpans) {
+            timeSpans[i] = tsvm.build();
+            i++;
         }
-        return scenario;
+        
+        return new TimeScenario(timeSpans);
     }
     
     // EVENT HANDLING

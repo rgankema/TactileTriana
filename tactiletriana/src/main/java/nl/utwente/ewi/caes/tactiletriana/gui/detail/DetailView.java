@@ -73,7 +73,7 @@ public class DetailView extends BorderPane {
         fadeIn.setToValue(1.0);
         
         final SequentialTransition transition = new SequentialTransition(fadeOut, fadeIn);
-        viewModel.setOnSimulationTimeSpanChange(timeSpan -> transition.playFromStart());
+        viewModel.setOnSimulationTimeSpanChange(() -> transition.playFromStart());
         
         // Show notifications on the screen
         viewModel.getNotificationQueue().addListener((ListChangeListener.Change<? extends NotificationVM> c) -> {
