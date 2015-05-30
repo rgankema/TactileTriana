@@ -8,6 +8,7 @@ package nl.utwente.ewi.caes.tactiletriana.simulation.devices;
 import java.time.LocalDateTime;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
@@ -28,7 +29,8 @@ public class SolarPanel extends DeviceBase {
     public final static String API_AREA = "area";
     public final static String API_PROFILE = "profile";
     
-    private double[] profileSquareMeter;
+    // The profile for the solar panel for an efficiency of 100% and an area of 1m²
+    private double[] abstractProfile;
     
     // The tick of the year where the profile starts
     private int profileTickOffset;
@@ -92,12 +94,16 @@ public class SolarPanel extends DeviceBase {
     private final DoubleProperty elevation = new SimpleDoubleProperty(45) {
         @Override
         public void set(double value) {
-            if (value < 0) {
-                throw new IllegalArgumentException("Elevation may not be below 0 degrees");
-            } else if (value > 90) {
-                throw new IllegalArgumentException("Elevation may not be higher than 90 degrees");
+            if (value != get()) {
+                if (value < 0) {
+                    throw new IllegalArgumentException("Elevation may not be below 0 degrees");
+                } else if (value > 90) {
+                    throw new IllegalArgumentException("Elevation may not be higher than 90 degrees");
+                }
+                // When elevation changes profile becomes invalid
+                abstractProfile = null;
+                super.set(value);
             }
-            super.set(value);
         }
     };
     
@@ -125,7 +131,11 @@ public class SolarPanel extends DeviceBase {
             if (value < 0) {
                 value += 360;
             }
-            super.set(value);
+            if (value != get()) {
+                // When orientation changes the profile becomes invalid
+                abstractProfile = null;
+                super.set(value);
+            }
         }
     };
     
@@ -147,12 +157,14 @@ public class SolarPanel extends DeviceBase {
     private final DoubleProperty efficiency = new SimpleDoubleProperty(21.5) {
         @Override
         public void set(double value) {
-            if (value < 0) {
-                throw new IllegalArgumentException("Efficiecny may not be below 0%");
-            } else if (value > 100) {
-                throw new IllegalArgumentException("Efficiecny may not be higher than 100%");
+            if (value != get()) {
+                if (value < 0) {
+                    throw new IllegalArgumentException("Efficiency may not be below 0%");
+                } else if (value > 100) {
+                    throw new IllegalArgumentException("Efficiency may not be higher than 100%");
+                }
+                super.set(value);
             }
-            super.set(value);
         }
     };
     
@@ -173,7 +185,7 @@ public class SolarPanel extends DeviceBase {
      */
     private final ObjectProperty<double[]> profile = new SimpleObjectProperty<>();
 
-    public ObjectProperty<double[]> profileProperty() {
+    public ReadOnlyObjectProperty<double[]> profileProperty() {
         return profile;
     }
     
@@ -182,7 +194,7 @@ public class SolarPanel extends DeviceBase {
     }
     
     private void setProfile(double[] profile) {
-        profileProperty().set(profile);
+        this.profile.set(profile);
     }
     
     // METHODS
@@ -199,17 +211,17 @@ public class SolarPanel extends DeviceBase {
         LocalDateTime time = getSimulation().getCurrentTime();
         int timeStepsInDay = (24 * 60) / SimulationConfig.TICK_MINUTES;
         
-        if (profileSquareMeter == null) {
+        if (abstractProfile == null) {
             // No profile yet, calculate the whole thing
             
-            profileSquareMeter = new double[timeStepsInDay];
+            abstractProfile = new double[timeStepsInDay];
             
             profileTickOffset = toTimeStep(time);
             for (int ts = 0; ts < timeStepsInDay; ts++) {
                 int timeStepInYear = (ts + profileTickOffset) % TOTAL_TICKS_IN_YEAR;
                 double temp = tempProfile[timeStepInYear];
                 double radiance = radianceProfile[timeStepInYear];
-                profileSquareMeter[ts] = (float) -calculateProductionSquareMeter(temp, radiance, weather.getLongitude(), weather.getLatitude(), time);
+                abstractProfile[ts] = (float) -calculateProductionSquareMeter(temp, radiance, weather.getLongitude(), weather.getLatitude(), time);
                 time = time.plusMinutes(SimulationConfig.TICK_MINUTES);
             }
         } else {
@@ -219,42 +231,49 @@ public class SolarPanel extends DeviceBase {
             
             // If the new time is before the last one, just calculate the whole profile again
             if (deltaTimeSteps < 0) {
-                for (int ts = 0; ts < profileSquareMeter.length; ts++) {
+                for (int ts = 0; ts < abstractProfile.length; ts++) {
                     int timeStepInYear = (ts + profileTickOffset) % TOTAL_TICKS_IN_YEAR;
                     double temp = tempProfile[timeStepInYear];
                     double radiance = radianceProfile[timeStepInYear];
-                    profileSquareMeter[ts] = (float) -calculateProductionSquareMeter(temp, radiance, weather.getLongitude(), weather.getLatitude(), time);
+                    abstractProfile[ts] = (float) -calculateProductionSquareMeter(temp, radiance, weather.getLongitude(), weather.getLatitude(), time);
                     time = time.plusMinutes(SimulationConfig.TICK_MINUTES);
                 }
             } else {
                 // Shift the array
                 int ts = 0;
-                for (; ts < profileSquareMeter.length - deltaTimeSteps; ts++) {
-                    profileSquareMeter[ts] = profileSquareMeter[ts + deltaTimeSteps];
+                for (; ts < abstractProfile.length - deltaTimeSteps; ts++) {
+                    abstractProfile[ts] = abstractProfile[ts + deltaTimeSteps];
                 }
                 // Calculate the timesteps we haven't done yet
-                for (; ts < profileSquareMeter.length; ts++) {
+                for (; ts < abstractProfile.length; ts++) {
                     int timeStepInYear = (ts + profileTickOffset) % TOTAL_TICKS_IN_YEAR;
                     double temp = tempProfile[timeStepInYear];
                     double radiance = radianceProfile[timeStepInYear];
-                    profileSquareMeter[ts] = (float) -calculateProductionSquareMeter(temp, radiance, weather.getLongitude(), weather.getLatitude(), time);
+                    abstractProfile[ts] = (float) -calculateProductionSquareMeter(temp, radiance, weather.getLongitude(), weather.getLatitude(), time);
                     time = time.plusMinutes(SimulationConfig.TICK_MINUTES);
                 }
             }
         }
         
         double[] finalProfile = new double[timeStepsInDay];
-        for (int i = 0; i < profileSquareMeter.length; i++) {
-            finalProfile[i] = profileSquareMeter[i] * getArea();
+        double efficiency = getEfficiency() / 100;
+        for (int i = 0; i < abstractProfile.length; i++) {
+            finalProfile[i] = abstractProfile[i] * getArea() * efficiency;
         }
         
         setProfile(finalProfile);
         setCurrentConsumption(getProfile()[0]);
     }
-
+    
+    
+    // Constants for the calculation below
+    private static final double PI = 3.14159265359;
+    private static final double PI_DIV_180 = PI / 180;
+    private static final double RHO_GND = 0.2;
+    
     /**
      * Calculates the production per square meter of this solar panel given the
-     * temperature, radiance, longitude and latitude and time.
+     * temperature, radiance, longitude and latitude and time, and an efficiency of 100%.
      * 
      * @param temperature the temperature at the location of the panel
      * @param radiance the radiance at the location of the panel
@@ -264,25 +283,22 @@ public class SolarPanel extends DeviceBase {
      * @return amount of watt that the device produces per square meter
      */
     private double calculateProductionSquareMeter(double temperature, double radiance, double longitude, double latitude, LocalDateTime time) {
-        double PI = 3.14159265359;
-
-        double longitudeRadian = longitude * (PI / 180);
-        double latitudeRadian = latitude * (PI / 180);
-        double elevationRadian = getElevation() * (PI / 180);	//Angle of the panel
-        double azimuthRadian = getOrientation() * (PI / 180);
-
-        double rho_gnd = 0.2; //constant
+        
+        double longitudeRadian = longitude * PI_DIV_180;
+        double latitudeRadian = latitude * PI_DIV_180;
+        double elevationRadian = getElevation() * PI_DIV_180;	//Angle of the panel
+        double azimuthRadian = getOrientation() * PI_DIV_180;
 
         //TIme calculations
         int day = time.getDayOfYear();
-        double delta = (23.44 * Math.sin(2 * PI * (day + 284) / 365.24)) * (PI / 180);
+        double delta = (23.44 * Math.sin(2 * PI * (day + 284) / 365.24)) * PI_DIV_180;
         double N = 2 * PI * (day / 366); //one year
         double E_time = 229.2 * (0.0000075 + 0.001868 * Math.cos(N) - 0.032077 * Math.sin(N) - 0.014614 * Math.cos(2 * N) - 0.04089 * Math.sin(N));
 
         //Calcuate h: Heigth of the sun
         double local_std_time = time.getHour() * 60 + time.getMinute();
-        double solar_time = (-4.0 * (longitudeRadian / (PI / 180))) + E_time + local_std_time;
-        double omega = ((0.25 * solar_time) - 180) * (PI / 180);
+        double solar_time = (-4.0 * (longitudeRadian / PI_DIV_180)) + E_time + local_std_time;
+        double omega = ((0.25 * solar_time) - 180) * PI_DIV_180;
         double h = Math.asin(Math.cos(latitudeRadian) * Math.cos(delta) * Math.cos(omega) + Math.sin(latitudeRadian) * Math.sin(delta));
 
         //Calculate diffuse light
@@ -311,7 +327,7 @@ public class SolarPanel extends DeviceBase {
 
         //Obtain the ammount of energy
         double G_ds = I_d * (1 + Math.cos(elevationRadian)) / 2;
-        double G_gnds = radiance * rho_gnd * (1 - Math.cos(elevationRadian)) / 2;
+        double G_gnds = radiance * RHO_GND * (1 - Math.cos(elevationRadian)) / 2;
         double theta = Math.acos(Math.sin(delta) * Math.sin(latitudeRadian) * Math.cos(elevationRadian)
                 - Math.sin(delta) * Math.cos(latitudeRadian) * Math.cos(azimuthRadian) * Math.sin(elevationRadian)
                 + Math.cos(delta) * Math.cos(latitudeRadian) * Math.cos(omega) * Math.cos(elevationRadian)
@@ -325,12 +341,10 @@ public class SolarPanel extends DeviceBase {
 
         //Guess for the PV temperature that affects the efficiency.
         double temperaturePV = temperature + (50 * powerSquareMeter / 1367); //Formula not based on anything or whatsover, this part can be improved
-        double actualEfficiency = (getEfficiency() * (1 - ((temperaturePV - 25) * temperatureEfficiency) / 100)) / 100;
-        
-        double result = powerSquareMeter * actualEfficiency;
+        double actualEfficiency = (1 - ((temperaturePV - 25) * temperatureEfficiency) / 100);
         
         //Return the production in W (coming from J/cm2 for a whole hour)
-        return result; 
+        return powerSquareMeter * actualEfficiency;
     }
 
     @Override
