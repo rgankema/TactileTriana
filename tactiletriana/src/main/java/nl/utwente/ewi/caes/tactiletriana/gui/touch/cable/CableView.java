@@ -16,6 +16,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
+import javafx.scene.CacheHint;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
@@ -152,6 +153,8 @@ public class CableView extends Group {
 
                         particle.getStyleClass().add("electricity");
                         particle.setSmooth(false);
+                        particle.setCache(true);
+                        particle.setCacheHint(CacheHint.SPEED);
                     }
                     getChildren().add(particle);
                     onScreen.add(particle);
