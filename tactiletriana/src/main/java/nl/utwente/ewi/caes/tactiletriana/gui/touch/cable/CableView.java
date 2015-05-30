@@ -7,6 +7,7 @@ package nl.utwente.ewi.caes.tactiletriana.gui.touch.cable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 import javafx.animation.AnimationTimer;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
@@ -38,14 +39,6 @@ public class CableView extends Group {
 
     public CableView() {
         ViewLoader.load(this);
-
-        // Calculates the angle between two points
-        DoubleBinding angle = Bindings.createDoubleBinding(() -> {
-            double theta = Math.atan2(line.getEndY() - line.getStartY(), line.getEndX() - line.getStartX());
-            double a = Math.toDegrees(theta);
-            a = (a + 90 + 360) % 360;
-            return a;
-        }, line.startXProperty(), line.startYProperty(), line.endXProperty(), line.startYProperty());
     }
 
     /**
@@ -70,7 +63,7 @@ public class CableView extends Group {
             }
 
             double load = viewModel.getLoad();
-            return Color.DARKGRAY.interpolate(Color.RED, load);//new Color(load, 1.0 - load, 0, 1.0);
+            return Color.DARKGRAY.interpolate(Color.RED, load);
         }, viewModel.loadProperty(), viewModel.brokenProperty()));
         
         // Bind diameter of cables to direction in viewmodel
@@ -122,50 +115,47 @@ public class CableView extends Group {
         
         AnimationTimer timer = new AnimationTimer() {
             
-            final List<Circle> circles = new ArrayList<>();
-            final List<Circle> removed = new ArrayList<>();
+            final List<Circle> onScreen = new ArrayList<>();
+            final Stack<Circle> offScreen = new Stack<>();
+            final Stack<Circle> toOffScreen = new Stack<>();
             
-            long last = -1;
+            long previousTime = -1;
             
             @Override
-            public void handle(long now) {
+            public void handle(long currentTime) {
                 if (viewModel.getLoad() == 0) {
-                    for (Circle circle : circles) {
-                        removed.add(circle);
-                        getChildren().remove(circle);
-                    }
-                    for (Circle circle : removed) {
-                        circles.remove(circle);
-                    }   
+                    offScreen.addAll(onScreen);
+                    getChildren().removeAll(onScreen);
+                    onScreen.clear();
                     return;
                 }
-                if (last == -1 || ((now - last) / 1000000) * viewModel.getLoad() >= 50) {
-                    Circle circle;
-                    if (removed.size() > 0) {
-                        circle = removed.get(0);
-                        circle.setTranslateX(0);
-                        circle.setTranslateY(0);
-                        removed.remove(0);
+                if (previousTime == -1 || ((currentTime - previousTime) / 1000000) * viewModel.getLoad() >= 100) {
+                    Circle particle;
+                    if (!offScreen.empty()) {
+                        particle = offScreen.pop();
+                        particle.setTranslateX(0);
+                        particle.setTranslateY(0);
                     } else {
-                        circle = new Circle(line.getStrokeWidth() * 0.3);
-                        circle.layoutXProperty().bind(Bindings.createDoubleBinding(() -> { 
+                        particle = new Circle(line.getStrokeWidth() * 0.3);
+                        
+                        // Anchor base location to source of flow
+                        particle.layoutXProperty().bind(Bindings.createDoubleBinding(() -> { 
                             return (viewModel.getDirection() == CableVM.Direction.END) ? line.getStartX() : line.getEndX();
                         }, viewModel.directionProperty(), line.startXProperty(), line.endXProperty()));
-                        circle.layoutYProperty().bind(Bindings.createDoubleBinding(() -> { 
+                        particle.layoutYProperty().bind(Bindings.createDoubleBinding(() -> { 
                             return (viewModel.getDirection() == CableVM.Direction.END) ? line.getStartY() : line.getEndY();
                         }, viewModel.directionProperty(), line.startYProperty(), line.endYProperty()));
                         viewModel.directionProperty().addListener((obs, oldV, newV) -> { 
-                            circle.setTranslateX(0 - circle.getTranslateX());
-                            circle.setTranslateY(0 - circle.getTranslateY());
+                            particle.setTranslateX(0 - particle.getTranslateX());
+                            particle.setTranslateY(0 - particle.getTranslateY());
                         });
 
-                        circle.getStyleClass().add("electricity");
-                        circle.setFill(Color.YELLOW);
-                        circle.setSmooth(false);
+                        particle.getStyleClass().add("electricity");
+                        particle.setSmooth(false);
                     }
-                    getChildren().add(circle);
-                    circles.add(circle);
-                    last = now;
+                    getChildren().add(particle);
+                    onScreen.add(particle);
+                    previousTime = currentTime;
                 }
                 
                 Point2D end = (viewModel.getDirection() == CableVM.Direction.END) ?
@@ -173,24 +163,24 @@ public class CableView extends Group {
                     new Point2D(line.getStartX() - line.getEndX(), line.getStartY() - line.getEndY());
                 Point2D direction = end.normalize();
                 
-                for (Circle circle : circles) {
+                for (int i = 0; i < onScreen.size(); i++) {
+                    Circle particle = onScreen.get(i);
+                    
                     double speed = 1.5 + 3.0 * viewModel.getLoad();
 
-                    double x = circle.getTranslateX() + direction.getX() * speed;
-                    double y = circle.getTranslateY() + direction.getY() * speed;
+                    double x = particle.getTranslateX() + direction.getX() * speed;
+                    double y = particle.getTranslateY() + direction.getY() * speed;
                     
                     if (Math.abs(x) > Math.abs(end.getX()) || Math.abs(y) > Math.abs(end.getY())) {
-                        removed.add(circle);
-                        getChildren().remove(circle);
+                        getChildren().remove(particle);
+                        onScreen.remove(i);
+                        offScreen.add(particle);
+                        i--;
                         continue;
                     }
                     
-                    circle.setTranslateX(x);
-                    circle.setTranslateY(y);
-                }
-                
-                for (Circle circle : removed) {
-                    circles.remove(circle);
+                    particle.setTranslateX(x);
+                    particle.setTranslateY(y);
                 }
             }
         };

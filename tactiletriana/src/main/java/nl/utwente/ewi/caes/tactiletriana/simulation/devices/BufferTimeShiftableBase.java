@@ -120,8 +120,8 @@ public abstract class BufferTimeShiftableBase extends BufferBase {
         return desiredCharge.get();
     }
 
-    public final void setDesiredCharge(double dc) {
-        this.desiredCharge.set(dc);
+    public final void setDesiredCharge(double desiredCharge) {
+        this.desiredCharge.set(desiredCharge);
     }
     
     // METHODS

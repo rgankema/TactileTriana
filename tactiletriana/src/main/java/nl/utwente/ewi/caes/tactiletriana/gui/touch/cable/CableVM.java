@@ -30,17 +30,19 @@ public class CableVM  extends LoggingEntityVMBase {
             return Math.min(1.0, Math.abs(model.getCurrent()) / model.getMaximumCurrent());
         }, model.currentProperty(), model.maximumCurrentProperty(), model.brokenProperty()));
 
-        direction.bind(Bindings.createObjectBinding(() -> {
-            if (!model.isBroken()) {
-                if (model.getCurrent() < 0) {
-                    return Direction.START;
-                }
-                if (model.getCurrent() > 0) {
-                    return Direction.END;
-                }
+        model.brokenProperty().addListener(obs -> { 
+            direction.set(Direction.NONE);
+        });
+        
+        model.currentProperty().addListener(obs -> { 
+            if (model.getCurrent() > 0) {
+                direction.set(Direction.END);
+            } else if (model.getCurrent() < 0) {
+                direction.set(Direction.START);
+            } else {
+                direction.set(Direction.NONE);
             }
-            return Direction.NONE;
-        }, model.brokenProperty(), model.currentProperty()));
+        });
         
         model.brokenProperty().addListener((observable, wasBroken, isBroken) -> {
             if (isBroken) {

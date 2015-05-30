@@ -34,9 +34,6 @@ public class SolarPanel extends DeviceBase {
     
     // The tick of the year where the profile starts
     private int profileTickOffset;
-    
-    //Efficiency degradation due to temperature increase of the solar panel. Percentage degradation for maximum power per degree celcius [percent]
-    private static final double temperatureEfficiency = 0.3;
 
     /**
      * Constructs a new SolarPanel.
@@ -219,7 +216,7 @@ public class SolarPanel extends DeviceBase {
                 int timeStepInYear = (ts + profileTickOffset) % TOTAL_TICKS_IN_YEAR;
                 double temp = tempProfile[timeStepInYear];
                 double radiance = radianceProfile[timeStepInYear];
-                abstractProfile[ts] = (float) -calculateProductionSquareMeter(temp, radiance, time);
+                abstractProfile[ts] = -calculateProductionSquareMeter(temp, radiance, time);
                 time = time.plusMinutes(SimulationConfig.TICK_MINUTES);
             }
         } else {
@@ -233,7 +230,7 @@ public class SolarPanel extends DeviceBase {
                     int timeStepInYear = (ts + profileTickOffset) % TOTAL_TICKS_IN_YEAR;
                     double temp = tempProfile[timeStepInYear];
                     double radiance = radianceProfile[timeStepInYear];
-                    abstractProfile[ts] = (float) -calculateProductionSquareMeter(temp, radiance, time);
+                    abstractProfile[ts] = -calculateProductionSquareMeter(temp, radiance, time);
                     time = time.plusMinutes(SimulationConfig.TICK_MINUTES);
                 }
             } else {
@@ -247,7 +244,7 @@ public class SolarPanel extends DeviceBase {
                     int timeStepInYear = (ts + profileTickOffset) % TOTAL_TICKS_IN_YEAR;
                     double temp = tempProfile[timeStepInYear];
                     double radiance = radianceProfile[timeStepInYear];
-                    abstractProfile[ts] = (float) -calculateProductionSquareMeter(temp, radiance, time);
+                    abstractProfile[ts] = -calculateProductionSquareMeter(temp, radiance, time);
                     time = time.plusMinutes(SimulationConfig.TICK_MINUTES);
                 }
             }
@@ -353,15 +350,13 @@ public class SolarPanel extends DeviceBase {
         double G_bs = Math.max(0.0, I * Math.cos(theta));
         double G_ts = G_ds + G_bs + G_gnds; //This is the joules in one hour for a square cm
         
-        
         double powerSquareMeter = (G_ts * 10000) / 3600;
 
         //Guess for the PV temperature that affects the efficiency.
-        double temperaturePV = temperature + (50 * powerSquareMeter / 1367); //Formula not based on anything or whatsover, this part can be improved
-        double actualEfficiency = (1 - ((temperaturePV - 25) * temperatureEfficiency) / 100);
+        double temperaturePV = temperature + (50 * powerSquareMeter / 1367);
+        double temperatureEfficiency = (1 - ((temperaturePV - 25) * 0.3) / 100);
         
-        //Return the production in W (coming from J/cm2 for a whole hour)
-        return powerSquareMeter * actualEfficiency;
+        return powerSquareMeter * temperatureEfficiency;
     }
 
     // API METHODS

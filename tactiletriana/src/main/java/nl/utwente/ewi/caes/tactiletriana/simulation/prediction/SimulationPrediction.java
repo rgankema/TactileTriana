@@ -35,7 +35,6 @@ public class SimulationPrediction extends SimulationBase {
     private final Map<LoggingEntityBase, LoggingEntityBase> futureByActual = new HashMap<>();
     
     private boolean mainSimulationChanged = false;
-    private boolean timeSpanChanged = false;
 
     /**
      * Creates a new SimulationPrediction.
@@ -43,8 +42,6 @@ public class SimulationPrediction extends SimulationBase {
      * @param mainSimulation The real Simulation that this object will predict
      */
     public SimulationPrediction(Simulation mainSimulation) {
-        super();
-        
         this.mainSimulation = mainSimulation;
         setCurrentTime(mainSimulation.getCurrentTime());
 
@@ -53,30 +50,21 @@ public class SimulationPrediction extends SimulationBase {
         linkNetwork(mainSimulation.getTransformer(), this.getTransformer());
         
         mainSimulation.addOnTimeSpanShiftedHandler(() -> { 
-            timeSpanChanged = true;
+            // Clear the log
+            for (LoggingEntityBase logger : futureByActual.values()) {
+                logger.getLog().clear();
+                // Reset state of charges of all buffers
+                if (logger instanceof BufferBase) {
+                    ((BufferBase)logger).setStateOfCharge(((BufferBase)getActual(logger)).getStateOfCharge());
+                }
+            }
             setCurrentTime(mainSimulation.getCurrentTime());
         });
         
         // Zorg dat de simulatie 12 uur vooruit loopt
         this.mainSimulation.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
-            // Main Simulation jumped to new timespan, set time to start of new timespan
-            if (timeSpanChanged) {
-                timeSpanChanged = false;
-                mainSimulationChanged = false;
-                
-                setCurrentTime(newValue);
-                
-                // Clear the log
-                for (LoggingEntityBase logger : futureByActual.values()) {
-                    logger.getLog().clear();
-                    // Reset state of charges of all buffers
-                    if (logger instanceof BufferBase) {
-                        ((BufferBase)logger).setStateOfCharge(((BufferBase)getActual(logger)).getStateOfCharge());
-                    }
-                }
-            }
             // Er is iets veranderd. Run de simulation vanaf het huidige punt vooruit
-            else if (mainSimulationChanged) {
+            if (mainSimulationChanged) {
                 mainSimulationChanged = false;
                 setCurrentTime(oldValue);
                 
