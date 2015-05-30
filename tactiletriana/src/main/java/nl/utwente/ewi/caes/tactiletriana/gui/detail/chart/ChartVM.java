@@ -5,8 +5,6 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.detail.chart;
 
-import java.util.ArrayList;
-import java.util.List;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyStringProperty;
@@ -141,25 +139,22 @@ public class ChartVM {
         }
         
         actualLogListener = new ListChangeListener<Data<Integer, Float>>() {
-
+            
             @Override
             public void onChanged(Change<? extends Data<Integer, Float>> c) {
                 while (c.next()) {
                     for (Data<Integer, Float> data : c.getAddedSubList()) {
-                        
                         // Remove all data from the future series that has an X before or equal to the new value
-                        List<Data<Integer, Float>> toRemove = new ArrayList<>();
+                        int i = 0;
                         for (Data<Integer, Float> futureData : futureSeriesData) {
                             // This only works as long as futureSeriesData is sorted, which is a safe assumption
                             if (futureData.getXValue() < data.getXValue()) {
-                                toRemove.add(futureData);
+                                i++;
                             } else {
                                 break;
                             }
                         }
-                        for (Data<Integer, Float> futureData : toRemove) {
-                            futureSeriesData.remove(futureData);
-                        }
+                        futureSeriesData.remove(0, i);
                         
                         xAxisLowerBound.set(data.getXValue() - 6 * 60);
                         actualSeriesData.add(data);

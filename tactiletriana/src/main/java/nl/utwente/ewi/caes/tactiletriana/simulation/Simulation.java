@@ -142,6 +142,7 @@ public class Simulation extends SimulationBase {
         boolean timeSpanShifted = getTimeScenario().next(SimulationConfig.TICK_MINUTES);
         setCurrentTime(getTimeScenario().getCurrentTime());
         if (timeSpanShifted) {
+            clearAllLogs();
             for (Runnable callback : timeSpanShiftedCallbacks) {
                 callback.run();
             }

@@ -17,7 +17,7 @@ public interface IDeviceDataProvider<T extends DeviceBase> {
     
     /**
      * Returns a profile for the device. This profile may be random, so two calls
-     * of this method may not return the same profile.
+     * of this method might not return the same profile.
      * 
      * @return a power consumption profile
      */
