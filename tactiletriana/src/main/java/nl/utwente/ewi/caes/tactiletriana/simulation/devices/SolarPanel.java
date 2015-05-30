@@ -266,10 +266,14 @@ public class SolarPanel extends DeviceBase {
     }
     
     
-    // Constants for the calculation below
+    // Below are constants that are used a lot and shouldn't be calculated every time again
     private static final double PI = 3.14159265359;
     private static final double PI_DIV_180 = PI / 180;
     private static final double RHO_GND = 0.2;
+    // Delta and sines and cosines of delta for each day in the year
+    private static final double deltas[] = new double[366];
+    private static final double cosDeltas[] = new double[366];
+    private static final double sinDeltas[] = new double[366];
     
     /**
      * Calculates the production per square meter of this solar panel given the
@@ -291,17 +295,37 @@ public class SolarPanel extends DeviceBase {
 
         //TIme calculations
         int day = time.getDayOfYear();
-        double delta = (23.44 * Math.sin(2 * PI * (day + 284) / 365.24)) * PI_DIV_180;
-        double N = 2 * PI * (day / 366); //one year
+        if (deltas[day] == 0) {
+            deltas[day] = (23.44 * Math.sin(2 * PI * (day + 284) / 365.24)) * PI_DIV_180;
+            cosDeltas[day] = Math.cos(deltas[day]);
+            sinDeltas[day] = Math.sin(deltas[day]);
+        }
+        
+        double delta = deltas[day];
+        double N = 2 * PI * (day / 366);
         double E_time = 229.2 * (0.0000075 + 0.001868 * Math.cos(N) - 0.032077 * Math.sin(N) - 0.014614 * Math.cos(2 * N) - 0.04089 * Math.sin(N));
 
-        //Calcuate h: Heigth of the sun
+        // Needed for height of the sun
         double local_std_time = time.getHour() * 60 + time.getMinute();
         double solar_time = (-4.0 * (longitudeRadian / PI_DIV_180)) + E_time + local_std_time;
         double omega = ((0.25 * solar_time) - 180) * PI_DIV_180;
-        double h = Math.asin(Math.cos(latitudeRadian) * Math.cos(delta) * Math.cos(omega) + Math.sin(latitudeRadian) * Math.sin(delta));
+        
+        // Sines and cosines that we need a lot
+        double cosDelta = cosDeltas[day];
+        double sinDelta = sinDeltas[day];
+        double cosLatitudeRadian = Math.cos(latitudeRadian);
+        double sinLatitudeRadian = Math.sin(latitudeRadian);
+        double cosElevationRadian = Math.cos(elevationRadian);
+        double sinElevationRadian = Math.sin(elevationRadian);
+        double cosAzimuthRadian = Math.cos(azimuthRadian);
+        double sinAzimuthRadian = Math.sin(azimuthRadian);
+        double cosOmega = Math.cos(omega);
+        double sinOmega = Math.sin(omega);
+                
+        // Calcuate h: Heigth of the sun
+        double h = Math.asin(cosLatitudeRadian * cosDelta * cosOmega + sinLatitudeRadian * sinDelta);
 
-        //Calculate diffuse light
+        // Calculate diffuse light
         double I_0 = (1367 * 3600 / 10000) * Math.sin(h);
         double k_T = 0.0;
         if (I_0 >= 0.001) {
@@ -326,13 +350,13 @@ public class SolarPanel extends DeviceBase {
         }
 
         //Obtain the ammount of energy
-        double G_ds = I_d * (1 + Math.cos(elevationRadian)) / 2;
-        double G_gnds = radiance * RHO_GND * (1 - Math.cos(elevationRadian)) / 2;
-        double theta = Math.acos(Math.sin(delta) * Math.sin(latitudeRadian) * Math.cos(elevationRadian)
-                - Math.sin(delta) * Math.cos(latitudeRadian) * Math.cos(azimuthRadian) * Math.sin(elevationRadian)
-                + Math.cos(delta) * Math.cos(latitudeRadian) * Math.cos(omega) * Math.cos(elevationRadian)
-                + Math.cos(delta) * Math.sin(latitudeRadian) * Math.cos(azimuthRadian) * Math.cos(omega) * Math.sin(elevationRadian)
-                + Math.cos(delta) * Math.sin(azimuthRadian) * Math.sin(omega) * Math.sin(elevationRadian));
+        double G_ds = I_d * (1 + cosElevationRadian) / 2;
+        double G_gnds = radiance * RHO_GND * (1 - cosElevationRadian) / 2;
+        double theta = Math.acos(sinDelta * sinLatitudeRadian * cosElevationRadian
+                - sinDelta * cosLatitudeRadian * cosAzimuthRadian * sinElevationRadian
+                + cosDelta * cosLatitudeRadian * cosOmega * cosElevationRadian
+                + cosDelta * sinLatitudeRadian * cosAzimuthRadian * cosOmega * sinElevationRadian
+                + cosDelta * sinAzimuthRadian * sinOmega * sinElevationRadian);
         double G_bs = Math.max(0.0, I * Math.cos(theta));
         double G_ts = G_ds + G_bs + G_gnds; //This is the joules in one hour for a square cm
         
