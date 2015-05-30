@@ -42,5 +42,14 @@ public class TransformerView extends Rectangle {
                 getStyleClass().remove("on-chart");
             }
         });
+        
+        viewModel.chartIndexProperty().addListener(obs -> { 
+            int index = viewModel.getChartIndex();
+            if (index == -1) {
+                getStyleClass().removeIf(s -> s.startsWith("chart-"));
+            } else {
+                getStyleClass().add("chart-" + index);
+            }
+        });
     }
 }

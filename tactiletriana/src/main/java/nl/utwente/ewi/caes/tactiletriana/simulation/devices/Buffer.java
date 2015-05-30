@@ -44,8 +44,6 @@ public class Buffer extends BufferBase {
 
         // If no planning available, help out parent house
         if (getPlanning() == null || getPlanning().get(currentTime) == null) {
-            // Likely to change, tick time is probably going to be variable
-
             
             // TODO: dit aan Gerwin vragen, dit is echt rare shit!
             // dit is om het probleem met meerdere buffers eruit te halen.

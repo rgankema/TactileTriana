@@ -55,8 +55,8 @@ application.
 // TOUCH
 
 .touch-view {
-    -fx-background-image: url("../images/background.jpg");
-    -fx-background-repeat: stretch;
+    //-fx-background-image: url("../images/background.jpg");
+    //-fx-background-repeat: stretch;
 }
 
 .device-view #config-icon {

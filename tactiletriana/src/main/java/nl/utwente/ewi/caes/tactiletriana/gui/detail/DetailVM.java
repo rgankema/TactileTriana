@@ -87,16 +87,18 @@ public class DetailVM {
      * @param loggerVM the VM for the LoggingEntityBase
      * @param actual the actual LoggingEntityBase to be shown on a chart
      * @param future the future LoggingEntityBase to be shown on a chart
-     * @return the LoggingEntityBase that was removed from a chart to make room
-     * for the new one. {@code null} if none were removed.
      */
-    public LoggingEntityVMBase showOnChart(LoggingEntityVMBase loggerVM, LoggingEntityBase actual, LoggingEntityBase future) {
+    public void showOnChart(LoggingEntityVMBase loggerVM, LoggingEntityBase actual, LoggingEntityBase future) {
+        loggerVM.setShownOnChart(true);
+        loggerVM.setChartIndex(subChartIndex);
+        
         LoggingEntityVMBase old = loggersOnCharts[subChartIndex];
         loggersOnCharts[subChartIndex] = loggerVM;
         subChartVMs[subChartIndex].setEntity(actual, future);
         subChartIndex++;
         subChartIndex = (subChartIndex == subChartVMs.length) ? 0 : subChartIndex;
-        return old;
+        
+        if (old != null) old.setShownOnChart(false);
     }
     
     // CALLBACKS FOR VIEW

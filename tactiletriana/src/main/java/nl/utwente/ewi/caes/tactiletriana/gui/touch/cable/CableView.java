@@ -17,7 +17,6 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.effect.Glow;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -99,6 +98,23 @@ public class CableView extends Group {
             }
         });
         
+        viewModel.chartIndexProperty().addListener(obs -> { 
+            int index = viewModel.getChartIndex();
+            if (index == -1) {
+                getStyleClass().removeIf(s -> s.startsWith("chart-"));
+            } else {
+                getStyleClass().add("chart-" + index);
+            }
+        });
+        
+        viewModel.brokenProperty().addListener((obs, wasBroken, isBroken) -> { 
+            if (isBroken) {
+                getStyleClass().add("broken");
+            } else {
+                getStyleClass().remove("broken");
+            }
+        });
+        
         animate();
     }
 
@@ -145,7 +161,7 @@ public class CableView extends Group {
 
                         circle.getStyleClass().add("electricity");
                         circle.setFill(Color.YELLOW);
-                        circle.setEffect(new Glow(0.7));
+                        circle.setSmooth(false);
                     }
                     getChildren().add(circle);
                     circles.add(circle);
@@ -156,7 +172,6 @@ public class CableView extends Group {
                     new Point2D(line.getEndX() - line.getStartX(), line.getEndY() - line.getStartY()) : 
                     new Point2D(line.getStartX() - line.getEndX(), line.getStartY() - line.getEndY());
                 Point2D direction = end.normalize();
-                
                 
                 for (Circle circle : circles) {
                     double speed = 1.5 + 3.0 * viewModel.getLoad();

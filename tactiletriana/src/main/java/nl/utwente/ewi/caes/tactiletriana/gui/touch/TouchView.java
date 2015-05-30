@@ -13,6 +13,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Duration;
 import nl.utwente.ewi.caes.tactilefx.control.Anchor;
@@ -47,11 +49,17 @@ public class TouchView extends TactilePane {
     
     private TouchVM viewModel;
     private FloatPane networkOverlay;
+    private ImageView background;
     
     public TouchView() {
         ViewLoader.load(this);
 
         addEventFilter(MouseEvent.ANY, new MouseToTouchMapper());
+        
+        background = new ImageView();
+        background.setImage(new Image("images/background.jpg"));
+        background.fitWidthProperty().bind(this.widthProperty());
+        background.fitHeightProperty().bind(this.heightProperty());
         
         networkOverlay = new FloatPane();
         networkOverlay.prefWidthProperty().bind(this.widthProperty());
@@ -126,7 +134,7 @@ public class TouchView extends TactilePane {
         FloatPane.setMargin(tv, new Insets(200));
         networkOverlay.getChildren().add(tv);
         
-        getChildren().add(networkOverlay);
+        getChildren().addAll(background, networkOverlay);
         
         List<Node> toBackground = new ArrayList<>();
         for (Node node : networkOverlay.getChildren()) {

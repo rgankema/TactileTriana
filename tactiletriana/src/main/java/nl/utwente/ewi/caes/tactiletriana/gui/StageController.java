@@ -252,9 +252,9 @@ public final class StageController {
     }
 
     public void showOnChart(LoggingEntityVMBase logger, LoggingEntityBase entity) {
-        logger.setShownOnChart(true);
-        LoggingEntityVMBase old = detailVM.showOnChart(logger, entity, simulationPrediction.getFuture(entity));
-        if (old != null) old.setShownOnChart(false);
+        if (!logger.isShownOnChart()) {
+            detailVM.showOnChart(logger, entity, simulationPrediction.getFuture(entity));
+        }
     }
     
     public void showNotification(String message) {

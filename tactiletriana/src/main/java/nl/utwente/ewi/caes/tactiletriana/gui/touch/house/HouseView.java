@@ -67,5 +67,22 @@ public class HouseView extends Pane {
                 getStyleClass().remove("on-chart");
             }
         });
+        
+        viewModel.chartIndexProperty().addListener(obs -> { 
+            int index = viewModel.getChartIndex();
+            if (index == -1) {
+                getStyleClass().removeIf(s -> s.startsWith("chart-"));
+            } else {
+                getStyleClass().add("chart-" + index);
+            }
+        });
+        
+        viewModel.fuseBlownProperty().addListener((obs, wasBlown, isBlown) -> { 
+            if (isBlown) {
+                getStyleClass().add("fuse-blown");
+            } else {
+                getStyleClass().remove("fuse-blown");
+            }
+        });
     }
 }
