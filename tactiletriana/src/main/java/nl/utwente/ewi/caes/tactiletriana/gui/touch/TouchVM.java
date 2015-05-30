@@ -171,9 +171,9 @@ public class TouchVM {
         double solar_time = (-4.0 * longitude) + E_time + local_std_time;
         double omega = ((0.25 * solar_time) - 180) * PI_DIV_180;
         double h = Math.asin(Math.cos(latitude * PI_DIV_180) * Math.cos(delta) * Math.cos(omega) + Math.sin(latitude * PI_DIV_180) * Math.sin(delta));
-        //System.out.println(h);
         
-        double darkness = h * -10;
+        // Twilight starts when the center of the sun is 12 degrees below the horizon
+        double darkness = -Math.toDegrees(h) / 12;
         
         if (darkness > 1) darkness = 1;
         if (darkness < 0) darkness = 0;

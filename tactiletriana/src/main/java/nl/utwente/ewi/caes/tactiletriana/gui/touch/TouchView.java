@@ -185,8 +185,8 @@ public class TouchView extends TactilePane {
         pushDeviceStack(wv, 200);
         
         ColorAdjust colorAdjust = new ColorAdjust();
-        colorAdjust.hueProperty().bind(viewModel.darknessFactorProperty());
-        colorAdjust.saturationProperty().bind(viewModel.darknessFactorProperty().negate());
+        colorAdjust.hueProperty().bind(viewModel.darknessFactorProperty().multiply(0.3));
+        colorAdjust.saturationProperty().bind(viewModel.darknessFactorProperty().negate().multiply(0.5));
         colorAdjust.brightnessProperty().bind(viewModel.darknessFactorProperty().negate().multiply(0.5));
         background.setEffect(colorAdjust);
     }
