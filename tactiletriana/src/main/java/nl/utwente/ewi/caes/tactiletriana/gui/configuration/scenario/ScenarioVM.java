@@ -59,7 +59,6 @@ public class ScenarioVM {
     // METHODS
     
     public TimeScenario build() {
-        
         TimeSpan[] timeSpans = new TimeSpan[this.timeSpans.size()];
         int i = 0;
         for (TimeSpanVM tsvm : this.timeSpans) {

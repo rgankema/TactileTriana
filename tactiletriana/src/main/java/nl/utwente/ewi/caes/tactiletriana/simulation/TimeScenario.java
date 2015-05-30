@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * @author Richard
@@ -42,7 +41,6 @@ public final class TimeScenario {
     // MEMBER FIELDS
     
     private final List<TimeSpan> timeSpans;
-    private final List<Consumer<TimeSpan>> callbacks;
     
     private LocalDateTime currentTime;
     private int timeSpanIndex = 0;
@@ -56,7 +54,6 @@ public final class TimeScenario {
         if (timeSpans.length == 0) throw new IllegalArgumentException("TimeScenario requires at least one TimeSpan");
         
         this.timeSpans = new ArrayList<>();
-        this.callbacks = new ArrayList<>();
         
         for (TimeSpan timeSpan : timeSpans) {
             if (this.timeSpans.isEmpty()) {
@@ -69,20 +66,14 @@ public final class TimeScenario {
                 this.timeSpans.add(timeSpan);
             }
         }
+        
+        currentTime = LocalDateTime.of(timeSpans[0].start, LocalTime.MIN);
     }
     
     // PROPERTIES
     
     public List<TimeSpan> getTimeSpans(){
         return timeSpans;
-    }
-    
-    /**
-     * 
-     * @return the start date of the scenario
-     */
-    public LocalDate getStart() {
-        return timeSpans.get(0).start;
     }
     
     /**
@@ -95,6 +86,10 @@ public final class TimeScenario {
     
     
     // METHODS
+    
+    public void reset() {
+        currentTime = LocalDateTime.of(timeSpans.get(0).start, LocalTime.MIN);
+    }
     
     /**
      * Shifts the time in the scenario given a current time and an amount of minutes to

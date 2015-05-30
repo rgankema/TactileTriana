@@ -6,8 +6,6 @@
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -30,7 +28,7 @@ public class Simulation extends SimulationBase {
         this.setState(SimulationState.STOPPED);
 
         // Initialise time
-        setCurrentTime(LocalDateTime.of(getTimeScenario().getStart(), LocalTime.MIN));
+        setCurrentTime(getTimeScenario().getCurrentTime());
     }
 
     // PROPERTIES
@@ -130,7 +128,8 @@ public class Simulation extends SimulationBase {
             cable.repair();
         }
         clearAllLogs();
-        setCurrentTime(LocalDateTime.of(getTimeScenario().getStart(), LocalTime.MIN));
+        getTimeScenario().reset();
+        setCurrentTime(getTimeScenario().getCurrentTime());
     }
     
     /**
