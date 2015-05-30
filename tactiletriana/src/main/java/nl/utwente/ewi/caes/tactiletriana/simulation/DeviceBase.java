@@ -34,6 +34,8 @@ public abstract class DeviceBase extends LoggingEntityBase {
     private final List<ObservableList> lists;
     private final List<ObservableMap> maps;
     
+    protected final SimulationBase simulation;
+    
     /**
      * Constructs a new DeviceBase
      * 
@@ -42,7 +44,7 @@ public abstract class DeviceBase extends LoggingEntityBase {
      * @param apiDeviceType    the name of the device as specified in the API
      */
     public DeviceBase(SimulationBase simulation, String displayName, String apiDeviceType) {
-        super(simulation, displayName, QuantityType.POWER);
+        super(displayName, QuantityType.POWER);
         
         id = DEVICE_ID;
         DEVICE_ID++;
@@ -52,6 +54,7 @@ public abstract class DeviceBase extends LoggingEntityBase {
         this.properties = new ArrayList<>();
         this.lists = new ArrayList<>();
         this.maps = new ArrayList<>();
+        this.simulation = simulation;
     }
 
     // PROPERTIES
@@ -73,7 +76,7 @@ public abstract class DeviceBase extends LoggingEntityBase {
             if (getState() != DeviceBase.State.CONNECTED) {
                 value = 0;
             }
-            log(value);
+            
             super.set(value);
         }
     };
@@ -180,13 +183,20 @@ public abstract class DeviceBase extends LoggingEntityBase {
     
     // METHODS
 
-    public void tick(boolean connected) {
+    public final void tick(boolean connected) {
         if (!connected) {
             setState(DeviceBase.State.DISCONNECTED);
         } else {
             setState(DeviceBase.State.CONNECTED);
         }
+        
+        doTick(connected);
+        
+        log(simulation.getCurrentTime(), getCurrentConsumption());
     }
+    
+    protected abstract void doTick(boolean connected);
+    
     
     /**
      * Register an API parameter. Registered API parameters can be updated using the updateParameters() method.

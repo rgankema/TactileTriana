@@ -14,14 +14,17 @@ import javafx.beans.property.ReadOnlyDoubleWrapper;
  *
  * @author Richard
  */
-public class Node extends LoggingEntityBase implements IFWBWSEntity {
+public class Node extends LoggingEntityBase {
 
     private final List<Cable> cables;
     private House house;
-
+    
+    protected SimulationBase simulation;
+    
     public Node(House house, SimulationBase simulation) {
-        super(simulation, "Node", QuantityType.VOLTAGE);
+        super("Node", QuantityType.VOLTAGE);
 
+        this.simulation = simulation;
         this.cables = new ArrayList<>();
         this.house = house;
     }
@@ -78,7 +81,6 @@ public class Node extends LoggingEntityBase implements IFWBWSEntity {
     // FORWARD BACKWARD SWEEP METHODS
     private double tempVoltage;
     
-    @Override
     public void prepareForwardBackwardSweep() {
         tempVoltage = 230d;
 
@@ -87,7 +89,6 @@ public class Node extends LoggingEntityBase implements IFWBWSEntity {
         }
     }
     
-    @Override
     public double doForwardBackwardSweep(double voltage) {
         double current = 0.0;
 
@@ -105,10 +106,9 @@ public class Node extends LoggingEntityBase implements IFWBWSEntity {
         return current;
     }
 
-    @Override
     public void finishForwardBackwardSweep() {
         setVoltage(tempVoltage);
-        log(getVoltage());
+        log(simulation.getCurrentTime(), getVoltage());
         for (Cable c : cables) {
             c.finishForwardBackwardSweep();
         }

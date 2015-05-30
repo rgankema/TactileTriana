@@ -200,15 +200,13 @@ public class SolarPanel extends DeviceBase {
     // METHODS
     
     @Override
-    public void tick(boolean connected) {
-        // Lots of double code, could be more elegant
-        super.tick(connected);
+    public void doTick(boolean connected) {
         
         // Update profile
         WeatherData weather = WeatherData.getInstance();
         double[] radianceProfile = weather.getRadianceProfile();
         double[] tempProfile = weather.getTemperatureProfile();
-        LocalDateTime time = getSimulation().getCurrentTime();
+        LocalDateTime time = simulation.getCurrentTime();
         int timeStepsInDay = (24 * 60) / SimulationConfig.TICK_MINUTES;
         
         if (abstractProfile == null) {
@@ -319,7 +317,6 @@ public class SolarPanel extends DeviceBase {
         double cosOmega = Math.cos(omega);
         double sinOmega = Math.sin(omega);
         double h = Math.asin(cosLatitudeRadian * cosDelta * cosOmega + sinLatitudeRadian * sinDelta);
-        if (getSimulation() instanceof Simulation) System.out.println(h);
         
         // Calculate diffuse light
         double I_0 = (1367 * 3600 / 10000) * Math.sin(h);

@@ -29,8 +29,7 @@ public class Buffer extends BufferBase {
     // METHODS
     
     @Override
-    public void tick(boolean connected) {
-        super.tick(connected);
+    protected void doTick(boolean connected) {
         int timestep = SimulationConfig.TICK_MINUTES;
 
         // Calculate state of charge change based on previous nextConsumption
@@ -38,7 +37,7 @@ public class Buffer extends BufferBase {
         double deltaSOC = getCurrentConsumption() * deltaHours;
         setStateOfCharge(getStateOfCharge() + deltaSOC);
 
-        LocalDateTime currentTime = getSimulation().getCurrentTime();
+        LocalDateTime currentTime = simulation.getCurrentTime();
 
         double nextConsumption;
 

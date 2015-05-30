@@ -184,9 +184,7 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
     // METHODS
     
     @Override
-    public void tick(boolean connected) {
-        super.tick(connected);
-
+    public void doTick(boolean connected) {
         LocalDateTime time = simulation.getCurrentTime();
         
         //Convert the time to a double value for easier comparison

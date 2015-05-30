@@ -62,4 +62,9 @@ public class BufferConverter extends BufferBase {
         }        
     }
     
+    @Override
+    protected void doTick(boolean connected) {
+        // TODO implement this
+    }
+    
 }

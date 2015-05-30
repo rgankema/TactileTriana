@@ -42,8 +42,7 @@ public abstract class SimulationBase extends LoggingEntityBase {
     // CONSTRUCTOR
     
     public SimulationBase() {
-        super(null, "Network", QuantityType.POWER);
-        this.setSimulation(this);   // LoggingEntityBase needs reference to Simulation for time
+        super("Network", QuantityType.POWER);
         
         // keep an array of nodes for later reference
         this.lastVoltageByNode = new HashMap<>();
@@ -70,7 +69,7 @@ public abstract class SimulationBase extends LoggingEntityBase {
             this.houseCables[i] = new Cable(houseNodes[i], 110, 5, this);
             this.internalNodes[i].getCables().add(houseCables[i]);
 
-            this.internalCables[i] = new Cable(internalNodes[i], 110 + (NUMBER_OF_HOUSES - i) * 60, 20, simulation);
+            this.internalCables[i] = new Cable(internalNodes[i], 110 + (NUMBER_OF_HOUSES - i) * 60, 20, this);
             if (i == 0) {
                 transformer.getCables().add(internalCables[i]);
             } else {
@@ -217,7 +216,7 @@ public abstract class SimulationBase extends LoggingEntityBase {
             transformer.finishForwardBackwardSweep();
 
             // Log total power consumption in network
-            log(transformer.getCables().get(0).getCurrent() * 230d);
+            log(getCurrentTime(), transformer.getCables().get(0).getCurrent() * 230d);
 
             // Increment time
             incrementTime();

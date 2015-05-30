@@ -27,15 +27,15 @@ public class House extends LoggingEntityBase {
     private final ObservableList<DeviceBase> devices;
     private final int id;
     
+    protected final SimulationBase simulation;
+    
     public House(SimulationBase simulation) {
-        super(simulation, "House", QuantityType.POWER);
+        super("House", QuantityType.POWER);
+        
+        this.simulation = simulation;
         
         //set the id
         this.id = houseID++;
-        
-        // fuse blow met false initializeren
-        this.setFuseBlown(false);
-        
         
         devices = FXCollections.observableArrayList();
         devices.addListener((ListChangeListener.Change<? extends DeviceBase> c) -> {
@@ -146,7 +146,7 @@ public class House extends LoggingEntityBase {
 
         setCurrentConsumption(getDevices().stream().mapToDouble(d -> d.getCurrentConsumption()).sum());
 
-        log(getCurrentConsumption());
+        log(simulation.getCurrentTime(), getCurrentConsumption());
     }
 
     public String toString(int indentation) {

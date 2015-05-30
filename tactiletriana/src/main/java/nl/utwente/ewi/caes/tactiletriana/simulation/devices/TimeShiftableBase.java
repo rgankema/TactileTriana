@@ -146,11 +146,9 @@ public abstract class TimeShiftableBase extends DeviceBase {
     // METHODS
     
     @Override
-    public void tick(boolean connected){
-        super.tick(connected);
-        
+    public void doTick(boolean connected){
         // Check if we should start now
-        LocalDateTime currentDateTime = getSimulation().getCurrentTime();
+        LocalDateTime currentDateTime = simulation.getCurrentTime();
         if (getPlanning().size() > 0) {
             LocalDateTime nextPlannedStart = getPlanning().get(0);
             if (!nextPlannedStart.isAfter(currentDateTime)) {

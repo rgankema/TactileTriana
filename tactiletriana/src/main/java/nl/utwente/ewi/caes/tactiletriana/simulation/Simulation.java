@@ -68,6 +68,7 @@ public class Simulation extends SimulationBase {
     }
     
     // EVENT HANDLING
+    
     private final List<Runnable> timeSpanShiftedCallbacks = new ArrayList<>();
     
     public final void addOnTimeSpanShiftedHandler(Runnable handler) {

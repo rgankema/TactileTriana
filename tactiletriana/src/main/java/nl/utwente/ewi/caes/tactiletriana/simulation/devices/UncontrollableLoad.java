@@ -61,11 +61,8 @@ public class UncontrollableLoad extends DeviceBase {
     }
 
     @Override
-    public void tick(boolean connected) {
-        super.tick(connected);
-        
+    public void doTick(boolean connected) {
         updateProfile();
-        
         setCurrentConsumption(getProfile()[0]);
     }
     

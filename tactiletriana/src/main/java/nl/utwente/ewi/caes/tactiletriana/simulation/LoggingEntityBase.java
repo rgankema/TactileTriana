@@ -20,18 +20,11 @@ public abstract class LoggingEntityBase {
     private final String displayName;
     private final QuantityType qType;
     private final ObservableList<Data<Integer, Float>> log;
-
-    protected SimulationBase simulation;
-
-    public LoggingEntityBase(SimulationBase simulation, String displayName, QuantityType qType) {
+    
+    public LoggingEntityBase(String displayName, QuantityType qType) {
         this.displayName = displayName;
         this.qType = qType;
-        this.simulation = simulation;
         this.log = FXCollections.observableArrayList();
-    }
-
-    protected void setSimulation(SimulationBase simulation) {
-        this.simulation = simulation;
     }
 
     // PROPERTIES
@@ -42,31 +35,22 @@ public abstract class LoggingEntityBase {
     public final QuantityType getQuantityType() {
         return this.qType;
     }
-
-    public final SimulationBase getSimulation() {
-        return this.simulation;
-    }
    
     public final ObservableList<Data<Integer, Float>> getLog() {
         return this.log;
     }
 
     // METHODS
-    protected final void log(double value) {
-        LocalDateTime time = this.simulation.getCurrentTime();
-        // Log can be called when Simulation is still initializing, and thus currentTime can be null
+    protected final void log(LocalDateTime time, double value) {
+        if (log.size() > 0) {
+            log.add(new Data<>(log.get(log.size() - 1).getXValue(), (float) value));
+        }
+        log.add(new Data<>(toMinuteOfYear(time), (float) value));
 
-        if (time != null) {
-            if (log.size() > 0) {
-                log.add(new Data<>(log.get(log.size() - 1).getXValue(), (float) value));
-            }
-            log.add(new Data<>(toMinuteOfYear(time), (float) value));
-            
-            // Discard values that won't be shown anymore.
-            if (log.size() > 12 * 60 / SimulationConfig.TICK_MINUTES + 2) {
-                log.remove(0);
-                log.remove(0);
-            }
+        // Discard values that won't be shown anymore.
+        if (log.size() > 12 * 60 / SimulationConfig.TICK_MINUTES + 2) {
+            log.remove(0);
+            log.remove(0);
         }
     }
 
@@ -75,6 +59,7 @@ public abstract class LoggingEntityBase {
     }
 
     // ENUMS
+    
     /**
      * Describes a physical quantity that may be logged.
      */

@@ -15,10 +15,11 @@ import javafx.beans.property.SimpleDoubleProperty;
 /**
  * A connection between to nodes
  */
-public class Cable extends LoggingEntityBase implements IFWBWSEntity {
+public class Cable extends LoggingEntityBase {
 
     private final Node childNode;
     private final double resistance;
+    private final SimulationBase simulation;
 
     /**
      * Instantiates a new cable connected to two nodes
@@ -27,9 +28,10 @@ public class Cable extends LoggingEntityBase implements IFWBWSEntity {
      * @param maxCurrent The maximum current that can flow through the cable
      */
     public Cable(Node childNode, double maxCurrent, double length, SimulationBase simulation) {
-        super(simulation, "Cable", QuantityType.CURRENT);
+        super("Cable", QuantityType.CURRENT);
         this.childNode = childNode;
         this.resistance = 0.00005;
+        this.simulation = simulation;
         setLength(length);
         setMaximumCurrent(maxCurrent);
     }
@@ -157,12 +159,10 @@ public class Cable extends LoggingEntityBase implements IFWBWSEntity {
     // FORWARD BACKWARD SWEEP
     private double tempCurrent;
     
-    @Override
     public void prepareForwardBackwardSweep() {
         tempCurrent = 0;
     }
     
-    @Override
     public double doForwardBackwardSweep(double voltage) {
         //update the voltages in the forward sweep
         voltage = voltage - (tempCurrent * (resistance * getLength()));
@@ -172,10 +172,9 @@ public class Cable extends LoggingEntityBase implements IFWBWSEntity {
         return tempCurrent;
     }
     
-    @Override
     public void finishForwardBackwardSweep() {
         setCurrent(tempCurrent);
-        log(getCurrent());
+        log(simulation.getCurrentTime(), getCurrent());
         childNode.finishForwardBackwardSweep();
     }
 }
