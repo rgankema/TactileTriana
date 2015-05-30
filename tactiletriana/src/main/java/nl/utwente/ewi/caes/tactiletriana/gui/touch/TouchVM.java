@@ -5,6 +5,11 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.touch;
 
+import java.time.LocalDateTime;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import nl.utwente.ewi.caes.tactiletriana.Util;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.cable.CableVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseVM;
@@ -14,6 +19,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Cable;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Node;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
+import nl.utwente.ewi.caes.tactiletriana.simulation.data.WeatherData;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.*;
 
 
@@ -60,6 +66,10 @@ public class TouchVM {
                 }
             }
         }
+        
+        model.currentTimeProperty().addListener(obs -> { 
+            darknessFactor.set(computeDarknessFactor());
+        });
     }
     
     // VIEWMODELS
@@ -121,5 +131,53 @@ public class TouchVM {
     
     public DeviceVM getBufferVM(){
         return new DeviceVM(new Buffer(model));
+    }
+    
+    // PROPERTIES
+    
+    /**
+     * The darkness on a scale of 0 to 1.
+     */
+    private final DoubleProperty darknessFactor = new SimpleDoubleProperty();
+    
+    public ReadOnlyDoubleProperty darknessFactorProperty() {
+        return darknessFactor;
+    }
+    
+    public final double getDarknessFactor() {
+        return darknessFactorProperty().get();
+    }
+    
+    // HELP METHODS
+    
+    private double computeDarknessFactor() {
+        final double PI = Math.PI;
+        
+        final double PI_DIV_180 = PI / 180;
+        LocalDateTime time = model.getCurrentTime();
+        double longitude = WeatherData.getInstance().getLongitude();
+        double latitude = WeatherData.getInstance().getLatitude();
+        double radiance = WeatherData.getInstance().getRadianceProfile()[Util.toTimeStep(time)];
+        
+        // Time calculations
+        int day = time.getDayOfYear();
+        double delta = (23.44 * Math.sin(2 * PI * (day + 284) / 365.24)) * PI_DIV_180;
+        
+        double N = 2 * PI * (day / 366);
+        double E_time = 229.2 * (0.0000075 + 0.001868 * Math.cos(N) - 0.032077 * Math.sin(N) - 0.014614 * Math.cos(2 * N) - 0.04089 * Math.sin(N));
+
+        // Calculate h: height of sun
+        double local_std_time = time.getHour() * 60 + time.getMinute();
+        double solar_time = (-4.0 * longitude) + E_time + local_std_time;
+        double omega = ((0.25 * solar_time) - 180) * PI_DIV_180;
+        double h = Math.asin(Math.cos(latitude * PI_DIV_180) * Math.cos(delta) * Math.cos(omega) + Math.sin(latitude * PI_DIV_180) * Math.sin(delta));
+        //System.out.println(h);
+        
+        double darkness = h * -10;
+        
+        if (darkness > 1) darkness = 1;
+        if (darkness < 0) darkness = 0;
+        
+        return darkness;
     }
 }

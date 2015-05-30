@@ -18,12 +18,18 @@ package nl.utwente.ewi.caes.tactiletriana.simulation.data;
  */
 public interface IWeatherDataProvider {
     /**
-     * @return the latitude that corresponds with the weather profiles
+     * Returns the latitude that corresponds with the given weather profiles.
+     * This may never change during the course of the program.
+     * 
+     * @return the latitude in degrees
      */
     public double getLatitude();
     
     /**
-     * @return the longitude that corresponds with the weather profiles
+     * Returns the longitude that corresponds with the given weather profiles.
+     * This may never change during the course of the program.
+     * 
+     * @return the longitude in degrees
      */
     public double getLongitude();
     

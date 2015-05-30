@@ -13,6 +13,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -182,6 +183,12 @@ public class TouchView extends TactilePane {
         pushDeviceStack(sv, 0);
         pushDeviceStack(dv, 100);
         pushDeviceStack(wv, 200);
+        
+        ColorAdjust colorAdjust = new ColorAdjust();
+        colorAdjust.hueProperty().bind(viewModel.darknessFactorProperty());
+        colorAdjust.saturationProperty().bind(viewModel.darknessFactorProperty().negate());
+        colorAdjust.brightnessProperty().bind(viewModel.darknessFactorProperty().negate().multiply(0.5));
+        background.setEffect(colorAdjust);
     }
     
     private void pushDeviceStack(DeviceView device, double xOffset) {

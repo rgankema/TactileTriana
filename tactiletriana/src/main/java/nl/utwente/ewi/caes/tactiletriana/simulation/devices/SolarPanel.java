@@ -221,7 +221,7 @@ public class SolarPanel extends DeviceBase {
                 int timeStepInYear = (ts + profileTickOffset) % TOTAL_TICKS_IN_YEAR;
                 double temp = tempProfile[timeStepInYear];
                 double radiance = radianceProfile[timeStepInYear];
-                abstractProfile[ts] = (float) -calculateProductionSquareMeter(temp, radiance, weather.getLongitude(), weather.getLatitude(), time);
+                abstractProfile[ts] = (float) -calculateProductionSquareMeter(temp, radiance, time);
                 time = time.plusMinutes(SimulationConfig.TICK_MINUTES);
             }
         } else {
@@ -235,7 +235,7 @@ public class SolarPanel extends DeviceBase {
                     int timeStepInYear = (ts + profileTickOffset) % TOTAL_TICKS_IN_YEAR;
                     double temp = tempProfile[timeStepInYear];
                     double radiance = radianceProfile[timeStepInYear];
-                    abstractProfile[ts] = (float) -calculateProductionSquareMeter(temp, radiance, weather.getLongitude(), weather.getLatitude(), time);
+                    abstractProfile[ts] = (float) -calculateProductionSquareMeter(temp, radiance, time);
                     time = time.plusMinutes(SimulationConfig.TICK_MINUTES);
                 }
             } else {
@@ -249,7 +249,7 @@ public class SolarPanel extends DeviceBase {
                     int timeStepInYear = (ts + profileTickOffset) % TOTAL_TICKS_IN_YEAR;
                     double temp = tempProfile[timeStepInYear];
                     double radiance = radianceProfile[timeStepInYear];
-                    abstractProfile[ts] = (float) -calculateProductionSquareMeter(temp, radiance, weather.getLongitude(), weather.getLatitude(), time);
+                    abstractProfile[ts] = (float) -calculateProductionSquareMeter(temp, radiance, time);
                     time = time.plusMinutes(SimulationConfig.TICK_MINUTES);
                 }
             }
@@ -270,7 +270,13 @@ public class SolarPanel extends DeviceBase {
     private static final double PI = 3.14159265359;
     private static final double PI_DIV_180 = PI / 180;
     private static final double RHO_GND = 0.2;
-    // Delta and sines and cosines of delta for each day in the year
+    
+    private static final double longitude = WeatherData.getInstance().getLongitude();
+    private static final double latitude = WeatherData.getInstance().getLatitude();
+    private static final double latitudeRadian =  latitude * PI_DIV_180;
+    private static final double cosLatitudeRadian = Math.cos(latitudeRadian);
+    private static final double sinLatitudeRadian = Math.sin(latitudeRadian);
+    // Delta and sines and cosines of delta for each day of the year
     private static final double deltas[] = new double[366];
     private static final double cosDeltas[] = new double[366];
     private static final double sinDeltas[] = new double[366];
@@ -281,19 +287,19 @@ public class SolarPanel extends DeviceBase {
      * 
      * @param temperature the temperature at the location of the panel
      * @param radiance the radiance at the location of the panel
-     * @param longitude the longitude of the panel coordinates
-     * @param latitude the latitude of the panel coordinates
      * @param time the time in the simulation
      * @return amount of watt that the device produces per square meter
      */
-    private double calculateProductionSquareMeter(double temperature, double radiance, double longitude, double latitude, LocalDateTime time) {
+    private double calculateProductionSquareMeter(double temperature, double radiance, LocalDateTime time) {
         
-        double longitudeRadian = longitude * PI_DIV_180;
-        double latitudeRadian = latitude * PI_DIV_180;
-        double elevationRadian = getElevation() * PI_DIV_180;	//Angle of the panel
+        double elevationRadian = getElevation() * PI_DIV_180;
+        double cosElevationRadian = Math.cos(elevationRadian);
+        double sinElevationRadian = Math.sin(elevationRadian);
         double azimuthRadian = getOrientation() * PI_DIV_180;
+        double cosAzimuthRadian = Math.cos(azimuthRadian);
+        double sinAzimuthRadian = Math.sin(azimuthRadian);
 
-        //TIme calculations
+        // Time calculations
         int day = time.getDayOfYear();
         if (deltas[day] == 0) {
             deltas[day] = (23.44 * Math.sin(2 * PI * (day + 284) / 365.24)) * PI_DIV_180;
@@ -301,30 +307,20 @@ public class SolarPanel extends DeviceBase {
             sinDeltas[day] = Math.sin(deltas[day]);
         }
         
-        double delta = deltas[day];
+        double cosDelta = cosDeltas[day];
+        double sinDelta = sinDeltas[day];
         double N = 2 * PI * (day / 366);
         double E_time = 229.2 * (0.0000075 + 0.001868 * Math.cos(N) - 0.032077 * Math.sin(N) - 0.014614 * Math.cos(2 * N) - 0.04089 * Math.sin(N));
 
-        // Needed for height of the sun
+        // Calculate h: height of sun
         double local_std_time = time.getHour() * 60 + time.getMinute();
-        double solar_time = (-4.0 * (longitudeRadian / PI_DIV_180)) + E_time + local_std_time;
+        double solar_time = (-4.0 * longitude) + E_time + local_std_time;
         double omega = ((0.25 * solar_time) - 180) * PI_DIV_180;
-        
-        // Sines and cosines that we need a lot
-        double cosDelta = cosDeltas[day];
-        double sinDelta = sinDeltas[day];
-        double cosLatitudeRadian = Math.cos(latitudeRadian);
-        double sinLatitudeRadian = Math.sin(latitudeRadian);
-        double cosElevationRadian = Math.cos(elevationRadian);
-        double sinElevationRadian = Math.sin(elevationRadian);
-        double cosAzimuthRadian = Math.cos(azimuthRadian);
-        double sinAzimuthRadian = Math.sin(azimuthRadian);
         double cosOmega = Math.cos(omega);
         double sinOmega = Math.sin(omega);
-                
-        // Calcuate h: Heigth of the sun
         double h = Math.asin(cosLatitudeRadian * cosDelta * cosOmega + sinLatitudeRadian * sinDelta);
-
+        if (getSimulation() instanceof Simulation) System.out.println(h);
+        
         // Calculate diffuse light
         double I_0 = (1367 * 3600 / 10000) * Math.sin(h);
         double k_T = 0.0;
@@ -371,6 +367,8 @@ public class SolarPanel extends DeviceBase {
         return powerSquareMeter * actualEfficiency;
     }
 
+    // API METHODS
+    
     @Override
     protected JSONObject parametersToJSON() {
         JSONObject result = new JSONObject();
