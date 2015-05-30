@@ -193,7 +193,7 @@ public class TouchView extends TactilePane {
         ft.setToValue(1);
         ft.playFromStart();
         // Add device to pane, in background
-        getChildren().add(1, group);
+        getChildren().add(2, group);
         // Track device
         getActiveNodes().add(group);
 
