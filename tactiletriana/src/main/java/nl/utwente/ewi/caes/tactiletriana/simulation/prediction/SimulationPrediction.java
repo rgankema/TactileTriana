@@ -35,7 +35,7 @@ public class SimulationPrediction extends SimulationBase {
     private final Map<LoggingEntityBase, LoggingEntityBase> futureByActual = new HashMap<>();
     
     private boolean mainSimulationChanged = false;
-
+    
     /**
      * Creates a new SimulationPrediction.
      * 
@@ -50,6 +50,7 @@ public class SimulationPrediction extends SimulationBase {
         linkNetwork(mainSimulation.getTransformer(), this.getTransformer());
         
         mainSimulation.addOnTimeSpanShiftedHandler(() -> { 
+            mainSimulationChanged = false;
             // Clear the log
             for (LoggingEntityBase logger : futureByActual.values()) {
                 logger.getLog().clear();
@@ -63,6 +64,7 @@ public class SimulationPrediction extends SimulationBase {
         
         // Zorg dat de simulatie 12 uur vooruit loopt
         this.mainSimulation.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
+                
             // Er is iets veranderd. Run de simulation vanaf het huidige punt vooruit
             if (mainSimulationChanged) {
                 mainSimulationChanged = false;
