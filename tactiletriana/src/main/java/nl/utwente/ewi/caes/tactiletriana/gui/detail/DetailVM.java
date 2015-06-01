@@ -99,6 +99,22 @@ public class DetailVM {
         if (old != null) old.setShownOnChart(false);
     }
     
+    /**
+     * Removes a LoggingEntityBase from the charts.
+     * 
+     * @param loggerVM the VM for the LoggingEntityBase
+     */
+    public void removeFromChart(LoggingEntityVMBase loggerVM) {
+        loggerVM.setShownOnChart(false);
+        loggerVM.setChartIndex(-1);
+        
+        for (int i = 0; i < subChartVMs.length; i++) {
+            if (loggersOnCharts[i] == loggerVM) {
+                subChartVMs[i].setEntity(null, null);
+            }
+        }
+    }
+    
     // CALLBACKS FOR VIEW
     
     /**

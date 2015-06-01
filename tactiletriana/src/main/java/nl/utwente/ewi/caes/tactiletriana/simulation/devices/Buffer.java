@@ -20,10 +20,9 @@ public class Buffer extends BufferBase {
         super(simulation, "Buffer", "Buffer");
 
         // initialize values
-        this.setMaxPower(3700d);
+        this.setMaxPower(1000d);
         this.setCapacity(10000d);
         this.setStateOfCharge(0d);
-        
     }
     
     // METHODS

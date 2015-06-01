@@ -26,6 +26,7 @@ public class DeviceVM extends LoggingEntityVMBase {
 
     private DeviceBase model;
     private HouseVM house;
+    private DeviceConfigVM deviceConfigVM;
 
     public DeviceVM(DeviceBase model) {
         this.model = model;
@@ -63,10 +64,16 @@ public class DeviceVM extends LoggingEntityVMBase {
         batteryIconVisible.bind(Bindings.createBooleanBinding(() -> {
             return model.getState() != DeviceBase.State.NOT_IN_HOUSE && model instanceof BufferBase;
         }, model.stateProperty()));
+        
+        deviceConfigVM = new DeviceConfigVM(model);
     }
 
-    public DeviceBase getModel() {
-        return this.model;
+    public DeviceConfigVM getDeviceConfigVM() {
+        return deviceConfigVM;
+    }
+    
+    public Class<? extends DeviceBase> getModelClass() {
+        return this.model.getClass();
     }
     
     /**
@@ -183,8 +190,6 @@ public class DeviceVM extends LoggingEntityVMBase {
 
         if (house != null) {
             house.addDevice(model);
-        } else if (isShownOnChart()) {
-            StageController.getInstance().showOnChart(null, null);
         }
     }
 

@@ -69,10 +69,6 @@ public class DeviceView extends StackPane {
         this.setBackground(new Background(new BackgroundFill(Color.GREY, CornerRadii.EMPTY, Insets.EMPTY)));
         this.setBorder(buildBorder(Color.DARKGREY));
     }
-    
-    public Class<? extends DeviceBase> getType() {
-        return type;
-    }
 
     public DeviceVM getViewModel() {
         return viewModel;
@@ -82,8 +78,8 @@ public class DeviceView extends StackPane {
         if (this.viewModel != null) {
             throw new IllegalStateException("ViewModel already set");
         }
-        if (viewModel.getModel().getClass() != getType()) {
-            throw new IllegalArgumentException("ViewModel does not reference a model of type " + getType().toString());
+        if (viewModel.getModelClass() != type) {
+            throw new IllegalArgumentException("ViewModel does not reference a model of type " + type.toString());
         }
         
         this.viewModel = viewModel;
@@ -113,7 +109,7 @@ public class DeviceView extends StackPane {
         viewModel.configPanelShownProperty().addListener(obs -> {
             if (viewModel.isConfigPanelShown()) {
                 if (configPanel == null) {
-                    configPanel = new DeviceConfigView(viewModel.getModel());
+                    configPanel = new DeviceConfigView(viewModel.getDeviceConfigVM());
                 }
                 getChildren().remove(deviceIcon);
                 getChildren().add(0, configPanel);

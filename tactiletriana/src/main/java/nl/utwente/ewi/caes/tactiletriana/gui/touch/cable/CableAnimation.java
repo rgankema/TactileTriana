@@ -16,7 +16,8 @@ import javafx.scene.Node;
 import javafx.scene.shape.Circle;
 
 /**
- *
+ * Animates electricity flowing over a cable
+ * 
  * @author Richard
  */
 class CableAnimation extends AnimationTimer {
@@ -27,7 +28,6 @@ class CableAnimation extends AnimationTimer {
     private final CableVM viewModel;
     private final List<Circle> onScreen = new ArrayList<>();
     private final Stack<Circle> offScreen = new Stack<>();
-    private final Stack<Circle> toOffScreen = new Stack<>();
             
     private long previousTime = -1;
     

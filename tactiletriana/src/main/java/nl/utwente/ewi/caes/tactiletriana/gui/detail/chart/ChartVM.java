@@ -110,6 +110,12 @@ public class ChartVM {
         this.actual = actual;
         this.future = future;
 
+        if (actual == null) {
+            chartTitle.set("Long press to show on chart");
+            seriesName.set("");
+            return;
+        }
+        
         // Set label of series
         switch (actual.getQuantityType()) {
             case POWER:

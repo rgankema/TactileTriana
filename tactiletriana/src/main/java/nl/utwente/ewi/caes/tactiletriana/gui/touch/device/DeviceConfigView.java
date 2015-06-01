@@ -5,7 +5,6 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.touch.device;
 
-import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.Property;
 import javafx.fxml.FXML;
@@ -14,14 +13,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.input.TouchEvent;
 import javafx.scene.layout.GridPane;
-import nl.utwente.ewi.caes.tactiletriana.Util;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 import nl.utwente.ewi.caes.tactiletriana.gui.customcontrols.Carousel;
-import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
-import nl.utwente.ewi.caes.tactiletriana.simulation.devices.Buffer;
-import nl.utwente.ewi.caes.tactiletriana.simulation.devices.ElectricVehicle;
-import nl.utwente.ewi.caes.tactiletriana.simulation.devices.SolarPanel;
-import nl.utwente.ewi.caes.tactiletriana.simulation.devices.TimeShiftableBase;
+import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceConfigVM.CategoryRow;
+import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceConfigVM.DoubleRow;
+import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceConfigVM.Row;
 
 /**
  * A panel for configuring device parameters. Has two columns, with labels on
@@ -33,57 +29,23 @@ class DeviceConfigView extends GridPane {
     
     @FXML private Label header;
     
-    private int row = 1;
+    private int currentRow = 1;
     
-    // TODO clean up this spaghetti code
-    public DeviceConfigView(DeviceBase device) {
+    public DeviceConfigView(DeviceConfigVM viewModel) {
         ViewLoader.load(this);
         
-        this.header.setText(device.getDisplayName());
+        this.header.textProperty().bind(viewModel.headerTextProperty());
         
-        if (device instanceof Buffer) {     // Buffer
-            Buffer buffer = (Buffer) device;
-            Slider capacity = buildSlider(5000, 20000, buffer.capacityProperty());
-            Slider maxPower = buildSlider(500, 3700, buffer.maxPowerProperty());
-            addControl("Capacity", capacity, capacity.valueProperty().asString("%.0f Wh"));
-            addControl("Max Power", maxPower, maxPower.valueProperty().asString("%.0f W"));
-        } else if (device instanceof TimeShiftableBase) {   // WashingMachine and Dishwasher
-            TimeShiftableBase timeShiftable = (TimeShiftableBase) device;
-            Slider startTime = buildSlider(0, 24 * 60 - 1);
-            Slider delay = buildSlider(0, 24*60 - timeShiftable.getStaticProfile().length);
-            
-            // These controls are a little less straightforward since they are not entirely
-            // the same in the simulation as they are in the GUI
-            startTime.valueProperty().addListener(obs -> { 
-                double d = delay.getValue();
-                timeShiftable.setStartTime((int) startTime.getValue());
-                timeShiftable.setEndTime((int) (startTime.getValue() + d) % (24 * 60));
-            });
-            delay.valueProperty().addListener(obs -> { 
-                timeShiftable.setEndTime((int) ((timeShiftable.getStartTime() + delay.getValue()) % (24 * 60)));
-            });
-            timeShiftable.startTimeProperty().addListener(obs -> {
-                startTime.setValue(timeShiftable.getStartTime());
-                delay.setValue((timeShiftable.getEndTime() - timeShiftable.getStartTime() + 24 * 60) % (24 * 60));
-            });
-            timeShiftable.endTimeProperty().addListener(obs -> { 
-                delay.setValue((timeShiftable.getEndTime() - timeShiftable.getStartTime() + 24 * 60) % (24 * 60));
-            });
-            addControl("Start Time", startTime, Bindings.createStringBinding(() -> { 
-                return Util.minutesToTimeString((int) startTime.getValue());
-            }, startTime.valueProperty()));
-            addControl("Delay", delay , Bindings.createStringBinding(() -> {
-                return Util.minutesToTimeString((int) delay.getValue());
-            }, delay.valueProperty()));
-            
-        } else if (device instanceof SolarPanel) {  // SolarPanel
-            SolarPanel solarPanel = (SolarPanel) device;
-            Slider area = buildSlider(1, 50, solarPanel.areaProperty());
-            addControl("Area", area, area.valueProperty().asString("%.0f m²"));
-        } else if (device instanceof ElectricVehicle) { // EV
-            ElectricVehicle electricVehicle = (ElectricVehicle) device;
-            Carousel model = new Carousel(electricVehicle.modelProperty(), ev -> electricVehicle.getModelName(), (Object[]) ElectricVehicle.Model.values());
-            addControl("Model", model, null);
+        for (Row row : viewModel.getRows()) {
+            if (row instanceof DoubleRow) {
+                DoubleRow dRow = (DoubleRow) row;
+                Slider slider = buildSlider(dRow.getMin(), dRow.getMax(), dRow.getValueProperty());
+                addControl(dRow.getLabel(), slider, dRow.getValueStringBinding());
+            } else if (row instanceof CategoryRow) {
+                CategoryRow cRow = (CategoryRow) row;
+                Carousel carousel = new Carousel(cRow.getValueProperty(), x -> cRow.getValueStringBinding().getValue(), cRow.getPossibleValues());
+                addControl(cRow.getLabel(), carousel, null);
+            }
         }
     }
     
@@ -124,13 +86,13 @@ class DeviceConfigView extends GridPane {
      * @param valueString   a binding to the value of the control in a specific string format, may be null
      */
     private void addControl(String label, Node control, StringBinding valueString) {
-        this.add(new Label(label), 0, row);
-        this.add(control, 1, row);
+        this.add(new Label(label), 0, currentRow);
+        this.add(control, 1, currentRow);
         if (valueString != null) {
             Label valueLabel = new Label();
             valueLabel.textProperty().bind(valueString);
-            this.add(valueLabel, 2, row);
+            this.add(valueLabel, 2, currentRow);
         }
-        row++;
+        currentRow++;
     }
 }

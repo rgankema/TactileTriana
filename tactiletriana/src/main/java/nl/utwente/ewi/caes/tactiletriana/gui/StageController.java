@@ -257,6 +257,10 @@ public final class StageController {
         }
     }
     
+    public void removeFromChart(LoggingEntityVMBase logger) {
+        detailVM.removeFromChart(logger);
+    }
+    
     public void showNotification(String message) {
         detailVM.showNotification(message);
     }

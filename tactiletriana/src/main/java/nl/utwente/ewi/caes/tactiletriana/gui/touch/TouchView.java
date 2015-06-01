@@ -24,6 +24,7 @@ import javafx.util.Duration;
 import nl.utwente.ewi.caes.tactilefx.control.Anchor;
 import nl.utwente.ewi.caes.tactilefx.control.TactilePane;
 import nl.utwente.ewi.caes.tactilefx.debug.MouseToTouchMapper;
+import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseView;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
@@ -81,7 +82,7 @@ public class TouchView extends TactilePane {
         controlView = new ControlView();
         controlView.setRotate(90);
         FloatPane.setAlignment(controlView, Pos.CENTER_LEFT);
-        FloatPane.setMargin(controlView, new Insets(50));
+        FloatPane.setMargin(controlView, new Insets(25));
         networkOverlay.getChildren().add(controlView);
         
         tv = new TransformerView();
@@ -238,14 +239,14 @@ public class TouchView extends TactilePane {
         // Add new device when drag starts, remove device if not on house
         TactilePane.inUseProperty(group).addListener(obs -> {
             if (TactilePane.isInUse(group) && device.getViewModel().getState() == DeviceVM.State.DISCONNECTED) {
-                DeviceView newDevice = new DeviceView(device.getType());
-                newDevice.setViewModel(viewModel.getDeviceVM(device.getViewModel().getModel().getClass()));
+                DeviceView newDevice = new DeviceView(device.getViewModel().getModelClass());
+                newDevice.setViewModel(viewModel.getDeviceVM(device.getViewModel().getModelClass()));
                 pushDeviceStack(newDevice, xOffset);
             } else {
                 if (!TactilePane.getNodesColliding(group).stream().anyMatch(node -> node instanceof HouseView)) {
                     getChildren().remove(group);
                     getActiveNodes().remove(group);
-                    device.getViewModel().droppedOnHouse(null);
+                    StageController.getInstance().removeFromChart(device.getViewModel());
                 } else {
                     for (Node node : TactilePane.getNodesColliding(group)) {
                         if (node instanceof HouseView) {
