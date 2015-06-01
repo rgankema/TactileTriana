@@ -11,6 +11,7 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import nl.utwente.ewi.caes.tactiletriana.Util;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.cable.CableVM;
+import nl.utwente.ewi.caes.tactiletriana.gui.touch.control.ControlVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.node.NodeVM;
@@ -37,6 +38,8 @@ public class TouchVM {
     private final CableVM internalCables[];
     private final CableVM houseCables[];
     private final HouseVM houses[];
+    
+    private final ControlVM control;
 
     public TouchVM(Simulation model) {
         this.model = model;
@@ -70,6 +73,8 @@ public class TouchVM {
         model.currentTimeProperty().addListener(obs -> { 
             darknessFactor.set(computeDarknessFactor());
         });
+        
+        this.control = new ControlVM(model);
     }
     
     // VIEWMODELS
@@ -131,6 +136,10 @@ public class TouchVM {
     
     public DeviceVM getBufferVM(){
         return new DeviceVM(new Buffer(model));
+    }
+    
+    public ControlVM getControlVM() {
+        return this.control;
     }
     
     // PROPERTIES

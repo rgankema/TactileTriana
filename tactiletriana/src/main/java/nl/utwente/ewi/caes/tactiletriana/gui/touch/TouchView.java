@@ -29,6 +29,7 @@ import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseView;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 import nl.utwente.ewi.caes.tactiletriana.gui.customcontrols.FloatPane;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.cable.CableView;
+import nl.utwente.ewi.caes.tactiletriana.gui.touch.control.ControlView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.node.NodeView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.transformer.TransformerView;
@@ -52,6 +53,7 @@ public class TouchView extends TactilePane {
     
     private TouchVM viewModel;
     private FloatPane networkOverlay;
+    private ControlView controlView;
     private ImageView bgDay;
     private ImageView bgNight;
     
@@ -75,6 +77,12 @@ public class TouchView extends TactilePane {
         networkOverlay = new FloatPane();
         networkOverlay.prefWidthProperty().bind(this.widthProperty());
         networkOverlay.prefHeightProperty().bind(this.heightProperty());
+        
+        controlView = new ControlView();
+        controlView.setRotate(90);
+        FloatPane.setAlignment(controlView, Pos.CENTER_LEFT);
+        FloatPane.setMargin(controlView, new Insets(50));
+        networkOverlay.getChildren().add(controlView);
         
         tv = new TransformerView();
         hv = new HouseView[6];
@@ -193,6 +201,8 @@ public class TouchView extends TactilePane {
         pushDeviceStack(sv, 0);
         pushDeviceStack(dv, 100);
         pushDeviceStack(wv, 200);
+        
+        controlView.setViewModel(viewModel.getControlVM());
         
         bgDay.opacityProperty().bind(viewModel.darknessFactorProperty().negate().add(1));
         bgNight.opacityProperty().bind(viewModel.darknessFactorProperty());

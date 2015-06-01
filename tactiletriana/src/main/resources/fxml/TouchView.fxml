@@ -14,5 +14,5 @@
          minWidth="1600" minHeight="900" 
          xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
     
-    
+         <!-- The children of this view are all added in the corresponding .java file -->
 </fx:root>

@@ -5,25 +5,20 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.touch.cable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
-import javafx.animation.AnimationTimer;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
-import javafx.geometry.Point2D;
-import javafx.scene.CacheHint;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 import nl.utwente.ewi.caes.tactiletriana.gui.events.EventUtil;
+import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 
 /**
  * The view for a single cable.
@@ -34,7 +29,7 @@ import nl.utwente.ewi.caes.tactiletriana.gui.events.EventUtil;
  */
 public class CableView extends Group {
 
-    @FXML private Line line;
+    @FXML protected Line line;
     
     private CableVM viewModel;
 
@@ -42,6 +37,10 @@ public class CableView extends Group {
         ViewLoader.load(this);
     }
 
+    public CableVM getViewModel() {
+        return viewModel;
+    }
+    
     /**
      * Sets the ViewModel of this CableView. It can only be set once.
      *
@@ -84,6 +83,7 @@ public class CableView extends Group {
             viewModel.longPressed();
         });
         
+        // Add CSS class when on chart
         viewModel.shownOnChartProperty().addListener(obs -> {
             if (viewModel.isShownOnChart()) {
                 getStyleClass().add("on-chart");
@@ -92,6 +92,7 @@ public class CableView extends Group {
             }
         });
         
+        // Add CSS class for specific chart
         viewModel.chartIndexProperty().addListener(obs -> { 
             int index = viewModel.getChartIndex();
             if (index == -1) {
@@ -101,6 +102,7 @@ public class CableView extends Group {
             }
         });
         
+        // Add CSS class for broken
         viewModel.brokenProperty().addListener((obs, wasBroken, isBroken) -> { 
             if (isBroken) {
                 getStyleClass().add("broken");
@@ -109,89 +111,23 @@ public class CableView extends Group {
             }
         });
         
-        animate();
-    }
-
-    private void animate() {
+        // Animate energy flow
+        CableAnimation animation = new CableAnimation(this);
+        animation.start();
         
-        AnimationTimer timer = new AnimationTimer() {
-            
-            final List<Circle> onScreen = new ArrayList<>();
-            final Stack<Circle> offScreen = new Stack<>();
-            final Stack<Circle> toOffScreen = new Stack<>();
-            
-            long previousTime = -1;
-            
-            @Override
-            public void handle(long currentTime) {
-                if (viewModel.getLoad() == 0) {
-                    offScreen.addAll(onScreen);
-                    getChildren().removeAll(onScreen);
-                    onScreen.clear();
-                    return;
-                }
-                if (previousTime == -1 || ((currentTime - previousTime) / 1000000) * viewModel.getLoad() >= 100) {
-                    Circle particle;
-                    if (!offScreen.empty()) {
-                        particle = offScreen.pop();
-                        particle.setTranslateX(0);
-                        particle.setTranslateY(0);
-                    } else {
-                        particle = new Circle(line.getStrokeWidth() * 0.3);
-                        
-                        // Anchor base location to source of flow
-                        particle.layoutXProperty().bind(Bindings.createDoubleBinding(() -> { 
-                            return (viewModel.getDirection() == CableVM.Direction.END) ? line.getStartX() : line.getEndX();
-                        }, viewModel.directionProperty(), line.startXProperty(), line.endXProperty()));
-                        particle.layoutYProperty().bind(Bindings.createDoubleBinding(() -> { 
-                            return (viewModel.getDirection() == CableVM.Direction.END) ? line.getStartY() : line.getEndY();
-                        }, viewModel.directionProperty(), line.startYProperty(), line.endYProperty()));
-                        viewModel.directionProperty().addListener((obs, oldV, newV) -> { 
-                            particle.setTranslateX(0 - particle.getTranslateX());
-                            particle.setTranslateY(0 - particle.getTranslateY());
-                        });
-
-                        particle.getStyleClass().add("electricity");
-                        particle.setSmooth(false);
-                        particle.setCache(true);
-                        particle.setCacheHint(CacheHint.SPEED);
-                    }
-                    getChildren().add(particle);
-                    onScreen.add(particle);
-                    previousTime = currentTime;
-                }
-                
-                Point2D end = (viewModel.getDirection() == CableVM.Direction.END) ?
-                    new Point2D(line.getEndX() - line.getStartX(), line.getEndY() - line.getStartY()) : 
-                    new Point2D(line.getStartX() - line.getEndX(), line.getStartY() - line.getEndY());
-                Point2D direction = end.normalize();
-                
-                for (int i = 0; i < onScreen.size(); i++) {
-                    Circle particle = onScreen.get(i);
-                    
-                    double speed = 1.5 + 3.0 * viewModel.getLoad();
-
-                    double x = particle.getTranslateX() + direction.getX() * speed;
-                    double y = particle.getTranslateY() + direction.getY() * speed;
-                    
-                    if (Math.abs(x) > Math.abs(end.getX()) || Math.abs(y) > Math.abs(end.getY())) {
-                        getChildren().remove(particle);
-                        onScreen.remove(i);
-                        offScreen.add(particle);
-                        i--;
-                        continue;
-                    }
-                    
-                    particle.setTranslateX(x);
-                    particle.setTranslateY(y);
-                }
+        // Stop animation when Simulation is paused
+        Simulation simulation = StageController.getInstance().getSimulation();
+        simulation.stateProperty().addListener(obs -> { 
+            if (simulation.getState() == Simulation.SimulationState.RUNNING) {
+                animation.start();
+            } else {
+                animation.stop();
             }
-        };
-        
-        timer.start();
+        });
     }
     
     // PROPERTIES
+    
     /**
      * The JavaFX Node that defines where the cable starts.
      */
