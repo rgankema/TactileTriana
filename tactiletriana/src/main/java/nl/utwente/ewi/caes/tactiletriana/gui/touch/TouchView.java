@@ -13,7 +13,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -50,17 +49,23 @@ public class TouchView extends TactilePane {
     
     private TouchVM viewModel;
     private FloatPane networkOverlay;
-    private ImageView background;
+    private ImageView bgDay;
+    private ImageView bgNight;
     
     public TouchView() {
         ViewLoader.load(this);
 
         addEventFilter(MouseEvent.ANY, new MouseToTouchMapper());
         
-        background = new ImageView();
-        background.setImage(new Image("images/background.jpg"));
-        background.fitWidthProperty().bind(this.widthProperty());
-        background.fitHeightProperty().bind(this.heightProperty());
+        bgDay = new ImageView();
+        bgDay.setImage(new Image("images/background-summer.jpg"));
+        bgDay.fitWidthProperty().bind(this.widthProperty());
+        bgDay.fitHeightProperty().bind(this.heightProperty());
+        
+        bgNight = new ImageView();
+        bgNight.setImage(new Image("images/background-summer-night.jpg"));
+        bgNight.fitWidthProperty().bind(this.widthProperty());
+        bgNight.fitHeightProperty().bind(this.heightProperty());
         
         networkOverlay = new FloatPane();
         networkOverlay.prefWidthProperty().bind(this.widthProperty());
@@ -135,7 +140,7 @@ public class TouchView extends TactilePane {
         FloatPane.setMargin(tv, new Insets(200));
         networkOverlay.getChildren().add(tv);
         
-        getChildren().addAll(background, networkOverlay);
+        getChildren().addAll(bgNight, bgDay, networkOverlay);
         
         List<Node> toBackground = new ArrayList<>();
         for (Node node : networkOverlay.getChildren()) {
@@ -184,11 +189,8 @@ public class TouchView extends TactilePane {
         pushDeviceStack(dv, 100);
         pushDeviceStack(wv, 200);
         
-        ColorAdjust colorAdjust = new ColorAdjust();
-        colorAdjust.hueProperty().bind(viewModel.darknessFactorProperty().multiply(0.3));
-        colorAdjust.saturationProperty().bind(viewModel.darknessFactorProperty().negate().multiply(0.5));
-        colorAdjust.brightnessProperty().bind(viewModel.darknessFactorProperty().negate().multiply(0.5));
-        background.setEffect(colorAdjust);
+        bgDay.opacityProperty().bind(viewModel.darknessFactorProperty().negate().add(1));
+        bgNight.opacityProperty().bind(viewModel.darknessFactorProperty());
     }
     
     private void pushDeviceStack(DeviceView device, double xOffset) {
@@ -200,7 +202,7 @@ public class TouchView extends TactilePane {
         ft.setToValue(1);
         ft.playFromStart();
         // Add device to pane, in background
-        getChildren().add(2, group);
+        getChildren().add(3, group);
         // Track device
         getActiveNodes().add(group);
 
