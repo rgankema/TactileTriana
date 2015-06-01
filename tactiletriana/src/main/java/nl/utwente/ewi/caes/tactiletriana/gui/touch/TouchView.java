@@ -16,6 +16,10 @@ import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import nl.utwente.ewi.caes.tactilefx.control.Anchor;
 import nl.utwente.ewi.caes.tactilefx.control.TactilePane;
@@ -46,7 +50,6 @@ public class TouchView extends TactilePane {
     CableView[] cvh;
     CableView[] cvi;
     
-    
     private TouchVM viewModel;
     private FloatPane networkOverlay;
     private ImageView bgDay;
@@ -56,6 +59,8 @@ public class TouchView extends TactilePane {
         ViewLoader.load(this);
 
         addEventFilter(MouseEvent.ANY, new MouseToTouchMapper());
+        
+        setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
         
         bgDay = new ImageView();
         bgDay.setImage(new Image("images/background-summer.jpg"));

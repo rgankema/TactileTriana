@@ -60,7 +60,7 @@ public abstract class SimulationBase extends LoggingEntityBase {
         for (int i = 0; i <= NUMBER_OF_HOUSES - 1; i++) {
             this.houses[i] = new House(this);
 
-            if (SimulationConfig.SIMULATION_UNCONTROLABLE_LOAD_ENABLED) {
+            if (SimulationConfig.UNCONTROLLABLE_LOAD_ENABLED) {
                 houses[i].getDevices().add(new UncontrollableLoad(i, this));
             }
 

@@ -24,30 +24,30 @@ public class SimulationConfigTest {
     }
     @Test
     public void testLoadConfigFile(){
-        assertEquals(SimulationConfig.HOUSE_MAX_FUSE_CURRENT, 0);
+        assertEquals(SimulationConfig.HOUSE_FUSE_MAX_CURRENT, 0);
         SimulationConfig.LoadProperties();
-        assertThat(SimulationConfig.HOUSE_MAX_FUSE_CURRENT, is(not(0)));
+        assertThat(SimulationConfig.HOUSE_FUSE_MAX_CURRENT, is(not(0)));
     }
     
     @Test
     public void testSaveConfigFile(){
         
         // save the old value
-        int oldValue = SimulationConfig.HOUSE_MAX_FUSE_CURRENT;
+        int oldValue = SimulationConfig.HOUSE_FUSE_MAX_CURRENT;
         
         // change value
-        SimulationConfig.HOUSE_MAX_FUSE_CURRENT = 1337;
+        SimulationConfig.HOUSE_FUSE_MAX_CURRENT = 1337;
         SimulationConfig.SaveProperties();
-        SimulationConfig.HOUSE_MAX_FUSE_CURRENT = 12345;
+        SimulationConfig.HOUSE_FUSE_MAX_CURRENT = 12345;
         SimulationConfig.LoadProperties();
-        assertEquals(SimulationConfig.HOUSE_MAX_FUSE_CURRENT, 1337);
+        assertEquals(SimulationConfig.HOUSE_FUSE_MAX_CURRENT, 1337);
         
         // resave the oldvalue
-        SimulationConfig.HOUSE_MAX_FUSE_CURRENT = oldValue;
+        SimulationConfig.HOUSE_FUSE_MAX_CURRENT = oldValue;
         SimulationConfig.SaveProperties();
-        SimulationConfig.HOUSE_MAX_FUSE_CURRENT = 12345;
+        SimulationConfig.HOUSE_FUSE_MAX_CURRENT = 12345;
         SimulationConfig.LoadProperties();
-        assertEquals(SimulationConfig.HOUSE_MAX_FUSE_CURRENT, oldValue);
+        assertEquals(SimulationConfig.HOUSE_FUSE_MAX_CURRENT, oldValue);
     }
     
 }
