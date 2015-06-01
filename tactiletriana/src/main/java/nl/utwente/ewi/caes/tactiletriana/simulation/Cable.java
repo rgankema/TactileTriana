@@ -26,11 +26,13 @@ public class Cable extends LoggingEntityBase {
      *
      * @param childNode The node away from the transformer
      * @param maxCurrent The maximum current that can flow through the cable
+     * @param length The length of the cable
+     * @param simulation The Simulation this cable belongs to
      */
     public Cable(Node childNode, double maxCurrent, double length, SimulationBase simulation) {
         super("Cable", QuantityType.CURRENT);
         this.childNode = childNode;
-        this.resistance = 0.00005;
+        this.resistance = 0.0005;
         this.simulation = simulation;
         setLength(length);
         setMaximumCurrent(maxCurrent);
