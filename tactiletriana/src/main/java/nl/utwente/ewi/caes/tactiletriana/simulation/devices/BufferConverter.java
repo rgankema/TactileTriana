@@ -5,26 +5,61 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation.devices;
 
+import javafx.beans.InvalidationListener;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
+import static nl.utwente.ewi.caes.tactiletriana.Util.toTimeStep;
+import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
+import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 import nl.utwente.ewi.caes.tactiletriana.simulation.SimulationBase;
+import nl.utwente.ewi.caes.tactiletriana.simulation.data.IDeviceDataProvider;
+import nl.utwente.ewi.caes.tactiletriana.simulation.data.BufferConverterData;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 /**
  *
  * @author niels
  */
-public class BufferConverter extends BufferBase {
+public class BufferConverter extends DeviceBase{
     
+    //coefficient of performance
     public static final String API_COP = "COP";
+    public static final String API_PROFILE = "profile";
+    //Number of current profile (0-5)
+    private final int profileNumber;
+    //Data of the heat demand in W
+    private final IDeviceDataProvider<BufferConverter> data;
+    
+    /**
+     *
+     * @param profileNumber a number between 0 and 5 (inclusive) which selects
+     * the profile data on which this instance is based
+     * @param simulation the Simulation this device belongs to
+     */
+    public BufferConverter(int profileNumber, SimulationBase simulation) {
+        super(simulation, "BufferConverter", "BufferConverter");
+
+        if (profileNumber < 0 || profileNumber > 5) {
+            throw new IllegalArgumentException("profileNumber must be in the range of 0 to 5");
+        }
+
+        this.profileNumber = profileNumber;
+        this.data = BufferConverterData.getInstance();
         
-    public BufferConverter(SimulationBase simulation, String displayName, String apiDeviceType) {
-        super(simulation, displayName, "BufferConverter");
-        
+        // Register API properties
+        registerAPIParameter(API_PROFILE);       
+        registerAPIParameter(API_COP);
+                
         registerProperty(COP);
         
-        registerAPIParameter(API_COP);
-        
+        //Set default of COP to 4
+        setCOP(4);
+    }
+    
+    public BufferConverter(SimulationBase simulation){
+        this((int)(Math.random()*6),simulation);
     }
     
     /**
@@ -45,15 +80,6 @@ public class BufferConverter extends BufferBase {
     }
     
     @Override
-    protected JSONObject parametersToJSON() {
-        JSONObject result = super.parametersToJSON();
-                
-        result.put(API_COP, getCOP());
-        
-        return result;
-    }
-    
-    @Override
     public void updateParameter(String parameter, Object value){
         if(parameter.equals(API_COP)){
             setCOP((double) value);
@@ -63,8 +89,23 @@ public class BufferConverter extends BufferBase {
     }
     
     @Override
-    protected void doTick(boolean connected) {
-        // TODO implement this
+    public void doTick(boolean connected) {
+        //Current consumption is heatdemand / COP
+        System.out.println(data.getProfile(profileNumber).length);
+        setCurrentConsumption(data.getProfile(profileNumber)[toTimeStep(simulation.getCurrentTime())] / getCOP());
+    }
+
+    @Override
+    protected JSONObject parametersToJSON() {
+        JSONObject result = new JSONObject();
+        JSONArray jsonProfile = new JSONArray();
+        
+        int time = toTimeStep(simulation.getCurrentTime());
+        for (int i = time; i < time + 24 * 60 / SimulationConfig.TICK_MINUTES; i++) {
+            jsonProfile.add(data.getProfile(profileNumber)[i]);
+        }
+        result.put(API_PROFILE, jsonProfile);
+        return result;
     }
     
 }

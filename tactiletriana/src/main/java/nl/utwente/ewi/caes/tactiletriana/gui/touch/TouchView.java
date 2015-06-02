@@ -206,12 +206,16 @@ public class TouchView extends TactilePane {
         wv.setViewModel(viewModel.getWashingMachineVM());
         DeviceView bv = new DeviceView(Buffer.class);
         bv.setViewModel(viewModel.getBufferVM());
+        DeviceView bcv = new DeviceView(BufferConverter.class);
+        bcv.setViewModel(viewModel.getBufferConverterVM());
         
         pushDeviceStack(bv, -200);
         pushDeviceStack(cv, -100);
         pushDeviceStack(sv, 0);
         pushDeviceStack(dv, 100);
         pushDeviceStack(wv, 200);
+        pushDeviceStack(bcv, 300);
+        
         
         controlView.setViewModel(viewModel.getControlVM());
         

@@ -64,7 +64,10 @@ public class DeviceView extends StackPane {
         } else if (type == Buffer.class) {
             deviceIcon.setImage(new Image("images/buffer.png",50,50,false,true));
             getStyleClass().add("buffer");
-        } else throw new UnsupportedOperationException("No DeviceView for type " + type.toString());
+        } else if (type == BufferConverter.class) {
+            deviceIcon.setImage(new Image("images/buffer.png",100,100,false,true));
+            getStyleClass().add("bufferconverter");
+        }else throw new UnsupportedOperationException("No DeviceView for type " + type.toString());
 
         this.setBackground(new Background(new BackgroundFill(Color.GREY, CornerRadii.EMPTY, Insets.EMPTY)));
         this.setBorder(buildBorder(Color.DARKGREY));

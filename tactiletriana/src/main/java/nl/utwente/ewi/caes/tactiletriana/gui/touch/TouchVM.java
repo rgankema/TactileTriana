@@ -142,6 +142,10 @@ public class TouchVM {
         return new DeviceVM(new Buffer(model));
     }
     
+    public DeviceVM getBufferConverterVM(){
+        return new DeviceVM(new BufferConverter(model));
+    }
+    
     public ControlVM getControlVM() {
         return this.control;
     }
