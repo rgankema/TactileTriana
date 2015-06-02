@@ -219,6 +219,20 @@ public class TouchView extends TactilePane {
         bgNight.opacityProperty().bind(viewModel.darknessFactorProperty());
         
         viewModel.seasonProperty().addListener(obs -> { 
+            // Temporarily replace day background with old night background
+            ImageView temp = new ImageView(bgNight.getImage());
+            getChildren().set(1, temp);
+            
+            // Fade out old nigt background
+            FadeTransition fade = new FadeTransition(Duration.seconds(3), temp);
+            fade.setFromValue(1.0);
+            fade.setToValue(0.0);
+            fade.setOnFinished(e -> { 
+                getChildren().set(1, bgDay);
+            });
+            fade.playFromStart();
+            
+            // Find the proper image
             Season season = viewModel.getSeason();
             Image day = null, night = null;
             if (season == Season.SPRING) {
