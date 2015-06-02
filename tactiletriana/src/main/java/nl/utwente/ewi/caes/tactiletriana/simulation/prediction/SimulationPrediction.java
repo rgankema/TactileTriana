@@ -13,6 +13,7 @@ import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.scene.chart.XYChart.Data;
+import nl.utwente.ewi.caes.tactiletriana.Concurrent;
 import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Cable;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
@@ -35,6 +36,7 @@ public class SimulationPrediction extends SimulationBase {
     private final Map<LoggingEntityBase, LoggingEntityBase> futureByActual = new HashMap<>();
     
     private boolean mainSimulationChanged = false;
+    private boolean cancelled = false;
     
     /**
      * Creates a new SimulationPrediction.
@@ -64,10 +66,11 @@ public class SimulationPrediction extends SimulationBase {
         
         // Zorg dat de simulatie 12 uur vooruit loopt
         this.mainSimulation.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
-                
+            
             // Er is iets veranderd. Run de simulation vanaf het huidige punt vooruit
             if (mainSimulationChanged) {
                 mainSimulationChanged = false;
+                cancelled = true;
                 setCurrentTime(oldValue);
                 
                 // Clear the invalid log values
@@ -89,15 +92,39 @@ public class SimulationPrediction extends SimulationBase {
                     }
                 }
             }
-
-            // Zo lang hij achterloopt -> doe een tick()
-            while (getCurrentTime().isBefore(newValue.plusHours(RUN_AHEAD))) {
-                super.tick();
-            }
+            
+            // Calculate new ticks in background
+            cancelled = false;
+            Concurrent.getExecutorService().submit(() -> { 
+                // Do tick while still behind, but only if the main simulation hasn't changed again
+                while (!cancelled && getCurrentTime().isBefore(newValue.plusHours(RUN_AHEAD))) {
+                    tick();
+                }
+            });
+            
         });
     }
     
     // SIMULATIONBASE
+    
+    /**
+     * Called at the start of each tick
+     */
+    @Override
+    protected final void tick() {
+        // Calculate device consumptions
+        getTransformer().tick(true);
+        // Reset the nodes and cables
+        prepareForwardBackwardSweep();
+        // Calculate forward backward sweep
+        doForwardBackwardSweep();
+        // Finish forward backward sweep
+        finishForwardBackwardSweep();
+        // Log total power consumption in network
+        log(getCurrentTime(), transformer.getCables().get(0).getCurrent() * 230d);
+        // Increment time
+        incrementTime();
+    }
     
     @Override
     protected void incrementTime() {

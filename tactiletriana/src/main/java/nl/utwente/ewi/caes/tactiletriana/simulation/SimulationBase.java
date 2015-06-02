@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import static nl.utwente.ewi.caes.tactiletriana.Concurrent.runOnJavaFXThreadSynchronously;
 import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 import static nl.utwente.ewi.caes.tactiletriana.Util.toTimeStep;
 import static nl.utwente.ewi.caes.tactiletriana.simulation.Simulation.NUMBER_OF_HOUSES;
@@ -188,14 +187,18 @@ public abstract class SimulationBase extends LoggingEntityBase {
     /**
      * Called at the start of each tick
      */
-    protected final void tick() {
-        // Run anything that involves the UI on the JavaFX thread
-        runOnJavaFXThreadSynchronously(() -> {
-            getTransformer().tick(true);
-        });
-        
-        // Reset the nodes.
+    protected abstract void tick();
+    
+    /**
+     * Increments the time.
+     */
+    protected abstract void incrementTime();
+    
+    protected final void prepareForwardBackwardSweep() {
         transformer.prepareForwardBackwardSweep();
+    }
+    
+    protected final void doForwardBackwardSweep() {
         // Run the ForwardBackwardSweep Load-flow calculation until converged or the iteration limit is reached
         for (int i = 0; i < 20; i++) {
             transformer.doForwardBackwardSweep(230);
@@ -209,32 +212,14 @@ public abstract class SimulationBase extends LoggingEntityBase {
                 lastVoltageByNode.put(node, node.getVoltage());
             }
         }
-        
-        // Run anything that involves the UI on the JavaFX thread
-        runOnJavaFXThreadSynchronously(() -> {
-            // Finish forward backward sweep
-            transformer.finishForwardBackwardSweep();
-
-            // Log total power consumption in network
-            log(getCurrentTime(), transformer.getCables().get(0).getCurrent() * 230d);
-
-            // Increment time
-            incrementTime();
-        });
-        
-        if (getController() != null) {
-            System.out.println("as");
-            getController().retrievePlanning(50, getCurrentTime());
-        }
     }
     
-    /**
-     * Increments the time.
-     */
-    protected abstract void incrementTime();
+    protected final void finishForwardBackwardSweep() {
+        transformer.finishForwardBackwardSweep();
+    }
     
     // Calculate if the FBS algorithm has converged. 
-    private boolean hasFBSConverged(double error) {
+    private final boolean hasFBSConverged(double error) {
         boolean result = true;
 
         //Loop through the network-tree and compare the previous voltage from each with the current voltage.
