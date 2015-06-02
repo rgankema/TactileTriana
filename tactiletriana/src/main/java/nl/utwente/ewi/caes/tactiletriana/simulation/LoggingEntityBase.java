@@ -44,17 +44,19 @@ public abstract class LoggingEntityBase {
     
     // METHODS
     protected final void log(LocalDateTime time, double value) {
-        if (log.size() > 0) {
-            log.add(new Data<>(log.get(log.size() - 1).getXValue(), (float) value));
-        }
-        log.add(new Data<>(toMinuteOfYear(time), (float) value));
-        invalid = true;
-
-        // Discard values that won't be shown anymore.
-        if (log.size() > 12 * 60 / SimulationConfig.TICK_MINUTES + 2) {
-            log.remove(0);
-            log.remove(0);
+        synchronized(this) {
+            if (log.size() > 0) {
+                log.add(new Data<>(log.get(log.size() - 1).getXValue(), (float) value));
+            }
+            log.add(new Data<>(toMinuteOfYear(time), (float) value));
             invalid = true;
+
+            // Discard values that won't be shown anymore.
+            if (log.size() > 12 * 60 / SimulationConfig.TICK_MINUTES + 2) {
+                log.remove(0);
+                log.remove(0);
+                invalid = true;
+            }
         }
     }
 

@@ -66,8 +66,8 @@ public class TouchView extends TactilePane {
     private final Image BG_SUMMER_NIGHT = new Image("images/background-summer-night.jpg");
     private final Image BG_AUTUMN_DAY = new Image("images/background-fall.jpg");
     private final Image BG_AUTUMN_NIGHT = new Image("images/background-fall-night.jpg");
-    private final Image BG_WINTER_DAY = new Image("images/background-fall.jpg");
-    private final Image BG_WINTER_NIGHT = new Image("images/background-fall-night.jpg");
+    private final Image BG_WINTER_DAY = new Image("images/background-winter.jpg");
+    private final Image BG_WINTER_NIGHT = new Image("images/background-winter-night.jpg");
     
     
     
@@ -227,7 +227,7 @@ public class TouchView extends TactilePane {
             getChildren().set(1, temp);
             
             // Fade out old nigt background
-            FadeTransition fade = new FadeTransition(Duration.millis(SimulationConfig.SYSTEM_TICK_TIME * (180 / SimulationConfig.TICK_MINUTES)), temp);
+            FadeTransition fade = new FadeTransition(Duration.millis(SimulationConfig.SYSTEM_TICK_TIME * (120 / SimulationConfig.TICK_MINUTES)), temp);
             fade.setFromValue(1.0);
             fade.setToValue(0.0);
             fade.setOnFinished(e -> { 

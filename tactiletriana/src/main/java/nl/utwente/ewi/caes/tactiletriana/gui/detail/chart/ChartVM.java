@@ -96,17 +96,21 @@ public class ChartVM {
     
     public final void updateSeries() {
         if (actual != null && actual.invalid) {
-            actualSeriesData.clear();
-            actualSeriesData.addAll(actual.getLog());
-            if (!actual.getLog().isEmpty()) {
-                xAxisLowerBound.set(actual.getLog().get(actual.getLog().size() - 1).getXValue() - 6 * 60);
+            synchronized (actual) {
+                actualSeriesData.clear();
+                actualSeriesData.addAll(actual.getLog());
+                if (!actual.getLog().isEmpty()) {
+                    xAxisLowerBound.set(actual.getLog().get(actual.getLog().size() - 1).getXValue() - 6 * 60);
+                }
+                actual.invalid = false;
             }
-            actual.invalid = false;
         }
         if (future != null && future.invalid) {
-            futureSeriesData.clear();
-            futureSeriesData.addAll(future.getLog());
-            future.invalid = false;
+            synchronized (future) {
+                futureSeriesData.clear();
+                futureSeriesData.addAll(future.getLog());
+                future.invalid = false;
+            }
         }
     }
     
