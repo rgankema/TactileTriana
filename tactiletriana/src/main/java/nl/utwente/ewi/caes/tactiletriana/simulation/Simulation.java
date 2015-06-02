@@ -135,24 +135,8 @@ public class Simulation extends SimulationBase {
     }
     
     /**
-     * Increments the time by either the tick time, or leaps to the next time span
-     * if required.
-     */
-    @Override
-    protected void incrementTime() {
-        boolean timeSpanShifted = getTimeScenario().next(SimulationConfig.TICK_MINUTES);
-        setCurrentTime(getTimeScenario().getCurrentTime());
-        if (timeSpanShifted) {
-            
-            for (Runnable callback : timeSpanShiftedCallbacks) {
-                callback.run();
-            }
-            clearAllLogs();
-        }
-    }
-    
-    /**
-     * Called at the start of each tick
+     * Called at the start of each tick. Parts of the method have to run on the
+     * JavaFX thread because of property bindings.
      */
     @Override
     protected final void tick() {
@@ -178,6 +162,23 @@ public class Simulation extends SimulationBase {
         
         if (getController() != null) {
             getController().retrievePlanning(50, getCurrentTime());
+        }
+    }
+    
+    /**
+     * Increments the time by either the tick time, or leaps to the next time span
+     * if required.
+     */
+    @Override
+    protected void incrementTime() {
+        boolean timeSpanShifted = getTimeScenario().next(SimulationConfig.TICK_MINUTES);
+        setCurrentTime(getTimeScenario().getCurrentTime());
+        if (timeSpanShifted) {
+            
+            for (Runnable callback : timeSpanShiftedCallbacks) {
+                callback.run();
+            }
+            clearAllLogs();
         }
     }
 
