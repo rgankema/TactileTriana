@@ -29,6 +29,7 @@ import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseView;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 import nl.utwente.ewi.caes.tactiletriana.gui.customcontrols.FloatPane;
+import nl.utwente.ewi.caes.tactiletriana.gui.touch.TouchVM.Season;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.cable.CableView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.control.ControlView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceVM;
@@ -58,6 +59,17 @@ public class TouchView extends TactilePane {
     private ImageView bgDay;
     private ImageView bgNight;
     
+    private final Image BG_SPRING_DAY = new Image("images/background-spring.jpg");
+    private final Image BG_SPRING_NIGHT = new Image("images/background-spring-night.jpg");
+    private final Image BG_SUMMER_DAY = new Image("images/background-summer.jpg");
+    private final Image BG_SUMMER_NIGHT = new Image("images/background-summer-night.jpg");
+    private final Image BG_AUTUMN_DAY = new Image("images/background-fall.jpg");
+    private final Image BG_AUTUMN_NIGHT = new Image("images/background-fall-night.jpg");
+    private final Image BG_WINTER_DAY = new Image("images/background-fall.jpg");
+    private final Image BG_WINTER_NIGHT = new Image("images/background-fall-night.jpg");
+    
+    
+    
     public TouchView() {
         ViewLoader.load(this);
 
@@ -66,12 +78,10 @@ public class TouchView extends TactilePane {
         setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
         
         bgDay = new ImageView();
-        bgDay.setImage(new Image("images/background-summer.jpg"));
         bgDay.fitWidthProperty().bind(this.widthProperty());
         bgDay.fitHeightProperty().bind(this.heightProperty());
         
         bgNight = new ImageView();
-        bgNight.setImage(new Image("images/background-summer-night.jpg"));
         bgNight.fitWidthProperty().bind(this.widthProperty());
         bgNight.fitHeightProperty().bind(this.heightProperty());
         
@@ -207,6 +217,26 @@ public class TouchView extends TactilePane {
         
         bgDay.opacityProperty().bind(viewModel.darknessFactorProperty().negate().add(1));
         bgNight.opacityProperty().bind(viewModel.darknessFactorProperty());
+        
+        viewModel.seasonProperty().addListener(obs -> { 
+            Season season = viewModel.getSeason();
+            Image day = null, night = null;
+            if (season == Season.SPRING) {
+                day = BG_SPRING_DAY;
+                night = BG_SPRING_NIGHT;
+            } else if (season == Season.SUMMER) {
+                day = BG_SUMMER_DAY;
+                night = BG_SUMMER_NIGHT;
+            } else if (season == Season.AUTUMN) {
+                day = BG_AUTUMN_DAY;
+                night = BG_AUTUMN_NIGHT;
+            } else if (season == Season.WINTER) {
+                day = BG_WINTER_DAY;
+                night = BG_WINTER_NIGHT;
+            }
+            bgDay.setImage(day);
+            bgNight.setImage(night);
+        });
     }
     
     private void pushDeviceStack(DeviceView device, double xOffset) {

@@ -7,8 +7,11 @@ package nl.utwente.ewi.caes.tactiletriana.gui.touch;
 
 import java.time.LocalDateTime;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import nl.utwente.ewi.caes.tactiletriana.Util;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.cable.CableVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.control.ControlVM;
@@ -71,7 +74,8 @@ public class TouchVM {
         }
         
         model.currentTimeProperty().addListener(obs -> { 
-            darknessFactor.set(computeDarknessFactor());
+            updateDarknessFactor(model.getCurrentTime());
+            updateSeason(model.getCurrentTime());
         });
         
         this.control = new ControlVM(model);
@@ -145,7 +149,8 @@ public class TouchVM {
     // PROPERTIES
     
     /**
-     * The darkness on a scale of 0 to 1.
+     * The darkness on a scale of 0 to 1. 0 means day, 1 means night, and 
+     * anything in between is twilight.
      */
     private final DoubleProperty darknessFactor = new SimpleDoubleProperty();
     
@@ -157,13 +162,33 @@ public class TouchVM {
         return darknessFactorProperty().get();
     }
     
+    private void setDarknessFactor(double darkness) {
+        darknessFactor.set(darkness);
+    }
+    
+    /**
+     * The season to be shown on the touch screen.
+     */
+    private final ObjectProperty<Season> season = new SimpleObjectProperty<>();
+    
+    public ReadOnlyObjectProperty<Season> seasonProperty() {
+        return season;
+    }
+    
+    public final Season getSeason() {
+        return seasonProperty().get();
+    }
+    
+    private void setSeason(Season season) {
+        this.season.set(season);
+    }
+    
     // HELP METHODS
     
-    private double computeDarknessFactor() {
+    private void updateDarknessFactor(LocalDateTime time) {
         final double PI = Math.PI;
         
         final double PI_DIV_180 = PI / 180;
-        LocalDateTime time = model.getCurrentTime();
         double longitude = WeatherData.getInstance().getLongitude();
         double latitude = WeatherData.getInstance().getLatitude();
         double radiance = WeatherData.getInstance().getRadianceProfile()[Util.toTimeStep(time)];
@@ -187,6 +212,34 @@ public class TouchVM {
         if (darkness > 1) darkness = 1;
         if (darkness < 0) darkness = 0;
         
-        return darkness;
+        setDarknessFactor(darkness);
+    }
+    
+    private void updateSeason(LocalDateTime time) {
+        // Using the meteorological definition of seasons
+        int month = time.getMonthValue() % 12;
+        Season result = null;
+        if (month < 3) {
+            result = Season.WINTER;
+        } else if (month < 6) {
+            result = Season.SPRING;
+        } else if (month < 9) {
+            result = Season.SUMMER;
+        } else if (month < 12) {
+            result = Season.AUTUMN;
+        }
+        setSeason(result);
+    }
+    
+    // NESTED ENUMS
+    
+    /**
+     * Represents the seasons in a year
+     */
+    public enum Season {
+        SPRING,
+        SUMMER,
+        AUTUMN,
+        WINTER
     }
 }
