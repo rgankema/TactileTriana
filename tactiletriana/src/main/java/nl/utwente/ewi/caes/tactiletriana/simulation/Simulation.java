@@ -14,6 +14,7 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import nl.utwente.ewi.caes.tactiletriana.Concurrent;
+import static nl.utwente.ewi.caes.tactiletriana.Concurrent.runOnJavaFXThreadSynchronously;
 import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.UncontrollableLoad;
 
@@ -131,6 +132,37 @@ public class Simulation extends SimulationBase {
         clearAllLogs();
         getTimeScenario().reset();
         setCurrentTime(getTimeScenario().getCurrentTime());
+    }
+    
+    /**
+     * Called at the start of each tick. Parts of the method have to run on the
+     * JavaFX thread because of property bindings.
+     */
+    @Override
+    protected final void tick() {
+        // Run anything that involves the UI on the JavaFX thread
+        runOnJavaFXThreadSynchronously(() -> {
+            getTransformer().tick(true);
+        });
+        
+        // Reset the nodes.
+        prepareForwardBackwardSweep();
+        // Calculate forward backward sweep
+        doForwardBackwardSweep();
+        
+        // Run anything that involves the UI on the JavaFX thread
+        runOnJavaFXThreadSynchronously(() -> {
+            // Finish forward backward sweep
+            finishForwardBackwardSweep();
+            // Log total power consumption in network
+            log(getCurrentTime(), transformer.getCables().get(0).getCurrent() * 230d);
+            // Increment time
+            incrementTime();
+        });
+        
+        if (getController() != null) {
+            getController().retrievePlanning(50, getCurrentTime());
+        }
     }
     
     /**

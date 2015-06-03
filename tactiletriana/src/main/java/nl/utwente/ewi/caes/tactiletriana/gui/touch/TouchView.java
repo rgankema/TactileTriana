@@ -24,6 +24,7 @@ import javafx.util.Duration;
 import nl.utwente.ewi.caes.tactilefx.control.Anchor;
 import nl.utwente.ewi.caes.tactilefx.control.TactilePane;
 import nl.utwente.ewi.caes.tactilefx.debug.MouseToTouchMapper;
+import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseView;
@@ -65,8 +66,8 @@ public class TouchView extends TactilePane {
     private final Image BG_SUMMER_NIGHT = new Image("images/background-summer-night.jpg");
     private final Image BG_AUTUMN_DAY = new Image("images/background-fall.jpg");
     private final Image BG_AUTUMN_NIGHT = new Image("images/background-fall-night.jpg");
-    private final Image BG_WINTER_DAY = new Image("images/background-fall.jpg");
-    private final Image BG_WINTER_NIGHT = new Image("images/background-fall-night.jpg");
+    private final Image BG_WINTER_DAY = new Image("images/background-winter.jpg");
+    private final Image BG_WINTER_NIGHT = new Image("images/background-winter-night.jpg");
     
     
     
@@ -223,6 +224,22 @@ public class TouchView extends TactilePane {
         bgNight.opacityProperty().bind(viewModel.darknessFactorProperty());
         
         viewModel.seasonProperty().addListener(obs -> { 
+            // Temporarily replace day background with old night background
+            ImageView temp = new ImageView(bgNight.getImage());
+            temp.fitWidthProperty().bind(this.widthProperty());
+            temp.fitHeightProperty().bind(this.heightProperty());
+            getChildren().set(1, temp);
+            
+            // Fade out old nigt background
+            FadeTransition fade = new FadeTransition(Duration.millis(SimulationConfig.SYSTEM_TICK_TIME * (120 / SimulationConfig.TICK_MINUTES)), temp);
+            fade.setFromValue(1.0);
+            fade.setToValue(0.0);
+            fade.setOnFinished(e -> { 
+                getChildren().set(1, bgDay);
+            });
+            fade.playFromStart();
+            
+            // Find the proper image
             Season season = viewModel.getSeason();
             Image day = null, night = null;
             if (season == Season.SPRING) {

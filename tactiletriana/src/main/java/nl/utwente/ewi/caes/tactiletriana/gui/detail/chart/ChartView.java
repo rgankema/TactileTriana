@@ -5,6 +5,7 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.detail.chart;
 
+import javafx.animation.AnimationTimer;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -81,6 +82,16 @@ public class ChartView extends StackPane {
         chart.getData().add(actualSeries);
         chart.getData().add(futureSeries);
         
+        AnimationTimer timer = new AnimationTimer() {
+
+            @Override
+            public void handle(long now) {
+                viewModel.updateSeries();
+            }
+            
+        };
+        
+        timer.start();
     }
     
     // PROPERTIES

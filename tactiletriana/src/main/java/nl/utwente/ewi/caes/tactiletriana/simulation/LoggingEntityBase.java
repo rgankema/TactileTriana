@@ -6,8 +6,8 @@
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
 import java.time.LocalDateTime;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import java.util.ArrayList;
+import java.util.List;
 import javafx.scene.chart.XYChart.Data;
 import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 
@@ -19,12 +19,14 @@ public abstract class LoggingEntityBase {
 
     private final String displayName;
     private final QuantityType qType;
-    private final ObservableList<Data<Integer, Float>> log;
+    private final List<Data<Integer, Float>> log;
+    
+    public boolean invalid = false;
     
     public LoggingEntityBase(String displayName, QuantityType qType) {
         this.displayName = displayName;
         this.qType = qType;
-        this.log = FXCollections.observableArrayList();
+        this.log = new ArrayList<>();
     }
 
     // PROPERTIES
@@ -36,21 +38,25 @@ public abstract class LoggingEntityBase {
         return this.qType;
     }
    
-    public final ObservableList<Data<Integer, Float>> getLog() {
+    public final List<Data<Integer, Float>> getLog() {
         return this.log;
     }
-
+    
     // METHODS
     protected final void log(LocalDateTime time, double value) {
-        if (log.size() > 0) {
-            log.add(new Data<>(log.get(log.size() - 1).getXValue(), (float) value));
-        }
-        log.add(new Data<>(toMinuteOfYear(time), (float) value));
+        synchronized(this) {
+            if (log.size() > 0) {
+                log.add(new Data<>(log.get(log.size() - 1).getXValue(), (float) value));
+            }
+            log.add(new Data<>(toMinuteOfYear(time), (float) value));
+            invalid = true;
 
-        // Discard values that won't be shown anymore.
-        if (log.size() > 12 * 60 / SimulationConfig.TICK_MINUTES + 2) {
-            log.remove(0);
-            log.remove(0);
+            // Discard values that won't be shown anymore.
+            if (log.size() > 12 * 60 / SimulationConfig.TICK_MINUTES + 2) {
+                log.remove(0);
+                log.remove(0);
+                invalid = true;
+            }
         }
     }
 
