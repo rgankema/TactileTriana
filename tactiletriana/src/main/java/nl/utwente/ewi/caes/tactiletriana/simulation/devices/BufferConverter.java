@@ -7,7 +7,9 @@ package nl.utwente.ewi.caes.tactiletriana.simulation.devices;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 import static nl.utwente.ewi.caes.tactiletriana.Util.toTimeStep;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
@@ -24,11 +26,13 @@ import org.json.simple.JSONObject;
  */
 public class BufferConverter extends DeviceBase{
     
+    public static int profileCounter = 0;
+    
     //coefficient of performance
     public static final String API_COP = "COP";
     public static final String API_PROFILE = "profile";
     //Number of current profile (0-5)
-    private final int profileNumber;
+    private final IntegerProperty profileNumber;
     //Data of the heat demand in W
     private final IDeviceDataProvider<BufferConverter> data;
     
@@ -45,7 +49,8 @@ public class BufferConverter extends DeviceBase{
             throw new IllegalArgumentException("profileNumber must be in the range of 0 to 5");
         }
 
-        this.profileNumber = profileNumber;
+        this.profileNumber =  new SimpleIntegerProperty();
+        this.profileNumber.set(profileNumber);
         this.data = BufferConverterData.getInstance();
         
         // Register API properties
@@ -53,13 +58,16 @@ public class BufferConverter extends DeviceBase{
         registerAPIParameter(API_COP);
                 
         registerProperty(COP);
+        registerProperty(this.profileNumber);
         
         //Set default of COP to 4
         setCOP(4);
     }
     
     public BufferConverter(SimulationBase simulation){
-        this((int)(Math.random()*6),simulation);
+        //Make sure profiles cycle
+        this(BufferConverter.profileCounter%6 ,simulation);
+        profileCounter++;
     }
     
     /**
@@ -90,7 +98,7 @@ public class BufferConverter extends DeviceBase{
     
     @Override
     public void doTick(boolean connected) {
-        setCurrentConsumption(data.getProfile(profileNumber)[toTimeStep(simulation.getCurrentTime())] / getCOP());
+        setCurrentConsumption(data.getProfile(profileNumber.get())[toTimeStep(simulation.getCurrentTime())] / getCOP());
     }
 
     @Override
