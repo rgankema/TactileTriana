@@ -90,8 +90,6 @@ public class BufferConverter extends DeviceBase{
     
     @Override
     public void doTick(boolean connected) {
-        //Current consumption is heatdemand / COP
-        System.out.println(data.getProfile(profileNumber).length);
         setCurrentConsumption(data.getProfile(profileNumber)[toTimeStep(simulation.getCurrentTime())] / getCOP());
     }
 

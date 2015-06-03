@@ -65,7 +65,7 @@ public class DeviceView extends StackPane {
             deviceIcon.setImage(new Image("images/buffer.png",50,50,false,true));
             getStyleClass().add("buffer");
         } else if (type == BufferConverter.class) {
-            deviceIcon.setImage(new Image("images/buffer.png",100,100,false,true));
+            deviceIcon.setImage(new Image("images/bufferconverter.png",50,50,false,true));
             getStyleClass().add("bufferconverter");
         }else throw new UnsupportedOperationException("No DeviceView for type " + type.toString());
 

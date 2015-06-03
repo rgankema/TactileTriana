@@ -210,12 +210,12 @@ public class TouchView extends TactilePane {
         DeviceView bcv = new DeviceView(BufferConverter.class);
         bcv.setViewModel(viewModel.getBufferConverterVM());
         
-        pushDeviceStack(bv, -200);
-        pushDeviceStack(cv, -100);
-        pushDeviceStack(sv, 0);
-        pushDeviceStack(dv, 100);
-        pushDeviceStack(wv, 200);
-        pushDeviceStack(bcv, 300);
+        pushDeviceStack(bv, -250);
+        pushDeviceStack(cv, -150);
+        pushDeviceStack(sv, -50);
+        pushDeviceStack(dv, 50);
+        pushDeviceStack(wv, 150);
+        pushDeviceStack(bcv, 250);
         
         
         controlView.setViewModel(viewModel.getControlVM());

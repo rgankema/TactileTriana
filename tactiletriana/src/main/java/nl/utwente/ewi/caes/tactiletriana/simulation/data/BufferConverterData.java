@@ -33,6 +33,10 @@ public class BufferConverterData implements IDeviceDataProvider<BufferConverter>
         return instance;
     }
     
+    public BufferConverterData(){
+        loadProfile();
+    }
+    
     private final Map<Integer, double[]> profileByKey = new TreeMap<>();
     
     @Override
@@ -42,13 +46,13 @@ public class BufferConverterData implements IDeviceDataProvider<BufferConverter>
 
     @Override
     public double[] getProfile(Object key) {
-        return profileByKey.get(key);
+        return profileByKey.get((Integer) key);
     }
     
     // HELPER METHODS
     private void loadProfile() {
         //Load the profile data into an array from the CSV file containing power consumptions for 6 houses.
-        double[][] profiles = new double[6][525600];
+        double[][] profiles = new double[6][525601];
         
         File csvData = new File("src/main/resources/datasets/house_profiles_heat_demand.csv");
         CSVFormat format = CSVFormat.DEFAULT.withDelimiter(';');

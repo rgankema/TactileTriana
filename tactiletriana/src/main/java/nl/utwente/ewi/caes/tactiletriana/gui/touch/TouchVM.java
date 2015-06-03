@@ -118,6 +118,8 @@ public class TouchVM {
             return getWashingMachineVM();
         } else if (deviceClass.equals(Buffer.class)){
             return getBufferVM();
+        } else if (deviceClass.equals(BufferConverter.class)){
+            return getBufferConverterVM();
         }
         return null;
     }
