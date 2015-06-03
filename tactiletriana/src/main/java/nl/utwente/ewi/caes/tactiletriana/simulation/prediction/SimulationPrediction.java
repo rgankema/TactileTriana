@@ -191,7 +191,9 @@ public class SimulationPrediction extends SimulationBase {
                             futureDevice = new SolarPanel(this);
                         } else if (actualDevice instanceof WashingMachine) {
                             futureDevice = new WashingMachine(this);
-                        } else {
+                        } else if (actualDevice instanceof BufferConverter) {
+                            futureDevice = new BufferConverter(this);
+                        }else {
                             throw new UnsupportedOperationException("Copying instances of type " + 
                                     actualDevice.getClass().getName() + " not supported.");
                         }
