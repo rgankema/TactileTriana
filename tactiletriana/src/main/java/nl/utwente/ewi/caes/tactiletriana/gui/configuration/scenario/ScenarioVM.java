@@ -33,7 +33,7 @@ public class ScenarioVM {
         this.timeSpans = FXCollections.observableArrayList();
 
         try {
-            TimeScenario ts = SimulationConfig.LoadTimeScenarios();
+            TimeScenario ts = SimulationConfig.LoadTimeScenario();
             for (TimeSpan span : ts.getTimeSpans()) {
                 timeSpans.add(new TimeSpanVM(span.getStart(), span.getEnd()));
             }

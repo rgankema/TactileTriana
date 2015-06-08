@@ -210,7 +210,7 @@ public class ConfigurationVM {
         Concurrent.getExecutorService().submit(server);
 
         // save the configured timescenario
-        SimulationConfig.SaveTimeScenarios(this.simulation.getTimeScenario());
+        SimulationConfig.SaveTimeScenario(this.simulation.getTimeScenario());
 
         // save the configuration
         SimulationConfig.SaveProperties();

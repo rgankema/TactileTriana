@@ -31,7 +31,7 @@ public final class SimulationConfig {
     private static final String STR_SYSTEM_TICK_TIME = "SYSTEM_TICK_TIME";
     private static final String STR_UNCONTROLLABLE_LOAD_ENABLED = "UNCONTROLLABLE_LOAD_ENABLED";
     private static final String STR_HOUSE_FUSE_MAX_CURRENT = "HOUSE_FUSE_MAX_CURRENT";
-    private static final String STR_TIME_SCENARIOS = "TIME_SCENARIOS";
+    private static final String STR_TIME_SCENARIOS = "TIME_SCENARIO";
 
     public static void LoadProperties() {
         try {
@@ -69,7 +69,7 @@ public final class SimulationConfig {
         }
     }
 
-    public static TimeScenario LoadTimeScenarios() throws IOException {
+    public static TimeScenario LoadTimeScenario() throws IOException {
         TimeScenario ts;
         try {
             ts = TimeScenario.parse(LoadProperty(STR_TIME_SCENARIOS));
@@ -95,7 +95,7 @@ public final class SimulationConfig {
         return ts;
     }
 
-    public static void SaveTimeScenarios(TimeScenario ts) {
+    public static void SaveTimeScenario(TimeScenario ts) {
         SaveProperty(STR_TIME_SCENARIOS, ts.toString());
     }
 
