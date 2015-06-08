@@ -16,13 +16,6 @@ import org.junit.Test;
  */
 public class SimulationConfigTest {
     @Test
-    public void testConfigSaveAndLoadProperty() throws IOException{
-        SimulationConfig.SaveProperty("testValue", "12345");
-        SimulationConfig.SaveProperty("testValue2", "abcdefg");
-        assertEquals("12345", SimulationConfig.LoadProperty("testValue"));
-        assertEquals("abcdefg", SimulationConfig.LoadProperty("testValue2"));
-    }
-    @Test
     public void testLoadConfigFile(){
         assertEquals(SimulationConfig.HOUSE_MAX_FUSE_CURRENT, 0);
         SimulationConfig.LoadProperties();

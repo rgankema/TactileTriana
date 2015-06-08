@@ -40,7 +40,7 @@ public final class SimulationConfig {
             HOUSE_MAX_FUSE_CURRENT = Integer.parseInt(LoadProperty("HOUSE_MAX_FUSE_CURRENT"));
         }
         catch (Exception e){
-            System.out.println("Error: Could not read the config file.");
+            System.out.println("Warning: Could not read the config file.");
             TICK_MINUTES = 5;
             SYSTEM_TICK_TIME = 200;
             SIMULATION_UNCONTROLABLE_LOAD_ENABLED = true;
