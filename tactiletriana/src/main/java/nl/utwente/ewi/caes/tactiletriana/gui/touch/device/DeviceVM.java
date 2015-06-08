@@ -5,6 +5,7 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.touch.device;
 
+import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.deviceconfig.DeviceConfigVM;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
@@ -31,6 +32,8 @@ public class DeviceVM extends LoggingEntityVMBase {
     public DeviceVM(DeviceBase model) {
         this.model = model;
 
+        deviceConfigVM = new DeviceConfigVM(model);
+        
         // Bind current consumption divided by 3700 (assumed maximum consumption) to load
         load.bind(Bindings.createDoubleBinding(() -> {
             return Math.min(1.0, Math.abs(model.getCurrentConsumption()) / 3700d);
@@ -57,21 +60,28 @@ public class DeviceVM extends LoggingEntityVMBase {
 
         // Show config icon if there are parameters to configure, and the device is in a house
         configIconShown.bind(Bindings.createBooleanBinding(() -> {
-            return model.getState() != DeviceBase.State.NOT_IN_HOUSE;
+            return deviceConfigVM.getRows().size() > 0 && model.getState() != DeviceBase.State.NOT_IN_HOUSE;
         }, model.stateProperty()));
         
         // Show battery icon if device is in a house, and is a BufferBase
         batteryIconVisible.bind(Bindings.createBooleanBinding(() -> {
-            return model.getState() != DeviceBase.State.NOT_IN_HOUSE && model instanceof BufferBase;
+            return model instanceof BufferBase && model.getState() != DeviceBase.State.NOT_IN_HOUSE;
         }, model.stateProperty()));
         
-        deviceConfigVM = new DeviceConfigVM(model);
     }
 
+    /**
+     * 
+     * @return the view model for the configuration view for this device
+     */
     public DeviceConfigVM getDeviceConfigVM() {
         return deviceConfigVM;
     }
     
+    /**
+     * 
+     * @return the class of the device
+     */
     public Class<? extends DeviceBase> getModelClass() {
         return this.model.getClass();
     }

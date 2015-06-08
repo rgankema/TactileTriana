@@ -11,8 +11,8 @@
 
 <fx:root minHeight="60.0" minWidth="60.0" styleClass="device-view" type="StackPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <ImageView fx:id="configIcon" id="config-icon" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" translateX="15.0" translateY="-15.0" StackPane.alignment="TOP_RIGHT"/>
-      <Label fx:id="batteryLabel" text="0%" textOverrun="CLIP" translateX="-15.0" translateY="-15.0" StackPane.alignment="TOP_RIGHT" />
-      <ImageView fx:id="deviceIcon" id="device-icon" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView id="config-icon" fx:id="configIcon" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" translateX="15.0" translateY="-15.0" StackPane.alignment="TOP_RIGHT" />
+      <ImageView id="device-icon" fx:id="deviceIcon" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" />
+      <ProgressBar fx:id="batteryProgress" prefWidth="50.0" progress="0.0" translateY="15.0" StackPane.alignment="BOTTOM_CENTER" />
    </children>
 </fx:root>

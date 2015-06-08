@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package nl.utwente.ewi.caes.tactiletriana.gui.touch.device;
+package nl.utwente.ewi.caes.tactiletriana.gui.touch.device.deviceconfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,14 +28,12 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.devices.TimeShiftableBase;
  * The ViewModel for the device configuration panel
  * @author Richard
  */
-class DeviceConfigVM {
+public class DeviceConfigVM {
     private final List<Row> rows = new ArrayList<>();
-    private final DeviceBase device;
     
     // CONSTRUCTOR
     
     public DeviceConfigVM(DeviceBase device) {
-        this.device = device;
         
         headerText.set(device.getDisplayName());
         
@@ -43,9 +41,9 @@ class DeviceConfigVM {
             initBuffer((Buffer) device);
         } else if (device instanceof TimeShiftableBase) {
             initTimeShiftable((TimeShiftableBase) device);
-        } else if (device instanceof SolarPanel) {  // SolarPanel
+        } else if (device instanceof SolarPanel) {
             initSolarPanel((SolarPanel) device);
-        } else if (device instanceof ElectricVehicle) { // EV
+        } else if (device instanceof ElectricVehicle) {
             initElectricVehicle((ElectricVehicle) device);
         }
     }

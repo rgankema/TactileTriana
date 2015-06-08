@@ -230,7 +230,7 @@ public class TouchView extends TactilePane {
             temp.fitHeightProperty().bind(this.heightProperty());
             getChildren().set(1, temp);
             
-            // Fade out old nigt background
+            // Fade out old night background
             FadeTransition fade = new FadeTransition(Duration.millis(SimulationConfig.SYSTEM_TICK_TIME * (120 / SimulationConfig.TICK_MINUTES)), temp);
             fade.setFromValue(1.0);
             fade.setToValue(0.0);
@@ -261,6 +261,7 @@ public class TouchView extends TactilePane {
     }
     
     private void pushDeviceStack(DeviceView device, double xOffset) {
+        
         // Add device to group to fix drag bug
         Group group = new Group(device);
         // Animate new device
@@ -272,8 +273,10 @@ public class TouchView extends TactilePane {
         getChildren().add(3, group);
         // Track device
         getActiveNodes().add(group);
-
+       
         TactilePane.setAnchor(group, new Anchor(this, xOffset, 0, Pos.CENTER, false));
+        //group.setLayoutX(1920 / 2 - 30 + xOffset);
+        //group.setLayoutY(1080 / 2 - 30);
         
         // Rotate device
         device.rotateProperty().bind(Bindings.createDoubleBinding(() -> {
@@ -307,6 +310,16 @@ public class TouchView extends TactilePane {
                     }
                 }
             }
+        });
+        
+        // Relocate device if it gets out of the TouchView's bounds
+        group.boundsInParentProperty().addListener(obs -> { 
+            double deviceMaxX = group.getBoundsInParent().getMaxX();
+            double deltaX = Math.max(0, deviceMaxX - getWidth());
+            double deviceMaxY = group.getBoundsInParent().getMaxY();
+            double deltaY = Math.max(0, deviceMaxY - getHeight());
+            group.setLayoutX(group.getLayoutX() - deltaX);
+            group.setLayoutY(group.getLayoutY() - deltaY);
         });
     }
 }

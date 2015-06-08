@@ -5,7 +5,6 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation.devices;
 
-import javafx.beans.InvalidationListener;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -13,7 +12,6 @@ import javafx.beans.property.SimpleIntegerProperty;
 import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 import static nl.utwente.ewi.caes.tactiletriana.Util.toTimeStep;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
-import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 import nl.utwente.ewi.caes.tactiletriana.simulation.SimulationBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.data.IDeviceDataProvider;
 import nl.utwente.ewi.caes.tactiletriana.simulation.data.BufferConverterData;
@@ -57,6 +55,7 @@ public class BufferConverter extends DeviceBase{
         registerAPIParameter(API_PROFILE);       
         registerAPIParameter(API_COP);
                 
+        // Register properties for prediction
         registerProperty(COP);
         registerProperty(this.profileNumber);
         
@@ -79,11 +78,11 @@ public class BufferConverter extends DeviceBase{
         return COP;
     }
     
-    public double getCOP() {
+    public final double getCOP() {
         return COP.get();
     }
 
-    public void setCOP(double power) {
+    public final void setCOP(double power) {
         this.COP.set(power);
     }
     

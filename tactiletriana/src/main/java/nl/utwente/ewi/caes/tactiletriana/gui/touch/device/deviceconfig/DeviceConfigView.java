@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package nl.utwente.ewi.caes.tactiletriana.gui.touch.device;
+package nl.utwente.ewi.caes.tactiletriana.gui.touch.device.deviceconfig;
 
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.Property;
@@ -15,9 +15,9 @@ import javafx.scene.input.TouchEvent;
 import javafx.scene.layout.GridPane;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 import nl.utwente.ewi.caes.tactiletriana.gui.customcontrols.Carousel;
-import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceConfigVM.CategoryRow;
-import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceConfigVM.DoubleRow;
-import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceConfigVM.Row;
+import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.deviceconfig.DeviceConfigVM.CategoryRow;
+import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.deviceconfig.DeviceConfigVM.DoubleRow;
+import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.deviceconfig.DeviceConfigVM.Row;
 
 /**
  * A panel for configuring device parameters. Has two columns, with labels on
@@ -25,7 +25,7 @@ import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceConfigVM.Row;
  *
  * @author Richard
  */
-class DeviceConfigView extends GridPane {
+public class DeviceConfigView extends GridPane {
     
     @FXML private Label header;
     

@@ -5,11 +5,12 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.touch.device;
 
+import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.deviceconfig.DeviceConfigView;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
@@ -36,8 +37,9 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.devices.*;
  * @author Richard
  */
 public class DeviceView extends StackPane {
+    
     @FXML private Node configIcon;
-    @FXML private Label batteryLabel;
+    @FXML private ProgressBar batteryProgress;
     @FXML private ImageView deviceIcon;
     private DeviceConfigView configPanel;
 
@@ -87,9 +89,16 @@ public class DeviceView extends StackPane {
         
         this.viewModel = viewModel;
 
+        // Build config panel
+        configPanel = new DeviceConfigView(viewModel.getDeviceConfigVM());
+        
         // Bind config icon visibility to viewmodel
         configIcon.visibleProperty().bind(viewModel.configIconShownProperty());
 
+        // Show/hide battery icon
+        batteryProgress.visibleProperty().bind(viewModel.batteryIconVisibleProperty());
+        batteryProgress.progressProperty().bind(viewModel.stateOfChargeProperty());
+        
         // Bind bordercolor to state
         this.borderProperty().bind(Bindings.createObjectBinding(() -> {
             Color color = Color.DARKGREY;
@@ -111,9 +120,6 @@ public class DeviceView extends StackPane {
         // Show/hide config panel when necessary
         viewModel.configPanelShownProperty().addListener(obs -> {
             if (viewModel.isConfigPanelShown()) {
-                if (configPanel == null) {
-                    configPanel = new DeviceConfigView(viewModel.getDeviceConfigVM());
-                }
                 getChildren().remove(deviceIcon);
                 getChildren().add(0, configPanel);
             } else {
@@ -122,15 +128,12 @@ public class DeviceView extends StackPane {
             }
         });
         
-        // Show/hide battery icon
-        batteryLabel.visibleProperty().bind(viewModel.batteryIconVisibleProperty());
-        batteryLabel.textProperty().bind(viewModel.stateOfChargeProperty().multiply(100d).asString("%.0f%%"));
-        
         // Show on chart on long press
         EventUtil.addShortAndLongPressEventHandler(this, null, e -> {
             viewModel.longPressed();
         });
         
+        // Add CSS classes for charts
         viewModel.shownOnChartProperty().addListener(obs -> {
             if (viewModel.isShownOnChart()) {
                 getStyleClass().add("on-chart");
