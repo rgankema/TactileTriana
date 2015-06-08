@@ -13,30 +13,36 @@ import nl.utwente.ewi.caes.tactiletriana.gui.configuration.scenario.timespan.Tim
 import nl.utwente.ewi.caes.tactiletriana.gui.configuration.scenario.timespan.TimeSpanView;
 
 public class ScenarioView extends GridPane {
-    @FXML private Button addButton;
-    @FXML private Button removeButton;
-    @FXML private VBox timeSpanContainer;
+
+    @FXML
+    private Button addButton;
+    @FXML
+    private Button removeButton;
+    @FXML
+    private VBox timeSpanContainer;
 
     private ScenarioVM viewModel;
-    
+
     public ScenarioView() {
         ViewLoader.load(this);
     }
-    
+
     public ScenarioVM getViewModel() {
         return viewModel;
     }
-    
+
     public void setViewModel(ScenarioVM viewModel) {
-        if (this.viewModel != null) throw new IllegalStateException("ViewModel can only be set once");
-        
+        if (this.viewModel != null) {
+            throw new IllegalStateException("ViewModel can only be set once");
+        }
+
         this.viewModel = viewModel;
-        
+
         // Add time span when button pressed
         addButton.setOnAction(e -> viewModel.addTimeSpan());
         removeButton.setOnAction(e -> viewModel.removeTimeSpan(viewModel.getTimeSpans().get(viewModel.getTimeSpans().size() - 1)));
         removeButton.disableProperty().bind(viewModel.removeButtonDisableProperty());
-        
+
         // Synchronize time span views with time span view models
         for (TimeSpanVM tsvm : viewModel.getTimeSpans()) {
             TimeSpanView tsv = new TimeSpanView();
@@ -54,11 +60,11 @@ public class ScenarioView extends GridPane {
                 }
                 if (c.wasRemoved()) {
                     List<TimeSpanView> toRemove = new ArrayList<>();
-                    
+
                     for (TimeSpanVM tsvm : c.getRemoved()) {
                         for (Node n : timeSpanContainer.getChildren()) {
                             if (((TimeSpanView) n).getViewModel() == tsvm) {
-                                toRemove.add((TimeSpanView)n);
+                                toRemove.add((TimeSpanView) n);
                             }
                         }
                     }
@@ -68,5 +74,5 @@ public class ScenarioView extends GridPane {
                 }
             }
         });
-    } 
+    }
 }

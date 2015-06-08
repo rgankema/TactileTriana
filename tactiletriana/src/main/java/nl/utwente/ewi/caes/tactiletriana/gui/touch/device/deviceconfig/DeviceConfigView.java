@@ -26,16 +26,17 @@ import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.deviceconfig.DeviceCon
  * @author Richard
  */
 public class DeviceConfigView extends GridPane {
-    
-    @FXML private Label header;
-    
+
+    @FXML
+    private Label header;
+
     private int currentRow = 1;
-    
+
     public DeviceConfigView(DeviceConfigVM viewModel) {
         ViewLoader.load(this);
-        
+
         this.header.textProperty().bind(viewModel.headerTextProperty());
-        
+
         for (Row row : viewModel.getRows()) {
             if (row instanceof DoubleRow) {
                 DoubleRow dRow = (DoubleRow) row;
@@ -48,14 +49,14 @@ public class DeviceConfigView extends GridPane {
             }
         }
     }
-    
+
     /**
-     * Convenience method that returns a Slider control with its value bound to 
+     * Convenience method that returns a Slider control with its value bound to
      * a given property.
-     * 
-     * @param min       the minimum value of the slider
-     * @param max       the maximum value of the slider
-     * @param property  the property to bind to
+     *
+     * @param min the minimum value of the slider
+     * @param max the maximum value of the slider
+     * @param property the property to bind to
      * @return a Slider control
      */
     private Slider buildSlider(double min, double max, Property<Number> property) {
@@ -63,13 +64,13 @@ public class DeviceConfigView extends GridPane {
         result.valueProperty().bindBidirectional(property);
         return result;
     }
-    
+
     /**
      * Convenience method that returns a Slider control.
-     * 
-     * @param min       the minimum value of the slider       
-     * @param max       the maximum value of the slider
-     * @return a Slider control 
+     *
+     * @param min the minimum value of the slider
+     * @param max the maximum value of the slider
+     * @return a Slider control
      */
     private Slider buildSlider(double min, double max) {
         Slider result = new Slider(min, max, min);
@@ -77,13 +78,14 @@ public class DeviceConfigView extends GridPane {
         result.addEventFilter(TouchEvent.ANY, e -> e.consume());
         return result;
     }
-    
+
     /**
      * Adds a control to a new row.
-     * 
-     * @param label         the name for the type of value that can be configured
-     * @param control       the control to add
-     * @param valueString   a binding to the value of the control in a specific string format, may be null
+     *
+     * @param label the name for the type of value that can be configured
+     * @param control the control to add
+     * @param valueString a binding to the value of the control in a specific
+     * string format, may be null
      */
     private void addControl(String label, Node control, StringBinding valueString) {
         this.add(new Label(label), 0, currentRow);

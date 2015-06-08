@@ -10,5 +10,5 @@ package nl.utwente.ewi.caes.tactiletriana.api;
  * @author jd
  */
 public class APIClient {
-    
+
 }

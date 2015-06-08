@@ -19,7 +19,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Cable;
  *
  * @author Richard
  */
-public class CableVM  extends LoggingEntityVMBase {
+public class CableVM extends LoggingEntityVMBase {
 
     private Cable model;
 
@@ -30,11 +30,11 @@ public class CableVM  extends LoggingEntityVMBase {
             return Math.min(1.0, Math.abs(model.getCurrent()) / model.getMaximumCurrent());
         }, model.currentProperty(), model.maximumCurrentProperty(), model.brokenProperty()));
 
-        model.brokenProperty().addListener(obs -> { 
+        model.brokenProperty().addListener(obs -> {
             direction.set(Direction.NONE);
         });
-        
-        model.currentProperty().addListener(obs -> { 
+
+        model.currentProperty().addListener(obs -> {
             if (model.getCurrent() > 0) {
                 direction.set(Direction.END);
             } else if (model.getCurrent() < 0) {
@@ -43,7 +43,7 @@ public class CableVM  extends LoggingEntityVMBase {
                 direction.set(Direction.NONE);
             }
         });
-        
+
         model.brokenProperty().addListener((observable, wasBroken, isBroken) -> {
             if (isBroken) {
                 StageController.getInstance().showNotification("A cable is broken due to heavy load!");
@@ -54,7 +54,7 @@ public class CableVM  extends LoggingEntityVMBase {
     public Cable getModel() {
         return model;
     }
-    
+
     // PROPERTIES
     /**
      * The load on the cable on a scale from 0 to 1.
@@ -100,19 +100,17 @@ public class CableVM  extends LoggingEntityVMBase {
     public ReadOnlyObjectProperty<Direction> directionProperty() {
         return direction.getReadOnlyProperty();
     }
-    
+
     // EVENT HANDLING
-    
     public void pressed() {
         model.repair();
     }
-    
+
     public void longPressed() {
         StageController.getInstance().showOnChart(this, model);
     }
 
     // ENUMS
-    
     /**
      * Describes the direction of current in a cable
      */

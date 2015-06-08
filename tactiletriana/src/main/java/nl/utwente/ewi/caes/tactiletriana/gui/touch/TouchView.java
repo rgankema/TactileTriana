@@ -40,7 +40,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.devices.*;
 
 /**
  * The root view for the touch screen.
- * 
+ *
  * CSS class: touch-view
  *
  * @author Richard
@@ -53,13 +53,13 @@ public class TouchView extends TactilePane {
     NodeView[] nvi;
     CableView[] cvh;
     CableView[] cvi;
-    
+
     private TouchVM viewModel;
     private FloatPane networkOverlay;
     private ControlView controlView;
     private ImageView bgDay;
     private ImageView bgNight;
-    
+
     private final Image BG_SPRING_DAY = new Image("images/background-spring.jpg");
     private final Image BG_SPRING_NIGHT = new Image("images/background-spring-night.jpg");
     private final Image BG_SUMMER_DAY = new Image("images/background-summer.jpg");
@@ -68,41 +68,39 @@ public class TouchView extends TactilePane {
     private final Image BG_AUTUMN_NIGHT = new Image("images/background-fall-night.jpg");
     private final Image BG_WINTER_DAY = new Image("images/background-winter.jpg");
     private final Image BG_WINTER_NIGHT = new Image("images/background-winter-night.jpg");
-    
-    
-    
+
     public TouchView() {
         ViewLoader.load(this);
 
         addEventFilter(MouseEvent.ANY, new MouseToTouchMapper());
-        
+
         setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
-        
+
         bgDay = new ImageView();
         bgDay.fitWidthProperty().bind(this.widthProperty());
         bgDay.fitHeightProperty().bind(this.heightProperty());
-        
+
         bgNight = new ImageView();
         bgNight.fitWidthProperty().bind(this.widthProperty());
         bgNight.fitHeightProperty().bind(this.heightProperty());
-        
+
         networkOverlay = new FloatPane();
         networkOverlay.prefWidthProperty().bind(this.widthProperty());
         networkOverlay.prefHeightProperty().bind(this.heightProperty());
-        
+
         controlView = new ControlView();
         controlView.setRotate(90);
         FloatPane.setAlignment(controlView, Pos.CENTER_LEFT);
         FloatPane.setMargin(controlView, new Insets(25));
         networkOverlay.getChildren().add(controlView);
-        
+
         tv = new TransformerView();
         hv = new HouseView[6];
         nvh = new NodeView[6];
         nvi = new NodeView[6];
         cvh = new CableView[6];
         cvi = new CableView[6];
-        
+
         for (int i = 0; i < 6; i++) {
             hv[i] = new HouseView();
             getActiveNodes().add(hv[i]);
@@ -112,7 +110,7 @@ public class TouchView extends TactilePane {
             cvh[i].setManaged(false);
             cvi[i] = new CableView();
             cvi[i].setManaged(false);
-            
+
             // Arrange internal cables
             if (i == 0) {
                 cvi[i].setStartNode(tv);
@@ -121,11 +119,11 @@ public class TouchView extends TactilePane {
                 cvi[i].setStartNode(nvi[i - 1]);
                 cvi[i].setEndNode(nvi[i]);
             }
-            
+
             // Arrange house cables
             cvh[i].setStartNode(nvi[i]);
             cvh[i].setEndNode(nvh[i]);
-            
+
             // Setup FloatPane parameters
             Insets margin = new Insets(10);
             Pos pos = null;
@@ -149,24 +147,24 @@ public class TouchView extends TactilePane {
                     pos = Pos.BOTTOM_LEFT;
                     break;
             }
-            
+
             FloatPane.setAlignment(hv[i], pos);
             FloatPane.setMargin(hv[i], margin);
-            
+
             FloatPane.setAlignment(nvh[i], pos);
             FloatPane.setMargin(nvh[i], new Insets(195, 225, 195, 225));
-            
+
             FloatPane.setAlignment(nvi[i], pos);
             FloatPane.setMargin(nvi[i], new Insets(325, 225, 325, 225));
-            
+
             networkOverlay.getChildren().addAll(cvi[i], cvh[i], hv[i], nvh[i], nvi[i]);
         }
         FloatPane.setAlignment(tv, Pos.CENTER_LEFT);
         FloatPane.setMargin(tv, new Insets(200));
         networkOverlay.getChildren().add(tv);
-        
+
         getChildren().addAll(bgNight, bgDay, networkOverlay);
-        
+
         List<Node> toBackground = new ArrayList<>();
         for (Node node : networkOverlay.getChildren()) {
             if (node instanceof CableView) {
@@ -187,7 +185,7 @@ public class TouchView extends TactilePane {
         }
 
         this.viewModel = viewModel;
-        
+
         tv.setViewModel(viewModel.getTransformer());
         for (int i = 0; i < 6; i++) {
             hv[i].setViewModel(viewModel.getHouses()[i]);
@@ -196,7 +194,7 @@ public class TouchView extends TactilePane {
             nvi[i].setViewModel(viewModel.getInternalNodes()[i]);
             nvh[i].setViewModel(viewModel.getHouseNodes()[i]);
         }
-        
+
         DeviceView cv = new DeviceView(ElectricVehicle.class);
         cv.setViewModel(viewModel.getElectricVehicleVM());
         DeviceView sv = new DeviceView(SolarPanel.class);
@@ -209,36 +207,35 @@ public class TouchView extends TactilePane {
         bv.setViewModel(viewModel.getBufferVM());
         DeviceView bcv = new DeviceView(BufferConverter.class);
         bcv.setViewModel(viewModel.getBufferConverterVM());
-        
+
         pushDeviceStack(bv, -250);
         pushDeviceStack(cv, -150);
         pushDeviceStack(sv, -50);
         pushDeviceStack(dv, 50);
         pushDeviceStack(wv, 150);
         pushDeviceStack(bcv, 250);
-        
-        
+
         controlView.setViewModel(viewModel.getControlVM());
-        
+
         bgDay.opacityProperty().bind(viewModel.darknessFactorProperty().negate().add(1));
         bgNight.opacityProperty().bind(viewModel.darknessFactorProperty());
-        
-        viewModel.seasonProperty().addListener(obs -> { 
+
+        viewModel.seasonProperty().addListener(obs -> {
             // Temporarily replace day background with old night background
             ImageView temp = new ImageView(bgNight.getImage());
             temp.fitWidthProperty().bind(this.widthProperty());
             temp.fitHeightProperty().bind(this.heightProperty());
             getChildren().set(1, temp);
-            
+
             // Fade out old night background
             FadeTransition fade = new FadeTransition(Duration.millis(SimulationConfig.SYSTEM_TICK_TIME * (120 / SimulationConfig.TICK_MINUTES)), temp);
             fade.setFromValue(1.0);
             fade.setToValue(0.0);
-            fade.setOnFinished(e -> { 
+            fade.setOnFinished(e -> {
                 getChildren().set(1, bgDay);
             });
             fade.playFromStart();
-            
+
             // Find the proper image
             Season season = viewModel.getSeason();
             Image day = null, night = null;
@@ -259,9 +256,9 @@ public class TouchView extends TactilePane {
             bgNight.setImage(night);
         });
     }
-    
+
     private void pushDeviceStack(DeviceView device, double xOffset) {
-        
+
         // Add device to group to fix drag bug
         Group group = new Group(device);
         // Animate new device
@@ -273,11 +270,11 @@ public class TouchView extends TactilePane {
         getChildren().add(3, group);
         // Track device
         getActiveNodes().add(group);
-       
+
         TactilePane.setAnchor(group, new Anchor(this, xOffset, 0, Pos.CENTER, false));
         //group.setLayoutX(1920 / 2 - 30 + xOffset);
         //group.setLayoutY(1080 / 2 - 30);
-        
+
         // Rotate device
         device.rotateProperty().bind(Bindings.createDoubleBinding(() -> {
             double rotate = -getHeight() / 2 + device.getBoundsInLocal().getHeight() / 2 + group.getLayoutY();
@@ -311,9 +308,9 @@ public class TouchView extends TactilePane {
                 }
             }
         });
-        
+
         // Relocate device if it gets out of the TouchView's bounds
-        group.boundsInParentProperty().addListener(obs -> { 
+        group.boundsInParentProperty().addListener(obs -> {
             double deviceMaxX = group.getBoundsInParent().getMaxX();
             double deltaX = Math.max(0, deviceMaxX - getWidth());
             double deviceMaxY = group.getBoundsInParent().getMaxY();

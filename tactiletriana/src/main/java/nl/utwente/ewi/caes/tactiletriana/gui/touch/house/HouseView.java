@@ -15,9 +15,9 @@ import nl.utwente.ewi.caes.tactiletriana.gui.events.EventUtil;
 
 /**
  * The view for a single house.
- * 
+ *
  * CSS class: house-view
- * 
+ *
  * @author Richard
  */
 public class HouseView extends Pane {
@@ -52,14 +52,13 @@ public class HouseView extends Pane {
             return Color.DARKGRAY.interpolate(Color.RED, load);
         }, viewModel.loadProperty(), viewModel.fuseBlownProperty()));
 
-
         // Repair fuse on short press, show on chart for long press
         EventUtil.addShortAndLongPressEventHandler(this, hv -> {
             viewModel.pressed();
         }, hv -> {
             viewModel.longPressed();
         });
-        
+
         viewModel.shownOnChartProperty().addListener(obs -> {
             if (viewModel.isShownOnChart()) {
                 getStyleClass().add("on-chart");
@@ -67,8 +66,8 @@ public class HouseView extends Pane {
                 getStyleClass().remove("on-chart");
             }
         });
-        
-        viewModel.chartIndexProperty().addListener(obs -> { 
+
+        viewModel.chartIndexProperty().addListener(obs -> {
             int index = viewModel.getChartIndex();
             if (index == -1) {
                 getStyleClass().removeIf(s -> s.startsWith("chart-"));
@@ -76,8 +75,8 @@ public class HouseView extends Pane {
                 getStyleClass().add("chart-" + index);
             }
         });
-        
-        viewModel.fuseBlownProperty().addListener((obs, wasBlown, isBlown) -> { 
+
+        viewModel.fuseBlownProperty().addListener((obs, wasBlown, isBlown) -> {
             if (isBlown) {
                 getStyleClass().add("fuse-blown");
             } else {

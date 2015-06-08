@@ -14,12 +14,13 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Transformer;
  * @author Richard
  */
 public class TransformerVM extends LoggingEntityVMBase {
+
     private final Transformer model;
-    
+
     public TransformerVM(Transformer model) {
         this.model = model;
     }
-    
+
     public void longPressed() {
         StageController.getInstance().showOnChart(this, model);
     }

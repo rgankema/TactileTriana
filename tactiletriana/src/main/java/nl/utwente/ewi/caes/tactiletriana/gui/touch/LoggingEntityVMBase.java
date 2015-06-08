@@ -12,23 +12,24 @@ import javafx.beans.property.SimpleIntegerProperty;
 
 /**
  * ViewModel base for views that can be shown on the chart.
- * 
+ *
  * @author Richard
  */
 public abstract class LoggingEntityVMBase {
+
     /**
      * Whether the entity is shown on the chart
      */
     private BooleanProperty shownOnChart;
-    
+
     public final boolean isShownOnChart() {
         return shownOnChartProperty().get();
     }
-    
+
     public final void setShownOnChart(boolean value) {
         shownOnChartProperty().set(value);
     }
-    
+
     public BooleanProperty shownOnChartProperty() {
         if (shownOnChart == null) {
             shownOnChart = new SimpleBooleanProperty(false) {
@@ -43,20 +44,21 @@ public abstract class LoggingEntityVMBase {
         }
         return shownOnChart;
     }
-    
+
     /**
-     * The index of the chart at which the entity is shown. -1 if not on a chart.
+     * The index of the chart at which the entity is shown. -1 if not on a
+     * chart.
      */
     private IntegerProperty chartIndex;
-    
+
     public final int getChartIndex() {
         return chartIndexProperty().get();
     }
-    
+
     public final void setChartIndex(int index) {
         chartIndexProperty().set(index);
     }
-    
+
     public IntegerProperty chartIndexProperty() {
         if (chartIndex == null) {
             chartIndex = new SimpleIntegerProperty(-1);

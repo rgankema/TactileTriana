@@ -20,9 +20,9 @@ public abstract class LoggingEntityBase {
     private final String displayName;
     private final QuantityType qType;
     private final List<Data<Integer, Float>> log;
-    
+
     public boolean invalid = false;
-    
+
     public LoggingEntityBase(String displayName, QuantityType qType) {
         this.displayName = displayName;
         this.qType = qType;
@@ -37,14 +37,14 @@ public abstract class LoggingEntityBase {
     public final QuantityType getQuantityType() {
         return this.qType;
     }
-   
+
     public final List<Data<Integer, Float>> getLog() {
         return this.log;
     }
-    
+
     // METHODS
     protected final void log(LocalDateTime time, double value) {
-        synchronized(this) {
+        synchronized (this) {
             if (log.size() > 0) {
                 log.add(new Data<>(log.get(log.size() - 1).getXValue(), (float) value));
             }
@@ -65,7 +65,6 @@ public abstract class LoggingEntityBase {
     }
 
     // ENUMS
-    
     /**
      * Describes a physical quantity that may be logged.
      */

@@ -37,7 +37,6 @@ public final class StageController {
     private static StageController instance;
 
     // STATIC METHODS
-    
     public static StageController getInstance() {
         return instance;
     }
@@ -49,11 +48,10 @@ public final class StageController {
     }
 
     // INSTANCE FIELDS
-    
     private final Stage configurationStage;
     private Stage touchStage;
     private Stage detailStage;
-    
+
     private final List<Stage> screenIndexStages;
     private final ObservableList<Integer> screenIndexList;
     private final List<Screen> screens;
@@ -61,12 +59,11 @@ public final class StageController {
     private final ConfigurationVM configurationVM;
     private TouchVM touchVM;
     private DetailVM detailVM;
-    
+
     private final Simulation simulation;
     private final SimulationPrediction simulationPrediction;
-    
+
     // CONSTRUCTOR
-    
     private StageController(Stage configurationStage) {
         this.simulation = new Simulation();
         this.simulationPrediction = new SimulationPrediction(simulation);
@@ -78,7 +75,7 @@ public final class StageController {
         for (int i = 0; i < screens.size(); i++) {
             screenIndexList.add(i + 1);
         }
-        
+
         // Build screen index stages
         screenIndexStages = new ArrayList<>();
         for (Integer i : screenIndexList) {
@@ -93,7 +90,7 @@ public final class StageController {
             stage.setY(screen.getVisualBounds().getMinY());
             screenIndexStages.add(stage);
         }
-        
+
         // Build configuration stage
         this.configurationStage = configurationStage;
 
@@ -104,7 +101,7 @@ public final class StageController {
 
         Scene configurationScene = new Scene(cv);
         addMasterStyleSheet(configurationScene);
-        
+
         configurationStage.setScene(configurationScene);
         configurationStage.setOnCloseRequest(e -> closeAllStages());
         configurationStage.getIcons().add(new Image("images/triana.png"));
@@ -112,15 +109,14 @@ public final class StageController {
     }
 
     // PROPERTIES
-    
     public Simulation getSimulation() {
         return this.simulation;
     }
-    
+
     public ObservableList<Integer> getScreenIndexList() {
         return screenIndexList;
     }
-    
+
     /**
      *
      * @param index the screen index
@@ -133,9 +129,8 @@ public final class StageController {
             return this.screens.get(index - 1);
         }
     }
-    
+
     // METHODS
-    
     public void setLauncherStageVisible(boolean visible) {
         if (visible) {
             configurationStage.show();
@@ -152,7 +147,7 @@ public final class StageController {
             touchVM = new TouchVM(simulation);
             TouchView tv = new TouchView();
             tv.setViewModel(touchVM);
-            
+
             Scene touchScene = new Scene(tv);
             addMasterStyleSheet(touchScene);
             touchScene.setOnKeyPressed(e -> {
@@ -172,7 +167,7 @@ public final class StageController {
             if (configurationVM.fullScreenCheckedProperty().get()) {
                 Screen touchScreen = getScreenByIndex((Integer) configurationVM.touchScreenSelectionProperty().get());
 
-                tv.setMinSize(touchScreen.getBounds().getWidth(), 
+                tv.setMinSize(touchScreen.getBounds().getWidth(),
                         touchScreen.getBounds().getHeight());
                 tv.setMaxSize(touchScreen.getBounds().getWidth(),
                         touchScreen.getBounds().getHeight());
@@ -201,7 +196,7 @@ public final class StageController {
                     reloadStyleSheets();
                 }
             });
-            
+
             detailStage.setScene(detailScene);
             detailStage.setOnCloseRequest(e -> closeAllStages());
 
@@ -217,10 +212,10 @@ public final class StageController {
 
                 detailStage.initStyle(StageStyle.UNDECORATED);
             }
-            
+
             detailVM.getChartVM().setEntity(simulation, simulationPrediction);
-        }        
-        
+        }
+
         if (visible) {
             detailStage.show();
             touchStage.show();
@@ -256,27 +251,25 @@ public final class StageController {
             detailVM.showOnChart(logger, entity, simulationPrediction.getFuture(entity));
         }
     }
-    
+
     public void removeFromChart(LoggingEntityVMBase logger) {
         detailVM.removeFromChart(logger);
     }
-    
+
     public void showNotification(String message) {
         detailVM.showNotification(message);
     }
-    
+
     public void resetSimulation() {
         this.simulation.reset();
     }
-    
+
     // HELPER METHODS
-    
     private void addMasterStyleSheet(Scene scene) {
-        scene.getStylesheets().add(getClass().getResource("/stylesheets/style.css").toExternalForm()); 
+        scene.getStylesheets().add(getClass().getResource("/stylesheets/style.css").toExternalForm());
     }
-    
+
     // DEBUG
-    
     /**
      * Reloads the master style sheet for the touch, detail, and configuration
      * scenes.

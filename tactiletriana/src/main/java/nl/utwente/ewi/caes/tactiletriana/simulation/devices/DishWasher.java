@@ -12,9 +12,9 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.data.DishWasherData;
  *
  * @author niels
  */
-public class DishWasher extends TimeShiftableBase {        
+public class DishWasher extends TimeShiftableBase {
 
-    public DishWasher(SimulationBase simulation){
+    public DishWasher(SimulationBase simulation) {
         super(simulation, "DishWasher", DishWasherData.getInstance().getProfile());
     }
 }

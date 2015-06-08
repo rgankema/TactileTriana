@@ -12,9 +12,9 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.data.WashingMachineData;
  *
  * @author niels
  */
-public class WashingMachine extends TimeShiftableBase{        
+public class WashingMachine extends TimeShiftableBase {
 
-    public WashingMachine(SimulationBase simulation){
+    public WashingMachine(SimulationBase simulation) {
         super(simulation, "WashingMachine", WashingMachineData.getInstance().getProfile());
     }
 }

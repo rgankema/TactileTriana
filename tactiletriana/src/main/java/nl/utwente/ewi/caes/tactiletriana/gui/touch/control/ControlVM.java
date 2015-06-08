@@ -16,13 +16,14 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation.SimulationState;
  * @author Richard
  */
 public class ControlVM {
+
     private final Simulation simulation;
-    
+
     public ControlVM(Simulation simulation) {
         this.simulation = simulation;
-        
+
         // Bind pause button text to Simulation state
-        simulation.stateProperty().addListener((obs) -> { 
+        simulation.stateProperty().addListener((obs) -> {
             if (simulation.getState() == SimulationState.RUNNING) {
                 setPauseButtonText("Pause");
             } else {
@@ -30,20 +31,20 @@ public class ControlVM {
             }
         });
     }
-    
+
     /**
      * The text for the pause button
      */
     private final StringProperty pauseButtonText = new SimpleStringProperty("Pause");
-    
+
     public ReadOnlyStringProperty pauseButtonTextProperty() {
         return pauseButtonText;
     }
-    
+
     protected final void setPauseButtonText(String text) {
         pauseButtonText.set(text);
     }
-    
+
     /**
      * Resumes the simulation when paused and pauses it when running
      */

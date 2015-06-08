@@ -29,18 +29,20 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.devices.*;
  * @author mickvdv
  */
 public class SimulationPrediction extends SimulationBase {
+
     // Amount of hours that the prediction runs ahead
+
     private final static int RUN_AHEAD = 6;
-    
+
     private final Simulation mainSimulation;
     private final Map<LoggingEntityBase, LoggingEntityBase> futureByActual = new HashMap<>();
-    
+
     private boolean mainSimulationChanged = false;
     private boolean cancelled = false;
-    
+
     /**
      * Creates a new SimulationPrediction.
-     * 
+     *
      * @param mainSimulation The real Simulation that this object will predict
      */
     public SimulationPrediction(Simulation mainSimulation) {
@@ -50,29 +52,29 @@ public class SimulationPrediction extends SimulationBase {
         // Link this (future) simulation to acual simulation
         futureByActual.put(mainSimulation, this);
         linkNetwork(mainSimulation.getTransformer(), this.getTransformer());
-        
-        mainSimulation.addOnTimeSpanShiftedHandler(() -> { 
+
+        mainSimulation.addOnTimeSpanShiftedHandler(() -> {
             mainSimulationChanged = false;
             // Clear the log
             for (LoggingEntityBase logger : futureByActual.values()) {
                 logger.getLog().clear();
                 // Reset state of charges of all buffers
                 if (logger instanceof BufferBase) {
-                    ((BufferBase)logger).setStateOfCharge(((BufferBase)getActual(logger)).getStateOfCharge());
+                    ((BufferBase) logger).setStateOfCharge(((BufferBase) getActual(logger)).getStateOfCharge());
                 }
             }
             setCurrentTime(mainSimulation.getCurrentTime());
         });
-        
+
         // Zorg dat de simulatie 12 uur vooruit loopt
         this.mainSimulation.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
-            
+
             // Er is iets veranderd. Run de simulation vanaf het huidige punt vooruit
             if (mainSimulationChanged) {
                 mainSimulationChanged = false;
                 cancelled = true;
                 setCurrentTime(oldValue);
-                
+
                 // Clear the invalid log values
                 int minuteOfYear = toMinuteOfYear(oldValue);
                 for (LoggingEntityBase logger : futureByActual.values()) {
@@ -85,28 +87,27 @@ public class SimulationPrediction extends SimulationBase {
                     for (Data<Integer, Float> data : toRemove) {
                         logger.getLog().remove(data);
                     }
-                    
+
                     // Reset state of charges of all buffers
                     if (logger instanceof BufferBase) {
-                        ((BufferBase)logger).setStateOfCharge(((BufferBase)getActual(logger)).getStateOfCharge());
+                        ((BufferBase) logger).setStateOfCharge(((BufferBase) getActual(logger)).getStateOfCharge());
                     }
                 }
             }
-            
+
             // Calculate new ticks in background
             cancelled = false;
-            Concurrent.getExecutorService().submit(() -> { 
+            Concurrent.getExecutorService().submit(() -> {
                 // Do tick while still behind, but only if the main simulation hasn't changed again
                 while (!cancelled && getCurrentTime().isBefore(newValue.plusHours(RUN_AHEAD))) {
                     tick();
                 }
             });
-            
+
         });
     }
-    
+
     // SIMULATIONBASE
-    
     /**
      * Called at the start of each tick
      */
@@ -125,14 +126,13 @@ public class SimulationPrediction extends SimulationBase {
         // Increment time
         incrementTime();
     }
-    
+
     @Override
     protected void incrementTime() {
         setCurrentTime(getCurrentTime().plusMinutes(SimulationConfig.TICK_MINUTES));
     }
-    
+
     // HELPER METHODS
-    
     // Walks through the network tree and synchronizes equivalent LoggingEntityBases
     private void linkNetwork(Node actual, Node future) {
         futureByActual.put(actual, future);
@@ -148,7 +148,7 @@ public class SimulationPrediction extends SimulationBase {
                 }
             });
             // Bind length
-            actualCable.lengthProperty().addListener(obs -> { 
+            actualCable.lengthProperty().addListener(obs -> {
                 futureCable.setLength(actualCable.getLength());
                 mainSimulationChanged = true;
             });
@@ -156,35 +156,35 @@ public class SimulationPrediction extends SimulationBase {
             linkNetwork(actualCable.getChildNode(), futureCable.getChildNode());
         }
     }
-    
+
     // Synchronizes two houses by synchronizing its device list
     private void linkHouse(House actualHouse, House futureHouse) {
         futureByActual.put(actualHouse, futureHouse);
         //futureDevice.getProperties().get(property).bind(actualDevice.getProperties().get(property));
-        
+
         // bind the fuse property from actualHouse to futureHouse
-        actualHouse.fuseBlownProperty().addListener((observable, wasBroken, isBroken) -> { 
+        actualHouse.fuseBlownProperty().addListener((observable, wasBroken, isBroken) -> {
             if (!isBroken) {
                 futureHouse.repairFuse();
             }
         });
-        
+
         actualHouse.getDevices().addListener((ListChangeListener.Change<? extends DeviceBase> c) -> {
             while (c.next()) {
                 for (DeviceBase item : c.getRemoved()) {
                     mainSimulationChanged = true;
-                    futureHouse.getDevices().remove((DeviceBase)futureByActual.get(item));
+                    futureHouse.getDevices().remove((DeviceBase) futureByActual.get(item));
                 }
                 for (DeviceBase actualDevice : c.getAddedSubList()) {
                     mainSimulationChanged = true;
-                    
+
                     // maak een kopie van dit device in de map
                     DeviceBase futureDevice = (DeviceBase) futureByActual.get(actualDevice);
                     if (futureDevice == null) {
                         if (actualDevice instanceof Buffer) {
                             futureDevice = new Buffer(this);
                         } else if (actualDevice instanceof ElectricVehicle) {
-                            futureDevice = new ElectricVehicle(this, ((ElectricVehicle)actualDevice).getModel());
+                            futureDevice = new ElectricVehicle(this, ((ElectricVehicle) actualDevice).getModel());
                         } else if (actualDevice instanceof DishWasher) {
                             futureDevice = new DishWasher(this);
                         } else if (actualDevice instanceof SolarPanel) {
@@ -193,15 +193,15 @@ public class SimulationPrediction extends SimulationBase {
                             futureDevice = new WashingMachine(this);
                         } else if (actualDevice instanceof BufferConverter) {
                             futureDevice = new BufferConverter(this);
-                        }else {
-                            throw new UnsupportedOperationException("Copying instances of type " + 
-                                    actualDevice.getClass().getName() + " not supported.");
+                        } else {
+                            throw new UnsupportedOperationException("Copying instances of type "
+                                    + actualDevice.getClass().getName() + " not supported.");
                         }
                     }
-                    
+
                     // sla het nieuwe device op in de map
                     futureByActual.put(actualDevice, futureDevice);
-                    
+
                     // bind alle parameters
                     for (int i = 0; i < actualDevice.getProperties().size(); i++) {
                         futureDevice.getProperties().get(i).bind(actualDevice.getProperties().get(i));
@@ -221,31 +221,30 @@ public class SimulationPrediction extends SimulationBase {
                             mainSimulationChanged = true;
                         });
                     }
-                    
+
                     // voeg het toe aan dit huis
                     futureHouse.getDevices().add(futureDevice);
                 }
             }
         });
     }
-    
+
     // PUBLIC METHODS
-    
     /**
      * Returns a LoggingEntityBase that represents the future version of the
      * specified LoggingEntityBase.
-     * 
+     *
      * @param actual the real LoggingEntityBase
      * @return the future representation
      */
     public final LoggingEntityBase getFuture(LoggingEntityBase actual) {
         return futureByActual.get(actual);
     }
-    
+
     /**
      * Returns the LoggingEntityBase that the specified LoggingEntityBase is the
      * the future version of.
-     * 
+     *
      * @param future the future representation of a LoggingEntityBase
      * @return the real LoggingEntityBase
      */
@@ -258,5 +257,4 @@ public class SimulationPrediction extends SimulationBase {
         return null;
     }
 
-    
 }

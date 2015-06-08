@@ -28,11 +28,10 @@ public class NodeVM extends LoggingEntityVMBase {
             return Math.min(1.0, difference / 23.0);
         }, model.voltageProperty()));
     }
-    
+
     public Node getModel() {
         return model;
     }
-    
 
     /**
      * Defines how far off the voltage is in the node on a scale of 0 to 1. 0
@@ -47,9 +46,8 @@ public class NodeVM extends LoggingEntityVMBase {
     public ReadOnlyDoubleProperty voltageErrorProperty() {
         return voltageErrorProperty.getReadOnlyProperty();
     }
-    
+
     // EVENT HANDLING
-    
     public void longPressed() {
         StageController.getInstance().showOnChart(this, model);
     }

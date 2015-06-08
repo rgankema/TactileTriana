@@ -27,12 +27,11 @@ import javafx.scene.layout.Pane;
  * @author Richard
  */
 public class FloatPane extends Pane {
-    
+
     static final String ALIGNMENT = "float-pane-alignment";
     static final String MARGIN = "float-pane-margin";
-    
+
     // ATTACHED PROPERTIES
-    
     public static final ObjectProperty<Pos> alignmentProperty(Node child) {
         ObjectProperty<Pos> property = (ObjectProperty<Pos>) getConstraint(child, ALIGNMENT);
         if (property == null) {
@@ -41,15 +40,15 @@ public class FloatPane extends Pane {
         }
         return property;
     }
-    
+
     public static final Pos getAlignment(Node child) {
         return alignmentProperty(child).get();
     }
-    
+
     public static final void setAlignment(Node child, Pos alignment) {
         alignmentProperty(child).set(alignment);
     }
-    
+
     public static final ObjectProperty<Insets> marginProperty(Node child) {
         ObjectProperty<Insets> property = (ObjectProperty<Insets>) getConstraint(child, MARGIN);
         if (property == null) {
@@ -58,17 +57,16 @@ public class FloatPane extends Pane {
         }
         return property;
     }
-    
+
     public static final Insets getMargin(Node child) {
         return marginProperty(child).get();
     }
-    
+
     public static final void setMargin(Node child, Insets margin) {
         marginProperty(child).set(margin);
     }
-    
+
     // STATIC HELPER METHODS
-    
     static void setConstraint(Node node, Object key, Object value) {
         if (value == null) {
             node.getProperties().remove(key);
@@ -89,26 +87,25 @@ public class FloatPane extends Pane {
         }
         return null;
     }
-    
-    
+
     // CONSTRUCTOR
-    
     public FloatPane() {
         getStyleClass().setAll(DEFAULT_STYLE_CLASS);
     }
-    
+
     public FloatPane(Node... children) {
         this();
         getChildren().addAll(children);
     }
-    
+
     // LAYOUT
-    
     @Override
     public void layoutChildren() {
         for (Node child : getChildren()) {
-            if (!child.isManaged()) continue;
-            
+            if (!child.isManaged()) {
+                continue;
+            }
+
             double areaX = 0;
             double areaY = 0;
             double areaW = getWidth();
@@ -116,18 +113,19 @@ public class FloatPane extends Pane {
             double offset = 0;
             Insets margin = getMargin(child);
             Pos alignment = getAlignment(child);
-            
-            layoutInArea(child, areaX, areaY, areaW, areaH, offset, margin, 
+
+            layoutInArea(child, areaX, areaY, areaW, areaH, offset, margin,
                     false, false, alignment.getHpos(), alignment.getVpos());
         }
     }
-    
+
     // STYLESHEET HANDLING
     private static final String DEFAULT_STYLE_CLASS = "customfx-float-pane";
-    
+
     private static class Styleables {
-        
+
         private static final List<CssMetaData<? extends Styleable, ?>> STYLEABLES;
+
         static {
             final List<CssMetaData<? extends Styleable, ?>> styleables
                     = new ArrayList<>(Pane.getClassCssMetaData());

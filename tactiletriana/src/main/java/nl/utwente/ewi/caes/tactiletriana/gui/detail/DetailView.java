@@ -28,23 +28,30 @@ import nl.utwente.ewi.caes.tactiletriana.gui.detail.weather.WeatherView;
  */
 public class DetailView extends BorderPane {
 
-    @FXML private StackPane header;
-    @FXML private DateTimeView dateTimeView;
-    @FXML private ChartView mainChart;
-    @FXML private ChartView subChart1;
-    @FXML private ChartView subChart2;
-    @FXML private ChartView subChart3;
-    @FXML private WeatherView weatherView;
-    @FXML private ImageView trianaLogo;
-    
+    @FXML
+    private StackPane header;
+    @FXML
+    private DateTimeView dateTimeView;
+    @FXML
+    private ChartView mainChart;
+    @FXML
+    private ChartView subChart1;
+    @FXML
+    private ChartView subChart2;
+    @FXML
+    private ChartView subChart3;
+    @FXML
+    private WeatherView weatherView;
+    @FXML
+    private ImageView trianaLogo;
+
     private final HashMap<NotificationVM, NotificationView> notificationViewByVM;
-    
+
     private DetailVM viewModel;
-    
-    
+
     public DetailView() {
         ViewLoader.load(this);
-        
+
         notificationViewByVM = new HashMap<>();
     }
 
@@ -58,23 +65,23 @@ public class DetailView extends BorderPane {
         dateTimeView.setViewModel(viewModel.getDateTimeVM());
         mainChart.setViewModel(viewModel.getChartVM());
         weatherView.setViewModel(viewModel.getWeatherVM());
-        
+
         subChart1.setViewModel(viewModel.getSubChartVM(0));
         subChart2.setViewModel(viewModel.getSubChartVM(1));
         subChart3.setViewModel(viewModel.getSubChartVM(2));
-        
+
         // Fade in and out when a the simulation shifts to a new timespan
         final FadeTransition fadeOut = new FadeTransition(Duration.millis(200), mainChart);
         fadeOut.setFromValue(1.0);
         fadeOut.setToValue(0.0);
-        
+
         final FadeTransition fadeIn = new FadeTransition(Duration.millis(300), mainChart);
         fadeIn.setFromValue(0.0);
         fadeIn.setToValue(1.0);
-        
+
         final SequentialTransition transition = new SequentialTransition(fadeOut, fadeIn);
         viewModel.setOnSimulationTimeSpanChange(() -> transition.playFromStart());
-        
+
         // Show notifications on the screen
         viewModel.getNotificationQueue().addListener((ListChangeListener.Change<? extends NotificationVM> c) -> {
             while (c.next()) {
@@ -87,23 +94,23 @@ public class DetailView extends BorderPane {
             }
         });
     }
-    
+
     private void popup(NotificationVM notificationVM) {
         NotificationView notificationView = new NotificationView();
         StackPane.setAlignment(notificationView, Pos.CENTER_RIGHT);
         notificationView.setViewModel(notificationVM);
         notificationViewByVM.put(notificationVM, notificationView);
-        
+
         header.getChildren().add(notificationView);
         final FadeTransition fadeIn = new FadeTransition(Duration.millis(300), notificationView);
         fadeIn.setFromValue(0.0);
         fadeIn.setToValue(1.0);
         fadeIn.playFromStart();
     }
-    
+
     private void remove(NotificationVM notificationVM) {
         NotificationView notificationView = notificationViewByVM.remove(notificationVM);
-        
+
         final FadeTransition fadeOut = new FadeTransition(Duration.millis(500), notificationView);
         fadeOut.setFromValue(1.0);
         fadeOut.setToValue(0.0);

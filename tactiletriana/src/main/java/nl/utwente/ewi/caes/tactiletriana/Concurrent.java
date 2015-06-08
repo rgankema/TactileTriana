@@ -12,24 +12,25 @@ import javafx.application.Platform;
 
 /**
  * Holds anything related to multi-threading
- * 
+ *
  * @author Richard
  */
 public class Concurrent {
+
     private final static ScheduledExecutorService executorService = Executors.newScheduledThreadPool(4);
-    
+
     public static ScheduledExecutorService getExecutorService() {
         return executorService;
     }
-    
+
     /**
-     * Runs a given task on the JavaFX thread, and blocks until the task
-     * is done.
-     * 
+     * Runs a given task on the JavaFX thread, and blocks until the task is
+     * done.
+     *
      * @param task that needs to be run on the JavaFX thread
      */
     public static void runOnJavaFXThreadSynchronously(Runnable task) {
-        
+
         if (Platform.isFxApplicationThread()) {
             task.run();
         } else {

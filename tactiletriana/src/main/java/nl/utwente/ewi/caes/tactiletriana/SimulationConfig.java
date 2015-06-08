@@ -23,34 +23,34 @@ public final class SimulationConfig {
     public static int SYSTEM_TICK_TIME;                 // time between ticks in ms
     public static boolean UNCONTROLLABLE_LOAD_ENABLED;  // staat de uncontrolable load aan?
     public static int HOUSE_FUSE_MAX_CURRENT;
-    
+
     private static final String STR_TICK_MINUTES = "TICK_MINUTES";
     private static final String STR_SYSTEM_TICK_TIME = "SYSTEM_TICK_TIME";
     private static final String STR_UNCONTROLLABLE_LOAD_ENABLED = "UNCONTROLLABLE_LOAD_ENABLED";
     private static final String STR_HOUSE_FUSE_MAX_CURRENT = "HOUSE_FUSE_MAX_CURRENT";
+    private static final String STR_TIME_SCENARIOS = "TIME_SCENARIOS";
 
     public static void LoadProperties() {
-        try{
+        try {
             TICK_MINUTES = Integer.parseInt(LoadProperty(STR_TICK_MINUTES));
             SYSTEM_TICK_TIME = Integer.parseInt(LoadProperty(STR_SYSTEM_TICK_TIME));
             UNCONTROLLABLE_LOAD_ENABLED = Boolean.parseBoolean(LoadProperty(STR_UNCONTROLLABLE_LOAD_ENABLED));
             HOUSE_FUSE_MAX_CURRENT = Integer.parseInt(LoadProperty(STR_HOUSE_FUSE_MAX_CURRENT));
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             System.out.println("Warning: Could not read the config file.");
             TICK_MINUTES = 5;
             SYSTEM_TICK_TIME = 200;
             UNCONTROLLABLE_LOAD_ENABLED = true;
             HOUSE_FUSE_MAX_CURRENT = 3 * 35;
-        }        
+        }
     }
-    
+
     public static String LoadProperty(String title) throws IOException {
         properties.load(new FileInputStream(CONFIG_FILE));
         return properties.getProperty(title);
     }
-    
-    public static void SaveProperties(){
+
+    public static void SaveProperties() {
         SaveProperty(STR_TICK_MINUTES, String.valueOf(TICK_MINUTES));
         SaveProperty(STR_SYSTEM_TICK_TIME, String.valueOf(SYSTEM_TICK_TIME));
         SaveProperty(STR_UNCONTROLLABLE_LOAD_ENABLED, String.valueOf(UNCONTROLLABLE_LOAD_ENABLED));
@@ -64,6 +64,18 @@ public final class SimulationConfig {
         } catch (IOException e) {
             System.out.println("Error: config file could not be saved.");
         }
+    }
+
+    public static String LoadTimeScenarios() throws IOException {
+        try {
+            return LoadProperty(STR_TIME_SCENARIOS);
+        } catch (IOException e) {
+            return "2014-01-01,2014-12-31|";
+        }
+    }
+
+    public static void SaveTimeScenarios(String toString) {
+        SaveProperty(STR_TIME_SCENARIOS, toString);
     }
 
 }

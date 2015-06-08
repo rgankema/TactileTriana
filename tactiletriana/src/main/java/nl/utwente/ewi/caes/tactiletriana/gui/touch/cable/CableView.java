@@ -22,15 +22,16 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 
 /**
  * The view for a single cable.
- * 
+ *
  * CSS class: cable-view
  *
  * @author Richard
  */
 public class CableView extends Group {
 
-    @FXML protected Line line;
-    
+    @FXML
+    protected Line line;
+
     private CableVM viewModel;
 
     public CableView() {
@@ -40,7 +41,7 @@ public class CableView extends Group {
     public CableVM getViewModel() {
         return viewModel;
     }
-    
+
     /**
      * Sets the ViewModel of this CableView. It can only be set once.
      *
@@ -55,7 +56,7 @@ public class CableView extends Group {
         }
 
         this.viewModel = viewModel;
-        
+
         // Bind color in view to load and broken in viewmodel
         line.strokeProperty().bind(Bindings.createObjectBinding(() -> {
             if (viewModel.isBroken()) {
@@ -65,7 +66,7 @@ public class CableView extends Group {
             double load = viewModel.getLoad();
             return Color.DARKGRAY.interpolate(Color.RED, load);
         }, viewModel.loadProperty(), viewModel.brokenProperty()));
-        
+
         // Bind diameter of cables to direction in viewmodel
         DoubleBinding diameterBinding = Bindings.createDoubleBinding(() -> {
             double current = viewModel.getMaximumCurrent();
@@ -82,7 +83,7 @@ public class CableView extends Group {
         }, l -> {
             viewModel.longPressed();
         });
-        
+
         // Add CSS class when on chart
         viewModel.shownOnChartProperty().addListener(obs -> {
             if (viewModel.isShownOnChart()) {
@@ -91,9 +92,9 @@ public class CableView extends Group {
                 getStyleClass().remove("on-chart");
             }
         });
-        
+
         // Add CSS class for specific chart
-        viewModel.chartIndexProperty().addListener(obs -> { 
+        viewModel.chartIndexProperty().addListener(obs -> {
             int index = viewModel.getChartIndex();
             if (index == -1) {
                 getStyleClass().removeIf(s -> s.startsWith("chart-"));
@@ -101,23 +102,23 @@ public class CableView extends Group {
                 getStyleClass().add("chart-" + index);
             }
         });
-        
+
         // Add CSS class for broken
-        viewModel.brokenProperty().addListener((obs, wasBroken, isBroken) -> { 
+        viewModel.brokenProperty().addListener((obs, wasBroken, isBroken) -> {
             if (isBroken) {
                 getStyleClass().add("broken");
             } else {
                 getStyleClass().remove("broken");
             }
         });
-        
+
         // Animate energy flow
         CableAnimation animation = new CableAnimation(this);
         animation.start();
-        
+
         // Stop animation when Simulation is paused
         Simulation simulation = StageController.getInstance().getSimulation();
-        simulation.stateProperty().addListener(obs -> { 
+        simulation.stateProperty().addListener(obs -> {
             if (simulation.getState() == Simulation.SimulationState.RUNNING) {
                 animation.start();
             } else {
@@ -125,9 +126,8 @@ public class CableView extends Group {
             }
         });
     }
-    
+
     // PROPERTIES
-    
     /**
      * The JavaFX Node that defines where the cable starts.
      */

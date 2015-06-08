@@ -24,18 +24,21 @@ import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
  */
 public class ChartView extends StackPane {
 
-    @FXML private LineChart chart;
-    @FXML private NumberAxis xAxis;
-    @FXML private NumberAxis yAxis;
+    @FXML
+    private LineChart chart;
+    @FXML
+    private NumberAxis xAxis;
+    @FXML
+    private NumberAxis yAxis;
 
     private Series<Integer, Float> actualSeries;
     private Series<Integer, Float> futureSeries;
-    
+
     private ChartVM viewModel;
 
     public ChartView() {
         ViewLoader.load(this);
-        
+
         // Get label text as defined in FXML
         final String xAxisLabelText = xAxis.getLabel();
         xAxis.labelProperty().bind(Bindings.createStringBinding(() -> (isAxisLabelsVisible()) ? xAxisLabelText : "", axisLabelsVisible));
@@ -54,21 +57,21 @@ public class ChartView extends StackPane {
         Bindings.bindContent(actualSeries.getData(), viewModel.getActualSeriesData());
         futureSeries = new Series<>();
         Bindings.bindContent(futureSeries.getData(), viewModel.getFutureSeriesData());
-        
+
         yAxis.setAutoRanging(true);
-        yAxis.labelProperty().bind(Bindings.createStringBinding(() -> { 
+        yAxis.labelProperty().bind(Bindings.createStringBinding(() -> {
             if (isAxisLabelsVisible()) {
                 return viewModel.seriesNameProperty().get();
             }
             return "";
         }, viewModel.seriesNameProperty(), axisLabelsVisible));
-        
+
         xAxis.lowerBoundProperty().bind(viewModel.xAxisLowerBoundProperty());
         xAxis.upperBoundProperty().bind(viewModel.xAxisUpperBoundProperty());
         xAxis.setTickLabelFormatter(new StringConverter<Number>() {
             @Override
             public String toString(Number object) {
-                return Util.minutesToTimeString((int)(double) object);
+                return Util.minutesToTimeString((int) (double) object);
             }
 
             @Override
@@ -76,39 +79,38 @@ public class ChartView extends StackPane {
                 throw new UnsupportedOperationException("Not supported yet.");
             }
         });
-        
+
         chart.titleProperty().bind(viewModel.chartTitleProperty());
-        
+
         chart.getData().add(actualSeries);
         chart.getData().add(futureSeries);
-        
+
         AnimationTimer timer = new AnimationTimer() {
 
             @Override
             public void handle(long now) {
                 viewModel.updateSeries();
             }
-            
+
         };
-        
+
         timer.start();
     }
-    
+
     // PROPERTIES
-    
     /**
      * Whether the axis labels are visible for this chartview
      */
     private final BooleanProperty axisLabelsVisible = new SimpleBooleanProperty(true);
-    
+
     public BooleanProperty axisLabelsVisibleProperty() {
         return axisLabelsVisible;
     }
-    
+
     public final boolean isAxisLabelsVisible() {
         return axisLabelsVisibleProperty().get();
     }
-    
+
     public final void setAxisLabelsVisible(boolean visible) {
         axisLabelsVisibleProperty().set(visible);
     }
