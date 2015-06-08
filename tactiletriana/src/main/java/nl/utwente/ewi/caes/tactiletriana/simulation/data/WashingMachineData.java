@@ -31,8 +31,7 @@ public class WashingMachineData implements IDeviceDataProvider<WashingMachine>{
     private WashingMachineData() {
         double[] minuteProfile = new double[72];
         
-        try {
-            Stream<String> dataset = Files.lines(Paths.get("src/main/resources/datasets/washing_machine_dataset.txt"));
+        try (Stream<String> dataset = Files.lines(Paths.get("src/main/resources/datasets/washing_machine_dataset.txt"))) {
             
             // Wrapper for i, because Java's lambda functions are idiotic
             class Wrapper { int value = 0; }

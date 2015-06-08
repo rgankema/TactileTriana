@@ -32,8 +32,8 @@ public class DishWasherData implements IDeviceDataProvider<DishWasher>{
     private DishWasherData() {
         float[] minuteProfile = new float[153];
         
-        try {
-            Stream<String> dataset = Files.lines(Paths.get("src/main/resources/datasets/dishwasher_dataset.txt"));
+        
+        try (Stream<String> dataset = Files.lines(Paths.get("src/main/resources/datasets/dishwasher_dataset.txt"))) {
             
             // Wrapper for i, because Java's lambda functions are idiotic
             class Wrapper { int value = 0; }

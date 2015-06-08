@@ -5,15 +5,11 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.detail.chart;
 
-import java.util.ArrayList;
-import java.util.List;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
@@ -27,8 +23,6 @@ public class ChartVM {
 
     private LoggingEntityBase actual;
     private LoggingEntityBase future;
-    private ListChangeListener actualLogListener;
-    private ListChangeListener futureLogListener;
     private final ObservableList<XYChart.Data<Integer, Float>> actualSeriesData;
     private final ObservableList<XYChart.Data<Integer, Float>> futureSeriesData;
     
@@ -100,11 +94,27 @@ public class ChartVM {
     
     // PUBLIC METHODS
     
-    public final void setEntity(LoggingEntityBase actual, LoggingEntityBase future) {
-        if (this.actual != null) {
-            this.actual.getLog().removeListener(actualLogListener);
-            this.future.getLog().removeListener(futureLogListener);
+    public final void updateSeries() {
+        if (actual != null && actual.invalid) {
+            synchronized (actual) {
+                actualSeriesData.clear();
+                actualSeriesData.addAll(actual.getLog());
+                if (!actual.getLog().isEmpty()) {
+                    xAxisLowerBound.set(actual.getLog().get(actual.getLog().size() - 1).getXValue() - 6 * 60);
+                }
+                actual.invalid = false;
+            }
         }
+        if (future != null && future.invalid) {
+            synchronized (future) {
+                futureSeriesData.clear();
+                futureSeriesData.addAll(future.getLog());
+                future.invalid = false;
+            }
+        }
+    }
+    
+    public final void setEntity(LoggingEntityBase actual, LoggingEntityBase future) {
         
         actualSeriesData.clear();
         futureSeriesData.clear();
@@ -112,6 +122,12 @@ public class ChartVM {
         this.actual = actual;
         this.future = future;
 
+        if (actual == null) {
+            chartTitle.set("Long press to show on chart");
+            seriesName.set("");
+            return;
+        }
+        
         // Set label of series
         switch (actual.getQuantityType()) {
             case POWER:
@@ -139,54 +155,5 @@ public class ChartVM {
         for (Data<Integer, Float> data : actual.getLog()) {
             actualSeriesData.add(data);
         }
-        
-        actualLogListener = new ListChangeListener<Data<Integer, Float>>() {
-
-            @Override
-            public void onChanged(Change<? extends Data<Integer, Float>> c) {
-                while (c.next()) {
-                    for (Data<Integer, Float> data : c.getAddedSubList()) {
-                        
-                        // Remove all data from the future series that has an X before or equal to the new value
-                        List<Data<Integer, Float>> toRemove = new ArrayList<>();
-                        for (Data<Integer, Float> futureData : futureSeriesData) {
-                            // This only works as long as futureSeriesData is sorted, which is a safe assumption
-                            if (futureData.getXValue() < data.getXValue()) {
-                                toRemove.add(futureData);
-                            } else {
-                                break;
-                            }
-                        }
-                        for (Data<Integer, Float> futureData : toRemove) {
-                            futureSeriesData.remove(futureData);
-                        }
-                        
-                        xAxisLowerBound.set(data.getXValue() - 6 * 60);
-                        actualSeriesData.add(data);
-                    }
-                    for (Data<Integer, Float> data : c.getRemoved()) {
-                        actualSeriesData.remove(data);
-                    }
-                }
-            }
-        };
-        
-        futureLogListener = new ListChangeListener<Data<Integer, Float>>() {
-
-            @Override
-            public void onChanged(Change<? extends Data<Integer, Float>> c) {
-                while (c.next()) {
-                    for (Data<Integer, Float> data : c.getAddedSubList()) {
-                        futureSeriesData.add(data);
-                    }
-                    for (Data<Integer, Float> data : c.getRemoved()) {
-                        futureSeriesData.remove(data);
-                    }
-                }
-            }
-        };
-        
-        actual.getLog().addListener(actualLogListener);
-        future.getLog().addListener(futureLogListener);
     }
 }

@@ -20,17 +20,15 @@ public class Buffer extends BufferBase {
         super(simulation, "Buffer", "Buffer");
 
         // initialize values
-        this.setMaxPower(3700d);
+        this.setMaxPower(1000d);
         this.setCapacity(10000d);
         this.setStateOfCharge(0d);
-        
     }
     
     // METHODS
     
     @Override
-    public void tick(boolean connected) {
-        super.tick(connected);
+    protected void doTick(boolean connected) {
         int timestep = SimulationConfig.TICK_MINUTES;
 
         // Calculate state of charge change based on previous nextConsumption
@@ -38,14 +36,12 @@ public class Buffer extends BufferBase {
         double deltaSOC = getCurrentConsumption() * deltaHours;
         setStateOfCharge(getStateOfCharge() + deltaSOC);
 
-        LocalDateTime currentTime = getSimulation().getCurrentTime();
+        LocalDateTime currentTime = simulation.getCurrentTime();
 
         double nextConsumption;
 
         // If no planning available, help out parent house
         if (getPlanning() == null || getPlanning().get(currentTime) == null) {
-            // Likely to change, tick time is probably going to be variable
-
             
             // TODO: dit aan Gerwin vragen, dit is echt rare shit!
             // dit is om het probleem met meerdere buffers eruit te halen.

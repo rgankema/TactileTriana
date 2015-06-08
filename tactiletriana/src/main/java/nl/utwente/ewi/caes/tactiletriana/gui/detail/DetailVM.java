@@ -6,7 +6,6 @@
 package nl.utwente.ewi.caes.tactiletriana.gui.detail;
 
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import nl.utwente.ewi.caes.tactiletriana.Concurrent;
@@ -17,7 +16,6 @@ import nl.utwente.ewi.caes.tactiletriana.gui.detail.weather.WeatherVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.LoggingEntityVMBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.LoggingEntityBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
-import nl.utwente.ewi.caes.tactiletriana.simulation.TimeScenario.TimeSpan;
 
 /**
  *
@@ -87,16 +85,34 @@ public class DetailVM {
      * @param loggerVM the VM for the LoggingEntityBase
      * @param actual the actual LoggingEntityBase to be shown on a chart
      * @param future the future LoggingEntityBase to be shown on a chart
-     * @return the LoggingEntityBase that was removed from a chart to make room
-     * for the new one. {@code null} if none were removed.
      */
-    public LoggingEntityVMBase showOnChart(LoggingEntityVMBase loggerVM, LoggingEntityBase actual, LoggingEntityBase future) {
+    public void showOnChart(LoggingEntityVMBase loggerVM, LoggingEntityBase actual, LoggingEntityBase future) {
+        loggerVM.setShownOnChart(true);
+        loggerVM.setChartIndex(subChartIndex);
+        
         LoggingEntityVMBase old = loggersOnCharts[subChartIndex];
         loggersOnCharts[subChartIndex] = loggerVM;
         subChartVMs[subChartIndex].setEntity(actual, future);
         subChartIndex++;
         subChartIndex = (subChartIndex == subChartVMs.length) ? 0 : subChartIndex;
-        return old;
+        
+        if (old != null) old.setShownOnChart(false);
+    }
+    
+    /**
+     * Removes a LoggingEntityBase from the charts.
+     * 
+     * @param loggerVM the VM for the LoggingEntityBase
+     */
+    public void removeFromChart(LoggingEntityVMBase loggerVM) {
+        loggerVM.setShownOnChart(false);
+        loggerVM.setChartIndex(-1);
+        
+        for (int i = 0; i < subChartVMs.length; i++) {
+            if (loggersOnCharts[i] == loggerVM) {
+                subChartVMs[i].setEntity(null, null);
+            }
+        }
     }
     
     // CALLBACKS FOR VIEW
@@ -107,12 +123,8 @@ public class DetailVM {
      * 
      * @param callback the function that should be called
      */
-    public void setOnSimulationTimeSpanChange(Consumer<TimeSpan> callback) {
-        this.simulation.getTimeScenario().addNewTimeSpanStartedCallback(callback);
-        this.simulation.timeScenarioProperty().addListener((obs, oV, nV) -> { 
-            oV.removeNewTimeSpanStartedCallback(callback);
-            nV.addNewTimeSpanStartedCallback(callback);
-        });
+    public void setOnSimulationTimeSpanChange(Runnable callback) {
+        this.simulation.addOnTimeSpanShiftedHandler(callback);
     }
 
     // Child VMs

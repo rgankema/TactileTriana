@@ -5,17 +5,15 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation.prediction;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.scene.chart.XYChart.Data;
+import nl.utwente.ewi.caes.tactiletriana.Concurrent;
 import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Cable;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
@@ -24,7 +22,6 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.LoggingEntityBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Node;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 import nl.utwente.ewi.caes.tactiletriana.simulation.SimulationBase;
-import nl.utwente.ewi.caes.tactiletriana.simulation.TimeScenario.TimeSpan;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.*;
 
 /**
@@ -39,16 +36,14 @@ public class SimulationPrediction extends SimulationBase {
     private final Map<LoggingEntityBase, LoggingEntityBase> futureByActual = new HashMap<>();
     
     private boolean mainSimulationChanged = false;
-    private boolean timeSpanChanged = false;
-
+    private boolean cancelled = false;
+    
     /**
      * Creates a new SimulationPrediction.
      * 
      * @param mainSimulation The real Simulation that this object will predict
      */
     public SimulationPrediction(Simulation mainSimulation) {
-        super();
-        
         this.mainSimulation = mainSimulation;
         setCurrentTime(mainSimulation.getCurrentTime());
 
@@ -56,38 +51,26 @@ public class SimulationPrediction extends SimulationBase {
         futureByActual.put(mainSimulation, this);
         linkNetwork(mainSimulation.getTransformer(), this.getTransformer());
         
-        final Consumer<TimeSpan> timeSpanCallback = (TimeSpan t) -> {
-            timeSpanChanged = true;
-            setCurrentTime(LocalDateTime.of(t.getStart(), LocalTime.MIN));
-        };
-        
-        mainSimulation.getTimeScenario().addNewTimeSpanStartedCallback(timeSpanCallback);
-        mainSimulation.timeScenarioProperty().addListener((observable, oldValue, newValue) -> {
-            oldValue.removeNewTimeSpanStartedCallback(timeSpanCallback);
-            newValue.addNewTimeSpanStartedCallback(timeSpanCallback);
+        mainSimulation.addOnTimeSpanShiftedHandler(() -> { 
+            mainSimulationChanged = false;
+            // Clear the log
+            for (LoggingEntityBase logger : futureByActual.values()) {
+                logger.getLog().clear();
+                // Reset state of charges of all buffers
+                if (logger instanceof BufferBase) {
+                    ((BufferBase)logger).setStateOfCharge(((BufferBase)getActual(logger)).getStateOfCharge());
+                }
+            }
+            setCurrentTime(mainSimulation.getCurrentTime());
         });
         
         // Zorg dat de simulatie 12 uur vooruit loopt
         this.mainSimulation.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
-            // Main Simulation jumped to new timespan, set time to start of new timespan
-            if (timeSpanChanged) {
-                timeSpanChanged = false;
-                mainSimulationChanged = false;
-                
-                setCurrentTime(newValue);
-                
-                // Clear the log
-                for (LoggingEntityBase logger : futureByActual.keySet()) {
-                    logger.getLog().clear();
-                    // Reset state of charges of all buffers
-                    if (logger instanceof BufferBase) {
-                        ((BufferBase)logger).setStateOfCharge(((BufferBase)getActual(logger)).getStateOfCharge());
-                    }
-                }
-            }
+            
             // Er is iets veranderd. Run de simulation vanaf het huidige punt vooruit
-            else if (mainSimulationChanged) {
+            if (mainSimulationChanged) {
                 mainSimulationChanged = false;
+                cancelled = true;
                 setCurrentTime(oldValue);
                 
                 // Clear the invalid log values
@@ -109,15 +92,39 @@ public class SimulationPrediction extends SimulationBase {
                     }
                 }
             }
-
-            // Zo lang hij achterloopt -> doe een tick()
-            while (getCurrentTime().isBefore(newValue.plusHours(RUN_AHEAD))) {
-                super.tick();
-            }
+            
+            // Calculate new ticks in background
+            cancelled = false;
+            Concurrent.getExecutorService().submit(() -> { 
+                // Do tick while still behind, but only if the main simulation hasn't changed again
+                while (!cancelled && getCurrentTime().isBefore(newValue.plusHours(RUN_AHEAD))) {
+                    tick();
+                }
+            });
+            
         });
     }
     
     // SIMULATIONBASE
+    
+    /**
+     * Called at the start of each tick
+     */
+    @Override
+    protected final void tick() {
+        // Calculate device consumptions
+        getTransformer().tick(true);
+        // Reset the nodes and cables
+        prepareForwardBackwardSweep();
+        // Calculate forward backward sweep
+        doForwardBackwardSweep();
+        // Finish forward backward sweep
+        finishForwardBackwardSweep();
+        // Log total power consumption in network
+        log(getCurrentTime(), transformer.getCables().get(0).getCurrent() * 230d);
+        // Increment time
+        incrementTime();
+    }
     
     @Override
     protected void incrementTime() {
@@ -184,7 +191,9 @@ public class SimulationPrediction extends SimulationBase {
                             futureDevice = new SolarPanel(this);
                         } else if (actualDevice instanceof WashingMachine) {
                             futureDevice = new WashingMachine(this);
-                        } else {
+                        } else if (actualDevice instanceof BufferConverter) {
+                            futureDevice = new BufferConverter(this);
+                        }else {
                             throw new UnsupportedOperationException("Copying instances of type " + 
                                     actualDevice.getClass().getName() + " not supported.");
                         }

@@ -27,15 +27,15 @@ public class House extends LoggingEntityBase {
     private final ObservableList<DeviceBase> devices;
     private final int id;
     
+    protected final SimulationBase simulation;
+    
     public House(SimulationBase simulation) {
-        super(simulation, "House", QuantityType.POWER);
+        super("House", QuantityType.POWER);
+        
+        this.simulation = simulation;
         
         //set the id
         this.id = houseID++;
-        
-        // fuse blow met false initializeren
-        this.setFuseBlown(false);
-        
         
         devices = FXCollections.observableArrayList();
         devices.addListener((ListChangeListener.Change<? extends DeviceBase> c) -> {
@@ -79,7 +79,6 @@ public class House extends LoggingEntityBase {
                 value = 0;
                 setFuseBlown(true);
             }
-            log(value);
             super.set(value);
         }
     };
@@ -100,7 +99,7 @@ public class House extends LoggingEntityBase {
      * The absolute maximum of power the house can consume/produce. When more
      * than this is consumed, the fuse in the house will blow.
      */
-    private final ReadOnlyDoubleWrapper maximumConsumption = new ReadOnlyDoubleWrapper(230 * SimulationConfig.HOUSE_MAX_FUSE_CURRENT);
+    private final ReadOnlyDoubleWrapper maximumConsumption = new ReadOnlyDoubleWrapper(230 * SimulationConfig.HOUSE_FUSE_MAX_CURRENT);
 
     public ReadOnlyDoubleProperty maximumConsumptionProperty() {
         return maximumConsumption;
@@ -147,7 +146,7 @@ public class House extends LoggingEntityBase {
 
         setCurrentConsumption(getDevices().stream().mapToDouble(d -> d.getCurrentConsumption()).sum());
 
-        log(getCurrentConsumption());
+        log(simulation.getCurrentTime(), getCurrentConsumption());
     }
 
     public String toString(int indentation) {

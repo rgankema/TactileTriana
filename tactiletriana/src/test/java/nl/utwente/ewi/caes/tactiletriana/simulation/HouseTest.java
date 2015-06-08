@@ -118,6 +118,6 @@ public class HouseTest {
         
         instance.tick(true);
         
-        verify(mockedDevice).tick(false);
+        verify(mockedDevice).doTick(false);
     }
 }

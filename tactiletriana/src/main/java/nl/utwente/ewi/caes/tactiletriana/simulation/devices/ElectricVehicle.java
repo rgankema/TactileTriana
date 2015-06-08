@@ -184,9 +184,7 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
     // METHODS
     
     @Override
-    public void tick(boolean connected) {
-        super.tick(connected);
-
+    public void doTick(boolean connected) {
         LocalDateTime time = simulation.getCurrentTime();
         
         //Convert the time to a double value for easier comparison
@@ -254,9 +252,9 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
     
     
     /**
-     * Function that determines the amount of kilometers this vechicle has to drive on workdays.
-     * The function looks at the range the vechicle has and thus never returns a higher value than the range.
-     * @return the amount of kilometers this vechicle has to drive on workdays.
+     * Function that determines the amount of kilometers this vehicle has to drive on workdays.
+     * The function looks at the range the vehicle has and thus never returns a higher value than the range.
+     * @return the amount of kilometers this vehicle has to drive on workdays.
                is a value between the max / 2 and the max. 
      */
     public int determineKilometersToWork(){

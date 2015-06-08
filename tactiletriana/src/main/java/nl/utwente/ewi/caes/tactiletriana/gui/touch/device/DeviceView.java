@@ -5,11 +5,12 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.touch.device;
 
+import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.deviceconfig.DeviceConfigView;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
@@ -36,8 +37,9 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.devices.*;
  * @author Richard
  */
 public class DeviceView extends StackPane {
+    
     @FXML private Node configIcon;
-    @FXML private Label batteryLabel;
+    @FXML private ProgressBar batteryProgress;
     @FXML private ImageView deviceIcon;
     private DeviceConfigView configPanel;
 
@@ -64,14 +66,13 @@ public class DeviceView extends StackPane {
         } else if (type == Buffer.class) {
             deviceIcon.setImage(new Image("images/buffer.png",50,50,false,true));
             getStyleClass().add("buffer");
-        } else throw new UnsupportedOperationException("No DeviceView for type " + type.toString());
+        } else if (type == BufferConverter.class) {
+            deviceIcon.setImage(new Image("images/bufferconverter.png",50,50,false,true));
+            getStyleClass().add("bufferconverter");
+        }else throw new UnsupportedOperationException("No DeviceView for type " + type.toString());
 
         this.setBackground(new Background(new BackgroundFill(Color.GREY, CornerRadii.EMPTY, Insets.EMPTY)));
         this.setBorder(buildBorder(Color.DARKGREY));
-    }
-    
-    public Class<? extends DeviceBase> getType() {
-        return type;
     }
 
     public DeviceVM getViewModel() {
@@ -82,15 +83,22 @@ public class DeviceView extends StackPane {
         if (this.viewModel != null) {
             throw new IllegalStateException("ViewModel already set");
         }
-        if (viewModel.getModel().getClass() != getType()) {
-            throw new IllegalArgumentException("ViewModel does not reference a model of type " + getType().toString());
+        if (viewModel.getModelClass() != type) {
+            throw new IllegalArgumentException("ViewModel does not reference a model of type " + type.toString());
         }
         
         this.viewModel = viewModel;
 
+        // Build config panel
+        configPanel = new DeviceConfigView(viewModel.getDeviceConfigVM());
+        
         // Bind config icon visibility to viewmodel
         configIcon.visibleProperty().bind(viewModel.configIconShownProperty());
 
+        // Show/hide battery icon
+        batteryProgress.visibleProperty().bind(viewModel.batteryIconVisibleProperty());
+        batteryProgress.progressProperty().bind(viewModel.stateOfChargeProperty());
+        
         // Bind bordercolor to state
         this.borderProperty().bind(Bindings.createObjectBinding(() -> {
             Color color = Color.DARKGREY;
@@ -112,9 +120,6 @@ public class DeviceView extends StackPane {
         // Show/hide config panel when necessary
         viewModel.configPanelShownProperty().addListener(obs -> {
             if (viewModel.isConfigPanelShown()) {
-                if (configPanel == null) {
-                    configPanel = new DeviceConfigView(viewModel.getModel());
-                }
                 getChildren().remove(deviceIcon);
                 getChildren().add(0, configPanel);
             } else {
@@ -123,20 +128,26 @@ public class DeviceView extends StackPane {
             }
         });
         
-        // Show/hide battery icon
-        batteryLabel.visibleProperty().bind(viewModel.batteryIconVisibleProperty());
-        batteryLabel.textProperty().bind(viewModel.stateOfChargeProperty().multiply(100d).asString("%.0f%%"));
-        
         // Show on chart on long press
         EventUtil.addShortAndLongPressEventHandler(this, null, e -> {
             viewModel.longPressed();
         });
         
+        // Add CSS classes for charts
         viewModel.shownOnChartProperty().addListener(obs -> {
             if (viewModel.isShownOnChart()) {
                 getStyleClass().add("on-chart");
             } else {
                 getStyleClass().remove("on-chart");
+            }
+        });
+        
+        viewModel.chartIndexProperty().addListener(obs -> { 
+            int index = viewModel.getChartIndex();
+            if (index == -1) {
+                getStyleClass().removeIf(s -> s.startsWith("chart-"));
+            } else {
+                getStyleClass().add("chart-" + index);
             }
         });
     }

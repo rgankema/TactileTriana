@@ -53,6 +53,7 @@ public final class StageController {
     private final Stage configurationStage;
     private Stage touchStage;
     private Stage detailStage;
+    
     private final List<Stage> screenIndexStages;
     private final ObservableList<Integer> screenIndexList;
     private final List<Screen> screens;
@@ -60,7 +61,6 @@ public final class StageController {
     private final ConfigurationVM configurationVM;
     private TouchVM touchVM;
     private DetailVM detailVM;
-    private LoggingEntityVMBase vmOnChart;
     
     private final Simulation simulation;
     private final SimulationPrediction simulationPrediction;
@@ -219,8 +219,8 @@ public final class StageController {
             }
             
             detailVM.getChartVM().setEntity(simulation, simulationPrediction);
-        }
-
+        }        
+        
         if (visible) {
             detailStage.show();
             touchStage.show();
@@ -252,9 +252,13 @@ public final class StageController {
     }
 
     public void showOnChart(LoggingEntityVMBase logger, LoggingEntityBase entity) {
-        logger.setShownOnChart(true);
-        LoggingEntityVMBase old = detailVM.showOnChart(logger, entity, simulationPrediction.getFuture(entity));
-        if (old != null) old.setShownOnChart(false);
+        if (!logger.isShownOnChart()) {
+            detailVM.showOnChart(logger, entity, simulationPrediction.getFuture(entity));
+        }
+    }
+    
+    public void removeFromChart(LoggingEntityVMBase logger) {
+        detailVM.removeFromChart(logger);
     }
     
     public void showNotification(String message) {

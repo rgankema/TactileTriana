@@ -10,19 +10,14 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * @author Richard
  */
 public final class TimeScenario {
-    private final List<TimeSpan> timeSpans;
-    private final List<Consumer<TimeSpan>> callbacks;
     
-    public List<TimeSpan> getTimeSpans(){
-        return timeSpans;
-    }
-
+    // STATIC METHODS
+    
     /**
      * Parse a representation of a TimeScenario:
      * Format: DateBegin,DateEnd|DateBegin,DateEnd| etc
@@ -30,19 +25,94 @@ public final class TimeScenario {
      * @return 
      */
     public static TimeScenario parse(String input){
-        TimeScenario result = new TimeScenario();
-        String[] timespans = input.split("[|]");
-        
-        for(int i = 0; i < timespans.length; i++){
-            String ts = timespans[i];
+        String[] tokens = input.split("[|]");
+        TimeSpan[] timeSpans = new TimeSpan[tokens.length];
+        for(int i = 0; i < tokens.length; i++){
+            String ts = tokens[i];
             String[] data = ts.split(",");
             LocalDate begin = LocalDate.parse(data[0]);
             LocalDate end = LocalDate.parse(data[1]);
-            TimeSpan timespan = new TimeSpan(begin, end);
-            result.add(timespan);
+            TimeSpan timeSpan = new TimeSpan(begin, end);
+            timeSpans[i] = timeSpan;
         }
-        return result;
+        return new TimeScenario(timeSpans);
     }
+    
+    // MEMBER FIELDS
+    
+    private final List<TimeSpan> timeSpans;
+    
+    private LocalDateTime currentTime;
+    private int timeSpanIndex = 0;
+    
+    /**
+     * Creates a new TimeScenario
+     * 
+     * @param timeSpans the time spans the scenario consists of
+     */
+    public TimeScenario(TimeSpan... timeSpans) {
+        if (timeSpans.length == 0) throw new IllegalArgumentException("TimeScenario requires at least one TimeSpan");
+        
+        this.timeSpans = new ArrayList<>();
+        
+        for (TimeSpan timeSpan : timeSpans) {
+            if (this.timeSpans.isEmpty()) {
+                this.timeSpans.add(timeSpan);
+            } else {
+                TimeSpan last = this.timeSpans.get(this.timeSpans.size() - 1);
+                if (last.end.isAfter(timeSpan.start)) {
+                    throw new IllegalArgumentException("Specified timespan must start after the end of the last added timespan");
+                }
+                this.timeSpans.add(timeSpan);
+            }
+        }
+        
+        currentTime = LocalDateTime.of(timeSpans[0].start, LocalTime.MIN);
+    }
+    
+    // PROPERTIES
+    
+    public List<TimeSpan> getTimeSpans(){
+        return timeSpans;
+    }
+    
+    /**
+     * 
+     * @return the current time in the scenario
+     */
+    public LocalDateTime getCurrentTime() {
+        return currentTime;
+    }
+    
+    
+    // METHODS
+    
+    public void reset() {
+        currentTime = LocalDateTime.of(timeSpans.get(0).start, LocalTime.MIN);
+    }
+    
+    /**
+     * Shifts the time in the scenario given a current time and an amount of minutes to
+     * increase that time by.
+     * 
+     * @param deltaMinutes the amount of minutes to increase the time by
+     * @return whether the next time was in a different time span
+     */
+    public boolean next(int deltaMinutes) {
+        
+        // If the next time is after the current time span, start the next time span
+        currentTime = currentTime.plusMinutes(deltaMinutes);
+        if (currentTime.toLocalDate().isAfter(timeSpans.get(timeSpanIndex).end)) {
+            timeSpanIndex++;
+            if (timeSpanIndex == timeSpans.size()) {
+                timeSpanIndex = 0;
+            }
+            currentTime = LocalDateTime.of(timeSpans.get(timeSpanIndex).start, LocalTime.MIN);
+            return true;
+        }
+        return false;
+    }
+    
     @Override
     public String toString(){
         String output = "";
@@ -52,104 +122,7 @@ public final class TimeScenario {
         return output;
     }
     
-    /**
-     * Creates a new TimeScenario
-     */
-    public TimeScenario() {
-        this.timeSpans = new ArrayList<>();
-        this.callbacks = new ArrayList<>();
-    }
-    
-    /**
-     * Adds a new TimeSpan to the scenario. The new time must start later than
-     * the last time span in this scenario.
-     * 
-     * @param timeSpan the time span to add
-     */
-    public void add(TimeSpan timeSpan) {
-        if (timeSpans.isEmpty()) {
-            timeSpans.add(timeSpan);
-        } else {
-            TimeSpan last = timeSpans.get(timeSpans.size() - 1);
-            if (last.end.isAfter(timeSpan.start)) {
-                throw new IllegalArgumentException("Specified timespan must start after the end of the last added timespan");
-            }
-            timeSpans.add(timeSpan);
-        }
-    }
-    
-    /**
-     * 
-     * @return the start date of the scenario
-     */
-    public LocalDate getStart() {
-        return timeSpans.get(0).start;
-    }
-    
-    /**
-     * Calculates the next time in the scenario given a current time and an amount of minutes to
-     * increase that time by.
-     * 
-     * @param currentTime the base time that should be increased
-     * @param deltaMinutes the amount of minutes to increase the time by
-     * @return the next time. {@code null} if no time spans have been added yet
-     */
-    public LocalDateTime getNext(LocalDateTime currentTime, int deltaMinutes) {
-        // TimeScenario isn't properly initialised
-        if (timeSpans.isEmpty()) {
-            throw new IllegalStateException("No time spans have been added yet");
-        }
-        // Find time span we're currently in
-        int index = 0;
-        for (index = 0; index < timeSpans.size(); index++) {
-            if (!timeSpans.get(index).start.isAfter(currentTime.toLocalDate()) && !currentTime.toLocalDate().isAfter(timeSpans.get(index).end)) {
-                break;
-            }
-            if (timeSpans.get(index).start.isAfter(currentTime.toLocalDate())) {
-                // Current time didn't fall in one of the timespans
-                currentTime = LocalDateTime.of(timeSpans.get(index).start, LocalTime.MIN);
-                for (Consumer c : callbacks) {
-                    c.accept(timeSpans.get(index));
-                }
-                break;
-            }
-        }
-        // Could not find the time span, throw exception
-        if (index == timeSpans.size()) {
-            throw new IllegalArgumentException("Specified time is not in any of the time spans");
-        }
-        // If the next time is after the current time span, start the next time span
-        LocalDateTime nextTime = currentTime.plusMinutes(deltaMinutes);
-        if (nextTime.toLocalDate().isAfter(timeSpans.get(index).end)) {
-            index++;
-            if (index == timeSpans.size()) {
-                index = 0;
-            }
-            nextTime = LocalDateTime.of(timeSpans.get(index).start, LocalTime.MIN);
-            for (Consumer c : callbacks) {
-                c.accept(timeSpans.get(index));
-            }
-        }
-        return nextTime;
-    }
-    
-    /**
-     * Adds a consumer that is called each time a new time span has started
-     * 
-     * @param callback the consumer
-     */
-    public void addNewTimeSpanStartedCallback(Consumer<TimeSpan> callback) {
-        callbacks.add(callback);
-    }
-    
-    /**
-     * Stops calling a given consumer when a new time span starts.
-     * 
-     * @param callback the consumer
-     */
-    public void removeNewTimeSpanStartedCallback(Consumer<TimeSpan> callback) {
-        callbacks.remove(callback);
-    }
+    // NESTED CLASSES
     
     /**
      * Represents a time span between two dates

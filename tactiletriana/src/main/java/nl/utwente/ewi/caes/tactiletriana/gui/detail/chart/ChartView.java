@@ -5,6 +5,7 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.detail.chart;
 
+import javafx.animation.AnimationTimer;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -14,6 +15,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.layout.StackPane;
 import javafx.util.StringConverter;
+import nl.utwente.ewi.caes.tactiletriana.Util;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 
 /**
@@ -66,11 +68,7 @@ public class ChartView extends StackPane {
         xAxis.setTickLabelFormatter(new StringConverter<Number>() {
             @Override
             public String toString(Number object) {
-                double totalMinutes = (double) object;
-                
-                int minutes = (int) (totalMinutes % 60);
-                int hours = (int) ((totalMinutes - minutes) / 60) % 24;
-                return String.format("%02d:%02d", hours, minutes);
+                return Util.minutesToTimeString((int)(double) object);
             }
 
             @Override
@@ -84,6 +82,16 @@ public class ChartView extends StackPane {
         chart.getData().add(actualSeries);
         chart.getData().add(futureSeries);
         
+        AnimationTimer timer = new AnimationTimer() {
+
+            @Override
+            public void handle(long now) {
+                viewModel.updateSeries();
+            }
+            
+        };
+        
+        timer.start();
     }
     
     // PROPERTIES

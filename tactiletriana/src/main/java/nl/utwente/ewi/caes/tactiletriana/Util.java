@@ -77,4 +77,18 @@ public class Util {
     public static LocalDateTime toLocalDateTime(int minuteOfYear) {
         return LocalDateTime.of(2014, 0, 0, 0, 0).plusMinutes(minuteOfYear);
     }
+    
+    /**
+     * Returns a string formatted as hh:mm where hh is the the amount of
+     * hours that fit in the total amount of minutes, and mm the remaining
+     * amount of minutes
+     * 
+     * @param totalMinutes  the total of amount to minutes to convert to a string
+     * @return the formatted string
+     */
+    public static String minutesToTimeString(int totalMinutes) {
+        int minutePart = (totalMinutes % 60);
+        int hourPart = ((totalMinutes - minutePart) / 60) % 24;
+        return String.format("%02d:%02d", hourPart, minutePart);
+    }
 }
