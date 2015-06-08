@@ -9,6 +9,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
+import nl.utwente.ewi.caes.tactiletriana.gui.configuration.scenario.ScenarioVM;
+import nl.utwente.ewi.caes.tactiletriana.simulation.TimeScenario;
+import nl.utwente.ewi.caes.tactiletriana.simulation.TimeScenario.TimeSpan;
 
 /**
  *
@@ -66,16 +69,34 @@ public final class SimulationConfig {
         }
     }
 
-    public static String LoadTimeScenarios() throws IOException {
+    public static TimeScenario LoadTimeScenarios() throws IOException {
+        TimeScenario ts;
         try {
-            return LoadProperty(STR_TIME_SCENARIOS);
+            ts = TimeScenario.parse(LoadProperty(STR_TIME_SCENARIOS));
         } catch (IOException e) {
-            return "2014-01-01,2014-12-31|";
+            return new TimeScenario(new TimeSpan(ScenarioVM.MIN_DATE, ScenarioVM.MAX_DATE));
         }
+        // checks uitvoeren!
+        TimeSpan prev = null;
+        for (TimeSpan span : ts.getTimeSpans()) {
+            if (prev != null) {
+                if ((span.getStart().isAfter(prev.getEnd()) || span.getStart().isEqual(prev.getEnd()))
+                        && (span.getStart().isAfter(ScenarioVM.MIN_DATE) || span.getStart().isEqual(ScenarioVM.MIN_DATE))
+                        && (span.getEnd().isBefore(ScenarioVM.MAX_DATE) || span.getEnd().isEqual(ScenarioVM.MAX_DATE))
+                        && (span.getStart().isBefore(span.getEnd()) || span.getStart().isEqual(span.getEnd()))) {
+                    prev = span;
+                } else {
+                    return new TimeScenario(new TimeSpan(ScenarioVM.MIN_DATE, ScenarioVM.MAX_DATE));
+
+                }
+
+            }
+        }
+        return ts;
     }
 
-    public static void SaveTimeScenarios(String toString) {
-        SaveProperty(STR_TIME_SCENARIOS, toString);
+    public static void SaveTimeScenarios(TimeScenario ts) {
+        SaveProperty(STR_TIME_SCENARIOS, ts.toString());
     }
 
 }

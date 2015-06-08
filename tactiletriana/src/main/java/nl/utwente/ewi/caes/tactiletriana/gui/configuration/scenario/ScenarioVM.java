@@ -23,9 +23,9 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.TimeScenario.TimeSpan;
 public class ScenarioVM {
 
     // Not meant to be configurable, just for reference
-
-    private static final LocalDate MIN_DATE = LocalDate.of(2014, 1, 1);
-    private static final LocalDate MAX_DATE = LocalDate.of(2014, 12, 31);
+    // Needed for the scenario check
+    public static final LocalDate MIN_DATE = LocalDate.of(2014, 1, 1);
+    public static final LocalDate MAX_DATE = LocalDate.of(2014, 12, 31);
 
     private final ObservableList<TimeSpanVM> timeSpans;
 
@@ -33,7 +33,7 @@ public class ScenarioVM {
         this.timeSpans = FXCollections.observableArrayList();
 
         try {
-            TimeScenario ts = TimeScenario.parse(SimulationConfig.LoadTimeScenarios());
+            TimeScenario ts = SimulationConfig.LoadTimeScenarios();
             for (TimeSpan span : ts.getTimeSpans()) {
                 timeSpans.add(new TimeSpanVM(span.getStart(), span.getEnd()));
             }
