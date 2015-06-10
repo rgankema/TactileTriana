@@ -19,19 +19,24 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.TimeScenario.TimeSpan;
  */
 public final class SimulationConfig {
 
-    public static Properties properties = new Properties();
+    private static Properties properties = new Properties();
     public static final String CONFIG_FILE = "tactiletriana.config";
 
     public static int TICK_MINUTES;                     // time in minutes that passes in the simulation with each tick
     public static int SYSTEM_TICK_TIME;                 // time between ticks in ms
     public static boolean UNCONTROLLABLE_LOAD_ENABLED;  // staat de uncontrolable load aan?
-    public static int HOUSE_FUSE_MAX_CURRENT;
+    public static int HOUSE_FUSE_MAX_CURRENT;           // max current before a fuse breaks
+    public static boolean EXTENDED_PARAMETERS;          // whether the users have access to the full range of device parameters
 
     private static final String STR_TICK_MINUTES = "TICK_MINUTES";
     private static final String STR_SYSTEM_TICK_TIME = "SYSTEM_TICK_TIME";
     private static final String STR_UNCONTROLLABLE_LOAD_ENABLED = "UNCONTROLLABLE_LOAD_ENABLED";
     private static final String STR_HOUSE_FUSE_MAX_CURRENT = "HOUSE_FUSE_MAX_CURRENT";
     private static final String STR_TIME_SCENARIOS = "TIME_SCENARIO";
+    private static final String STR_EXTENDED_PARAMETERS = "EXTENDED_PARAMETERS";
+    private static final String STR_TOUCH_SCREEN_ID = "TOUCH_SCREEN_ID";
+    private static final String STR_DETAIL_SCREEN_ID = "DETAIL_SCREEN_ID";
+    private static final String STR_FULLSCREEN = "FULLSCREEN";
 
     public static void LoadProperties() {
         try {
@@ -39,12 +44,14 @@ public final class SimulationConfig {
             SYSTEM_TICK_TIME = Integer.parseInt(LoadProperty(STR_SYSTEM_TICK_TIME));
             UNCONTROLLABLE_LOAD_ENABLED = Boolean.parseBoolean(LoadProperty(STR_UNCONTROLLABLE_LOAD_ENABLED));
             HOUSE_FUSE_MAX_CURRENT = Integer.parseInt(LoadProperty(STR_HOUSE_FUSE_MAX_CURRENT));
+            EXTENDED_PARAMETERS = Boolean.parseBoolean(STR_EXTENDED_PARAMETERS);
         } catch (Exception e) {
             System.out.println("Warning: Could not read the config file.");
             TICK_MINUTES = 5;
             SYSTEM_TICK_TIME = 200;
             UNCONTROLLABLE_LOAD_ENABLED = true;
             HOUSE_FUSE_MAX_CURRENT = 3 * 35;
+            EXTENDED_PARAMETERS = false;
         }
     }
 
@@ -58,6 +65,7 @@ public final class SimulationConfig {
         SaveProperty(STR_SYSTEM_TICK_TIME, String.valueOf(SYSTEM_TICK_TIME));
         SaveProperty(STR_UNCONTROLLABLE_LOAD_ENABLED, String.valueOf(UNCONTROLLABLE_LOAD_ENABLED));
         SaveProperty(STR_HOUSE_FUSE_MAX_CURRENT, String.valueOf(HOUSE_FUSE_MAX_CURRENT));
+        SaveProperty(STR_EXTENDED_PARAMETERS, String.valueOf(EXTENDED_PARAMETERS));
     }
 
     public static void SaveProperty(String title, String value) {
