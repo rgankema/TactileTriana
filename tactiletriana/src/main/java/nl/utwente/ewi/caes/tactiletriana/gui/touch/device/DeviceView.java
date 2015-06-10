@@ -141,7 +141,7 @@ public class DeviceView extends StackPane {
             viewModel.longPressed();
         });
 
-        // Add CSS classes for charts
+        // Sync CSS classes
         viewModel.shownOnChartProperty().addListener(obs -> {
             if (viewModel.isShownOnChart()) {
                 getStyleClass().add("on-chart");
