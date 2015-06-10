@@ -31,45 +31,50 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.devices.*;
 
 /**
  * The view for a single device.
- * 
+ *
  * CSS class: device-view
- * 
+ *
  * @author Richard
  */
 public class DeviceView extends StackPane {
-    
-    @FXML private Node configIcon;
-    @FXML private ProgressBar batteryProgress;
-    @FXML private ImageView deviceIcon;
+
+    @FXML
+    private Node configIcon;
+    @FXML
+    private ProgressBar batteryProgress;
+    @FXML
+    private ImageView deviceIcon;
     private DeviceConfigView configPanel;
 
     private DeviceVM viewModel;
     private final Class<? extends DeviceBase> type;
-    
+
     public DeviceView(Class<? extends DeviceBase> type) {
         ViewLoader.load(this);
 
         this.type = type;
-        
+
         if (type == ElectricVehicle.class) {
-            deviceIcon.setImage(new Image("images/car.png",50,50,false,true));
+            deviceIcon.setImage(new Image("images/car.png", 50, 50, false, true));
             getStyleClass().add("electric-vehicle");
         } else if (type == SolarPanel.class) {
-            deviceIcon.setImage(new Image("images/solarpanel.png",50,50,false,true));
+            deviceIcon.setImage(new Image("images/solarpanel.png", 50, 50, false, true));
             getStyleClass().add("solar-panel");
         } else if (type == DishWasher.class) {
-            deviceIcon.setImage(new Image("images/dishwasher.png",50,50,false,true));
+            deviceIcon.setImage(new Image("images/dishwasher.png", 50, 50, false, true));
             getStyleClass().add("dish-washer");
         } else if (type == WashingMachine.class) {
-            deviceIcon.setImage(new Image("images/washingmachine.png",50,50,false,true));
+            deviceIcon.setImage(new Image("images/washingmachine.png", 50, 50, false, true));
             getStyleClass().add("washing-machine");
         } else if (type == Buffer.class) {
-            deviceIcon.setImage(new Image("images/buffer.png",50,50,false,true));
+            deviceIcon.setImage(new Image("images/buffer.png", 50, 50, false, true));
             getStyleClass().add("buffer");
         } else if (type == BufferConverter.class) {
-            deviceIcon.setImage(new Image("images/bufferconverter.png",50,50,false,true));
+            deviceIcon.setImage(new Image("images/bufferconverter.png", 50, 50, false, true));
             getStyleClass().add("bufferconverter");
-        }else throw new UnsupportedOperationException("No DeviceView for type " + type.toString());
+        } else {
+            throw new UnsupportedOperationException("No DeviceView for type " + type.toString());
+        }
 
         this.setBackground(new Background(new BackgroundFill(Color.GREY, CornerRadii.EMPTY, Insets.EMPTY)));
         this.setBorder(buildBorder(Color.DARKGREY));
@@ -78,7 +83,7 @@ public class DeviceView extends StackPane {
     public DeviceVM getViewModel() {
         return viewModel;
     }
-    
+
     public void setViewModel(DeviceVM viewModel) {
         if (this.viewModel != null) {
             throw new IllegalStateException("ViewModel already set");
@@ -86,19 +91,19 @@ public class DeviceView extends StackPane {
         if (viewModel.getModelClass() != type) {
             throw new IllegalArgumentException("ViewModel does not reference a model of type " + type.toString());
         }
-        
+
         this.viewModel = viewModel;
 
         // Build config panel
         configPanel = new DeviceConfigView(viewModel.getDeviceConfigVM());
-        
+
         // Bind config icon visibility to viewmodel
         configIcon.visibleProperty().bind(viewModel.configIconShownProperty());
 
         // Show/hide battery icon
         batteryProgress.visibleProperty().bind(viewModel.batteryIconVisibleProperty());
         batteryProgress.progressProperty().bind(viewModel.stateOfChargeProperty());
-        
+
         // Bind bordercolor to state
         this.borderProperty().bind(Bindings.createObjectBinding(() -> {
             Color color = Color.DARKGREY;
@@ -127,12 +132,12 @@ public class DeviceView extends StackPane {
                 getChildren().add(0, deviceIcon);
             }
         });
-        
+
         // Show on chart on long press
         EventUtil.addShortAndLongPressEventHandler(this, null, e -> {
             viewModel.longPressed();
         });
-        
+
         // Add CSS classes for charts
         viewModel.shownOnChartProperty().addListener(obs -> {
             if (viewModel.isShownOnChart()) {
@@ -141,8 +146,8 @@ public class DeviceView extends StackPane {
                 getStyleClass().remove("on-chart");
             }
         });
-        
-        viewModel.chartIndexProperty().addListener(obs -> { 
+
+        viewModel.chartIndexProperty().addListener(obs -> {
             int index = viewModel.getChartIndex();
             if (index == -1) {
                 getStyleClass().removeIf(s -> s.startsWith("chart-"));

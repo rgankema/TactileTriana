@@ -25,7 +25,7 @@ public class ChartVM {
     private LoggingEntityBase future;
     private final ObservableList<XYChart.Data<Integer, Float>> actualSeriesData;
     private final ObservableList<XYChart.Data<Integer, Float>> futureSeriesData;
-    
+
     public ChartVM() {
         actualSeriesData = FXCollections.observableArrayList();
         futureSeriesData = FXCollections.observableArrayList();
@@ -49,7 +49,7 @@ public class ChartVM {
     public ReadOnlyStringProperty seriesNameProperty() {
         return seriesName.getReadOnlyProperty();
     }
-    
+
     /**
      * The lower bound of the x axis
      */
@@ -67,9 +67,9 @@ public class ChartVM {
     public ReadOnlyDoubleProperty xAxisUpperBoundProperty() {
         return xAxisUpperBound.getReadOnlyProperty();
     }
-    
+
     /**
-     * 
+     *
      * @return the type of value that is shown on the chart
      */
     public LoggingEntityBase.QuantityType getValueType() {
@@ -91,9 +91,8 @@ public class ChartVM {
     public ObservableList<XYChart.Data<Integer, Float>> getFutureSeriesData() {
         return futureSeriesData;
     }
-    
+
     // PUBLIC METHODS
-    
     public final void updateSeries() {
         if (actual != null && actual.invalid) {
             synchronized (actual) {
@@ -113,12 +112,12 @@ public class ChartVM {
             }
         }
     }
-    
+
     public final void setEntity(LoggingEntityBase actual, LoggingEntityBase future) {
-        
+
         actualSeriesData.clear();
         futureSeriesData.clear();
-        
+
         this.actual = actual;
         this.future = future;
 
@@ -127,7 +126,7 @@ public class ChartVM {
             seriesName.set("");
             return;
         }
-        
+
         // Set label of series
         switch (actual.getQuantityType()) {
             case POWER:
@@ -151,7 +150,7 @@ public class ChartVM {
         for (Data<Integer, Float> data : future.getLog()) {
             futureSeriesData.add(data);
         }
-        
+
         for (Data<Integer, Float> data : actual.getLog()) {
             actualSeriesData.add(data);
         }

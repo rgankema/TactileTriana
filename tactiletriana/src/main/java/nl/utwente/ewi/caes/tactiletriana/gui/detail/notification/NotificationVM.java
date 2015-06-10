@@ -14,26 +14,25 @@ import javafx.beans.property.StringProperty;
  * @author Richard
  */
 public class NotificationVM {
-    
+
     public NotificationVM(String notification) {
         setMessage(notification);
     }
-    
+
     // BINDABLE PROPERTIES
-    
     /**
      * The message that should be shown
      */
     private final StringProperty message = new SimpleStringProperty();
-    
+
     public ReadOnlyStringProperty messageProperty() {
         return message;
     }
-    
+
     public final String getMessage() {
         return messageProperty().get();
     }
-    
+
     private final void setMessage(String message) {
         this.message.set(message);
     }

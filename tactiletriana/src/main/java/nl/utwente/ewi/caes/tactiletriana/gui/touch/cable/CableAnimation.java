@@ -17,25 +17,26 @@ import javafx.scene.shape.Circle;
 
 /**
  * Animates electricity flowing over a cable
- * 
+ *
  * @author Richard
  */
 class CableAnimation extends AnimationTimer {
+
     private final double BASE_SPEED = 1.0;
     private final double LOAD_MULTIPLIER = 3.0;
-   
+
     private final CableView view;
     private final CableVM viewModel;
     private final List<Circle> onScreen = new ArrayList<>();
     private final Stack<Circle> offScreen = new Stack<>();
-            
+
     private long previousTime = -1;
-    
+
     public CableAnimation(CableView view) {
         this.view = view;
         this.viewModel = view.getViewModel();
     }
-            
+
     @Override
     public void handle(long currentTime) {
         // No load means no particles
@@ -45,7 +46,7 @@ class CableAnimation extends AnimationTimer {
             onScreen.clear();
             return;
         }
-        
+
         // Add new particle when more time has passed than the threshold
         if (previousTime == -1 || ((currentTime - previousTime) / 1000000) * viewModel.getLoad() >= 100) {
             addNewParticle();
@@ -53,9 +54,9 @@ class CableAnimation extends AnimationTimer {
         }
 
         // Distance vector from start of flow to end of flow
-        Point2D end = (viewModel.getDirection() == CableVM.Direction.END) ?
-            new Point2D(view.line.getEndX() - view.line.getStartX(), view.line.getEndY() - view.line.getStartY()) : 
-            new Point2D(view.line.getStartX() - view.line.getEndX(), view.line.getStartY() - view.line.getEndY());
+        Point2D end = (viewModel.getDirection() == CableVM.Direction.END)
+                ? new Point2D(view.line.getEndX() - view.line.getStartX(), view.line.getEndY() - view.line.getStartY())
+                : new Point2D(view.line.getStartX() - view.line.getEndX(), view.line.getStartY() - view.line.getEndY());
         Point2D direction = end.normalize();
 
         // Translate all particles on the screen
@@ -75,11 +76,11 @@ class CableAnimation extends AnimationTimer {
                 i--;
                 continue;
             }
-            
+
             translate(particle, x, y);
         }
     }
-    
+
     private void addNewParticle() {
         Circle particle;
         if (!offScreen.empty()) {
@@ -89,13 +90,13 @@ class CableAnimation extends AnimationTimer {
             particle = new Circle(view.line.getStrokeWidth() * 0.3);
 
             // Anchor base location to source of flow
-            particle.layoutXProperty().bind(Bindings.createDoubleBinding(() -> { 
+            particle.layoutXProperty().bind(Bindings.createDoubleBinding(() -> {
                 return (viewModel.getDirection() == CableVM.Direction.END) ? view.line.getStartX() : view.line.getEndX();
             }, viewModel.directionProperty(), view.line.startXProperty(), view.line.endXProperty()));
-            particle.layoutYProperty().bind(Bindings.createDoubleBinding(() -> { 
+            particle.layoutYProperty().bind(Bindings.createDoubleBinding(() -> {
                 return (viewModel.getDirection() == CableVM.Direction.END) ? view.line.getStartY() : view.line.getEndY();
             }, viewModel.directionProperty(), view.line.startYProperty(), view.line.endYProperty()));
-            viewModel.directionProperty().addListener((obs, oldV, newV) -> { 
+            viewModel.directionProperty().addListener((obs, oldV, newV) -> {
                 translate(particle, 0 - particle.getTranslateX(), 0 - particle.getTranslateY());
             });
 
@@ -107,7 +108,7 @@ class CableAnimation extends AnimationTimer {
         view.getChildren().add(particle);
         onScreen.add(particle);
     }
-    
+
     private void translate(Node node, double x, double y) {
         node.setTranslateX(x);
         node.setTranslateY(y);

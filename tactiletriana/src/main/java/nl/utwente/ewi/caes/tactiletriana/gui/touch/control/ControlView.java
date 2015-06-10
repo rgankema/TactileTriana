@@ -15,22 +15,27 @@ import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
  * @author Richard
  */
 public class ControlView extends HBox {
-    @FXML private Button pauseButton;
-    @FXML private Button disableTrianaButton;
-    
+
+    @FXML
+    private Button pauseButton;
+    @FXML
+    private Button disableTrianaButton;
+
     private ControlVM viewModel;
-    
+
     public ControlView() {
         ViewLoader.load(this);
     }
-    
+
     public void setViewModel(ControlVM viewModel) {
-        if (this.viewModel != null) throw new IllegalStateException("ViewModel may only be set once");
-        
+        if (this.viewModel != null) {
+            throw new IllegalStateException("ViewModel may only be set once");
+        }
+
         this.viewModel = viewModel;
-        
+
         pauseButton.textProperty().bind(viewModel.pauseButtonTextProperty());
-        
+
         pauseButton.setOnAction(e -> viewModel.toggleSimulationState());
     }
 }

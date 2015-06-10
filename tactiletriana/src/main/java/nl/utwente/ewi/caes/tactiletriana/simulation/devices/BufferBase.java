@@ -19,50 +19,50 @@ import org.json.simple.JSONObject;
 
 /**
  * Base class for any device that has a buffer.
- * 
+ *
  * @author Richard
  */
 public abstract class BufferBase extends DeviceBase {
+
     public static final String API_CAPACITY = "capacity";
     public static final String API_MAX_POWER = "max_power";
     public static final String API_STATE_OF_CHARGE = "SOC";
     public static final String API_PLANNING = "planning";
-    
+
     private final ObservableMap<LocalDateTime, Double> planning;
-    
+
     /**
      * Constructs a new BufferBase.
-     * 
-     * @param simulation    the Simulation that this device belongs to
-     * @param displayName   the name of this device as shown to the user
+     *
+     * @param simulation the Simulation that this device belongs to
+     * @param displayName the name of this device as shown to the user
      * @param apiDeviceType the name of this device as specified in the API
      */
     public BufferBase(SimulationBase simulation, String displayName, String apiDeviceType) {
         super(simulation, displayName, apiDeviceType);
-        
+
         planning = FXCollections.observableMap(new HashMap<LocalDateTime, Double>());
-        
+
         // register properties for API
         registerAPIParameter(API_CAPACITY);
         registerAPIParameter(API_MAX_POWER);
         registerAPIParameter(API_STATE_OF_CHARGE);
         registerAPIParameter(API_PLANNING);
-        
+
         // register properties for prediction
         registerProperty(capacity);
         registerProperty(maxPower);
         registerMap(planning);
     }
-    
+
     // PROPERTIES
-    
     /**
      * @return the planning for this device
      */
     public final ObservableMap<LocalDateTime, Double> getPlanning() {
         return planning;
     }
-    
+
     /**
      * Capacitiy of Buffer in Wh.
      */
@@ -75,7 +75,7 @@ public abstract class BufferBase extends DeviceBase {
             super.set(value);
         }
     };
-    
+
     public DoubleProperty capacityProperty() {
         return capacity;
     }
@@ -107,7 +107,7 @@ public abstract class BufferBase extends DeviceBase {
     public DoubleProperty maxPowerProperty() {
         return maxPower;
     }
-    
+
     public double getMaxPower() {
         return maxPower.get();
     }
@@ -117,8 +117,8 @@ public abstract class BufferBase extends DeviceBase {
     }
 
     /**
-     * The state of charge in Wh. Ensures that it's never below 0 and never higher
-     * than {@link capacity}.
+     * The state of charge in Wh. Ensures that it's never below 0 and never
+     * higher than {@link capacity}.
      */
     private final DoubleProperty stateOfCharge = new SimpleDoubleProperty(0) {
         @Override
@@ -143,20 +143,19 @@ public abstract class BufferBase extends DeviceBase {
     public final void setStateOfCharge(double soc) {
         this.stateOfCharge.set(soc);
     }
-    
+
     /**
      * @return whether the battery is charged or not
      */
-    public final boolean isCharged(){
+    public final boolean isCharged() {
         return getStateOfCharge() == getCapacity();
     }
-    
+
     // METHODS
-    
     @Override
     protected JSONObject parametersToJSON() {
         JSONObject result = new JSONObject();
-        
+
         // Convert planning to JSON
         JSONArray jsonPlanning = new JSONArray();
         for (LocalDateTime time : getPlanning().keySet()) {
@@ -165,25 +164,25 @@ public abstract class BufferBase extends DeviceBase {
             interval.put("consumption", getPlanning().get(time));
             jsonPlanning.add(interval);
         }
-        
+
         result.put(API_PLANNING, jsonPlanning);
         result.put(API_CAPACITY, getCapacity());
         result.put(API_MAX_POWER, getMaxPower());
         result.put(API_STATE_OF_CHARGE, getStateOfCharge());
         return result;
     }
-    
+
     @Override
     public void updateParameter(String parameter, Object value) {
         if (parameter.equals(API_CAPACITY)) {
             setCapacity((double) value);
         } else if (parameter.equals(API_MAX_POWER)) {
             setMaxPower((double) value);
-        } else if (parameter.equals(API_PLANNING)) { 
+        } else if (parameter.equals(API_PLANNING)) {
             JSONArray jsonPlanning = (JSONArray) value;
             for (Object o : jsonPlanning) {
                 JSONObject planningEntry = (JSONObject) o;
-                LocalDateTime date =  toLocalDateTime((int)planningEntry.get("timestamp"));
+                LocalDateTime date = toLocalDateTime((int) planningEntry.get("timestamp"));
                 double consumption = (double) planningEntry.get("consumption");
                 getPlanning().put(date, consumption);
             }

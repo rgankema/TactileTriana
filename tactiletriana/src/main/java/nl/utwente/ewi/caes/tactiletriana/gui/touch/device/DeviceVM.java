@@ -35,7 +35,7 @@ public class DeviceVM extends LoggingEntityVMBase {
         this.model = model;
 
         deviceConfigVM = new DeviceConfigVM(model);
-        
+
         // Bind current consumption divided by 3700 (assumed maximum consumption) to load
         load.bind(Bindings.createDoubleBinding(() -> {
             return Math.min(1.0, Math.abs(model.getCurrentConsumption()) / 3700d);
@@ -47,7 +47,7 @@ public class DeviceVM extends LoggingEntityVMBase {
             BufferBase b = (BufferBase) model;
             stateOfCharge.bind(b.stateOfChargeProperty().divide(b.capacityProperty()));
         }
-        
+
         // Define states for view
         state.bind(Bindings.createObjectBinding(() -> {
             if (model.getState() != DeviceBase.State.CONNECTED) {
@@ -69,27 +69,26 @@ public class DeviceVM extends LoggingEntityVMBase {
         batteryIconVisible.bind(Bindings.createBooleanBinding(() -> {
             return model instanceof BufferBase && !isOnStack();
         }, onStack));
-        
     }
 
     /**
-     * 
+     *
      * @return the view model for the configuration view for this device
      */
     public DeviceConfigVM getDeviceConfigVM() {
         return deviceConfigVM;
     }
-    
+
     /**
-     * 
+     *
      * @return the class of the device
      */
     public Class<? extends DeviceBase> getModelClass() {
         return this.model.getClass();
     }
-    
+
     /**
-     * 
+     *
      * @return The text for the header the device view
      */
     public final String getHeader() {
@@ -110,21 +109,21 @@ public class DeviceVM extends LoggingEntityVMBase {
     public final double getLoad() {
         return loadProperty().get();
     }
-    
+
     /**
-     * The state of charge of the device, a value of 0 to 1. A negative value if 
+     * The state of charge of the device, a value of 0 to 1. A negative value if
      * the device does not have a battery.
      */
     private final ReadOnlyDoubleWrapper stateOfCharge = new ReadOnlyDoubleWrapper();
-    
+
     public ReadOnlyDoubleProperty stateOfChargeProperty() {
         return stateOfCharge.getReadOnlyProperty();
     }
-    
+
     public double getStateOfCharge() {
         return stateOfCharge.get();
     }
-    
+
     /**
      * The current visual state of the view
      */
@@ -167,7 +166,7 @@ public class DeviceVM extends LoggingEntityVMBase {
     private void setConfigPanelShown(boolean configPanelShown) {
         this.configPanelShown.set(configPanelShown);
     }
-    
+
     /**
      * Whether the configuration panel should be shown
      */
@@ -201,7 +200,6 @@ public class DeviceVM extends LoggingEntityVMBase {
     }
     
     // EVENT HANDLING
-    
     /**
      * Called when the device view is dropped on a house or left it
      *
@@ -230,7 +228,7 @@ public class DeviceVM extends LoggingEntityVMBase {
     public void configIconPressed() {
         setConfigPanelShown(!isConfigPanelShown());
     }
-    
+
     /**
      * Shows the device on the chart
      */

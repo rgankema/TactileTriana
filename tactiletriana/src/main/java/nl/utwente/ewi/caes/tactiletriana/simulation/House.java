@@ -23,20 +23,20 @@ import org.json.simple.JSONObject;
 public class House extends LoggingEntityBase {
 
     private static int houseID = 0;
-    
+
     private final ObservableList<DeviceBase> devices;
     private final int id;
-    
+
     protected final SimulationBase simulation;
-    
+
     public House(SimulationBase simulation) {
         super("House", QuantityType.POWER);
-        
+
         this.simulation = simulation;
-        
+
         //set the id
         this.id = houseID++;
-        
+
         devices = FXCollections.observableArrayList();
         devices.addListener((ListChangeListener.Change<? extends DeviceBase> c) -> {
             while (c.next()) {
@@ -58,16 +58,16 @@ public class House extends LoggingEntityBase {
     public ObservableList<DeviceBase> getDevices() {
         return devices;
     }
-    
+
     /**
      * Returns the ID of the house.
-     * 
-     * @return integer representing the ID of the house. 
+     *
+     * @return integer representing the ID of the house.
      */
     public int getId() {
         return id;
     }
-    
+
     /*
      * The amount of power the house currently consumes. A negative number means
      * the house is producing energy.
@@ -122,7 +122,6 @@ public class House extends LoggingEntityBase {
         return fuseBlownProperty().get();
     }
 
-    
     protected final void setFuseBlown(boolean fuseBlown) {
         this.fuseBlown.set(fuseBlown);
     }
@@ -160,17 +159,19 @@ public class House extends LoggingEntityBase {
 
         return output;
     }
-    
+
     /**
-     * Convert this House and the parameters to a JSON representation as specified in the API
-     * @return 
+     * Convert this House and the parameters to a JSON representation as
+     * specified in the API
+     *
+     * @return
      */
     public JSONObject toJSON() {
         JSONObject result = new JSONObject();
         result.put("houseID", this.getId());
         //Add the devices
         JSONArray devices = new JSONArray();
-        for(DeviceBase device : this.getDevices()) {
+        for (DeviceBase device : this.getDevices()) {
             devices.add(device.toJSON());
         }
         result.put("devices", devices);

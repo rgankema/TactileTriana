@@ -19,11 +19,12 @@ import org.json.simple.JSONObject;
  * @author jd
  */
 public class UncontrollableLoad extends DeviceBase {
+
     public static final String API_PROFILE = "profile";
-    
+
     private final int profileNumber;
     private final IDeviceDataProvider<UncontrollableLoad> data;
-    
+
     /**
      *
      * @param profileNumber a number between 0 and 5 (inclusive) which selects
@@ -39,7 +40,7 @@ public class UncontrollableLoad extends DeviceBase {
 
         this.profileNumber = profileNumber;
         this.data = UncontrollableData.getInstance();
-        
+
         // Register API properties
         registerAPIParameter(API_PROFILE);
     }
@@ -53,7 +54,7 @@ public class UncontrollableLoad extends DeviceBase {
     protected JSONObject parametersToJSON() {
         JSONObject result = new JSONObject();
         JSONArray jsonProfile = new JSONArray();
-        
+
         int time = toTimeStep(simulation.getCurrentTime());
         for (int i = time; i < time + 24 * 60 / SimulationConfig.TICK_MINUTES; i++) {
             jsonProfile.add(data.getProfile(profileNumber)[i]);

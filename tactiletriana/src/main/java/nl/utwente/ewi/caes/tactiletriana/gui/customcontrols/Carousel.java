@@ -14,37 +14,43 @@ import javafx.scene.layout.BorderPane;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 
 /**
- * Carousel control specifically designed for selecting values for a CategoryParameter.
- * Can only be used with touch.
- * 
+ * Carousel control specifically designed for selecting values for a
+ * CategoryParameter. Can only be used with touch.
+ *
  * @author Richard
  */
 public class Carousel extends BorderPane {
-    @FXML Label valueLabel;
-    @FXML Node leftArrow;
-    @FXML Node rightArrow;
-    
+
+    @FXML
+    Label valueLabel;
+    @FXML
+    Node leftArrow;
+    @FXML
+    Node rightArrow;
+
     private ObjectProperty property;
     private Function<Object, String> objectToString;
     private Object[] possibleValues;
     private int index = -1;
-    
+
     /**
      * Constructs a new Carousel control
-     * @param property          The property that is affected by the Carousel
-     * @param objectToString    Mapping from selected object to string
-     * @param possibleValues    Array of values that the user should be able to choose from
+     *
+     * @param property The property that is affected by the Carousel
+     * @param objectToString Mapping from selected object to string
+     * @param possibleValues Array of values that the user should be able to
+     * choose from
      */
     public Carousel(ObjectProperty property, Function<Object, String> objectToString, Object... possibleValues) {
         ViewLoader.load(this);
-        
+
         this.property = property;
         this.objectToString = objectToString;
         this.possibleValues = possibleValues;
-        
+
         update();
-        
-        leftArrow.setOnTouchPressed(e -> { 
+
+        leftArrow.setOnTouchPressed(e -> {
             index--;
             if (index < 0) {
                 index = possibleValues.length - 1;
@@ -52,7 +58,7 @@ public class Carousel extends BorderPane {
             property.set(possibleValues[index]);
             e.consume();
         });
-        
+
         rightArrow.setOnTouchPressed(e -> {
             index++;
             if (index >= possibleValues.length) {
@@ -61,10 +67,10 @@ public class Carousel extends BorderPane {
             property.set(possibleValues[index]);
             e.consume();
         });
-        
+
         property.addListener(i -> update());
     }
-    
+
     /**
      * Updates the index and value label
      */
@@ -75,11 +81,11 @@ public class Carousel extends BorderPane {
                 break;
             }
         }
-        
+
         if (index == -1) {
             throw new IllegalStateException("Current value of property not among possible values");
         }
-        
+
         valueLabel.setText(objectToString.apply(possibleValues[index]));
     }
 }

@@ -23,22 +23,22 @@ import org.apache.commons.csv.CSVRecord;
  * @author niels
  */
 public class BufferConverterData implements IDeviceDataProvider<BufferConverter> {
-    
+
     private static BufferConverterData instance;
-    
+
     public static BufferConverterData getInstance() {
         if (instance == null) {
             instance = new BufferConverterData();
         }
         return instance;
     }
-    
-    public BufferConverterData(){
+
+    public BufferConverterData() {
         loadProfile();
     }
-    
+
     private final Map<Integer, double[]> profileByKey = new TreeMap<>();
-    
+
     @Override
     public double[] getProfile() {
         return getProfile(nextRandomInt(6));
@@ -48,28 +48,28 @@ public class BufferConverterData implements IDeviceDataProvider<BufferConverter>
     public double[] getProfile(Object key) {
         return profileByKey.get((Integer) key);
     }
-    
+
     // HELPER METHODS
     private void loadProfile() {
         //Load the profile data into an array from the CSV file containing power consumptions for 6 houses.
         double[][] profiles = new double[6][525601];
-        
+
         File csvData = new File("src/main/resources/datasets/house_profiles_heat_demand.csv");
         CSVFormat format = CSVFormat.DEFAULT.withDelimiter(';');
         try (CSVParser parser = CSVParser.parse(csvData, Charset.defaultCharset(), format)) {
             for (CSVRecord csvRecord : parser) {
                 for (int p = 0; p < 6; p++) {
-                    profiles[p][(int)parser.getRecordNumber()] = Double.parseDouble(csvRecord.get(p));
+                    profiles[p][(int) parser.getRecordNumber()] = Double.parseDouble(csvRecord.get(p));
                 }
-            }  
+            }
         } catch (IOException e) {
             throw new RuntimeException("Error while heat demand dataset", e);
         }
-        
+
         // Convert to profile with value per timestep   
         int tickMinutes = SimulationConfig.TICK_MINUTES;
         int minutesInYear = 365 * 24 * 60;
-        
+
         for (int key = 0; key < 6; key++) {
             double[] profile = new double[TOTAL_TICKS_IN_YEAR];
             // Get average of all minutes in timestep
@@ -85,5 +85,5 @@ public class BufferConverterData implements IDeviceDataProvider<BufferConverter>
             profileByKey.put(key, profile);
         }
     }
-    
+
 }

@@ -15,7 +15,7 @@ import nl.utwente.ewi.caes.tactiletriana.gui.events.EventUtil;
 
 /**
  * The view for a single node.
- * 
+ *
  * CSS class: node-view
  *
  * @author Richard
@@ -43,12 +43,12 @@ public class NodeView extends StackPane {
             double error = viewModel.getVoltageError();
             return new Color(error, 1.0 - error, 0, 1.0);
         }, viewModel.voltageErrorProperty()));
-        
+
         // Show on chart on long press
         EventUtil.addShortAndLongPressEventHandler(this, null, n -> {
             viewModel.longPressed();
         });
-        
+
         viewModel.shownOnChartProperty().addListener(obs -> {
             if (viewModel.isShownOnChart()) {
                 getStyleClass().add("on-chart");
@@ -56,8 +56,8 @@ public class NodeView extends StackPane {
                 getStyleClass().remove("on-chart");
             }
         });
-        
-        viewModel.chartIndexProperty().addListener(obs -> { 
+
+        viewModel.chartIndexProperty().addListener(obs -> {
             int index = viewModel.getChartIndex();
             if (index == -1) {
                 getStyleClass().removeIf(s -> s.startsWith("chart-"));

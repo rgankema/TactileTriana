@@ -18,9 +18,9 @@ public class Node extends LoggingEntityBase {
 
     private final List<Cable> cables;
     private House house;
-    
+
     protected SimulationBase simulation;
-    
+
     public Node(House house, SimulationBase simulation) {
         super("Node", QuantityType.VOLTAGE);
 
@@ -66,8 +66,9 @@ public class Node extends LoggingEntityBase {
     }
 
     /**
-     * 
-     * @param connected whether this Node is connected to the root of the network
+     *
+     * @param connected whether this Node is connected to the root of the
+     * network
      */
     public void tick(boolean connected) {
         if (getHouse() != null) {
@@ -80,7 +81,7 @@ public class Node extends LoggingEntityBase {
 
     // FORWARD BACKWARD SWEEP METHODS
     private double tempVoltage;
-    
+
     public void prepareForwardBackwardSweep() {
         tempVoltage = 230d;
 
@@ -88,7 +89,7 @@ public class Node extends LoggingEntityBase {
             c.prepareForwardBackwardSweep();
         }
     }
-    
+
     public double doForwardBackwardSweep(double voltage) {
         double current = 0.0;
 

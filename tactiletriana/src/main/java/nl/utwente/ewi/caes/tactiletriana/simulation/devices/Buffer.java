@@ -15,7 +15,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.SimulationBase;
  * @author mickvdv
  */
 public class Buffer extends BufferBase {
-    
+
     public Buffer(SimulationBase simulation) {
         super(simulation, "Buffer", "Buffer");
 
@@ -24,9 +24,8 @@ public class Buffer extends BufferBase {
         this.setCapacity(10000d);
         this.setStateOfCharge(0d);
     }
-    
+
     // METHODS
-    
     @Override
     protected void doTick(boolean connected) {
         int timestep = SimulationConfig.TICK_MINUTES;
@@ -42,20 +41,19 @@ public class Buffer extends BufferBase {
 
         // If no planning available, help out parent house
         if (getPlanning() == null || getPlanning().get(currentTime) == null) {
-            
+
             // TODO: dit aan Gerwin vragen, dit is echt rare shit!
             // dit is om het probleem met meerdere buffers eruit te halen.
-            
             // remove the influence of other batterys
             double bufferConsumption = 0;
-            for (DeviceBase d : this.getParentHouse().getDevices()){
-                if (d instanceof Buffer){
+            for (DeviceBase d : this.getParentHouse().getDevices()) {
+                if (d instanceof Buffer) {
                     bufferConsumption += d.getCurrentConsumption();
                 }
             }
-            
+
             // the next consumption is the currentConsupmtion of the house minus the influence of other buffers
-            nextConsumption = -(this.getParentHouse().getCurrentConsumption() - bufferConsumption );
+            nextConsumption = -(this.getParentHouse().getCurrentConsumption() - bufferConsumption);
 
             //System.out.println(this.getParentHouse().getCurrentConsumption());
             // The house is producing energy, so start charging

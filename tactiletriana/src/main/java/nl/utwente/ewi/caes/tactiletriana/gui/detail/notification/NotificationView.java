@@ -15,21 +15,23 @@ import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
  * @author Richard
  */
 public class NotificationView extends StackPane {
-    @FXML Label messageLabel;
-    
+
+    @FXML
+    Label messageLabel;
+
     private NotificationVM viewModel;
-    
+
     public NotificationView() {
         ViewLoader.load(this);
     }
-    
+
     public void setViewModel(NotificationVM viewModel) {
         if (this.viewModel != null) {
             throw new IllegalStateException("ViewModel can only be set once");
         }
-        
+
         this.viewModel = viewModel;
-        
+
         messageLabel.textProperty().bind(viewModel.messageProperty());
     }
 }

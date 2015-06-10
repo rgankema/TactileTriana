@@ -31,9 +31,9 @@ public class ConfigurationVM {
     private static final SimpleBooleanProperty launched = new SimpleBooleanProperty(false);
     private final ObservableList screenIndexList = FXCollections.observableArrayList();
     private final ScenarioVM scenarioVM = new ScenarioVM();
-    
+
     private Simulation simulation;
-    
+
     public ConfigurationVM(Simulation simulation) {
         this.simulation = simulation;
 
@@ -73,31 +73,30 @@ public class ConfigurationVM {
         }, this.simulation.stateProperty()));
 
         // reset button is enabled when simulation has been started
-        resetButtonDisabled.bind(Bindings.createBooleanBinding(() -> { 
+        resetButtonDisabled.bind(Bindings.createBooleanBinding(() -> {
             return simulation.getState() == Simulation.SimulationState.STOPPED;
         }, this.simulation.stateProperty()));
-        
+
         // scenario is enabled when simulation is stopped
-        scenarioViewDisable.bind(Bindings.createBooleanBinding(() -> { 
+        scenarioViewDisable.bind(Bindings.createBooleanBinding(() -> {
             return simulation.getState() != Simulation.SimulationState.STOPPED;
         }, this.simulation.stateProperty()));
     }
 
     // BINDABLE PROPERTIES
-    
     /**
      * Whether the Scenario view is enabled
      */
     private final BooleanProperty scenarioViewDisable = new SimpleBooleanProperty(false);
-    
+
     public ReadOnlyBooleanProperty scenarioViewDisableProperty() {
         return scenarioViewDisable;
     }
-    
+
     public final boolean isScenarioViewDisable() {
         return scenarioViewDisableProperty().get();
     }
-    
+
     /**
      * The text entered in the port field
      */
@@ -188,7 +187,7 @@ public class ConfigurationVM {
     public ObservableList<Integer> getScreenIndexList() {
         return screenIndexList;
     }
-    
+
     /**
      * @return the VM for the ScenarioView
      */
@@ -197,27 +196,25 @@ public class ConfigurationVM {
     }
 
     // METHODS
-
     public void start() {
-        
-        
+
         StageController.getInstance().setMainStagesVisible(true);
         StageController.getInstance().setLauncherStageVisible(false);
         StageController.getInstance().setScreenIndexStagesVisible(false);
-        
+
         if (this.simulation.getState() == Simulation.SimulationState.STOPPED) {
             this.simulation.setTimeScenario(scenarioVM.build());
         }
-        
+
         APIServer server = new APIServer(Integer.parseInt(portFieldTextProperty().get()), simulation);
         Concurrent.getExecutorService().submit(server);
-                
+
         // save the configured timescenario
-        SimulationConfig.SaveProperty("timescenario", this.simulation.getTimeScenario().toString());
-        
+        SimulationConfig.SaveTimeScenario(this.simulation.getTimeScenario());
+
         // save the configuration
-        SimulationConfig.SaveProperties();       
-        
+        SimulationConfig.SaveProperties();
+
         this.simulation.start();
 
         launched.set(true);

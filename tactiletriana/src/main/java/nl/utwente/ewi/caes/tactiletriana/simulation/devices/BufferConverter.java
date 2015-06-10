@@ -22,10 +22,10 @@ import org.json.simple.JSONObject;
  *
  * @author niels
  */
-public class BufferConverter extends DeviceBase{
-    
+public class BufferConverter extends DeviceBase {
+
     public static int profileCounter = 0;
-    
+
     //coefficient of performance
     public static final String API_COP = "COP";
     public static final String API_PROFILE = "profile";
@@ -33,7 +33,7 @@ public class BufferConverter extends DeviceBase{
     private final IntegerProperty profileNumber;
     //Data of the heat demand in W
     private final IDeviceDataProvider<BufferConverter> data;
-    
+
     /**
      *
      * @param profileNumber a number between 0 and 5 (inclusive) which selects
@@ -47,37 +47,37 @@ public class BufferConverter extends DeviceBase{
             throw new IllegalArgumentException("profileNumber must be in the range of 0 to 5");
         }
 
-        this.profileNumber =  new SimpleIntegerProperty();
+        this.profileNumber = new SimpleIntegerProperty();
         this.profileNumber.set(profileNumber);
         this.data = BufferConverterData.getInstance();
-        
+
         // Register API properties
-        registerAPIParameter(API_PROFILE);       
+        registerAPIParameter(API_PROFILE);
         registerAPIParameter(API_COP);
-                
+
         // Register properties for prediction
         registerProperty(COP);
         registerProperty(this.profileNumber);
-        
+
         //Set default of COP to 4
         setCOP(4);
     }
-    
-    public BufferConverter(SimulationBase simulation){
+
+    public BufferConverter(SimulationBase simulation) {
         //Make sure profiles cycle
-        this(BufferConverter.profileCounter%6 ,simulation);
+        this(BufferConverter.profileCounter % 6, simulation);
         profileCounter++;
     }
-    
+
     /**
      * Coefficient of performance of this BufferConverter
      */
     private final DoubleProperty COP = new SimpleDoubleProperty();
-    
+
     public DoubleProperty COPProperty() {
         return COP;
     }
-    
+
     public final double getCOP() {
         return COP.get();
     }
@@ -85,16 +85,16 @@ public class BufferConverter extends DeviceBase{
     public final void setCOP(double power) {
         this.COP.set(power);
     }
-    
+
     @Override
-    public void updateParameter(String parameter, Object value){
-        if(parameter.equals(API_COP)){
+    public void updateParameter(String parameter, Object value) {
+        if (parameter.equals(API_COP)) {
             setCOP((double) value);
-        } else {                      
+        } else {
             super.updateParameter(parameter, value);
-        }        
+        }
     }
-    
+
     @Override
     public void doTick(boolean connected) {
         setCurrentConsumption(data.getProfile(profileNumber.get())[toTimeStep(simulation.getCurrentTime())] / getCOP());
@@ -104,7 +104,7 @@ public class BufferConverter extends DeviceBase{
     protected JSONObject parametersToJSON() {
         JSONObject result = new JSONObject();
         JSONArray jsonProfile = new JSONArray();
-        
+
         int time = toTimeStep(simulation.getCurrentTime());
         for (int i = time; i < time + 24 * 60 / SimulationConfig.TICK_MINUTES; i++) {
             jsonProfile.add(data.getProfile(profileNumber)[i]);
@@ -112,5 +112,5 @@ public class BufferConverter extends DeviceBase{
         result.put(API_PROFILE, jsonProfile);
         return result;
     }
-    
+
 }

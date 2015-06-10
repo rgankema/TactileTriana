@@ -13,50 +13,55 @@ import javafx.scene.layout.HBox;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 
 public class TimeSpanView extends HBox {
-    @FXML private DatePicker startDate;
-    @FXML private DatePicker endDate;
-    
+
+    @FXML
+    private DatePicker startDate;
+    @FXML
+    private DatePicker endDate;
+
     private TimeSpanVM viewModel;
-    
+
     public TimeSpanView() {
         ViewLoader.load(this);
     }
-    
+
     public TimeSpanVM getViewModel() {
         return viewModel;
     }
-    
+
     public void setViewModel(TimeSpanVM viewModel) {
-        if (this.viewModel != null) throw new IllegalStateException("ViewModel may only be set once");
-        
+        if (this.viewModel != null) {
+            throw new IllegalStateException("ViewModel may only be set once");
+        }
+
         this.viewModel = viewModel;
-        
+
         startDate.valueProperty().bindBidirectional(viewModel.startDateProperty());
         endDate.valueProperty().bindBidirectional(viewModel.endDateProperty());
-        
+
         // Only enable days that are allowed
-        startDate.setDayCellFactory(dp -> { 
+        startDate.setDayCellFactory(dp -> {
             return new DateCell() {
                 @Override
                 public void updateItem(LocalDate item, boolean empty) {
                     super.updateItem(item, empty);
 
-                    if (item.isBefore(viewModel.minStartDateProperty().get()) ||
-                            item.isAfter(viewModel.maxStartDateProperty().get())) {
+                    if (item.isBefore(viewModel.minStartDateProperty().get())
+                            || item.isAfter(viewModel.maxStartDateProperty().get())) {
                         setDisable(true);
                     }
                 }
             };
         });
-        
-        endDate.setDayCellFactory(dp -> { 
+
+        endDate.setDayCellFactory(dp -> {
             return new DateCell() {
                 @Override
                 public void updateItem(LocalDate item, boolean empty) {
                     super.updateItem(item, empty);
 
-                    if (item.isBefore(viewModel.minEndDateProperty().get()) ||
-                            item.isAfter(viewModel.maxEndDateProperty().get())) {
+                    if (item.isBefore(viewModel.minEndDateProperty().get())
+                            || item.isAfter(viewModel.maxEndDateProperty().get())) {
                         setDisable(true);
                     }
                 }

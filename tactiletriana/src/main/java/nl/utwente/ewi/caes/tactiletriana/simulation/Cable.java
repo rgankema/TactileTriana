@@ -39,7 +39,6 @@ public class Cable extends LoggingEntityBase {
     }
 
     // PROPERTIES
-    
     /**
      * The length of the cable
      */
@@ -147,7 +146,7 @@ public class Cable extends LoggingEntityBase {
         if (isBroken()) {
             connected = false;
         }
-        
+
         getChildNode().tick(connected);
     }
 
@@ -160,11 +159,11 @@ public class Cable extends LoggingEntityBase {
 
     // FORWARD BACKWARD SWEEP
     private double tempCurrent;
-    
+
     public void prepareForwardBackwardSweep() {
         tempCurrent = 0;
     }
-    
+
     public double doForwardBackwardSweep(double voltage) {
         //update the voltages in the forward sweep
         voltage = voltage - (tempCurrent * (resistance * getLength()));
@@ -173,7 +172,7 @@ public class Cable extends LoggingEntityBase {
 
         return tempCurrent;
     }
-    
+
     public void finishForwardBackwardSweep() {
         setCurrent(tempCurrent);
         log(simulation.getCurrentTime(), getCurrent());
