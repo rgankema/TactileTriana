@@ -118,6 +118,8 @@ public class TouchVM {
             return getBufferVM();
         } else if (deviceClass.equals(BufferConverter.class)) {
             return getBufferConverterVM();
+        } else if (deviceClass.equals(TrianaHouseController.class)) {
+            return getTrianaHouseControllerVM();
         }
         return null;
     }
@@ -144,6 +146,10 @@ public class TouchVM {
 
     public DeviceVM getBufferConverterVM() {
         return new DeviceVM(new BufferConverter(model));
+    }
+    
+    public DeviceVM getTrianaHouseControllerVM() {
+        return new DeviceVM(new TrianaHouseController(model));
     }
 
     public ControlVM getControlVM() {

@@ -20,6 +20,7 @@ import nl.utwente.ewi.caes.tactiletriana.gui.touch.LoggingEntityVMBase;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseVM;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.BufferBase;
+import nl.utwente.ewi.caes.tactiletriana.simulation.devices.TrianaHouseController;
 
 /**
  *
@@ -233,7 +234,7 @@ public class DeviceVM extends LoggingEntityVMBase {
      * Shows the device on the chart
      */
     public void longPressed() {
-        if (model.getState() != DeviceBase.State.NOT_IN_HOUSE) {
+        if (model.getState() != DeviceBase.State.NOT_IN_HOUSE && !(model instanceof TrianaHouseController)) {
             StageController.getInstance().showOnChart(this, model);
         }
     }

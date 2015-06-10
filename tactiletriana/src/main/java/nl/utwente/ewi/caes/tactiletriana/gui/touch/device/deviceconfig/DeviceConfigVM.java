@@ -34,6 +34,7 @@ public class DeviceConfigVM {
     private final List<Row> rows = new ArrayList<>();
 
     // CONSTRUCTOR
+    
     public DeviceConfigVM(DeviceBase device) {
 
         headerText.set(device.getDisplayName());
@@ -46,7 +47,7 @@ public class DeviceConfigVM {
             initSolarPanel((SolarPanel) device);
         } else if (device instanceof ElectricVehicle) {
             initElectricVehicle((ElectricVehicle) device);
-        }
+        } // else no parameters available
     }
 
     private void initBuffer(Buffer buffer) {
@@ -101,6 +102,7 @@ public class DeviceConfigVM {
     }
 
     // PROPERTIES
+    
     /**
      * The text that should be shown in the header.
      */
@@ -118,6 +120,7 @@ public class DeviceConfigVM {
     }
 
     // NESTED CLASSES
+    
     /**
      * Represents a row in the configuration view.
      */

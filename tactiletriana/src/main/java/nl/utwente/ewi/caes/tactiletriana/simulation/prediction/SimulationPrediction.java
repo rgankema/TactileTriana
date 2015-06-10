@@ -193,6 +193,8 @@ public class SimulationPrediction extends SimulationBase {
                             futureDevice = new WashingMachine(this);
                         } else if (actualDevice instanceof BufferConverter) {
                             futureDevice = new BufferConverter(this);
+                        } else if (actualDevice instanceof TrianaHouseController) {
+                            futureDevice = new TrianaHouseController(this);
                         } else {
                             throw new UnsupportedOperationException("Copying instances of type "
                                     + actualDevice.getClass().getName() + " not supported.");

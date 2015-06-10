@@ -218,13 +218,16 @@ public class TouchView extends TactilePane {
         bv.setViewModel(viewModel.getBufferVM());
         DeviceView bcv = new DeviceView(BufferConverter.class);
         bcv.setViewModel(viewModel.getBufferConverterVM());
+        DeviceView hcv = new DeviceView(TrianaHouseController.class);
+        hcv.setViewModel(viewModel.getTrianaHouseControllerVM());
         
-        pushDeviceStack(bv, -250);
-        pushDeviceStack(cv, -150);
-        pushDeviceStack(sv, -50);
-        pushDeviceStack(dv, 50);
-        pushDeviceStack(wv, 150);
-        pushDeviceStack(bcv, 250);
+        pushDeviceStack(bv, -300);
+        pushDeviceStack(cv, -200);
+        pushDeviceStack(sv, -100);
+        pushDeviceStack(dv, 0);
+        pushDeviceStack(wv, 100);
+        pushDeviceStack(bcv, 200);
+        pushDeviceStack(hcv, 300);
         
         controlView.setViewModel(viewModel.getControlVM());
         
