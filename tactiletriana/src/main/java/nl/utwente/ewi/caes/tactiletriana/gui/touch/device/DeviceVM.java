@@ -7,12 +7,14 @@ package nl.utwente.ewi.caes.tactiletriana.gui.touch.device;
 
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.deviceconfig.DeviceConfigVM;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleBooleanProperty;
 import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.LoggingEntityVMBase;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseVM;
@@ -58,15 +60,15 @@ public class DeviceVM extends LoggingEntityVMBase {
             }
         }, model.currentConsumptionProperty(), model.stateProperty()));
 
-        // Show config icon if there are parameters to configure, and the device is in a house
+        // Show config icon if there are parameters to configure, and the device is not on the stack
         configIconShown.bind(Bindings.createBooleanBinding(() -> {
-            return deviceConfigVM.getRows().size() > 0 && model.getState() != DeviceBase.State.NOT_IN_HOUSE;
-        }, model.stateProperty()));
+            return deviceConfigVM.getRows().size() > 0 && !isOnStack();
+        }, onStack));
         
-        // Show battery icon if device is in a house, and is a BufferBase
+        // Show battery icon if device is not on the stack, and is a BufferBase
         batteryIconVisible.bind(Bindings.createBooleanBinding(() -> {
-            return model instanceof BufferBase && model.getState() != DeviceBase.State.NOT_IN_HOUSE;
-        }, model.stateProperty()));
+            return model instanceof BufferBase && !isOnStack();
+        }, onStack));
         
     }
 
@@ -175,17 +177,36 @@ public class DeviceVM extends LoggingEntityVMBase {
         return batteryIconVisible.getReadOnlyProperty();
     }
 
-    public boolean isBatteryIconVisible() {
-        return batteryIconVisible.get();
+    public final boolean isBatteryIconVisible() {
+        return batteryIconVisibleProperty().get();
     }
+    
+    /**
+     * Whether the device is on the stack of devices. A device is initialised as
+     * being on the stack, but when it has left it it can never return to the
+     * stack.
+     */
+    private final BooleanProperty onStack = new SimpleBooleanProperty(true);
 
+    public ReadOnlyBooleanProperty onStackProperty() {
+        return onStack;
+    }
+    
+    public final boolean isOnStack() {
+        return onStackProperty().get();
+    }
+    
+    public final void removeFromStack() {
+        onStack.set(false);
+    }
+    
     // EVENT HANDLING
     
     /**
-     * Called when the device view is dropped on a house
+     * Called when the device view is dropped on a house or left it
      *
      * @param house the HouseVM associated with the HouseView that the device
-     * was dropped on
+     * was dropped on, null if it left a house
      */
     public void droppedOnHouse(HouseVM house) {
         if (this.house == house) {
