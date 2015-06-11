@@ -773,18 +773,18 @@ public class ServerConnection implements Runnable, IController {
 
         //Now wait for the timeout period specified or until a SubmitPlanning request has been received. 
         boolean planningReceived = false;
-        log("a");
+    
         int looptime = 0;
         while (!planningReceived && looptime < timeout) {
             log(planningReceived + " " + looptime + " " + timeout);
             //The lastPlanningTime will be updated when the new planning is received
-            log("b");
-            if (this.lastUpdatedPlanning.equals(this.lastRequestPlanning)) {
+          
+            if (this.lastRequestPlanning.equals(this.lastUpdatedPlanning)) {
                 planningReceived = true;
             }
-            log("c");
+         
             try {
-                Thread.sleep(100);
+                Thread.sleep(10);
             } catch (InterruptedException e) {
                 log("Sleep interrupted");
             }
@@ -792,7 +792,7 @@ public class ServerConnection implements Runnable, IController {
             looptime++;
 
         }
-        log("d");
+   
         if (planningReceived) {
             //Planning accepted, going back to Control
             setClientState(ClientState.CONTROL);
@@ -800,7 +800,7 @@ public class ServerConnection implements Runnable, IController {
         } else {
             log("Failed to receive planning from Controller. Timeout expired...");
         }
-        log("e");
+     
 
         return planningReceived;
     }
