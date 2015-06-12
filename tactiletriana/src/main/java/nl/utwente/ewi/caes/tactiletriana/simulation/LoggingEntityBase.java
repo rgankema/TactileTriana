@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.scene.chart.XYChart.Data;
-import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
+import nl.utwente.ewi.caes.tactiletriana.TrianaSettings;
 
 /**
  * Superclass of any class that needs to log a certain value at a certain time.
@@ -52,7 +52,7 @@ public abstract class LoggingEntityBase {
             invalid = true;
 
             // Discard values that won't be shown anymore.
-            if (log.size() > 12 * 60 / SimulationConfig.TICK_MINUTES + 2) {
+            if (log.size() > 12 * 60 / TrianaSettings.TICK_MINUTES + 2) {
                 log.remove(0);
                 log.remove(0);
                 invalid = true;

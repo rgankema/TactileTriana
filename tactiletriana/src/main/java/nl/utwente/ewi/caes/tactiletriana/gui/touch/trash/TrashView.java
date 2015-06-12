@@ -5,16 +5,23 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.touch.trash;
 
-import javafx.scene.image.ImageView;
+import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.layout.StackPane;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 
 /**
  *
  * @author Richard
  */
-public class TrashView extends ImageView {
+public class TrashView extends StackPane {
+    @FXML private Node activeZone;
     
     public TrashView() {
         ViewLoader.load(this);
+    }
+    
+    public Node getActiveZone() {
+        return activeZone;
     }
 }

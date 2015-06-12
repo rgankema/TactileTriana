@@ -6,7 +6,7 @@
 package nl.utwente.ewi.caes.tactiletriana.simulation.devices;
 
 import java.time.LocalDateTime;
-import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
+import nl.utwente.ewi.caes.tactiletriana.TrianaSettings;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.SimulationBase;
 
@@ -28,10 +28,10 @@ public class Buffer extends BufferBase {
     // METHODS
     @Override
     protected void doTick(boolean connected) {
-        int timestep = SimulationConfig.TICK_MINUTES;
+        int timestep = TrianaSettings.TICK_MINUTES;
 
         // Calculate state of charge change based on previous nextConsumption
-        double deltaHours = SimulationConfig.TICK_MINUTES / 60d;
+        double deltaHours = TrianaSettings.TICK_MINUTES / 60d;
         double deltaSOC = getCurrentConsumption() * deltaHours;
         setStateOfCharge(getStateOfCharge() + deltaSOC);
 

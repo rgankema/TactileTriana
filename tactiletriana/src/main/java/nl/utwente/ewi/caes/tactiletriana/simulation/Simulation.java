@@ -15,7 +15,7 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import nl.utwente.ewi.caes.tactiletriana.Concurrent;
 import static nl.utwente.ewi.caes.tactiletriana.Concurrent.runOnJavaFXThreadSynchronously;
-import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
+import nl.utwente.ewi.caes.tactiletriana.TrianaSettings;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.UncontrollableLoad;
 
 /**
@@ -94,7 +94,7 @@ public class Simulation extends SimulationBase {
                 if (this.getState() == SimulationState.RUNNING) {
                     tick();
                 }
-            }, SimulationConfig.SYSTEM_TICK_TIME, SimulationConfig.SYSTEM_TICK_TIME, TimeUnit.MILLISECONDS);
+            }, TrianaSettings.SYSTEM_TICK_TIME, TrianaSettings.SYSTEM_TICK_TIME, TimeUnit.MILLISECONDS);
         }
         setState(SimulationState.RUNNING);
     }
@@ -115,8 +115,7 @@ public class Simulation extends SimulationBase {
         int i = 0;
         for (House house : houses) {
             house.repairFuse();
-            house.getDevices().clear();
-            house.getDevices().add(new UncontrollableLoad(i, this));
+            house.getDevices().removeIf(d -> !(d instanceof UncontrollableLoad));
             i++;
         }
         for (Cable cable : internalCables) {
@@ -167,7 +166,7 @@ public class Simulation extends SimulationBase {
      */
     @Override
     protected void incrementTime() {
-        boolean timeSpanShifted = getTimeScenario().next(SimulationConfig.TICK_MINUTES);
+        boolean timeSpanShifted = getTimeScenario().next(TrianaSettings.TICK_MINUTES);
         setCurrentTime(getTimeScenario().getCurrentTime());
         if (timeSpanShifted) {
 
@@ -182,24 +181,31 @@ public class Simulation extends SimulationBase {
     private void clearAllLogs() {
         for (House house : houses) {
             house.getLog().clear();
+            house.invalid = true;
         }
         for (Node node : internalNodes) {
             node.getLog().clear();
+            node.invalid = true;
         }
         for (Node node : houseNodes) {
             node.getLog().clear();
+            node.invalid = true;
         }
         for (Cable cable : internalCables) {
             cable.getLog().clear();
+            cable.invalid = true;
         }
         for (Cable cable : houseCables) {
             cable.getLog().clear();
+            cable.invalid = true;
         }
         transformer.getLog().clear();
         for (Cable cable : transformer.getCables()) {
             cable.getLog().clear();
+            cable.invalid = true;
         }
         this.getLog().clear();
+        this.invalid = true;
     }
 
     // NESTED ENUMS

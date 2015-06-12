@@ -9,6 +9,8 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -16,10 +18,9 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import nl.utwente.ewi.caes.tactiletriana.Concurrent;
-import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
+import nl.utwente.ewi.caes.tactiletriana.TrianaSettings;
 import nl.utwente.ewi.caes.tactiletriana.api.APIServer;
 import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
-import nl.utwente.ewi.caes.tactiletriana.gui.configuration.scenario.ScenarioVM;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 
 /**
@@ -30,10 +31,10 @@ public class ConfigurationVM {
 
     private static final SimpleBooleanProperty launched = new SimpleBooleanProperty(false);
     private final ObservableList screenIndexList = FXCollections.observableArrayList();
-    private final ScenarioVM scenarioVM = new ScenarioVM();
-
+    
     private Simulation simulation;
-
+    private APIServer server;
+    
     public ConfigurationVM(Simulation simulation) {
         this.simulation = simulation;
 
@@ -81,6 +82,19 @@ public class ConfigurationVM {
         scenarioViewDisable.bind(Bindings.createBooleanBinding(() -> {
             return simulation.getState() != Simulation.SimulationState.STOPPED;
         }, this.simulation.stateProperty()));
+        
+        // update connection info text if a controller has been added to the simulation
+        this.simulation.controllerProperty().addListener(obs -> { 
+            if (simulation.getController() != null) {
+                connectionInfoText.set("Controller connected");
+            } else {
+                if (server == null) {
+                    connectionInfoText.set("Connection closed");
+                } else {
+                    connectionInfoText.set("Waiting for controller to connect...");
+                }
+            }
+        });
     }
 
     // BINDABLE PROPERTIES
@@ -179,20 +193,31 @@ public class ConfigurationVM {
     public ObjectProperty detailScreenSelectionProperty() {
         return this.detailScreenSelection;
     }
+    
+    /**
+     * The text for the server start/stop button
+     */
+    private final ReadOnlyStringWrapper toggleServerButtonText = new ReadOnlyStringWrapper("Start Server");
 
+    public ReadOnlyStringProperty toggleServerButtonTextProperty() {
+        return toggleServerButtonText;
+    }
+    
+    /**
+     * The text for the connection info label
+     */
+    private final ReadOnlyStringWrapper connectionInfoText = new ReadOnlyStringWrapper("Connection closed");
+    
+    public ReadOnlyStringProperty connectionInfoTextProperty() {
+        return connectionInfoText;
+    }
+    
     /**
      *
      * @return an ObservableList of screen indexes
      */
     public ObservableList<Integer> getScreenIndexList() {
         return screenIndexList;
-    }
-
-    /**
-     * @return the VM for the ScenarioView
-     */
-    public ScenarioVM getScenarioVM() {
-        return scenarioVM;
     }
 
     // METHODS
@@ -203,18 +228,19 @@ public class ConfigurationVM {
         StageController.getInstance().setScreenIndexStagesVisible(false);
 
         if (this.simulation.getState() == Simulation.SimulationState.STOPPED) {
-            this.simulation.setTimeScenario(scenarioVM.build());
+            this.simulation.setTimeScenario(TrianaSettings.TIME_SCENARIO);
         }
 
-        APIServer server = new APIServer(Integer.parseInt(portFieldTextProperty().get()), simulation);
-        Concurrent.getExecutorService().submit(server);
-
-        // save the configured timescenario
-        SimulationConfig.SaveTimeScenario(this.simulation.getTimeScenario());
-
-        // save the configuration
-        SimulationConfig.SaveProperties();
-
+        /* Forget saving for now
+        if (launched.get()) {
+            TrianaSettings.FULLSCREEN = fullScreenCheckedProperty().get();
+            if (fullScreenCheckedProperty().get()) {
+                TrianaSettings.TOUCH_SCREEN_ID = (int) touchScreenSelectionProperty().get();
+                TrianaSettings.DETAIL_SCREEN_ID = (int) detailScreenSelectionProperty().get();
+            }
+            TrianaSettings.save(TrianaSettings.DEFAULT_FILE);
+        }*/
+        
         this.simulation.start();
 
         launched.set(true);
@@ -222,5 +248,33 @@ public class ConfigurationVM {
 
     public void reset() {
         StageController.getInstance().resetSimulation();
+    }
+    
+    public void toggleServer() {
+        if (server == null) {
+            server = new APIServer(Integer.parseInt(portFieldTextProperty().get()), simulation);
+            Concurrent.getExecutorService().submit(server);
+            toggleServerButtonText.set("Stop Server");
+            connectionInfoText.set("Waiting for controller to connect...");
+        } else {
+            server.stop();
+            toggleServerButtonText.set("Start Server");
+            connectionInfoText.set("Connection closed");
+            server = null;
+        }
+    }
+    
+    public void loadSettingsFile() {
+        StageController.getInstance().loadSettingsFile();
+        // We can only change the screens if the app hasn't started yet
+        if (!launched.get()) {
+            fullScreenChecked.set(TrianaSettings.FULLSCREEN);
+            if (getScreenIndexList().contains(TrianaSettings.TOUCH_SCREEN_ID)) {
+                touchScreenSelection.set(TrianaSettings.TOUCH_SCREEN_ID);
+            }
+            if (getScreenIndexList().contains(TrianaSettings.DETAIL_SCREEN_ID)) {
+                detailScreenSelection.set(TrianaSettings.DETAIL_SCREEN_ID);
+            }
+        }
     }
 }

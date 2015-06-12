@@ -27,7 +27,7 @@ import javafx.util.Duration;
 import nl.utwente.ewi.caes.tactilefx.control.Anchor;
 import nl.utwente.ewi.caes.tactilefx.control.TactilePane;
 import nl.utwente.ewi.caes.tactilefx.debug.MouseToTouchMapper;
-import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
+import nl.utwente.ewi.caes.tactiletriana.TrianaSettings;
 import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseView;
@@ -188,7 +188,7 @@ public class TouchView extends TactilePane {
         TactilePane.setDraggable(trash, false);
         TactilePane.setAnchor(trash, new Anchor(this, 400, 0, Pos.CENTER, false));
         getChildren().add(trash);
-        getActiveNodes().add(trash);
+        getActiveNodes().add(trash.getActiveZone());
     }
 
     public void setViewModel(TouchVM viewModel) {
@@ -207,28 +207,7 @@ public class TouchView extends TactilePane {
             nvh[i].setViewModel(viewModel.getHouseNodes()[i]);
         }
         
-        DeviceView cv = new DeviceView(ElectricVehicle.class);
-        cv.setViewModel(viewModel.getElectricVehicleVM());
-        DeviceView sv = new DeviceView(SolarPanel.class);
-        sv.setViewModel(viewModel.getSolarPanelVM());
-        DeviceView dv = new DeviceView(DishWasher.class);
-        dv.setViewModel(viewModel.getDishWasherVM());
-        DeviceView wv = new DeviceView(WashingMachine.class);
-        wv.setViewModel(viewModel.getWashingMachineVM());
-        DeviceView bv = new DeviceView(Buffer.class);
-        bv.setViewModel(viewModel.getBufferVM());
-        DeviceView bcv = new DeviceView(BufferConverter.class);
-        bcv.setViewModel(viewModel.getBufferConverterVM());
-        DeviceView hcv = new DeviceView(TrianaHouseController.class);
-        hcv.setViewModel(viewModel.getTrianaHouseControllerVM());
-        
-        pushDeviceStack(bv, -300);
-        pushDeviceStack(cv, -200);
-        pushDeviceStack(sv, -100);
-        pushDeviceStack(dv, 0);
-        pushDeviceStack(wv, 100);
-        pushDeviceStack(bcv, 200);
-        pushDeviceStack(hcv, 300);
+        initDeviceStacks();
         
         controlView.setViewModel(viewModel.getControlVM());
         
@@ -243,7 +222,7 @@ public class TouchView extends TactilePane {
             getChildren().set(1, temp);
             
             // Fade out old night background
-            FadeTransition fade = new FadeTransition(Duration.millis(SimulationConfig.SYSTEM_TICK_TIME * (120 / SimulationConfig.TICK_MINUTES)), temp);
+            FadeTransition fade = new FadeTransition(Duration.millis(TrianaSettings.SYSTEM_TICK_TIME * (120 / TrianaSettings.TICK_MINUTES)), temp);
             fade.setFromValue(1.0);
             fade.setToValue(0.0);
             fade.setOnFinished(e -> { 
@@ -270,6 +249,31 @@ public class TouchView extends TactilePane {
             bgDay.setImage(day);
             bgNight.setImage(night);
         });
+    }
+    
+    private void initDeviceStacks() {
+        DeviceView cv = new DeviceView(ElectricVehicle.class);
+        cv.setViewModel(viewModel.getElectricVehicleVM());
+        DeviceView sv = new DeviceView(SolarPanel.class);
+        sv.setViewModel(viewModel.getSolarPanelVM());
+        DeviceView dv = new DeviceView(DishWasher.class);
+        dv.setViewModel(viewModel.getDishWasherVM());
+        DeviceView wv = new DeviceView(WashingMachine.class);
+        wv.setViewModel(viewModel.getWashingMachineVM());
+        DeviceView bv = new DeviceView(Buffer.class);
+        bv.setViewModel(viewModel.getBufferVM());
+        DeviceView bcv = new DeviceView(BufferConverter.class);
+        bcv.setViewModel(viewModel.getBufferConverterVM());
+        DeviceView hcv = new DeviceView(TrianaHouseController.class);
+        hcv.setViewModel(viewModel.getTrianaHouseControllerVM());
+        
+        pushDeviceStack(bv, -300);
+        pushDeviceStack(cv, -200);
+        pushDeviceStack(sv, -100);
+        pushDeviceStack(dv, 0);
+        pushDeviceStack(wv, 100);
+        pushDeviceStack(bcv, 200);
+        pushDeviceStack(hcv, 300);
     }
     
     private void pushDeviceStack(DeviceView device, double xOffset) {
@@ -336,7 +340,7 @@ public class TouchView extends TactilePane {
         
         // When the device is dropped on the trash bin, remove it
         TactilePane.setOnInArea(group, e -> {
-            if (e.getOther() == trash && !TactilePane.isInUse(group)) {
+            if (e.getOther() == trash.getActiveZone() && !TactilePane.isInUse(group)) {
                 getChildren().remove(group);
                 StageController.getInstance().removeFromChart(device.getViewModel());
             }
@@ -358,5 +362,13 @@ public class TouchView extends TactilePane {
             group.setLayoutX(group.getLayoutX() - deltaX);
             group.setLayoutY(group.getLayoutY() - deltaY);
         });
+    }
+    
+    /**
+     * Removes all devices from the view.
+     */
+    public void reset() {
+        getChildren().removeIf(node -> node instanceof Group);
+        initDeviceStacks();
     }
 }

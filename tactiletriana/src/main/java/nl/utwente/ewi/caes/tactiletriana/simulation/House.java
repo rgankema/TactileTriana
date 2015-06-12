@@ -12,7 +12,7 @@ import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
+import nl.utwente.ewi.caes.tactiletriana.TrianaSettings;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -50,6 +50,8 @@ public class House extends LoggingEntityBase {
                 }
             }
         });
+        
+        TrianaSettings.addSettingsChangedHandler(() -> maximumConsumption.set(TrianaSettings.HOUSE_FUSE_MAX_CURRENT * 230));
     }
 
     /**
@@ -99,7 +101,7 @@ public class House extends LoggingEntityBase {
      * The absolute maximum of power the house can consume/produce. When more
      * than this is consumed, the fuse in the house will blow.
      */
-    private final ReadOnlyDoubleWrapper maximumConsumption = new ReadOnlyDoubleWrapper(230 * SimulationConfig.HOUSE_FUSE_MAX_CURRENT);
+    private final ReadOnlyDoubleWrapper maximumConsumption = new ReadOnlyDoubleWrapper(230 * TrianaSettings.HOUSE_FUSE_MAX_CURRENT);
 
     public ReadOnlyDoubleProperty maximumConsumptionProperty() {
         return maximumConsumption;

@@ -11,7 +11,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
+import nl.utwente.ewi.caes.tactiletriana.TrianaSettings;
 import nl.utwente.ewi.caes.tactiletriana.simulation.*;
 import nl.utwente.ewi.caes.tactiletriana.simulation.data.WeatherData;
 import static nl.utwente.ewi.caes.tactiletriana.Util.*;
@@ -203,7 +203,7 @@ public class SolarPanel extends DeviceBase {
         double[] radianceProfile = weather.getRadianceProfile();
         double[] tempProfile = weather.getTemperatureProfile();
         LocalDateTime time = simulation.getCurrentTime();
-        int timeStepsInDay = (24 * 60) / SimulationConfig.TICK_MINUTES;
+        int timeStepsInDay = (24 * 60) / TrianaSettings.TICK_MINUTES;
 
         if (abstractProfile == null) {
             // No profile yet, calculate the whole thing
@@ -216,7 +216,7 @@ public class SolarPanel extends DeviceBase {
                 double temp = tempProfile[timeStepInYear];
                 double radiance = radianceProfile[timeStepInYear];
                 abstractProfile[ts] = -calculateProductionSquareMeter(temp, radiance, time);
-                time = time.plusMinutes(SimulationConfig.TICK_MINUTES);
+                time = time.plusMinutes(TrianaSettings.TICK_MINUTES);
             }
         } else {
             int oldProfileTickOffset = profileTickOffset;
@@ -230,7 +230,7 @@ public class SolarPanel extends DeviceBase {
                     double temp = tempProfile[timeStepInYear];
                     double radiance = radianceProfile[timeStepInYear];
                     abstractProfile[ts] = -calculateProductionSquareMeter(temp, radiance, time);
-                    time = time.plusMinutes(SimulationConfig.TICK_MINUTES);
+                    time = time.plusMinutes(TrianaSettings.TICK_MINUTES);
                 }
             } else {
                 // Shift the array
@@ -244,7 +244,7 @@ public class SolarPanel extends DeviceBase {
                     double temp = tempProfile[timeStepInYear];
                     double radiance = radianceProfile[timeStepInYear];
                     abstractProfile[ts] = -calculateProductionSquareMeter(temp, radiance, time);
-                    time = time.plusMinutes(SimulationConfig.TICK_MINUTES);
+                    time = time.plusMinutes(TrianaSettings.TICK_MINUTES);
                 }
             }
         }

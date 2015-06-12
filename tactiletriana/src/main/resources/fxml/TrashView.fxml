@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.shape.*?>
 <?import javafx.scene.image.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
@@ -7,9 +8,13 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-
-<fx:root fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" styleClass="trash-view" type="ImageView" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
-   <image>
-      <Image url="@../images/trash.png" />
-   </image>
+<fx:root type="StackPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <ImageView fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" styleClass="trash-view">
+         <image>
+            <Image url="@../images/trash.png" />
+         </image>
+      </ImageView>
+      <Rectangle fx:id="activeZone" arcHeight="5.0" arcWidth="5.0" fill="#ffffff00" height="80.0" stroke="TRANSPARENT" strokeType="INSIDE" width="50.0" />
+   </children>
 </fx:root>

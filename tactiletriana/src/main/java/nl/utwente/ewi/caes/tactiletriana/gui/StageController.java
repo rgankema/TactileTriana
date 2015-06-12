@@ -5,6 +5,7 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.collections.FXCollections;
@@ -12,9 +13,11 @@ import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
+import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import nl.utwente.ewi.caes.tactiletriana.TrianaSettings;
 import nl.utwente.ewi.caes.tactiletriana.gui.detail.DetailVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.detail.DetailView;
 import nl.utwente.ewi.caes.tactiletriana.gui.configuration.ConfigurationVM;
@@ -262,6 +265,17 @@ public final class StageController {
 
     public void resetSimulation() {
         this.simulation.reset();
+        ((TouchView) this.touchStage.getScene().getRoot()).reset();
+        this.detailVM.reset();
+    }
+    
+    public void loadSettingsFile() {
+        FileChooser chooser = new FileChooser();
+        File file = chooser.showOpenDialog(configurationStage);
+        if (file != null) {
+            TrianaSettings.load(file.getAbsolutePath());
+            simulation.setTimeScenario(TrianaSettings.TIME_SCENARIO);
+        }
     }
 
     // HELPER METHODS
