@@ -19,7 +19,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.TimeScenario.TimeSpan;
  */
 public final class SimulationConfig {
 
-    private static Properties properties = new Properties();
+    public static Properties properties = new Properties();
     public static final String CONFIG_FILE = "tactiletriana.config";
 
     public static int TICK_MINUTES;                     // time in minutes that passes in the simulation with each tick
@@ -40,11 +40,12 @@ public final class SimulationConfig {
 
     public static void LoadProperties() {
         try {
+            properties.load(new FileInputStream(CONFIG_FILE));
             TICK_MINUTES = Integer.parseInt(LoadProperty(STR_TICK_MINUTES));
             SYSTEM_TICK_TIME = Integer.parseInt(LoadProperty(STR_SYSTEM_TICK_TIME));
             UNCONTROLLABLE_LOAD_ENABLED = Boolean.parseBoolean(LoadProperty(STR_UNCONTROLLABLE_LOAD_ENABLED));
             HOUSE_FUSE_MAX_CURRENT = Integer.parseInt(LoadProperty(STR_HOUSE_FUSE_MAX_CURRENT));
-            EXTENDED_PARAMETERS = Boolean.parseBoolean(STR_EXTENDED_PARAMETERS);
+            EXTENDED_PARAMETERS = Boolean.parseBoolean(LoadProperty(STR_EXTENDED_PARAMETERS));
         } catch (Exception e) {
             System.out.println("Warning: Could not read the config file.");
             TICK_MINUTES = 5;
@@ -56,7 +57,6 @@ public final class SimulationConfig {
     }
 
     public static String LoadProperty(String title) throws IOException {
-        properties.load(new FileInputStream(CONFIG_FILE));
         return properties.getProperty(title);
     }
 

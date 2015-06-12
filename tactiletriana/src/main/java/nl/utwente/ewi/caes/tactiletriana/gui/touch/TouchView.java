@@ -185,6 +185,7 @@ public class TouchView extends TactilePane {
         
         trash = new TrashView();
         trash.setRotate(90);
+        TactilePane.setDraggable(trash, false);
         TactilePane.setAnchor(trash, new Anchor(this, 400, 0, Pos.CENTER, false));
         getChildren().add(trash);
         getActiveNodes().add(trash);
