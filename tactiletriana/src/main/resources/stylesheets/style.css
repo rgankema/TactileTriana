@@ -72,5 +72,37 @@ application.
 .house-view.on-chart,
 .device-view.on-chart,
 .cable-view.on-chart {
-    -fx-effect: dropshadow(gaussian, white, 10, 0.3, 0, 0);
+    -fx-effect: dropshadow(gaussian, yellow, 10, 0.1, 0, 0);
 }
+
+.house-view-child {
+    -fx-fill: #BDC3CC;
+    -fx-stroke-width:10px;
+}
+
+.fuse-blown .house-view-child {
+    -fx-fill: orangered;
+    -fx-stroke: blue;
+    -fx-stroke-width: 10px;
+/*    -fx-stroke-dash-array: 20 20;
+    -fx-stroke-line-cap: butt;*/
+}
+
+
+.battery-progress {
+    -fx-accent: green;  
+}
+
+.device-view {
+    -fx-background-color: #D6D6D6;
+    -fx-border-color: black;
+    -fx-border-width: 1px;
+}
+
+.control-view-button {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-focus-color: transparent;
+    -fx-label-padding: 15px;
+}
+

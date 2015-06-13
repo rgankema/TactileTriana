@@ -60,7 +60,7 @@ public class CableView extends Group {
         // Bind color in view to load and broken in viewmodel
         line.strokeProperty().bind(Bindings.createObjectBinding(() -> {
             if (viewModel.isBroken()) {
-                return Color.BLACK;
+                return Color.ORANGERED;
             }
 
             double load = viewModel.getLoad();
