@@ -447,7 +447,7 @@ public class ServerConnection implements Runnable, IController {
     }
 
     public void processGetHouses() {
-        log("Processing GetDevices request...");
+        log("Processing GetHouses request...");
         //Get the houses in JSON format
         House[] houses = server.getSimulation().getHouses();
         JSONArray housesJSON = new JSONArray();
@@ -764,6 +764,7 @@ public class ServerConnection implements Runnable, IController {
         //Send the RequestPlanning request
         JSONObject response = new JSONObject();
         Simulation sim = server.getSimulation();
+        //TODO check if the the device parameters have changed
         response.put("category", "request");
         response.put("type", "RequestPlanning");
         response.put("simTime", (sim.getCurrentTime().getDayOfYear() - 1) * 24 * 60 + sim.getCurrentTime().getHour() * 60 + sim.getCurrentTime().getMinute());
