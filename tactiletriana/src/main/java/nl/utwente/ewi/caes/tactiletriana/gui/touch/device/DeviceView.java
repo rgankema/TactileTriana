@@ -80,7 +80,7 @@ public class DeviceView extends StackPane {
         }
 
         this.setBackground(new Background(new BackgroundFill(Color.GREY, CornerRadii.EMPTY, Insets.EMPTY)));
-        this.setBorder(buildBorder(Color.DARKGREY));
+        this.setBorder(buildBorder(Color.BLACK));
     }
 
     public DeviceVM getViewModel() {
@@ -107,17 +107,17 @@ public class DeviceView extends StackPane {
         batteryProgress.visibleProperty().bind(viewModel.batteryIconVisibleProperty());
         batteryProgress.progressProperty().bind(viewModel.stateOfChargeProperty());
 
-        // Bind bordercolor to state
-        this.borderProperty().bind(Bindings.createObjectBinding(() -> {
+        // Bind backgroundcolor to state   
+        this.backgroundProperty().bind(Bindings.createObjectBinding(() -> {
             Color color = Color.DARKGREY;
             if (viewModel.getState() == State.CONSUMING) {
                 color = color.interpolate(Color.RED, viewModel.getLoad());
             } else if (viewModel.getState() == State.PRODUCING) {
                 color = color.interpolate(Color.GREEN, viewModel.getLoad());
             }
-            return buildBorder(color);
+            return new Background(new BackgroundFill((Paint)color, null,null));
         }, viewModel.loadProperty(), viewModel.stateProperty()));
-
+        
         // Handle touch events on config icon
         configIcon.setOnTouchPressed(e -> {
             viewModel.configIconPressed();
@@ -163,6 +163,6 @@ public class DeviceView extends StackPane {
     // HELPER METHODS
     // Returns a Border for a given color
     private Border buildBorder(Paint color) {
-        return new Border(new BorderStroke(color, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(5)));
+        return new Border(new BorderStroke(color, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(1)));
     }
 }

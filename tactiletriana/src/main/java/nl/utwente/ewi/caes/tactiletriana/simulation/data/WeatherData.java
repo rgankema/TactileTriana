@@ -8,7 +8,7 @@ package nl.utwente.ewi.caes.tactiletriana.simulation.data;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
-import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
+import nl.utwente.ewi.caes.tactiletriana.TrianaSettings;
 import static nl.utwente.ewi.caes.tactiletriana.Util.TOTAL_TICKS_IN_YEAR;
 
 /**
@@ -62,7 +62,7 @@ public final class WeatherData implements IWeatherDataProvider {
         }
 
         // Convert to profile with value per timestep   
-        int tickMinutes = SimulationConfig.TICK_MINUTES;
+        int tickMinutes = TrianaSettings.TICK_MINUTES;
 
         temperatureProfile = new double[TOTAL_TICKS_IN_YEAR];
         radianceProfile = new double[TOTAL_TICKS_IN_YEAR];

@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.TreeMap;
-import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
+import nl.utwente.ewi.caes.tactiletriana.TrianaSettings;
 import static nl.utwente.ewi.caes.tactiletriana.Util.TOTAL_TICKS_IN_YEAR;
 import static nl.utwente.ewi.caes.tactiletriana.Util.nextRandomInt;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.BufferConverter;
@@ -67,7 +67,7 @@ public class BufferConverterData implements IDeviceDataProvider<BufferConverter>
         }
 
         // Convert to profile with value per timestep   
-        int tickMinutes = SimulationConfig.TICK_MINUTES;
+        int tickMinutes = TrianaSettings.TICK_MINUTES;
         int minutesInYear = 365 * 24 * 60;
 
         for (int key = 0; key < 6; key++) {

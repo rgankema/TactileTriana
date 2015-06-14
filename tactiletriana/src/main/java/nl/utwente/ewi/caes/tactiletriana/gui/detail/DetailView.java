@@ -117,4 +117,11 @@ public class DetailView extends BorderPane {
         fadeOut.setOnFinished(x -> header.getChildren().remove(notificationView));
         fadeOut.playFromStart();
     }
+    
+    /**
+     * Resets the view to the initial state
+     */
+    public void reset() {
+        viewModel.reset();
+    }
 }

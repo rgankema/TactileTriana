@@ -16,9 +16,11 @@ import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import nl.utwente.ewi.caes.tactiletriana.TrianaSettings;
 import nl.utwente.ewi.caes.tactiletriana.Util;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.Buffer;
+import nl.utwente.ewi.caes.tactiletriana.simulation.devices.BufferConverter;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.ElectricVehicle;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.ElectricVehicle.Model;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.SolarPanel;
@@ -47,7 +49,9 @@ public class DeviceConfigVM {
             initSolarPanel((SolarPanel) device);
         } else if (device instanceof ElectricVehicle) {
             initElectricVehicle((ElectricVehicle) device);
-        } // else no parameters available
+        } else if (device instanceof BufferConverter) {
+            initBufferConverter((BufferConverter) device);
+        }// else no parameters available
     }
 
     private void initBuffer(Buffer buffer) {
@@ -93,6 +97,16 @@ public class DeviceConfigVM {
         DoubleProperty area = solarPanel.areaProperty();
 
         rows.add(new DoubleRow("Area", area, 1, 50, area.asString("%.0f m²")));
+        
+        if (TrianaSettings.EXTENDED_PARAMETERS) {
+            DoubleProperty efficiency = solarPanel.efficiencyProperty();
+            DoubleProperty orientation = solarPanel.orientationProperty();
+            DoubleProperty elevation = solarPanel.elevationProperty();
+            
+            rows.add(new DoubleRow("Efficiency", efficiency, 0, 100, efficiency.asString("%.0f%%")));
+            rows.add(new DoubleRow("Orientation", orientation, 0, 360, orientation.asString("%.0f°")));
+            rows.add(new DoubleRow("Elevation", elevation, 0, 90, elevation.asString("%.0f°")));
+        }
     }
 
     private void initElectricVehicle(ElectricVehicle ev) {
@@ -101,6 +115,14 @@ public class DeviceConfigVM {
         rows.add(new CategoryRow("Model", model, Bindings.createStringBinding(() -> ev.getModelName(), model), Model.values()));
     }
 
+    private void initBufferConverter(BufferConverter bc) {
+        if (TrianaSettings.EXTENDED_PARAMETERS) {
+            DoubleProperty efficiency = bc.COPProperty();
+            
+            rows.add(new DoubleRow("Performance Coefficient", efficiency, 0.5, 10, efficiency.asString("%.1f")));
+        }
+    }
+    
     // PROPERTIES
     
     /**

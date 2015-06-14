@@ -24,7 +24,7 @@ public class Util {
     public static final int TOTAL_TICKS_IN_YEAR;
 
     static {
-        int tickMinutes = SimulationConfig.TICK_MINUTES;
+        int tickMinutes = TrianaSettings.TICK_MINUTES;
         TOTAL_TICKS_IN_YEAR = (365 * 24 * 60 % tickMinutes == 0)
                 ? 365 * 24 * 60 / tickMinutes
                 : 365 * 24 * 60 / tickMinutes + 1;
@@ -70,7 +70,7 @@ public class Util {
      * @return the time step of the year
      */
     public static int toTimeStep(LocalDateTime localDateTime) {
-        return toMinuteOfYear(localDateTime) / SimulationConfig.TICK_MINUTES;
+        return toMinuteOfYear(localDateTime) / TrianaSettings.TICK_MINUTES;
     }
 
     /**

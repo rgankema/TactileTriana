@@ -248,7 +248,6 @@ public class TouchVM {
      * Represents the seasons in a year
      */
     public enum Season {
-
         SPRING,
         SUMMER,
         AUTUMN,
