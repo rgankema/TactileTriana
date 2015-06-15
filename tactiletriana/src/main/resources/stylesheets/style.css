@@ -106,3 +106,27 @@ application.
     -fx-label-padding: 15px;
 }
 
+
+.paused #pauseButton {
+    -fx-background-image: url("../images/play.png");
+}
+
+#pauseButton {
+    -fx-background-image: url("../images/pause.png");
+    -fx-background-repeat: stretch;   
+    -fx-background-size: 50 50;
+    -fx-background-position: center center;
+}
+
+#disableTrianaButton {
+    -fx-background-image: url("../images/notriana.png");
+    -fx-background-repeat: stretch;   
+    -fx-background-size: 50 50;
+    -fx-background-position: center center;
+}
+
+
+.detail-view {
+    
+}
+
