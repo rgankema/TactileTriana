@@ -134,7 +134,6 @@ public class TouchVM {
         InvalidationListener listener = new InvalidationListener() {
             @Override
             public void invalidated(Observable observable) {
-                System.out.println("asdas");
                 if (!device.isOnStack()) {
                     
                     addToDevices(getDeviceVM(device.getModelClass()));

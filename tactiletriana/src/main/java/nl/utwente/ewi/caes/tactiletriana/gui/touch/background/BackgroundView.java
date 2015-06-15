@@ -7,9 +7,14 @@ package nl.utwente.ewi.caes.tactiletriana.gui.touch.background;
 
 import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import nl.utwente.ewi.caes.tactiletriana.GlobalSettings;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
@@ -36,6 +41,9 @@ public class BackgroundView extends StackPane {
     
     public BackgroundView() {
         ViewLoader.load(this);
+        
+        // Need black background for proper fading
+        setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
         
         imageDay.fitWidthProperty().bind(this.widthProperty());
         imageDay.fitHeightProperty().bind(this.heightProperty());

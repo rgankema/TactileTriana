@@ -22,10 +22,6 @@ import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import nl.utwente.ewi.caes.tactilefx.control.Anchor;
 import nl.utwente.ewi.caes.tactilefx.control.TactilePane;
@@ -52,38 +48,45 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.devices.*;
  * @author Richard
  */
 public class TouchView extends TactilePane {
-
-    TransformerView tv;
-    HouseView[] hv;
-    NodeView[] nvh;
-    NodeView[] nvi;
-    CableView[] cvh;
-    CableView[] cvi;
+    private final static Image WARNING_ICON = new Image("images/warning-icon.png", 50, 50, true, true);
     
     private TouchVM viewModel;
     
     @FXML private BackgroundView backgroundView;
     @FXML private TrashView trashView;
+    @FXML private FloatPane networkOverlay;
     @FXML private ControlView controlView;
     
-    private FloatPane networkOverlay;
+    private TransformerView tv;
+    private HouseView[] hv;
+    private NodeView[] nvh;
+    private NodeView[] nvi;
+    private CableView[] cvh;
+    private CableView[] cvi;
     
-    private final Image WARNING_ICON = new Image("images/warning-icon.png", 50, 50, true, true);
     
     public TouchView() {
         ViewLoader.load(this);
 
         addEventFilter(MouseEvent.ANY, new MouseToTouchMapper());
         
-        setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
-        
-        networkOverlay = new FloatPane();
-        networkOverlay.prefWidthProperty().bind(this.widthProperty());
-        networkOverlay.prefHeightProperty().bind(this.heightProperty());
-        
+        // Setup background
         backgroundView.prefWidthProperty().bind(this.widthProperty());
         backgroundView.prefHeightProperty().bind(this.heightProperty());
         
+        // Setup trash view
+        TactilePane.setAnchor(trashView, new Anchor(this, 500, 0, Pos.CENTER, false));
+        getActiveNodes().add(trashView.getActiveZone());
+        
+        // Setup control view
+        TactilePane.setAnchor(controlView, new Anchor(this, 50, 0, Pos.CENTER_LEFT, false));
+        
+        // Setup network overlay
+        networkOverlay.prefWidthProperty().bind(this.widthProperty());
+        networkOverlay.prefHeightProperty().bind(this.heightProperty());
+        
+        // Usually we would do layout in FXML, but in this case it's far easier
+        // to do it in code
         tv = new TransformerView();
         hv = new HouseView[6];
         nvh = new NodeView[6];
@@ -153,8 +156,6 @@ public class TouchView extends TactilePane {
         FloatPane.setMargin(tv, new Insets(200));
         networkOverlay.getChildren().add(tv);
         
-        getChildren().add(networkOverlay);
-        
         List<Node> toBackground = new ArrayList<>();
         for (Node node : networkOverlay.getChildren()) {
             if (node instanceof CableView) {
@@ -164,22 +165,11 @@ public class TouchView extends TactilePane {
         for (Node node : toBackground) {
             node.toBack();
         }
-        for (Node node : getChildren()) {
-            setDraggable(node, false);
-        }
-        
-        TactilePane.setAnchor(trashView, new Anchor(this, 500, 0, Pos.CENTER, false));
-        getActiveNodes().add(trashView.getActiveZone());
-        
-        TactilePane.setAnchor(controlView, new Anchor(this, 50, 0, Pos.CENTER_LEFT, false));
-        controlView.toFront();
     }
 
     public void setViewModel(TouchVM viewModel) {
-        if (this.viewModel != null) {
-            throw new IllegalStateException("ViewModel already set");
-        }
-
+        if (this.viewModel != null) throw new IllegalStateException("ViewModel already set");
+        
         this.viewModel = viewModel;
         
         // Set view models of children
@@ -204,36 +194,31 @@ public class TouchView extends TactilePane {
         for (DeviceVM device : viewModel.getDevices()) {
             pushDeviceStack(device);
         }
-        viewModel.getDevices().addListener(new ListChangeListener<DeviceVM>() {
-
-            @Override
-            public void onChanged(ListChangeListener.Change<? extends DeviceVM> c) {
-                
-            System.out.println("asd");
-                while (c.next()) {
-                    for (DeviceVM device : c.getAddedSubList()) {
-                        pushDeviceStack(device);
-                    }
-                    for (DeviceVM device : c.getRemoved()) {
-                        for (Iterator<Node> it = getChildren().iterator(); it.hasNext();) {
-                            Node node = it.next();
-                            if (node instanceof DeviceView) {
-                                DeviceView dv = (DeviceView) node;
-                                if (dv.getViewModel() == device) {
-                                    it.remove();
-                                    break;
-                                }
+        viewModel.getDevices().addListener((ListChangeListener.Change<? extends DeviceVM> c) -> {
+            while (c.next()) {
+                for (DeviceVM device : c.getAddedSubList()) {
+                    pushDeviceStack(device);
+                }
+                for (DeviceVM device : c.getRemoved()) {
+                    for (Iterator<Node> it = getChildren().iterator(); it.hasNext();) {
+                        Node node = it.next();
+                        if (node instanceof DeviceView) {
+                            DeviceView dv = (DeviceView) node;
+                            if (dv.getViewModel() == device) {
+                                it.remove();
+                                break;
                             }
                         }
                     }
                 }
             }
-            
         });
     }
     
+    // HELP METHODS
+    
+    // Creates a new DeviceView for a DeviceVM and places it on the appropriate stack
     private void pushDeviceStack(DeviceVM deviceVM) {
-        System.out.println("asd");
         // Get xOffset based on type of device
         int xOffset = 0;
         Class type = deviceVM.getModelClass();
