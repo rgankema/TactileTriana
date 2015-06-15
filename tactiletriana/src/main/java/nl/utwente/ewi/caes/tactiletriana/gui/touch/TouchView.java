@@ -6,12 +6,15 @@
 package nl.utwente.ewi.caes.tactiletriana.gui.touch;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.PauseTransition;
 import javafx.animation.TranslateTransition;
 import javafx.beans.binding.Bindings;
+import javafx.beans.value.ObservableBooleanValue;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -19,10 +22,6 @@ import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import nl.utwente.ewi.caes.tactilefx.control.Anchor;
 import nl.utwente.ewi.caes.tactilefx.control.TactilePane;
@@ -35,6 +34,7 @@ import nl.utwente.ewi.caes.tactiletriana.gui.customcontrols.FloatPane;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.background.BackgroundView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.cable.CableView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.control.ControlView;
+import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.node.NodeView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.transformer.TransformerView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.trash.TrashView;
@@ -48,38 +48,45 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.devices.*;
  * @author Richard
  */
 public class TouchView extends TactilePane {
-
-    TransformerView tv;
-    HouseView[] hv;
-    NodeView[] nvh;
-    NodeView[] nvi;
-    CableView[] cvh;
-    CableView[] cvi;
+    private final static Image WARNING_ICON = new Image("images/warning-icon.png", 50, 50, true, true);
     
     private TouchVM viewModel;
     
     @FXML private BackgroundView backgroundView;
     @FXML private TrashView trashView;
+    @FXML private FloatPane networkOverlay;
     @FXML private ControlView controlView;
     
-    private FloatPane networkOverlay;
+    private TransformerView tv;
+    private HouseView[] hv;
+    private NodeView[] nvh;
+    private NodeView[] nvi;
+    private CableView[] cvh;
+    private CableView[] cvi;
     
-    private final Image WARNING_ICON = new Image("images/warning-icon.png", 50, 50, true, true);
     
     public TouchView() {
         ViewLoader.load(this);
 
         addEventFilter(MouseEvent.ANY, new MouseToTouchMapper());
         
-        setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
-        
-        networkOverlay = new FloatPane();
-        networkOverlay.prefWidthProperty().bind(this.widthProperty());
-        networkOverlay.prefHeightProperty().bind(this.heightProperty());
-        
+        // Setup background
         backgroundView.prefWidthProperty().bind(this.widthProperty());
         backgroundView.prefHeightProperty().bind(this.heightProperty());
         
+        // Setup trash view
+        TactilePane.setAnchor(trashView, new Anchor(this, 500, 0, Pos.CENTER, false));
+        getActiveNodes().add(trashView.getActiveZone());
+        
+        // Setup control view
+        TactilePane.setAnchor(controlView, new Anchor(this, 50, 0, Pos.CENTER_LEFT, false));
+        
+        // Setup network overlay
+        networkOverlay.prefWidthProperty().bind(this.widthProperty());
+        networkOverlay.prefHeightProperty().bind(this.heightProperty());
+        
+        // Usually we would do layout in FXML, but in this case it's far easier
+        // to do it in code
         tv = new TransformerView();
         hv = new HouseView[6];
         nvh = new NodeView[6];
@@ -149,8 +156,6 @@ public class TouchView extends TactilePane {
         FloatPane.setMargin(tv, new Insets(200));
         networkOverlay.getChildren().add(tv);
         
-        getChildren().add(networkOverlay);
-        
         List<Node> toBackground = new ArrayList<>();
         for (Node node : networkOverlay.getChildren()) {
             if (node instanceof CableView) {
@@ -160,22 +165,11 @@ public class TouchView extends TactilePane {
         for (Node node : toBackground) {
             node.toBack();
         }
-        for (Node node : getChildren()) {
-            setDraggable(node, false);
-        }
-        
-        TactilePane.setAnchor(trashView, new Anchor(this, 500, 0, Pos.CENTER, false));
-        getActiveNodes().add(trashView.getActiveZone());
-        
-        TactilePane.setAnchor(controlView, new Anchor(this, 50, 0, Pos.CENTER_LEFT, false));
-        controlView.toFront();
     }
 
     public void setViewModel(TouchVM viewModel) {
-        if (this.viewModel != null) {
-            throw new IllegalStateException("ViewModel already set");
-        }
-
+        if (this.viewModel != null) throw new IllegalStateException("ViewModel already set");
+        
         this.viewModel = viewModel;
         
         // Set view models of children
@@ -190,73 +184,76 @@ public class TouchView extends TactilePane {
             nvi[i].setViewModel(viewModel.getInternalNodes()[i]);
             nvh[i].setViewModel(viewModel.getHouseNodes()[i]);
             
-            ImageView warning = new ImageView(WARNING_ICON);
-            TactilePane.setDraggable(warning, false);
-            TactilePane.setAnchor(warning, new Anchor(hv[i], Pos.CENTER));
-            warning.visibleProperty().bind(viewModel.getHouses()[i].fuseBlownProperty());
-            getChildren().add(warning);
-            rotateNode(warning);
-            
-            warning = new ImageView(WARNING_ICON);
-            TactilePane.setDraggable(warning, false);
-            TactilePane.setAnchor(warning, new Anchor(cvi[i], Pos.CENTER));
-            warning.visibleProperty().bind(viewModel.getInternalCables()[i].brokenProperty());
-            getChildren().add(warning);
-            rotateNode(warning);
-            
-            warning = new ImageView(WARNING_ICON);
-            TactilePane.setDraggable(warning, false);
-            TactilePane.setAnchor(warning, new Anchor(cvh[i], Pos.CENTER));
-            warning.visibleProperty().bind(viewModel.getHouseCables()[i].brokenProperty());
-            getChildren().add(warning);
-            rotateNode(warning);
+            // Anchor warning icons to houses and cables
+            addWarningIcon(hv[i], viewModel.getHouses()[i].fuseBlownProperty());
+            addWarningIcon(cvi[i], viewModel.getInternalCables()[i].brokenProperty());
+            addWarningIcon(cvh[i], viewModel.getHouseCables()[i].brokenProperty());
         }
         
-        initDeviceStacks();
+        // Populate the device stacks
+        for (DeviceVM device : viewModel.getDevices()) {
+            pushDeviceStack(device);
+        }
+        viewModel.getDevices().addListener((ListChangeListener.Change<? extends DeviceVM> c) -> {
+            while (c.next()) {
+                for (DeviceVM device : c.getAddedSubList()) {
+                    pushDeviceStack(device);
+                }
+                for (DeviceVM device : c.getRemoved()) {
+                    for (Iterator<Node> it = getChildren().iterator(); it.hasNext();) {
+                        Node node = it.next();
+                        if (node instanceof DeviceView) {
+                            DeviceView dv = (DeviceView) node;
+                            if (dv.getViewModel() == device) {
+                                it.remove();
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
     
-    private void initDeviceStacks() {
-        DeviceView cv = new DeviceView(ElectricVehicle.class);
-        cv.setViewModel(viewModel.getElectricVehicleVM());
-        DeviceView sv = new DeviceView(SolarPanel.class);
-        sv.setViewModel(viewModel.getSolarPanelVM());
-        DeviceView dv = new DeviceView(DishWasher.class);
-        dv.setViewModel(viewModel.getDishWasherVM());
-        DeviceView wv = new DeviceView(WashingMachine.class);
-        wv.setViewModel(viewModel.getWashingMachineVM());
-        DeviceView bv = new DeviceView(Buffer.class);
-        bv.setViewModel(viewModel.getBufferVM());
-        DeviceView bcv = new DeviceView(BufferConverter.class);
-        bcv.setViewModel(viewModel.getBufferConverterVM());
-        DeviceView hcv = new DeviceView(TrianaHouseController.class);
-        hcv.setViewModel(viewModel.getTrianaHouseControllerVM());
-        
-        pushDeviceStack(bv, -300);
-        pushDeviceStack(cv, -200);
-        pushDeviceStack(sv, -100);
-        pushDeviceStack(dv, 0);
-        pushDeviceStack(wv, 100);
-        pushDeviceStack(bcv, 200);
-        pushDeviceStack(hcv, 300);
-    }
+    // HELP METHODS
     
-    private void pushDeviceStack(DeviceView device, double xOffset) {
+    // Creates a new DeviceView for a DeviceVM and places it on the appropriate stack
+    private void pushDeviceStack(DeviceVM deviceVM) {
+        // Get xOffset based on type of device
+        int xOffset = 0;
+        Class type = deviceVM.getModelClass();
+        if (type == Buffer.class) {
+            xOffset = -300;
+        } else if (type == ElectricVehicle.class) {
+            xOffset = -200;
+        } else if (type == SolarPanel.class) {
+            xOffset = -100;
+        } else if (type == DishWasher.class) {
+            xOffset = 0;
+        } else if (type == WashingMachine.class) {
+            xOffset = 100;
+        } else if (type == BufferConverter.class) {
+            xOffset = 200;
+        } else if (type == TrianaHouseController.class) {
+            xOffset = 300;
+        }
         
+        // Build new device view
+        DeviceView device = new DeviceView(type);
+        device.setViewModel(deviceVM);
+        TactilePane.setAnchor(device, new Anchor(this, xOffset, 0, Pos.CENTER, false));
+        rotateNode(device);
         // Animate new device
         FadeTransition ft = new FadeTransition(Duration.millis(500), device);
         ft.setFromValue(0);
         ft.setToValue(1);
         ft.playFromStart();
         // Add device to pane, in background
-        getChildren().add(2, device);
+        getChildren().add(3, device);
         // Track device
         getActiveNodes().add(device);
        
-        TactilePane.setAnchor(device, new Anchor(this, xOffset, 0, Pos.CENTER, false));
-        
-        // Rotate device
-        rotateNode(device);
-
+        // Animation that moves device to trash bin if it's been unused for too long
         final TranslateTransition transition = new TranslateTransition(Duration.millis(1000), device);
         transition.setInterpolator(Interpolator.EASE_IN);
         final PauseTransition pause = new PauseTransition(Duration.millis(3500));
@@ -266,15 +263,11 @@ public class TouchView extends TactilePane {
             transition.play();
         });
         
+        // If device is not in use and collides with house, connect to house.
+        // Else, if device is not in use, start timer to move it to trash.
+        // Else (if device is being used) stop that timer.
         TactilePane.inUseProperty(device).addListener(obs -> {
-            if (device.getViewModel().isOnStack()) {
-                // When device is being used for the first time, add a new one to the stack
-                device.getViewModel().removeFromStack();
-                DeviceView newDevice = new DeviceView(device.getViewModel().getModelClass());
-                newDevice.setViewModel(viewModel.getDeviceVM(device.getViewModel().getModelClass()));
-                pushDeviceStack(newDevice, xOffset);
-            } else if (!TactilePane.isInUse(device)) {
-                // When device collides with a house, connect it
+            if (!TactilePane.isInUse(device)) {
                 if (TactilePane.getNodesColliding(device).stream().anyMatch(node -> node instanceof HouseView)) {
                     for (Node node : TactilePane.getNodesColliding(device)) {
                         if (node instanceof HouseView) {
@@ -317,14 +310,17 @@ public class TouchView extends TactilePane {
         });
     }
     
-    /**
-     * Removes all devices from the view.
-     */
-    public void reset() {
-        getChildren().removeIf(node -> node instanceof DeviceView);
-        initDeviceStacks();
+    // Adds a warning icon to a Node that shows when the showWarningBinding is true
+    private void addWarningIcon(Node node, ObservableBooleanValue showWarningBinding) {
+        ImageView warning = new ImageView(WARNING_ICON);
+        TactilePane.setDraggable(warning, false);
+        TactilePane.setAnchor(warning, new Anchor(node, Pos.CENTER));
+        warning.visibleProperty().bind(showWarningBinding);
+        getChildren().add(warning);
+        rotateNode(warning);
     }
     
+    // Adds a listener to the node that will make it rotate towards the edge of the screen that its closest to
     private void rotateNode(Node node) {
         node.rotateProperty().bind(Bindings.createDoubleBinding(() -> {
             double rotate = -getHeight() / 2 + node.getBoundsInLocal().getHeight() / 2 + node.getLayoutY() + node.getTranslateY();

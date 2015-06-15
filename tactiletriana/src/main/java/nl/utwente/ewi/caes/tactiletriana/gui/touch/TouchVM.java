@@ -5,6 +5,8 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.touch;
 
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.background.BackgroundVM;
@@ -72,6 +74,8 @@ public class TouchVM {
         this.control = new ControlVM(model);
         this.background = new BackgroundVM(model);
         this.devices = FXCollections.observableArrayList();
+        
+        reset();
     }
 
     // VIEWMODELS
@@ -99,11 +103,49 @@ public class TouchVM {
         return houses;
     }
     
-    //public ObservableList<DeviceVM> getDevices() {
-    //    return devices;
-    //}
+    public ObservableList<DeviceVM> getDevices() {
+        return devices;
+    }
 
-    public DeviceVM getDeviceVM(Class<? extends DeviceBase> deviceClass) {
+    public ControlVM getControlVM() {
+        return this.control;
+    }
+    
+    public BackgroundVM getBackgroundVM() {
+        return this.background;
+    }
+    
+    // PUBLIC METHODS
+    
+    public void reset() {
+        devices.clear();
+        addToDevices(getSolarPanelVM());
+        addToDevices(getElectricVehicleVM());
+        addToDevices(getDishWasherVM());
+        addToDevices(getWashingMachineVM());
+        addToDevices(getBufferVM());
+        addToDevices(getBufferConverterVM());
+        addToDevices(getTrianaHouseControllerVM());
+    }
+    
+    // HELP METHODS
+    
+    private void addToDevices(DeviceVM device) {
+        InvalidationListener listener = new InvalidationListener() {
+            @Override
+            public void invalidated(Observable observable) {
+                if (!device.isOnStack()) {
+                    
+                    addToDevices(getDeviceVM(device.getModelClass()));
+                    device.onStackProperty().removeListener(this);
+                }
+            }
+        };
+        device.onStackProperty().addListener(listener);
+        devices.add(device);
+    }
+    
+    private DeviceVM getDeviceVM(Class<? extends DeviceBase> deviceClass) {
         if (deviceClass.equals(SolarPanel.class)) {
             return getSolarPanelVM();
         } else if (deviceClass.equals(ElectricVehicle.class)) {
@@ -122,39 +164,31 @@ public class TouchVM {
         return null;
     }
 
-    public DeviceVM getSolarPanelVM() {
+    private DeviceVM getSolarPanelVM() {
         return new DeviceVM(new SolarPanel(model));
     }
 
-    public DeviceVM getElectricVehicleVM() {
+    private DeviceVM getElectricVehicleVM() {
         return new DeviceVM(new ElectricVehicle(model));
     }
 
-    public DeviceVM getDishWasherVM() {
+    private DeviceVM getDishWasherVM() {
         return new DeviceVM(new DishWasher(model));
     }
 
-    public DeviceVM getWashingMachineVM() {
+    private DeviceVM getWashingMachineVM() {
         return new DeviceVM(new WashingMachine(model));
     }
 
-    public DeviceVM getBufferVM() {
+    private DeviceVM getBufferVM() {
         return new DeviceVM(new Buffer(model));
     }
 
-    public DeviceVM getBufferConverterVM() {
+    private DeviceVM getBufferConverterVM() {
         return new DeviceVM(new BufferConverter(model));
     }
     
-    public DeviceVM getTrianaHouseControllerVM() {
+    private DeviceVM getTrianaHouseControllerVM() {
         return new DeviceVM(new TrianaHouseController(model));
-    }
-
-    public ControlVM getControlVM() {
-        return this.control;
-    }
-    
-    public BackgroundVM getBackgroundVM() {
-        return this.background;
     }
 }

@@ -62,7 +62,7 @@ public class BufferConverterData implements IDeviceDataProvider<BufferConverter>
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException("Error while heat demand dataset", e);
+            throw new RuntimeException("Error while reading heat demand dataset", e);
         }
 
         // Convert to profile with value per timestep   

@@ -23,6 +23,7 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import nl.utwente.ewi.caes.tactilefx.control.TactilePane;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 import nl.utwente.ewi.caes.tactiletriana.gui.events.EventUtil;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceVM.State;
@@ -81,6 +82,8 @@ public class DeviceView extends StackPane {
 
         this.setBackground(new Background(new BackgroundFill(Color.GREY, CornerRadii.EMPTY, Insets.EMPTY)));
         this.setBorder(buildBorder(Color.BLACK));
+        
+        TactilePane.inUseProperty(this).addListener(obs -> viewModel.removeFromStack());
     }
 
     public DeviceVM getViewModel() {
