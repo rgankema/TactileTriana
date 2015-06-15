@@ -764,7 +764,16 @@ public class ServerConnection implements Runnable, IController {
         //Send the RequestPlanning request
         JSONObject response = new JSONObject();
         Simulation sim = server.getSimulation();
-        //TODO check if the the device parameters have changed
+        //Check if the the device parameters have changed
+        boolean parametersHaveChanged = false;
+        for (DeviceBase device : sim.getDevices()) {
+            if(device.parametersHaveChanged()) {
+                parametersHaveChanged = true;
+                break;
+            }
+        }
+        
+        response.put("devicesChanged", parametersHaveChanged);
         response.put("category", "request");
         response.put("type", "RequestPlanning");
         response.put("simTime", (sim.getCurrentTime().getDayOfYear() - 1) * 24 * 60 + sim.getCurrentTime().getHour() * 60 + sim.getCurrentTime().getMinute());
