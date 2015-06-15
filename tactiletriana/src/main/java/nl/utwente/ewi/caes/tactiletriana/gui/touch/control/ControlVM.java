@@ -56,6 +56,13 @@ public class ControlVM {
         }
     }
     
+    /**
+     * Toggles Triana from on to off and vice versa
+     */
+    public void toggleTriana() {
+        
+    }
+    
     
     
 }

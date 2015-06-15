@@ -37,9 +37,11 @@ public class BackgroundView extends StackPane {
         
         imageDay.fitWidthProperty().bind(this.widthProperty());
         imageDay.fitHeightProperty().bind(this.heightProperty());
+        imageDay.setPreserveRatio(false);
         
         imageNight.fitWidthProperty().bind(this.widthProperty());
         imageNight.fitHeightProperty().bind(this.heightProperty());
+        imageNight.setPreserveRatio(false);
     }
     
     public void setViewModel(BackgroundVM viewModel) {

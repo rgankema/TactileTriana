@@ -10,12 +10,16 @@
 <?import nl.utwente.ewi.caes.tactiletriana.gui.touch.node.*?>
 <?import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.*?>
 <?import nl.utwente.ewi.caes.tactiletriana.gui.touch.background.*?>
+<?import nl.utwente.ewi.caes.tactiletriana.gui.touch.trash.*?>
+<?import nl.utwente.ewi.caes.tactiletriana.gui.touch.control.*?>
 
 <fx:root styleClass="touch-view" type="TactilePane" fx:id="root" bordersCollide="true" proximityThreshold="0"
          minWidth="1600" minHeight="900" 
          xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
     
     <BackgroundView fx:id="backgroundView" TactilePane.draggable="false" />
+    <TrashView fx:id="trashView" TactilePane.draggable="false" rotate="90" />
+    <ControlView fx:id="controlView" TactilePane.draggable="false" rotate="90" />
     
     <!-- Most of the children of this view are added in the corresponding .java file -->
 </fx:root>

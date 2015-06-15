@@ -10,6 +10,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
@@ -29,6 +30,7 @@ public class ConfigurationView extends BorderPane {
     @FXML private Button toggleServerButton;
     @FXML private Button loadSettingsButton;
     @FXML private Label connectionInfoLabel;
+    @FXML private TextArea textArea;
     
     private ConfigurationVM viewModel;
 
@@ -58,6 +60,7 @@ public class ConfigurationView extends BorderPane {
         resetButton.disableProperty().bind(viewModel.resetButtonDisabledProperty());
         toggleServerButton.textProperty().bind(viewModel.toggleServerButtonTextProperty());
         connectionInfoLabel.textProperty().bind(viewModel.connectionInfoTextProperty());
+        textArea.textProperty().bind(viewModel.settingsTextProperty());
         
         // Event handling
         startButton.setOnAction(e -> viewModel.start());

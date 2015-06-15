@@ -33,7 +33,8 @@ public class ControlView extends HBox {
         this.viewModel = viewModel;
 
         pauseButton.textProperty().bind(viewModel.pauseButtonTextProperty());
-
         pauseButton.setOnAction(e -> viewModel.toggleSimulationState());
+        
+        disableTrianaButton.setOnAction(e -> viewModel.toggleTriana());
     }
 }

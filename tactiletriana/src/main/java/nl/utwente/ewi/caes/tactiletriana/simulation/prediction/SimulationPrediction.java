@@ -195,6 +195,8 @@ public class SimulationPrediction extends SimulationBase {
                             futureDevice = new BufferConverter(this);
                         } else if (actualDevice instanceof TrianaHouseController) {
                             futureDevice = new TrianaHouseController(this);
+                        } else if (actualDevice instanceof UncontrollableLoad) {
+                            futureDevice = new UncontrollableLoad(((UncontrollableLoad)actualDevice).getProfileNumber(), this);
                         } else {
                             throw new UnsupportedOperationException("Copying instances of type "
                                     + actualDevice.getClass().getName() + " not supported.");

@@ -31,6 +31,7 @@ public final class TrianaSettings {
     private static final String STR_TOUCH_SCREEN_ID = "TOUCH_SCREEN_ID";
     private static final String STR_DETAIL_SCREEN_ID = "DETAIL_SCREEN_ID";
     private static final String STR_FULLSCREEN = "FULLSCREEN";
+    private static final String STR_UNCONTROLLABLE_LOAD_ENABLED = "UNCONTROLLABLE_LOAD_ENABLED";
     
     // VARIABLES
     private static final List<Runnable> callbacks = new ArrayList<>();
@@ -45,7 +46,6 @@ public final class TrianaSettings {
     public static int TOUCH_SCREEN_ID = 1;
     public static int DETAIL_SCREEN_ID = 1;
     public static boolean FULLSCREEN = true;
- 
     
     /**
      * Loads the settings from a given file path.
@@ -71,6 +71,7 @@ public final class TrianaSettings {
             FULLSCREEN = Boolean.parseBoolean(loadProperty(STR_FULLSCREEN));
             TOUCH_SCREEN_ID = Integer.parseInt(loadProperty(STR_TOUCH_SCREEN_ID));
             DETAIL_SCREEN_ID = Integer.parseInt(loadProperty(STR_DETAIL_SCREEN_ID));
+            UNCONTROLLABLE_LOAD_ENABLED = Boolean.parseBoolean(loadProperty(STR_UNCONTROLLABLE_LOAD_ENABLED));
         } catch (NumberFormatException | NullPointerException e) {
             System.err.println("Warning: Error while parsing one of the properties, using default values for remaining properties.");
         } finally {
@@ -100,6 +101,7 @@ public final class TrianaSettings {
         saveProperty(STR_FULLSCREEN, FULLSCREEN);
         saveProperty(STR_TOUCH_SCREEN_ID, TOUCH_SCREEN_ID);
         saveProperty(STR_DETAIL_SCREEN_ID, DETAIL_SCREEN_ID);
+        saveProperty(STR_UNCONTROLLABLE_LOAD_ENABLED, UNCONTROLLABLE_LOAD_ENABLED);
         
         try (FileOutputStream outputStream = new FileOutputStream(configFile)) {
             properties.store(outputStream, null);
@@ -158,5 +160,16 @@ public final class TrianaSettings {
      */
     public static void removeSettingsChangedHandler(Runnable handler) {
         callbacks.remove(handler);
+    }
+    
+    public static String settingsToString() {
+        StringBuilder sb = new StringBuilder();
+        for (String key : properties.stringPropertyNames()) {
+            sb.append(key);
+            sb.append("=");
+            sb.append(properties.getProperty(key));
+            sb.append('\n');
+        }
+        return sb.toString();
     }
 }

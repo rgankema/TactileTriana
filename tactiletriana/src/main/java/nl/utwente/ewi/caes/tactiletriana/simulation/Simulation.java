@@ -115,7 +115,10 @@ public class Simulation extends SimulationBase {
         int i = 0;
         for (House house : houses) {
             house.repairFuse();
-            house.getDevices().removeIf(d -> !(d instanceof UncontrollableLoad));
+            house.getDevices().clear();
+            if (TrianaSettings.UNCONTROLLABLE_LOAD_ENABLED) {
+                house.getDevices().add(new UncontrollableLoad(i, this));
+            }
             i++;
         }
         for (Cable cable : internalCables) {

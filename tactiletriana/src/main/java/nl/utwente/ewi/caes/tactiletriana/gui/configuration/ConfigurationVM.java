@@ -95,9 +95,22 @@ public class ConfigurationVM {
                 }
             }
         });
+        
+        // update settings when new ones have been loaded
+        TrianaSettings.addSettingsChangedHandler(() -> updateSettingsText());
+        updateSettingsText();
     }
 
     // BINDABLE PROPERTIES
+    /**
+     * The text to be shown in the settings text area
+     */
+    private final ReadOnlyStringWrapper settingsText = new ReadOnlyStringWrapper();
+    
+    public ReadOnlyStringProperty settingsTextProperty() {
+        return settingsText;
+    }
+    
     /**
      * Whether the Scenario view is enabled
      */
@@ -276,5 +289,9 @@ public class ConfigurationVM {
                 detailScreenSelection.set(TrianaSettings.DETAIL_SCREEN_ID);
             }
         }
+    }
+    
+    private void updateSettingsText() {
+        settingsText.set(TrianaSettings.settingsToString());
     }
 }

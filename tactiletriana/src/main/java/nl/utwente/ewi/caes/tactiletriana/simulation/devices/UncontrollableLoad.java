@@ -5,6 +5,8 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation.devices;
 
+import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.ReadOnlyIntegerWrapper;
 import nl.utwente.ewi.caes.tactiletriana.TrianaSettings;
 import static nl.utwente.ewi.caes.tactiletriana.Util.toTimeStep;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
@@ -22,7 +24,6 @@ public class UncontrollableLoad extends DeviceBase {
 
     public static final String API_PROFILE = "profile";
 
-    private final int profileNumber;
     private final IDeviceDataProvider<UncontrollableLoad> data;
 
     /**
@@ -38,16 +39,33 @@ public class UncontrollableLoad extends DeviceBase {
             throw new IllegalArgumentException("profileNumber must be in the range of 0 to 5");
         }
 
-        this.profileNumber = profileNumber;
         this.data = UncontrollableData.getInstance();
-
+        this.profileNumber.set(profileNumber);
+        
         // Register API properties
         registerAPIParameter(API_PROFILE);
+        
+        // Register properties for prediction
+        registerProperty(this.profileNumber);
     }
+    
+    // PROPERTIES
+    
+    private final ReadOnlyIntegerWrapper profileNumber = new ReadOnlyIntegerWrapper();
+    
+    public ReadOnlyIntegerProperty profileNumberProperty() {
+        return profileNumber.getReadOnlyProperty();
+    }
+    
+    public final int getProfileNumber() {
+        return profileNumber.get();
+    }
+    
+    // METHODS
 
     @Override
     public void doTick(boolean connected) {
-        setCurrentConsumption(data.getProfile(profileNumber)[toTimeStep(simulation.getCurrentTime())]);
+        setCurrentConsumption(data.getProfile(getProfileNumber())[toTimeStep(simulation.getCurrentTime())]);
     }
 
     @Override
@@ -57,7 +75,7 @@ public class UncontrollableLoad extends DeviceBase {
 
         int time = toTimeStep(simulation.getCurrentTime());
         for (int i = time; i < time + 24 * 60 / TrianaSettings.TICK_MINUTES; i++) {
-            jsonProfile.add(data.getProfile(profileNumber)[i]);
+            jsonProfile.add(data.getProfile(getProfileNumber())[i]);
         }
         result.put(API_PROFILE, jsonProfile);
         return result;

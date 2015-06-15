@@ -15,7 +15,6 @@ import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -60,9 +59,10 @@ public class TouchView extends TactilePane {
     private TouchVM viewModel;
     
     @FXML private BackgroundView backgroundView;
+    @FXML private TrashView trashView;
+    @FXML private ControlView controlView;
+    
     private FloatPane networkOverlay;
-    private ControlView controlView;
-    private TrashView trash;
     
     private final Image WARNING_ICON = new Image("images/warning-icon.png", 50, 50, true, true);
     
@@ -76,12 +76,6 @@ public class TouchView extends TactilePane {
         networkOverlay = new FloatPane();
         networkOverlay.prefWidthProperty().bind(this.widthProperty());
         networkOverlay.prefHeightProperty().bind(this.heightProperty());
-        
-        controlView = new ControlView();
-        controlView.setRotate(90);
-        FloatPane.setAlignment(controlView, Pos.CENTER_LEFT);
-        FloatPane.setMargin(controlView, new Insets(25));
-        networkOverlay.getChildren().add(controlView);
         
         backgroundView.prefWidthProperty().bind(this.widthProperty());
         backgroundView.prefHeightProperty().bind(this.heightProperty());
@@ -170,12 +164,11 @@ public class TouchView extends TactilePane {
             setDraggable(node, false);
         }
         
-        trash = new TrashView();
-        trash.setRotate(90);
-        TactilePane.setDraggable(trash, false);
-        TactilePane.setAnchor(trash, new Anchor(this, 500, 0, Pos.CENTER, false));
-        getChildren().add(trash);
-        getActiveNodes().add(trash.getActiveZone());
+        TactilePane.setAnchor(trashView, new Anchor(this, 500, 0, Pos.CENTER, false));
+        getActiveNodes().add(trashView.getActiveZone());
+        
+        TactilePane.setAnchor(controlView, new Anchor(this, 50, 0, Pos.CENTER_LEFT, false));
+        controlView.toFront();
     }
 
     public void setViewModel(TouchVM viewModel) {
@@ -268,8 +261,8 @@ public class TouchView extends TactilePane {
         transition.setInterpolator(Interpolator.EASE_IN);
         final PauseTransition pause = new PauseTransition(Duration.millis(3500));
         pause.setOnFinished(e -> { 
-            transition.setByX(trash.getLayoutX() - device.getLayoutX());
-            transition.setByY(trash.getLayoutY() - device.getLayoutY());
+            transition.setByX(trashView.getLayoutX() - device.getLayoutX());
+            transition.setByY(trashView.getLayoutY() - device.getLayoutY());
             transition.play();
         });
         
@@ -300,7 +293,7 @@ public class TouchView extends TactilePane {
         
         // When the device is dropped on the trash bin, remove it
         TactilePane.setOnInArea(device, e -> {
-            if (e.getOther() == trash.getActiveZone() && !TactilePane.isInUse(device)) {
+            if (e.getOther() == trashView.getActiveZone() && !TactilePane.isInUse(device)) {
                 getChildren().remove(device);
                 StageController.getInstance().removeFromChart(device.getViewModel());
             }
@@ -328,7 +321,7 @@ public class TouchView extends TactilePane {
      * Removes all devices from the view.
      */
     public void reset() {
-        getChildren().removeIf(node -> node instanceof Group);
+        getChildren().removeIf(node -> node instanceof DeviceView);
         initDeviceStacks();
     }
     
