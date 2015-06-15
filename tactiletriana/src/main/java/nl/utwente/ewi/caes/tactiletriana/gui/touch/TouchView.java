@@ -186,7 +186,7 @@ public class TouchView extends TactilePane {
         trash = new TrashView();
         trash.setRotate(90);
         TactilePane.setDraggable(trash, false);
-        TactilePane.setAnchor(trash, new Anchor(this, 400, 0, Pos.CENTER, false));
+        TactilePane.setAnchor(trash, new Anchor(this, 500, 0, Pos.CENTER, false));
         getChildren().add(trash);
         getActiveNodes().add(trash.getActiveZone());
     }
@@ -306,7 +306,7 @@ public class TouchView extends TactilePane {
 
         final TranslateTransition transition = new TranslateTransition(Duration.millis(1000), group);
         transition.setInterpolator(Interpolator.EASE_IN);
-        final PauseTransition pause = new PauseTransition(Duration.millis(5000));
+        final PauseTransition pause = new PauseTransition(Duration.millis(3500));
         pause.setOnFinished(e -> { 
             transition.setByX(trash.getLayoutX() - group.getLayoutX());
             transition.setByY(trash.getLayoutY() - group.getLayoutY());

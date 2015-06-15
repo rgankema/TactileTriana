@@ -16,10 +16,8 @@ import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
  */
 public class ControlView extends HBox {
 
-    @FXML
-    private Button pauseButton;
-    @FXML
-    private Button disableTrianaButton;
+    @FXML private Button pauseButton;
+    @FXML private Button disableTrianaButton;
 
     private ControlVM viewModel;
 
