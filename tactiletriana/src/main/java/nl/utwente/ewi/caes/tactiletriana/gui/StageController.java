@@ -265,7 +265,7 @@ public final class StageController {
 
     public void resetSimulation() {
         this.simulation.reset();
-        ((TouchView) this.touchStage.getScene().getRoot()).reset();
+        this.touchVM.reset();
         this.detailVM.reset();
     }
     
