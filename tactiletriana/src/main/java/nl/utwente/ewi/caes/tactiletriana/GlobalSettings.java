@@ -16,10 +16,14 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.TimeScenario;
 import nl.utwente.ewi.caes.tactiletriana.simulation.TimeScenario.TimeSpan;
 
 /**
- *
+ * Represents the global settings of TactileTriana, which can be configured using a
+ * configuration file. All settings are accessible as simple static fields. These
+ * are not meant to be changed by the programmer however. In a later version these
+ * should become private fields that are only accessible by getters.
+ * 
  * @author Mick
  */
-public final class TrianaSettings {
+public final class GlobalSettings {
     // CONSTANTS
     public static final String DEFAULT_FILE = "tactiletriana.config";
     

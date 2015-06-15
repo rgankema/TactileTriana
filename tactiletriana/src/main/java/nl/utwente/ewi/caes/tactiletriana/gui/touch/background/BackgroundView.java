@@ -11,7 +11,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
-import nl.utwente.ewi.caes.tactiletriana.TrianaSettings;
+import nl.utwente.ewi.caes.tactiletriana.GlobalSettings;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.background.BackgroundVM.Season;
 
@@ -29,6 +29,8 @@ public class BackgroundView extends StackPane {
     private static final Image BG_WINTER_DAY = new Image("images/background-winter.jpg");
     private static final Image BG_WINTER_NIGHT = new Image("images/background-winter-night.jpg");
     
+    private BackgroundVM viewModel;
+    
     @FXML private ImageView imageDay;
     @FXML private ImageView imageNight;
     
@@ -45,6 +47,8 @@ public class BackgroundView extends StackPane {
     }
     
     public void setViewModel(BackgroundVM viewModel) {
+        if (this.viewModel != null) throw new IllegalStateException("ViewModel already set");
+            
         imageDay.opacityProperty().bind(viewModel.darknessFactorProperty().negate().add(1));
         imageNight.opacityProperty().bind(viewModel.darknessFactorProperty());
         
@@ -56,7 +60,7 @@ public class BackgroundView extends StackPane {
             getChildren().add(temp);
             
             // Fade out old night background
-            FadeTransition fade = new FadeTransition(Duration.millis(TrianaSettings.SYSTEM_TICK_TIME * (120 / TrianaSettings.TICK_MINUTES)), temp);
+            FadeTransition fade = new FadeTransition(Duration.millis(GlobalSettings.SYSTEM_TICK_TIME * (120 / GlobalSettings.TICK_MINUTES)), temp);
             fade.setFromValue(1.0);
             fade.setToValue(0.0);
             fade.setOnFinished(e -> { 

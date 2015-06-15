@@ -9,7 +9,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import nl.utwente.ewi.caes.tactiletriana.TrianaSettings;
+import nl.utwente.ewi.caes.tactiletriana.GlobalSettings;
 import static nl.utwente.ewi.caes.tactiletriana.Util.toTimeStep;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.SimulationBase;
@@ -106,7 +106,7 @@ public class BufferConverter extends DeviceBase {
         JSONArray jsonProfile = new JSONArray();
 
         int time = toTimeStep(simulation.getCurrentTime());
-        for (int i = time; i < time + 24 * 60 / TrianaSettings.TICK_MINUTES; i++) {
+        for (int i = time; i < time + 24 * 60 / GlobalSettings.TICK_MINUTES; i++) {
             jsonProfile.add(data.getProfile(profileNumber)[i]);
         }
         result.put(API_PROFILE, jsonProfile);

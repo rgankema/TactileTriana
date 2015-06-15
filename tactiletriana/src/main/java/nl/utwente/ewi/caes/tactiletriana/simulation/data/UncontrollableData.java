@@ -13,7 +13,7 @@ import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import nl.utwente.ewi.caes.tactiletriana.Concurrent;
-import nl.utwente.ewi.caes.tactiletriana.TrianaSettings;
+import nl.utwente.ewi.caes.tactiletriana.GlobalSettings;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.UncontrollableLoad;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -83,13 +83,14 @@ public final class UncontrollableData implements IDeviceDataProvider<Uncontrolla
         }
 
         // Convert to profile with value per timestep   
-        int tickMinutes = TrianaSettings.TICK_MINUTES;
+        int tickMinutes = GlobalSettings.TICK_MINUTES;
         int minutesInYear = 365 * 24 * 60;
-
+        int ticksInYear = getTotalTicksInYear();
+        
         for (int key = 0; key < 6; key++) {
-            double[] profile = new double[TOTAL_TICKS_IN_YEAR];
+            double[] profile = new double[ticksInYear];
             // Get average of all minutes in timestep
-            for (int ts = 0; ts < TOTAL_TICKS_IN_YEAR; ts++) {
+            for (int ts = 0; ts < ticksInYear; ts++) {
                 profile[ts] = 0;
                 int minutesInTimeStep = 0;
                 for (int min = ts * tickMinutes; min < (ts + 1) * tickMinutes && min < minutesInYear; min++) {

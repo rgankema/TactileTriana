@@ -14,7 +14,7 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.scene.chart.XYChart.Data;
 import nl.utwente.ewi.caes.tactiletriana.Concurrent;
-import nl.utwente.ewi.caes.tactiletriana.TrianaSettings;
+import nl.utwente.ewi.caes.tactiletriana.GlobalSettings;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Cable;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.House;
@@ -129,7 +129,7 @@ public class SimulationPrediction extends SimulationBase {
 
     @Override
     protected void incrementTime() {
-        setCurrentTime(getCurrentTime().plusMinutes(TrianaSettings.TICK_MINUTES));
+        setCurrentTime(getCurrentTime().plusMinutes(GlobalSettings.TICK_MINUTES));
     }
 
     // HELPER METHODS

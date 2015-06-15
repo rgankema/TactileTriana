@@ -12,7 +12,7 @@ import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import nl.utwente.ewi.caes.tactiletriana.TrianaSettings;
+import nl.utwente.ewi.caes.tactiletriana.GlobalSettings;
 import static nl.utwente.ewi.caes.tactiletriana.Util.isWeekend;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 import nl.utwente.ewi.caes.tactiletriana.simulation.SimulationBase;
@@ -192,11 +192,11 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
         double h = time.getHour() + (time.getMinute() / 60) * 100;
 
         // Update state of charge
-        chargeBuffer(getCurrentConsumption(), TrianaSettings.TICK_MINUTES);
+        chargeBuffer(getCurrentConsumption(), GlobalSettings.TICK_MINUTES);
         if (!isWeekend(time) && (getLeaveTime() < h && h < getReturnTime())) {
             //calculate drainage
             double drainage = (((getKilometersToWork() * 2 / getKilometersPerkWh()) * 1000) / ((getReturnTime() - getLeaveTime())));
-            chargeBuffer(-drainage, TrianaSettings.TICK_MINUTES);
+            chargeBuffer(-drainage, GlobalSettings.TICK_MINUTES);
         }
 
         //If there's no planning available, charge full power

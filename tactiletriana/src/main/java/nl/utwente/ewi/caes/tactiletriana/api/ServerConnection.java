@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
-import nl.utwente.ewi.caes.tactiletriana.TrianaSettings;
+import nl.utwente.ewi.caes.tactiletriana.GlobalSettings;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.House;
 import nl.utwente.ewi.caes.tactiletriana.simulation.IController;
@@ -577,7 +577,7 @@ public class ServerConnection implements Runnable, IController {
         jsonResponse.put("isStarted", (sim.getState() != Simulation.SimulationState.STOPPED));
         //Minute of the year in the simulation.
         jsonResponse.put("simTime", (sim.getCurrentTime().getDayOfYear() - 1) * 24 * 60 + sim.getCurrentTime().getHour() * 60 + sim.getCurrentTime().getMinute());
-        jsonResponse.put("timeStep", TrianaSettings.TICK_MINUTES);
+        jsonResponse.put("timeStep", GlobalSettings.TICK_MINUTES);
         sendMessage(jsonResponse.toJSONString());
     }
 
@@ -768,7 +768,7 @@ public class ServerConnection implements Runnable, IController {
         response.put("category", "request");
         response.put("type", "RequestPlanning");
         response.put("simTime", (sim.getCurrentTime().getDayOfYear() - 1) * 24 * 60 + sim.getCurrentTime().getHour() * 60 + sim.getCurrentTime().getMinute());
-        response.put("timeStep", TrianaSettings.TICK_MINUTES);
+        response.put("timeStep", GlobalSettings.TICK_MINUTES);
         sendMessage(response.toJSONString());
         log("Sent request for planning...");
 

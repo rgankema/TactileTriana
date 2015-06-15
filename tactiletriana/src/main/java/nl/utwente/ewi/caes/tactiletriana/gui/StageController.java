@@ -17,7 +17,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import nl.utwente.ewi.caes.tactiletriana.TrianaSettings;
+import nl.utwente.ewi.caes.tactiletriana.GlobalSettings;
 import nl.utwente.ewi.caes.tactiletriana.gui.detail.DetailVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.detail.DetailView;
 import nl.utwente.ewi.caes.tactiletriana.gui.configuration.ConfigurationVM;
@@ -273,8 +273,8 @@ public final class StageController {
         FileChooser chooser = new FileChooser();
         File file = chooser.showOpenDialog(configurationStage);
         if (file != null) {
-            TrianaSettings.load(file.getAbsolutePath());
-            simulation.setTimeScenario(TrianaSettings.TIME_SCENARIO);
+            GlobalSettings.load(file.getAbsolutePath());
+            simulation.setTimeScenario(GlobalSettings.TIME_SCENARIO);
         }
     }
 

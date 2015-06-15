@@ -16,7 +16,7 @@ import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import nl.utwente.ewi.caes.tactiletriana.TrianaSettings;
+import nl.utwente.ewi.caes.tactiletriana.GlobalSettings;
 import nl.utwente.ewi.caes.tactiletriana.Util;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.Buffer;
@@ -98,7 +98,7 @@ public class DeviceConfigVM {
 
         rows.add(new DoubleRow("Area", area, 1, 50, area.asString("%.0f m²")));
         
-        if (TrianaSettings.EXTENDED_PARAMETERS) {
+        if (GlobalSettings.EXTENDED_PARAMETERS) {
             DoubleProperty efficiency = solarPanel.efficiencyProperty();
             DoubleProperty orientation = solarPanel.orientationProperty();
             DoubleProperty elevation = solarPanel.elevationProperty();
@@ -116,7 +116,7 @@ public class DeviceConfigVM {
     }
 
     private void initBufferConverter(BufferConverter bc) {
-        if (TrianaSettings.EXTENDED_PARAMETERS) {
+        if (GlobalSettings.EXTENDED_PARAMETERS) {
             DoubleProperty efficiency = bc.COPProperty();
             
             rows.add(new DoubleRow("Performance Coefficient", efficiency, 0.5, 10, efficiency.asString("%.1f")));

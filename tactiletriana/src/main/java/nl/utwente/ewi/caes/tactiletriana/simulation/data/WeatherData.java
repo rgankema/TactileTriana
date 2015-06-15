@@ -8,8 +8,8 @@ package nl.utwente.ewi.caes.tactiletriana.simulation.data;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
-import nl.utwente.ewi.caes.tactiletriana.TrianaSettings;
-import static nl.utwente.ewi.caes.tactiletriana.Util.TOTAL_TICKS_IN_YEAR;
+import nl.utwente.ewi.caes.tactiletriana.GlobalSettings;
+import static nl.utwente.ewi.caes.tactiletriana.Util.*;
 
 /**
  * Data provider for the weather profiles. Uses KNMI data from 2014.
@@ -62,12 +62,12 @@ public final class WeatherData implements IWeatherDataProvider {
         }
 
         // Convert to profile with value per timestep   
-        int tickMinutes = TrianaSettings.TICK_MINUTES;
+        int tickMinutes = GlobalSettings.TICK_MINUTES;
+        int ticksInYear = getTotalTicksInYear();
+        temperatureProfile = new double[ticksInYear];
+        radianceProfile = new double[ticksInYear];
 
-        temperatureProfile = new double[TOTAL_TICKS_IN_YEAR];
-        radianceProfile = new double[TOTAL_TICKS_IN_YEAR];
-
-        for (int ts = 0; ts < TOTAL_TICKS_IN_YEAR; ts++) {
+        for (int ts = 0; ts < ticksInYear; ts++) {
             int prevHour = ts * tickMinutes / 60;
             int nextHour = (prevHour + 1) % (365 * 24);
             float nextHourWeight = (((ts * tickMinutes) % 60) / 60f);

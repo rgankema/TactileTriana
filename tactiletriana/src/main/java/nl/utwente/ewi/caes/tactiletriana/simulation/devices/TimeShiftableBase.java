@@ -18,7 +18,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import nl.utwente.ewi.caes.tactiletriana.TrianaSettings;
+import nl.utwente.ewi.caes.tactiletriana.GlobalSettings;
 import nl.utwente.ewi.caes.tactiletriana.simulation.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -161,7 +161,7 @@ public abstract class TimeShiftableBase extends DeviceBase {
         } else { // No planning available
             int currentTime = currentDateTime.getHour() * 60 + currentDateTime.getMinute();
 
-            if (currentTime - TrianaSettings.TICK_MINUTES < 0) {
+            if (currentTime - GlobalSettings.TICK_MINUTES < 0) {
                 programRemaining = true;
             }
 
@@ -169,7 +169,7 @@ public abstract class TimeShiftableBase extends DeviceBase {
             if (!active && programRemaining) {
                 if (currentTime >= getStartTime()
                         || // Relevant if start time starts somewhere at the end of the day
-                        currentTime - TrianaSettings.TICK_MINUTES <= 0) {
+                        currentTime - GlobalSettings.TICK_MINUTES <= 0) {
                     if (currentTime <= getEndTime() || getEndTime() < getStartTime()) {
                         active = true;
                     }

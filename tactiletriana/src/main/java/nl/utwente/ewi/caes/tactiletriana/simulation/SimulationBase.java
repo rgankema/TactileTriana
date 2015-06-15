@@ -13,7 +13,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
-import nl.utwente.ewi.caes.tactiletriana.TrianaSettings;
+import nl.utwente.ewi.caes.tactiletriana.GlobalSettings;
 import static nl.utwente.ewi.caes.tactiletriana.Util.toTimeStep;
 import static nl.utwente.ewi.caes.tactiletriana.simulation.Simulation.NUMBER_OF_HOUSES;
 import nl.utwente.ewi.caes.tactiletriana.simulation.data.WeatherData;
@@ -60,7 +60,7 @@ public abstract class SimulationBase extends LoggingEntityBase {
         for (int i = 0; i <= NUMBER_OF_HOUSES - 1; i++) {
             this.houses[i] = new House(this);
 
-            if (TrianaSettings.UNCONTROLLABLE_LOAD_ENABLED) {
+            if (GlobalSettings.UNCONTROLLABLE_LOAD_ENABLED) {
                 houses[i].getDevices().add(new UncontrollableLoad(i, this));
             }
 

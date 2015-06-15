@@ -7,7 +7,7 @@ package nl.utwente.ewi.caes.tactiletriana.simulation.devices;
 
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
-import nl.utwente.ewi.caes.tactiletriana.TrianaSettings;
+import nl.utwente.ewi.caes.tactiletriana.GlobalSettings;
 import static nl.utwente.ewi.caes.tactiletriana.Util.toTimeStep;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.SimulationBase;
@@ -74,7 +74,7 @@ public class UncontrollableLoad extends DeviceBase {
         JSONArray jsonProfile = new JSONArray();
 
         int time = toTimeStep(simulation.getCurrentTime());
-        for (int i = time; i < time + 24 * 60 / TrianaSettings.TICK_MINUTES; i++) {
+        for (int i = time; i < time + 24 * 60 / GlobalSettings.TICK_MINUTES; i++) {
             jsonProfile.add(data.getProfile(getProfileNumber())[i]);
         }
         result.put(API_PROFILE, jsonProfile);

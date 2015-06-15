@@ -18,7 +18,7 @@ public class App extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         // Load settings file
-        TrianaSettings.load(TrianaSettings.DEFAULT_FILE);
+        GlobalSettings.load(GlobalSettings.DEFAULT_FILE);
         
         StageController.initialize(stage);
         StageController.getInstance().setLauncherStageVisible(true);

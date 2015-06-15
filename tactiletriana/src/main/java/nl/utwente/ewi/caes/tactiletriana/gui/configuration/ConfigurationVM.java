@@ -18,7 +18,7 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import nl.utwente.ewi.caes.tactiletriana.Concurrent;
-import nl.utwente.ewi.caes.tactiletriana.TrianaSettings;
+import nl.utwente.ewi.caes.tactiletriana.GlobalSettings;
 import nl.utwente.ewi.caes.tactiletriana.api.APIServer;
 import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
@@ -97,7 +97,7 @@ public class ConfigurationVM {
         });
         
         // update settings when new ones have been loaded
-        TrianaSettings.addSettingsChangedHandler(() -> updateSettingsText());
+        GlobalSettings.addSettingsChangedHandler(() -> updateSettingsText());
         updateSettingsText();
     }
 
@@ -241,7 +241,7 @@ public class ConfigurationVM {
         StageController.getInstance().setScreenIndexStagesVisible(false);
 
         if (this.simulation.getState() == Simulation.SimulationState.STOPPED) {
-            this.simulation.setTimeScenario(TrianaSettings.TIME_SCENARIO);
+            this.simulation.setTimeScenario(GlobalSettings.TIME_SCENARIO);
         }
 
         /* Forget saving for now
@@ -281,17 +281,17 @@ public class ConfigurationVM {
         StageController.getInstance().loadSettingsFile();
         // We can only change the screens if the app hasn't started yet
         if (!launched.get()) {
-            fullScreenChecked.set(TrianaSettings.FULLSCREEN);
-            if (getScreenIndexList().contains(TrianaSettings.TOUCH_SCREEN_ID)) {
-                touchScreenSelection.set(TrianaSettings.TOUCH_SCREEN_ID);
+            fullScreenChecked.set(GlobalSettings.FULLSCREEN);
+            if (getScreenIndexList().contains(GlobalSettings.TOUCH_SCREEN_ID)) {
+                touchScreenSelection.set(GlobalSettings.TOUCH_SCREEN_ID);
             }
-            if (getScreenIndexList().contains(TrianaSettings.DETAIL_SCREEN_ID)) {
-                detailScreenSelection.set(TrianaSettings.DETAIL_SCREEN_ID);
+            if (getScreenIndexList().contains(GlobalSettings.DETAIL_SCREEN_ID)) {
+                detailScreenSelection.set(GlobalSettings.DETAIL_SCREEN_ID);
             }
         }
     }
     
     private void updateSettingsText() {
-        settingsText.set(TrianaSettings.settingsToString());
+        settingsText.set(GlobalSettings.settingsToString());
     }
 }

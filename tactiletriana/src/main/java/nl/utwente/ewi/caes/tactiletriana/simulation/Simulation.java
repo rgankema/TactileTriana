@@ -15,7 +15,7 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import nl.utwente.ewi.caes.tactiletriana.Concurrent;
 import static nl.utwente.ewi.caes.tactiletriana.Concurrent.runOnJavaFXThreadSynchronously;
-import nl.utwente.ewi.caes.tactiletriana.TrianaSettings;
+import nl.utwente.ewi.caes.tactiletriana.GlobalSettings;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.UncontrollableLoad;
 
 /**
@@ -94,7 +94,7 @@ public class Simulation extends SimulationBase {
                 if (this.getState() == SimulationState.RUNNING) {
                     tick();
                 }
-            }, TrianaSettings.SYSTEM_TICK_TIME, TrianaSettings.SYSTEM_TICK_TIME, TimeUnit.MILLISECONDS);
+            }, GlobalSettings.SYSTEM_TICK_TIME, GlobalSettings.SYSTEM_TICK_TIME, TimeUnit.MILLISECONDS);
         }
         setState(SimulationState.RUNNING);
     }
@@ -116,7 +116,7 @@ public class Simulation extends SimulationBase {
         for (House house : houses) {
             house.repairFuse();
             house.getDevices().clear();
-            if (TrianaSettings.UNCONTROLLABLE_LOAD_ENABLED) {
+            if (GlobalSettings.UNCONTROLLABLE_LOAD_ENABLED) {
                 house.getDevices().add(new UncontrollableLoad(i, this));
             }
             i++;
@@ -169,7 +169,7 @@ public class Simulation extends SimulationBase {
      */
     @Override
     protected void incrementTime() {
-        boolean timeSpanShifted = getTimeScenario().next(TrianaSettings.TICK_MINUTES);
+        boolean timeSpanShifted = getTimeScenario().next(GlobalSettings.TICK_MINUTES);
         setCurrentTime(getTimeScenario().getCurrentTime());
         if (timeSpanShifted) {
 
