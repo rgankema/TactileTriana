@@ -12,7 +12,7 @@
 <fx:root minHeight="60.0" minWidth="60.0" styleClass="device-view" type="StackPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <ImageView id="config-icon" fx:id="configIcon" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" translateX="15.0" translateY="-15.0" StackPane.alignment="TOP_RIGHT" />
-      <ImageView id="device-icon" fx:id="deviceIcon" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" />
-      <ProgressBar fx:id="batteryProgress" prefWidth="50.0" progress="0.0" translateY="15.0" StackPane.alignment="BOTTOM_CENTER" />
+      <ImageView styleClass="device-view-child" id="device-icon" fx:id="deviceIcon" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" />
+      <ProgressBar styleClass="battery-progress" fx:id="batteryProgress" prefWidth="50.0" progress="0.0" translateY="15.0" StackPane.alignment="BOTTOM_CENTER" />
    </children>
 </fx:root>

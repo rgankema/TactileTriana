@@ -7,6 +7,7 @@ package nl.utwente.ewi.caes.tactiletriana.simulation;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,6 +35,7 @@ public abstract class DeviceBase extends LoggingEntityBase {
     private final List<Property> properties;
     private final List<ObservableList> lists;
     private final List<ObservableMap> maps;
+    private HashMap<String,Object> currentParameters;
 
     protected final SimulationBase simulation;
 
@@ -259,7 +261,31 @@ public abstract class DeviceBase extends LoggingEntityBase {
     public void updateParameter(String parameter, Object value) {
         throw new IllegalArgumentException("Cannot update parameter " + parameter);
     }
-
+    
+    public boolean parametersHaveChanged() {
+        boolean result = false;
+        
+        //Parameters which will be checked for changes
+        String[] parametersChecked = {""};
+        
+        //Check if the parameters since last time this function was called is available.
+        if(currentParameters == null) {
+            currentParameters = parametersToJSON();
+        } else {
+            //get the current parameters
+            HashMap<String, Object> newParameters = this.parametersToJSON();
+            //filter out parameters that always change
+            
+            //compare the current parameters to the saved ones
+            
+            
+            
+        }
+        
+        
+        return result;
+    }
+    
     // ENUMS AND NESTED CLASSES
     /**
      * Describes the state of a device
