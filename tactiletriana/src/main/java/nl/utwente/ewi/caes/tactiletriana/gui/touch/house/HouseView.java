@@ -7,7 +7,7 @@ package nl.utwente.ewi.caes.tactiletriana.gui.touch.house;
 
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
@@ -20,7 +20,7 @@ import nl.utwente.ewi.caes.tactiletriana.gui.events.EventUtil;
  *
  * @author Richard
  */
-public class HouseView extends Pane {
+public class HouseView extends StackPane {
 
     @FXML
     private Rectangle rectangle;

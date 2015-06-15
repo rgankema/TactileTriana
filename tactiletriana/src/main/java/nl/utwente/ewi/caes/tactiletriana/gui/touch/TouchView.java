@@ -12,6 +12,7 @@ import javafx.animation.Interpolator;
 import javafx.animation.PauseTransition;
 import javafx.animation.TranslateTransition;
 import javafx.beans.binding.Bindings;
+import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -27,13 +28,12 @@ import javafx.util.Duration;
 import nl.utwente.ewi.caes.tactilefx.control.Anchor;
 import nl.utwente.ewi.caes.tactilefx.control.TactilePane;
 import nl.utwente.ewi.caes.tactilefx.debug.MouseToTouchMapper;
-import nl.utwente.ewi.caes.tactiletriana.TrianaSettings;
 import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.house.HouseView;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 import nl.utwente.ewi.caes.tactiletriana.gui.customcontrols.FloatPane;
-import nl.utwente.ewi.caes.tactiletriana.gui.touch.TouchVM.Season;
+import nl.utwente.ewi.caes.tactiletriana.gui.touch.background.BackgroundView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.cable.CableView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.control.ControlView;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.node.NodeView;
@@ -58,21 +58,13 @@ public class TouchView extends TactilePane {
     CableView[] cvi;
     
     private TouchVM viewModel;
+    
+    @FXML private BackgroundView backgroundView;
     private FloatPane networkOverlay;
     private ControlView controlView;
-    private ImageView bgDay;
-    private ImageView bgNight;
     private TrashView trash;
     
-    private final Image BG_SPRING_DAY = new Image("images/background-spring.jpg");
-    private final Image BG_SPRING_NIGHT = new Image("images/background-spring-night.jpg");
-    private final Image BG_SUMMER_DAY = new Image("images/background-summer.jpg");
-    private final Image BG_SUMMER_NIGHT = new Image("images/background-summer-night.jpg");
-    private final Image BG_AUTUMN_DAY = new Image("images/background-fall.jpg");
-    private final Image BG_AUTUMN_NIGHT = new Image("images/background-fall-night.jpg");
-    private final Image BG_WINTER_DAY = new Image("images/background-winter.jpg");
-    private final Image BG_WINTER_NIGHT = new Image("images/background-winter-night.jpg");
-    
+    private final Image WARNING_ICON = new Image("images/warning-icon.png", 50, 50, true, true);
     
     public TouchView() {
         ViewLoader.load(this);
@@ -80,14 +72,6 @@ public class TouchView extends TactilePane {
         addEventFilter(MouseEvent.ANY, new MouseToTouchMapper());
         
         setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
-        
-        bgDay = new ImageView();
-        bgDay.fitWidthProperty().bind(this.widthProperty());
-        bgDay.fitHeightProperty().bind(this.heightProperty());
-        
-        bgNight = new ImageView();
-        bgNight.fitWidthProperty().bind(this.widthProperty());
-        bgNight.fitHeightProperty().bind(this.heightProperty());
         
         networkOverlay = new FloatPane();
         networkOverlay.prefWidthProperty().bind(this.widthProperty());
@@ -98,6 +82,9 @@ public class TouchView extends TactilePane {
         FloatPane.setAlignment(controlView, Pos.CENTER_LEFT);
         FloatPane.setMargin(controlView, new Insets(25));
         networkOverlay.getChildren().add(controlView);
+        
+        backgroundView.prefWidthProperty().bind(this.widthProperty());
+        backgroundView.prefHeightProperty().bind(this.heightProperty());
         
         tv = new TransformerView();
         hv = new HouseView[6];
@@ -168,7 +155,7 @@ public class TouchView extends TactilePane {
         FloatPane.setMargin(tv, new Insets(200));
         networkOverlay.getChildren().add(tv);
         
-        getChildren().addAll(bgNight, bgDay, networkOverlay);
+        getChildren().add(networkOverlay);
         
         List<Node> toBackground = new ArrayList<>();
         for (Node node : networkOverlay.getChildren()) {
@@ -198,6 +185,10 @@ public class TouchView extends TactilePane {
 
         this.viewModel = viewModel;
         
+        // Set view models of children
+        controlView.setViewModel(viewModel.getControlVM());
+        backgroundView.setViewModel(viewModel.getBackgroundVM());
+        
         tv.setViewModel(viewModel.getTransformer());
         for (int i = 0; i < 6; i++) {
             hv[i].setViewModel(viewModel.getHouses()[i]);
@@ -205,50 +196,30 @@ public class TouchView extends TactilePane {
             cvh[i].setViewModel(viewModel.getHouseCables()[i]);
             nvi[i].setViewModel(viewModel.getInternalNodes()[i]);
             nvh[i].setViewModel(viewModel.getHouseNodes()[i]);
+            
+            ImageView warning = new ImageView(WARNING_ICON);
+            TactilePane.setDraggable(warning, false);
+            TactilePane.setAnchor(warning, new Anchor(hv[i], Pos.CENTER));
+            warning.visibleProperty().bind(viewModel.getHouses()[i].fuseBlownProperty());
+            getChildren().add(warning);
+            rotateNode(warning);
+            
+            warning = new ImageView(WARNING_ICON);
+            TactilePane.setDraggable(warning, false);
+            TactilePane.setAnchor(warning, new Anchor(cvi[i], Pos.CENTER));
+            warning.visibleProperty().bind(viewModel.getInternalCables()[i].brokenProperty());
+            getChildren().add(warning);
+            rotateNode(warning);
+            
+            warning = new ImageView(WARNING_ICON);
+            TactilePane.setDraggable(warning, false);
+            TactilePane.setAnchor(warning, new Anchor(cvh[i], Pos.CENTER));
+            warning.visibleProperty().bind(viewModel.getHouseCables()[i].brokenProperty());
+            getChildren().add(warning);
+            rotateNode(warning);
         }
         
         initDeviceStacks();
-        
-        controlView.setViewModel(viewModel.getControlVM());
-        
-        bgDay.opacityProperty().bind(viewModel.darknessFactorProperty().negate().add(1));
-        bgNight.opacityProperty().bind(viewModel.darknessFactorProperty());
-        
-        viewModel.seasonProperty().addListener(obs -> { 
-            // Temporarily replace day background with old night background
-            ImageView temp = new ImageView(bgNight.getImage());
-            temp.fitWidthProperty().bind(this.widthProperty());
-            temp.fitHeightProperty().bind(this.heightProperty());
-            getChildren().set(1, temp);
-            
-            // Fade out old night background
-            FadeTransition fade = new FadeTransition(Duration.millis(TrianaSettings.SYSTEM_TICK_TIME * (120 / TrianaSettings.TICK_MINUTES)), temp);
-            fade.setFromValue(1.0);
-            fade.setToValue(0.0);
-            fade.setOnFinished(e -> { 
-                getChildren().set(1, bgDay);
-            });
-            fade.playFromStart();
-            
-            // Find the proper image
-            Season season = viewModel.getSeason();
-            Image day = null, night = null;
-            if (season == Season.SPRING) {
-                day = BG_SPRING_DAY;
-                night = BG_SPRING_NIGHT;
-            } else if (season == Season.SUMMER) {
-                day = BG_SUMMER_DAY;
-                night = BG_SUMMER_NIGHT;
-            } else if (season == Season.AUTUMN) {
-                day = BG_AUTUMN_DAY;
-                night = BG_AUTUMN_NIGHT;
-            } else if (season == Season.WINTER) {
-                day = BG_WINTER_DAY;
-                night = BG_WINTER_NIGHT;
-            }
-            bgDay.setImage(day);
-            bgNight.setImage(night);
-        });
     }
     
     private void initDeviceStacks() {
@@ -278,52 +249,41 @@ public class TouchView extends TactilePane {
     
     private void pushDeviceStack(DeviceView device, double xOffset) {
         
-        // Add device to group to fix drag bug
-        Group group = new Group(device);
         // Animate new device
-        FadeTransition ft = new FadeTransition(Duration.millis(500), group);
+        FadeTransition ft = new FadeTransition(Duration.millis(500), device);
         ft.setFromValue(0);
         ft.setToValue(1);
         ft.playFromStart();
         // Add device to pane, in background
-        getChildren().add(3, group);
+        getChildren().add(2, device);
         // Track device
-        getActiveNodes().add(group);
+        getActiveNodes().add(device);
        
-        TactilePane.setAnchor(group, new Anchor(this, xOffset, 0, Pos.CENTER, false));
+        TactilePane.setAnchor(device, new Anchor(this, xOffset, 0, Pos.CENTER, false));
         
         // Rotate device
-        device.rotateProperty().bind(Bindings.createDoubleBinding(() -> {
-            double rotate = -getHeight() / 2 + device.getBoundsInLocal().getHeight() / 2 + group.getLayoutY() + group.getTranslateY();
-            if (rotate < -90) {
-                rotate = -90.0;
-            }
-            if (rotate > 90) {
-                rotate = 90.0;
-            }
-            return 90.0 - rotate;
-        }, group.layoutYProperty(), group.translateYProperty(), heightProperty()));
+        rotateNode(device);
 
-        final TranslateTransition transition = new TranslateTransition(Duration.millis(1000), group);
+        final TranslateTransition transition = new TranslateTransition(Duration.millis(1000), device);
         transition.setInterpolator(Interpolator.EASE_IN);
         final PauseTransition pause = new PauseTransition(Duration.millis(3500));
         pause.setOnFinished(e -> { 
-            transition.setByX(trash.getLayoutX() - group.getLayoutX());
-            transition.setByY(trash.getLayoutY() - group.getLayoutY());
+            transition.setByX(trash.getLayoutX() - device.getLayoutX());
+            transition.setByY(trash.getLayoutY() - device.getLayoutY());
             transition.play();
         });
         
-        TactilePane.inUseProperty(group).addListener(obs -> {
+        TactilePane.inUseProperty(device).addListener(obs -> {
             if (device.getViewModel().isOnStack()) {
                 // When device is being used for the first time, add a new one to the stack
                 device.getViewModel().removeFromStack();
                 DeviceView newDevice = new DeviceView(device.getViewModel().getModelClass());
                 newDevice.setViewModel(viewModel.getDeviceVM(device.getViewModel().getModelClass()));
                 pushDeviceStack(newDevice, xOffset);
-            } else if (!TactilePane.isInUse(group)) {
+            } else if (!TactilePane.isInUse(device)) {
                 // When device collides with a house, connect it
-                if (TactilePane.getNodesColliding(group).stream().anyMatch(node -> node instanceof HouseView)) {
-                    for (Node node : TactilePane.getNodesColliding(group)) {
+                if (TactilePane.getNodesColliding(device).stream().anyMatch(node -> node instanceof HouseView)) {
+                    for (Node node : TactilePane.getNodesColliding(device)) {
                         if (node instanceof HouseView) {
                             device.getViewModel().droppedOnHouse(((HouseView) node).getViewModel());
                             break;
@@ -339,28 +299,28 @@ public class TouchView extends TactilePane {
         });
         
         // When the device is dropped on the trash bin, remove it
-        TactilePane.setOnInArea(group, e -> {
-            if (e.getOther() == trash.getActiveZone() && !TactilePane.isInUse(group)) {
-                getChildren().remove(group);
+        TactilePane.setOnInArea(device, e -> {
+            if (e.getOther() == trash.getActiveZone() && !TactilePane.isInUse(device)) {
+                getChildren().remove(device);
                 StageController.getInstance().removeFromChart(device.getViewModel());
             }
         });
         
         // When the device leaves the area of its house, disconnect it
-        TactilePane.setOnAreaLeft(group, e -> { 
+        TactilePane.setOnAreaLeft(device, e -> { 
             if (e.getOther() instanceof HouseView) {
                 device.getViewModel().droppedOnHouse(null);
             }
         });
         
         // Relocate device if it gets out of the TouchView's bounds
-        group.boundsInParentProperty().addListener(obs -> { 
-            double deviceMaxX = group.getBoundsInParent().getMaxX();
-            double deviceMaxY = group.getBoundsInParent().getMaxY();
+        device.boundsInParentProperty().addListener(obs -> { 
+            double deviceMaxX = device.getBoundsInParent().getMaxX();
+            double deviceMaxY = device.getBoundsInParent().getMaxY();
             double deltaX = Math.max(0, deviceMaxX - getWidth());
             double deltaY = Math.max(0, deviceMaxY - getHeight());
-            group.setLayoutX(group.getLayoutX() - deltaX);
-            group.setLayoutY(group.getLayoutY() - deltaY);
+            device.setLayoutX(device.getLayoutX() - deltaX);
+            device.setLayoutY(device.getLayoutY() - deltaY);
         });
     }
     
@@ -370,5 +330,18 @@ public class TouchView extends TactilePane {
     public void reset() {
         getChildren().removeIf(node -> node instanceof Group);
         initDeviceStacks();
+    }
+    
+    private void rotateNode(Node node) {
+        node.rotateProperty().bind(Bindings.createDoubleBinding(() -> {
+            double rotate = -getHeight() / 2 + node.getBoundsInLocal().getHeight() / 2 + node.getLayoutY() + node.getTranslateY();
+            if (rotate < -90) {
+                rotate = -90.0;
+            }
+            if (rotate > 90) {
+                rotate = 90.0;
+            }
+            return 90.0 - rotate;
+        }, node.layoutYProperty(), node.translateYProperty(), heightProperty()));
     }
 }
