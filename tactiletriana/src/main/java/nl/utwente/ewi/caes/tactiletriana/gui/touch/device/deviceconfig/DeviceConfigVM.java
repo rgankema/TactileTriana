@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyStringProperty;
@@ -116,6 +117,10 @@ public class DeviceConfigVM {
     }
 
     private void initBufferConverter(BufferConverter bc) {
+        
+        DoubleProperty desiredTemp = bc.desiredTemperatureProperty();        
+        rows.add(new DoubleRow("Desired temperature", desiredTemp, 0, 30, desiredTemp.asString("%.0f °C")));
+        
         if (GlobalSettings.EXTENDED_PARAMETERS) {
             DoubleProperty efficiency = bc.COPProperty();
             
