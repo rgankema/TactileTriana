@@ -26,7 +26,7 @@
             <Image url="images/radiance.png" />
         </image>
       </ImageView>
-      <Label text="Temperature: " GridPane.rowIndex="1" />
+      <Label text="Temperature (°C): " GridPane.rowIndex="1" />
       <Label fx:id="temperatureValueLabel" text="00" GridPane.columnIndex="1" GridPane.rowIndex="1" />
       <ImageView fx:id="temperatureImg" fitHeight="50" fitWidth="50" preserveRatio="true" StackPane.alignment="CENTER_LEFT" GridPane.columnIndex="2" GridPane.rowIndex="1">
         <image>
