@@ -132,3 +132,23 @@ application.
     -fx-padding:10px;
 }
 
+.detail-view {
+    -fx-background-color: #BBCCCC;
+}
+
+#chart-main .chart-series-line {
+    -fx-stroke-width:4px;
+}
+
+.chart-vertical-grid-lines {
+    -fx-stroke: #A8B7B7;
+}
+.chart-horizontal-grid-lines {
+    -fx-stroke: #A8B7B7;
+}
+
+//Sets current history consumption line: red
+.default-color0.chart-series-line { -fx-stroke: #FF4747; }
+//Sets future consumption line: blue
+.default-color1.chart-series-line { -fx-stroke: #3F6FFF; }
+
