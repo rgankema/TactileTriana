@@ -12,7 +12,7 @@ application.
 // TIME
 
 .date-time-view .time-label {
-    -fx-font-size: 80px;
+    -fx-font-size: 100px;
 }
 
 .date-time-view .date-label {
@@ -84,8 +84,6 @@ application.
     -fx-fill: orangered;
     -fx-stroke: blue;
     -fx-stroke-width: 10px;
-/*    -fx-stroke-dash-array: 20 20;
-    -fx-stroke-line-cap: butt;*/
 }
 
 
@@ -103,7 +101,8 @@ application.
     -fx-font-size: 18px;
     -fx-font-weight: bold;
     -fx-focus-color: transparent;
-    -fx-label-padding: 15px;
+    -fx-padding: 35px 50px;
+    -fx-background-color: #BDC3CC;
 }
 
 
@@ -125,8 +124,11 @@ application.
     -fx-background-position: center center;
 }
 
+.trash-view {
+    -fx-background-color: white;
+}
 
-.detail-view {
-    
+.device-config-view {
+    -fx-padding:10px;
 }
 
