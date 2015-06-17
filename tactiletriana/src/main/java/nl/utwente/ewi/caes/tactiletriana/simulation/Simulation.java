@@ -29,6 +29,7 @@ public class Simulation extends SimulationBase {
     private static final TimeScenario DEFAULT_SCENARIO = new TimeScenario(new TimeScenario.TimeSpan(LocalDate.of(2014, 1, 1), LocalDate.of(2014, 12, 31)));
     
     private boolean apiEnabled;
+    private boolean apiDisabledTickPassed;
     
     public Simulation() {
         this.setState(SimulationState.STOPPED);
@@ -165,6 +166,19 @@ public class Simulation extends SimulationBase {
         if (getController() != null && apiEnabled) {
             getController().retrievePlanning(50, getCurrentTime());
         }
+        
+        //If the api was just disabled, clear all the current plannings
+        if(!apiEnabled && !apiDisabledTickPassed) {
+            apiDisabledTickPassed = true;
+            //Clear all currently set plannings
+            for(DeviceBase device : this.getDevices()) {
+                if (device instanceof BufferBase) {
+                    ((BufferBase)device).getPlanning().clear();
+                } else if (device instanceof TimeShiftableBase) {
+                    ((TimeShiftableBase)device).getPlanning().clear();
+                }
+            }
+        }
     }
     
     
@@ -182,21 +196,17 @@ public class Simulation extends SimulationBase {
      */
     public void enableAPI() {
         this.apiEnabled = true;
+        this.apiDisabledTickPassed = false;
     }
     
     /**
-     * Prevent the API from requesting plannings and clear all current plannings 
+     * Prevent the API from requesting plannings  
      */
     public void disableAPI() {
         this.apiEnabled = false;
-        //Clear all currently set plannings 
-        for(DeviceBase device : this.getDevices()) {
-            if (device instanceof BufferBase) {
-                ((BufferBase)device).getPlanning().clear();
-            } else if (device instanceof TimeShiftableBase) {
-                ((TimeShiftableBase)device).getPlanning().clear();
-            }
-        }
+        
+        
+        
         
     }
     
