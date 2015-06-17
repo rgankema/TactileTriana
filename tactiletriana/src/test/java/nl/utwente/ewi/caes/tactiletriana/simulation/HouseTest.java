@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import nl.utwente.ewi.caes.tactiletriana.GlobalSettings;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -25,6 +26,8 @@ public class HouseTest {
     
     @Before
     public void setUp() {
+        GlobalSettings.load(GlobalSettings.DEFAULT_FILE);
+        
         mockedSimulation = mock(Simulation.class);
         when(mockedSimulation.currentTimeProperty()).thenReturn(new SimpleObjectProperty<>(LocalDateTime.of(2014, 1, 1, 0, 0)));
         
@@ -56,6 +59,7 @@ public class HouseTest {
             // Mock devices
             DeviceBase device = mock(DeviceBase.class);
             when(device.currentConsumptionProperty()).thenReturn(new SimpleDoubleProperty(deviceConsumption));
+            when(device.stateProperty()).thenReturn(new SimpleObjectProperty<>(DeviceBase.State.CONNECTED));
             instance.getDevices().add(device);
         }
         
@@ -72,6 +76,7 @@ public class HouseTest {
         // Mock device
         DeviceBase device = mock(DeviceBase.class);
         when(device.currentConsumptionProperty()).thenReturn(new SimpleDoubleProperty(instance.getMaximumConsumption()-1));
+        when(device.stateProperty()).thenReturn(new SimpleObjectProperty<>(DeviceBase.State.CONNECTED));
         instance.getDevices().add(device);
         
         instance.tick(true);
@@ -105,6 +110,7 @@ public class HouseTest {
         
         assertFalse(instance.isFuseBlown());
     }
+    
     
     @Test
     public void testBrokenFuseDisconnectsChildren() {

@@ -196,7 +196,10 @@ public abstract class DeviceBase extends LoggingEntityBase {
 
         doTick(connected);
 
-        log(simulation.getCurrentTime(), getCurrentConsumption());
+        // This is merely for unit tests, simulation should never be null
+        if (simulation != null) {
+            log(simulation.getCurrentTime(), getCurrentConsumption());
+        }
     }
 
     protected abstract void doTick(boolean connected);

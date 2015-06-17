@@ -37,6 +37,7 @@ public final class WeatherData implements IWeatherDataProvider {
         // Get data from KNMI
         double[] tempByHour = new double[365 * 24];
         double[] radianceByHour = new double[365 * 24];
+        
         try (Stream<String> dataset = Files.lines(Paths.get("src/main/resources/datasets/KNMI_dataset.txt"))) {
 
             // Wrapper for hour, because Java's lambda functions are idiotic
