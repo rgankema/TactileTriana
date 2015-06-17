@@ -137,7 +137,7 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
                     setKilometersPerkWh(44.0 / 7.5);
                     break;
                 case VOLKSWAGEN_E_GOLF:
-                    setModelName("Volkswagen e-Golf");
+                    setModelName("VW e-Golf");
                     setCapacity(24000);
                     setMaxPower(3700);
                     setKilometersPerkWh(190.0 / 24.0);
