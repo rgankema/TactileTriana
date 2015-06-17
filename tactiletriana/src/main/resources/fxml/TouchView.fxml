@@ -20,8 +20,10 @@
     
     <BackgroundView fx:id="backgroundView" TactilePane.draggable="false" />
     <TrashView fx:id="trashView" TactilePane.draggable="false" rotate="90" />
-    <FloatPane fx:id="networkOverlay" TactilePane.draggable="false" />
-    <ControlView fx:id="controlView" TactilePane.draggable="false" rotate="90" />
+    <FloatPane fx:id="networkOverlay" TactilePane.draggable="false">
+        <ControlView fx:id="controlView" FloatPane.alignment="CENTER_LEFT" TactilePane.draggable="false" rotate="90" />
+    </FloatPane>
+    
     
     <!-- Most of the children of this view are added in the corresponding .java file -->
 </fx:root>

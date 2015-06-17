@@ -48,24 +48,41 @@ public class Carousel extends BorderPane {
         update();
 
         leftArrow.setOnTouchPressed(e -> {
-            index--;
-            if (index < 0) {
-                index = possibleValues.length - 1;
-            }
-            property.set(possibleValues[index]);
+            toLeft();
             e.consume();
         });
 
         rightArrow.setOnTouchPressed(e -> {
-            index++;
-            if (index >= possibleValues.length) {
-                index = 0;
-            }
-            property.set(possibleValues[index]);
+            toRight();
             e.consume();
+        });
+        
+        this.setOnTouchPressed(e -> { 
+            if (e.getTouchPoint().getX() < getWidth() / 3) {
+                toLeft();
+            }
+            if (e.getTouchPoint().getX() > 2 * getWidth() / 3) {
+                toRight();
+            }
         });
 
         property.addListener(i -> update());
+    }
+    
+    private void toLeft() {
+        index--;
+        if (index < 0) {
+            index = possibleValues.length - 1;
+        }
+        property.set(possibleValues[index]);
+    }
+    
+    private void toRight() {
+        index++;
+        if (index >= possibleValues.length) {
+            index = 0;
+        }
+        property.set(possibleValues[index]);
     }
 
     /**

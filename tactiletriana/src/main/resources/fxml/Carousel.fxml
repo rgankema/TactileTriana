@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.image.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.shape.*?>
 <?import java.lang.*?>
@@ -9,34 +10,24 @@
 <?import javafx.scene.layout.*?>
 
 <fx:root maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minWidth="140.0" type="BorderPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
-   <left>
-      <Polygon fx:id="leftArrow" strokeType="INSIDE" BorderPane.alignment="CENTER">
-        <points>
-          <Double fx:value="0.0" />
-          <Double fx:value="10.0" />
-          <Double fx:value="10.0" />
-          <Double fx:value="0.0" />
-          <Double fx:value="10.0" />
-          <Double fx:value="20.0" />
-        </points>
-      </Polygon>
-   </left>
-   <right>
-      <Polygon fx:id="rightArrow" strokeType="INSIDE" BorderPane.alignment="CENTER">
-        <points>
-          <Double fx:value="10.0" />
-          <Double fx:value="10.0" />
-          <Double fx:value="0.0" />
-          <Double fx:value="0.0" />
-          <Double fx:value="0.0" />
-          <Double fx:value="20.0" />
-        </points>
-      </Polygon>
-   </right>
    <center>
       <Label fx:id="valueLabel" maxWidth="-Infinity" text="Label" textAlignment="CENTER" BorderPane.alignment="CENTER">
          <BorderPane.margin>
             <Insets left="10.0" right="10.0" />
          </BorderPane.margin></Label>
    </center>
+   <left>
+      <ImageView fx:id="leftArrow" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
+         <image>
+            <Image url="@../images/arrow-left.png" />
+         </image>
+      </ImageView>
+   </left>
+   <right>
+      <ImageView fx:id="rightArrow" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
+         <image>
+            <Image url="@../images/arrow-right.png" />
+         </image>
+      </ImageView>
+   </right>
 </fx:root>

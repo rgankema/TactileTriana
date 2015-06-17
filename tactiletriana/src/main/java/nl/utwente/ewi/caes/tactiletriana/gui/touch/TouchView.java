@@ -77,10 +77,7 @@ public class TouchView extends TactilePane {
         // Setup trash view
         TactilePane.setAnchor(trashView, new Anchor(this, 500, 0, Pos.CENTER, false));
         getActiveNodes().add(trashView.getActiveZone());
-        
-        // Setup control view
-        TactilePane.setAnchor(controlView, new Anchor(this, 0, 0, Pos.CENTER_LEFT, false));
-        
+      
         // Setup network overlay
         networkOverlay.prefWidthProperty().bind(this.widthProperty());
         networkOverlay.prefHeightProperty().bind(this.heightProperty());
