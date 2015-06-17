@@ -96,7 +96,7 @@ public abstract class DeviceBase extends LoggingEntityBase {
         return currentConsumptionProperty().get();
     }
 
-    protected final void setCurrentConsumption(double value) {
+    public final void setCurrentConsumption(double value) {
         currentConsumption.set(value);
     }
 

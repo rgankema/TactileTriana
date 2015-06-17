@@ -15,7 +15,7 @@
 <?import nl.utwente.ewi.caes.tactiletriana.gui.customcontrols.*?>
 
 <fx:root styleClass="touch-view" type="TactilePane" fx:id="root" bordersCollide="true" proximityThreshold="0"
-         minWidth="1600" minHeight="900" 
+         minWidth="1600" minHeight="900"  
          xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
     
     <BackgroundView fx:id="backgroundView" TactilePane.draggable="false" />

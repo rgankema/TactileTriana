@@ -61,6 +61,7 @@ public class SimulationPrediction extends SimulationBase {
                 // Reset state of charges of all buffers
                 if (logger instanceof BufferBase) {
                     ((BufferBase) logger).setStateOfCharge(((BufferBase) getActual(logger)).getStateOfCharge());
+                    ((BufferBase) logger).setCurrentConsumption(((BufferBase) getActual(logger)).getCurrentConsumption());
                 }
             }
             setCurrentTime(mainSimulation.getCurrentTime());
@@ -90,6 +91,7 @@ public class SimulationPrediction extends SimulationBase {
 
                     // Reset state of charges of all buffers
                     if (logger instanceof BufferBase) {
+                        ((BufferBase) logger).setCurrentConsumption(((BufferBase) getActual(logger)).getCurrentConsumption());
                         ((BufferBase) logger).setStateOfCharge(((BufferBase) getActual(logger)).getStateOfCharge());
                     }
                 }
