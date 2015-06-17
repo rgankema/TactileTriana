@@ -73,7 +73,7 @@ public class SimulationPrediction extends SimulationBase {
             if (mainSimulationChanged) {
                 mainSimulationChanged = false;
                 cancelled = true;
-                setCurrentTime(newValue);
+                setCurrentTime(oldValue);
 
                 // Clear the invalid log values
                 int minuteOfYear = toMinuteOfYear(oldValue);
@@ -145,6 +145,8 @@ public class SimulationPrediction extends SimulationBase {
             actualCable.brokenProperty().addListener((observable, wasBroken, isBroken) -> {
                 if (!isBroken) {
                     futureCable.repair();
+   
+                    mainSimulationChanged = true;
                 }
             });
             // Bind length
@@ -166,6 +168,7 @@ public class SimulationPrediction extends SimulationBase {
         actualHouse.fuseBlownProperty().addListener((observable, wasBroken, isBroken) -> {
             if (!isBroken) {
                 futureHouse.repairFuse();
+                mainSimulationChanged = true;
             }
         });
 
