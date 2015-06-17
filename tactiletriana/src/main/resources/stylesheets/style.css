@@ -67,13 +67,21 @@ application.
     -fx-effect: dropshadow(gaussian, #eeff00, 10, 0.5, 0, 0);
 }
 
-.node-view.on-chart,
-.transformer-view.on-chart,
-.house-view.on-chart,
-.device-view.on-chart,
-.cable-view.on-chart {
-    -fx-effect: dropshadow(gaussian, yellow, 10, 0.1, 0, 0);
+
+
+.on-chart.chart-0 {
+    -fx-effect: dropshadow(gaussian, yellow, 20, 0.1, 0, 0);
 }
+
+.on-chart.chart-1 {
+    -fx-effect: dropshadow(gaussian, purple, 20, 0.1, 0, 0);
+}
+
+.on-chart.chart-2 {
+    -fx-effect: dropshadow(gaussian, green, 20, 0.1, 0, 0);
+}
+
+
 
 .house-view-child {
     -fx-fill: #BDC3CC;
@@ -132,6 +140,10 @@ application.
     -fx-padding:10px;
 }
 
+
+
+//Graph styling
+
 .detail-view {
     -fx-background-color: #BBCCCC;
 }
@@ -146,6 +158,10 @@ application.
 .chart-horizontal-grid-lines {
     -fx-stroke: #A8B7B7;
 }
+
+#chart-0 .default-color1.chart-series-line { -fx-stroke: yellow; }
+#chart-1 .default-color1.chart-series-line { -fx-stroke: purple; }
+#chart-2 .default-color1.chart-series-line { -fx-stroke: green; }
 
 //Sets current history consumption line: red
 .default-color0.chart-series-line { -fx-stroke: #FF4747; }
