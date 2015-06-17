@@ -14,7 +14,7 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.scene.chart.XYChart.Data;
 import nl.utwente.ewi.caes.tactiletriana.Concurrent;
-import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
+import nl.utwente.ewi.caes.tactiletriana.GlobalSettings;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Cable;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.House;
@@ -129,7 +129,7 @@ public class SimulationPrediction extends SimulationBase {
 
     @Override
     protected void incrementTime() {
-        setCurrentTime(getCurrentTime().plusMinutes(SimulationConfig.TICK_MINUTES));
+        setCurrentTime(getCurrentTime().plusMinutes(GlobalSettings.TICK_MINUTES));
     }
 
     // HELPER METHODS
@@ -193,6 +193,10 @@ public class SimulationPrediction extends SimulationBase {
                             futureDevice = new WashingMachine(this);
                         } else if (actualDevice instanceof BufferConverter) {
                             futureDevice = new BufferConverter(this);
+                        } else if (actualDevice instanceof TrianaHouseController) {
+                            futureDevice = new TrianaHouseController(this);
+                        } else if (actualDevice instanceof UncontrollableLoad) {
+                            futureDevice = new UncontrollableLoad(((UncontrollableLoad)actualDevice).getProfileNumber(), this);
                         } else {
                             throw new UnsupportedOperationException("Copying instances of type "
                                     + actualDevice.getClass().getName() + " not supported.");

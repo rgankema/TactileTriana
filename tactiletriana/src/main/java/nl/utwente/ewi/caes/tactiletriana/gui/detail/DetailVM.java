@@ -114,6 +114,18 @@ public class DetailVM {
             }
         }
     }
+    
+    /**
+     * Resets the view to its initial state
+     */
+    public void reset() {
+        for (int i = 0; i < 3; i++) {
+            if (subChartVMs[i] != null) {
+                subChartVMs[i] = null;
+            }
+        }
+        subChartIndex = 0;
+    }
 
     // CALLBACKS FOR VIEW
     /**
@@ -127,7 +139,7 @@ public class DetailVM {
         this.simulation.addOnTimeSpanShiftedHandler(callback);
     }
 
-    // Child VMs
+    // CHILD VMs
     public DateTimeVM getDateTimeVM() {
         return dateTimeVM;
     }

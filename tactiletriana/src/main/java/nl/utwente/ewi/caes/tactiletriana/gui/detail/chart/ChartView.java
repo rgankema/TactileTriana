@@ -41,9 +41,8 @@ public class ChartView extends StackPane {
 
         // Get label text as defined in FXML
         final String xAxisLabelText = xAxis.getLabel();
-        xAxis.labelProperty().bind(Bindings.createStringBinding(() -> (isAxisLabelsVisible()) ? xAxisLabelText : "", axisLabelsVisible));
-        xAxis.tickLabelsVisibleProperty().bind(axisLabelsVisible);
-        yAxis.tickLabelsVisibleProperty().bind(axisLabelsVisible);
+        xAxis.labelProperty().bind(Bindings.createStringBinding(() -> (!isCompact()) ? xAxisLabelText : "", compact));
+        xAxis.tickLabelsVisibleProperty().bind(compact.not());
     }
 
     public void setViewModel(ChartVM viewModel) {
@@ -60,11 +59,11 @@ public class ChartView extends StackPane {
 
         yAxis.setAutoRanging(true);
         yAxis.labelProperty().bind(Bindings.createStringBinding(() -> {
-            if (isAxisLabelsVisible()) {
+            if (!isCompact()) {
                 return viewModel.seriesNameProperty().get();
             }
             return "";
-        }, viewModel.seriesNameProperty(), axisLabelsVisible));
+        }, viewModel.seriesNameProperty()));
 
         xAxis.lowerBoundProperty().bind(viewModel.xAxisLowerBoundProperty());
         xAxis.upperBoundProperty().bind(viewModel.xAxisUpperBoundProperty());
@@ -99,19 +98,19 @@ public class ChartView extends StackPane {
 
     // PROPERTIES
     /**
-     * Whether the axis labels are visible for this chartview
+     * Whether the x axis labels are visible for this chartview
      */
-    private final BooleanProperty axisLabelsVisible = new SimpleBooleanProperty(true);
+    private final BooleanProperty compact = new SimpleBooleanProperty(false);
 
-    public BooleanProperty axisLabelsVisibleProperty() {
-        return axisLabelsVisible;
+    public BooleanProperty compactProperty() {
+        return compact;
     }
 
-    public final boolean isAxisLabelsVisible() {
-        return axisLabelsVisibleProperty().get();
+    public final boolean isCompact() {
+        return compactProperty().get();
     }
 
-    public final void setAxisLabelsVisible(boolean visible) {
-        axisLabelsVisibleProperty().set(visible);
+    public final void setCompact(boolean visible) {
+        compactProperty().set(visible);
     }
 }

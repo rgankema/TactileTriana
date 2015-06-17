@@ -5,7 +5,9 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.touch.control;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
@@ -25,9 +27,9 @@ public class ControlVM {
         // Bind pause button text to Simulation state
         simulation.stateProperty().addListener((obs) -> {
             if (simulation.getState() == SimulationState.RUNNING) {
-                setPauseButtonText("Pause");
+                setPaused(false);
             } else {
-                setPauseButtonText("Resume");
+                setPaused(true);
             }
         });
     }
@@ -35,14 +37,14 @@ public class ControlVM {
     /**
      * The text for the pause button
      */
-    private final StringProperty pauseButtonText = new SimpleStringProperty("Pause");
+    private final BooleanProperty isPaused = new SimpleBooleanProperty(false);
 
-    public ReadOnlyStringProperty pauseButtonTextProperty() {
-        return pauseButtonText;
+    public BooleanProperty isPausedProperty() {
+        return isPaused;
     }
 
-    protected final void setPauseButtonText(String text) {
-        pauseButtonText.set(text);
+    protected final void setPaused(boolean b) {
+        isPaused.set(b);
     }
 
     /**
@@ -55,4 +57,14 @@ public class ControlVM {
             simulation.start();
         }
     }
+    
+    /**
+     * Toggles Triana from on to off and vice versa
+     */
+    public void toggleTriana() {
+        
+    }
+    
+    
+    
 }

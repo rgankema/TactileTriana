@@ -5,8 +5,8 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.touch.device.deviceconfig;
 
-import javafx.beans.binding.StringBinding;
 import javafx.beans.property.Property;
+import javafx.beans.value.ObservableObjectValue;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -87,7 +87,7 @@ public class DeviceConfigView extends GridPane {
      * @param valueString a binding to the value of the control in a specific
      * string format, may be null
      */
-    private void addControl(String label, Node control, StringBinding valueString) {
+    private void addControl(String label, Node control, ObservableObjectValue<String> valueString) {
         this.add(new Label(label), 0, currentRow);
         this.add(control, 1, currentRow);
         if (valueString != null) {

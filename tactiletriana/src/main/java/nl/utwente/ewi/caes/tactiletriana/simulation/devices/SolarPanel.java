@@ -11,7 +11,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
+import nl.utwente.ewi.caes.tactiletriana.GlobalSettings;
 import nl.utwente.ewi.caes.tactiletriana.simulation.*;
 import nl.utwente.ewi.caes.tactiletriana.simulation.data.WeatherData;
 import static nl.utwente.ewi.caes.tactiletriana.Util.*;
@@ -203,7 +203,7 @@ public class SolarPanel extends DeviceBase {
         double[] radianceProfile = weather.getRadianceProfile();
         double[] tempProfile = weather.getTemperatureProfile();
         LocalDateTime time = simulation.getCurrentTime();
-        int timeStepsInDay = (24 * 60) / SimulationConfig.TICK_MINUTES;
+        int timeStepsInDay = (24 * 60) / GlobalSettings.TICK_MINUTES;
 
         if (abstractProfile == null) {
             // No profile yet, calculate the whole thing
@@ -212,11 +212,11 @@ public class SolarPanel extends DeviceBase {
 
             profileTickOffset = toTimeStep(time);
             for (int ts = 0; ts < timeStepsInDay; ts++) {
-                int timeStepInYear = (ts + profileTickOffset) % TOTAL_TICKS_IN_YEAR;
+                int timeStepInYear = (ts + profileTickOffset) % getTotalTicksInYear();
                 double temp = tempProfile[timeStepInYear];
                 double radiance = radianceProfile[timeStepInYear];
                 abstractProfile[ts] = -calculateProductionSquareMeter(temp, radiance, time);
-                time = time.plusMinutes(SimulationConfig.TICK_MINUTES);
+                time = time.plusMinutes(GlobalSettings.TICK_MINUTES);
             }
         } else {
             int oldProfileTickOffset = profileTickOffset;
@@ -226,11 +226,11 @@ public class SolarPanel extends DeviceBase {
             // If the new time is before the last one, just calculate the whole profile again
             if (deltaTimeSteps < 0) {
                 for (int ts = 0; ts < abstractProfile.length; ts++) {
-                    int timeStepInYear = (ts + profileTickOffset) % TOTAL_TICKS_IN_YEAR;
+                    int timeStepInYear = (ts + profileTickOffset) % getTotalTicksInYear();
                     double temp = tempProfile[timeStepInYear];
                     double radiance = radianceProfile[timeStepInYear];
                     abstractProfile[ts] = -calculateProductionSquareMeter(temp, radiance, time);
-                    time = time.plusMinutes(SimulationConfig.TICK_MINUTES);
+                    time = time.plusMinutes(GlobalSettings.TICK_MINUTES);
                 }
             } else {
                 // Shift the array
@@ -240,11 +240,11 @@ public class SolarPanel extends DeviceBase {
                 }
                 // Calculate the timesteps we haven't done yet
                 for (; ts < abstractProfile.length; ts++) {
-                    int timeStepInYear = (ts + profileTickOffset) % TOTAL_TICKS_IN_YEAR;
+                    int timeStepInYear = (ts + profileTickOffset) % getTotalTicksInYear();
                     double temp = tempProfile[timeStepInYear];
                     double radiance = radianceProfile[timeStepInYear];
                     abstractProfile[ts] = -calculateProductionSquareMeter(temp, radiance, time);
-                    time = time.plusMinutes(SimulationConfig.TICK_MINUTES);
+                    time = time.plusMinutes(GlobalSettings.TICK_MINUTES);
                 }
             }
         }

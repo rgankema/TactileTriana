@@ -9,9 +9,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
+import javafx.beans.property.SimpleObjectProperty;
+import nl.utwente.ewi.caes.tactiletriana.GlobalSettings;
 import static nl.utwente.ewi.caes.tactiletriana.Util.toTimeStep;
 import static nl.utwente.ewi.caes.tactiletriana.simulation.Simulation.NUMBER_OF_HOUSES;
 import nl.utwente.ewi.caes.tactiletriana.simulation.data.WeatherData;
@@ -28,8 +30,6 @@ public abstract class SimulationBase extends LoggingEntityBase {
     public static final int NUMBER_OF_HOUSES = 6;
 
     // FIELDS
-    // API
-    private IController controller;
     // Network
     protected final Transformer transformer;
     protected final Node[] internalNodes;
@@ -60,7 +60,7 @@ public abstract class SimulationBase extends LoggingEntityBase {
         for (int i = 0; i <= NUMBER_OF_HOUSES - 1; i++) {
             this.houses[i] = new House(this);
 
-            if (SimulationConfig.UNCONTROLLABLE_LOAD_ENABLED) {
+            if (GlobalSettings.UNCONTROLLABLE_LOAD_ENABLED) {
                 houses[i].getDevices().add(new UncontrollableLoad(i, this));
             }
 
@@ -117,15 +117,19 @@ public abstract class SimulationBase extends LoggingEntityBase {
 
     /**
      * The Controller that controls the devices in this simulation. May be null.
-     *
-     * @return
      */
-    public IController getController() {
+    private final ObjectProperty<IController> controller = new SimpleObjectProperty<>(null);
+    
+    public ObjectProperty<IController> controllerProperty() {
         return controller;
     }
+    
+    public final IController getController() {
+        return controllerProperty().get();
+    }
 
-    public void setController(IController controller) {
-        this.controller = controller;
+    public final void setController(IController controller) {
+        controllerProperty().set(controller);
     }
 
     /**

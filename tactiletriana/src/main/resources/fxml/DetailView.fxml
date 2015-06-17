@@ -44,9 +44,9 @@
         
         <children>
             <ChartView fx:id="mainChart" id="chart-main" styleClass="big" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="0" />
-            <ChartView fx:id="subChart1" id="chart-0" styleClass="small" axisLabelsVisible="false" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-            <ChartView fx:id="subChart2" id="chart-1" styleClass="small" axisLabelsVisible="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <ChartView fx:id="subChart3" id="chart-2" styleClass="small" axisLabelsVisible="false" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <ChartView fx:id="subChart1" id="chart-0" styleClass="small" compact="true" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+            <ChartView fx:id="subChart2" id="chart-1" styleClass="small" compact="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <ChartView fx:id="subChart3" id="chart-2" styleClass="small" compact="true" GridPane.columnIndex="2" GridPane.rowIndex="1" />
         </children>
          <BorderPane.margin>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />

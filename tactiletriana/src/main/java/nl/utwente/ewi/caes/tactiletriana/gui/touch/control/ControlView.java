@@ -16,10 +16,8 @@ import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
  */
 public class ControlView extends HBox {
 
-    @FXML
-    private Button pauseButton;
-    @FXML
-    private Button disableTrianaButton;
+    @FXML private Button pauseButton;
+    @FXML private Button disableTrianaButton;
 
     private ControlVM viewModel;
 
@@ -34,8 +32,17 @@ public class ControlView extends HBox {
 
         this.viewModel = viewModel;
 
-        pauseButton.textProperty().bind(viewModel.pauseButtonTextProperty());
-
         pauseButton.setOnAction(e -> viewModel.toggleSimulationState());
+        
+        disableTrianaButton.setOnAction(e -> viewModel.toggleTriana());
+        
+        // Add CSS class for broken
+        viewModel.isPausedProperty().addListener(obs -> {
+            if (viewModel.isPausedProperty().get()) {
+                getStyleClass().add("paused");
+            } else {
+                getStyleClass().remove("paused");
+            }
+        });
     }
 }

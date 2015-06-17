@@ -7,8 +7,10 @@ package nl.utwente.ewi.caes.tactiletriana.simulation;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
@@ -31,9 +33,11 @@ public abstract class DeviceBase extends LoggingEntityBase {
     private final int id;
     private final String apiDeviceType;
     private final Set<String> apiParameters;
+    private final Set<String>  apiChangeParameters;
     private final List<Property> properties;
     private final List<ObservableList> lists;
     private final List<ObservableMap> maps;
+    private JSONObject currentParameters;
 
     protected final SimulationBase simulation;
 
@@ -53,10 +57,12 @@ public abstract class DeviceBase extends LoggingEntityBase {
 
         this.apiDeviceType = apiDeviceType;
         this.apiParameters = new HashSet<>();
+        this.apiChangeParameters = new HashSet<>();
         this.properties = new ArrayList<>();
         this.lists = new ArrayList<>();
         this.maps = new ArrayList<>();
         this.simulation = simulation;
+        
     }
 
     // PROPERTIES
@@ -190,7 +196,10 @@ public abstract class DeviceBase extends LoggingEntityBase {
 
         doTick(connected);
 
-        log(simulation.getCurrentTime(), getCurrentConsumption());
+        // This is merely for unit tests, simulation should never be null
+        if (simulation != null) {
+            log(simulation.getCurrentTime(), getCurrentConsumption());
+        }
     }
 
     protected abstract void doTick(boolean connected);
@@ -205,7 +214,11 @@ public abstract class DeviceBase extends LoggingEntityBase {
     protected final void registerAPIParameter(String parameterName) {
         this.apiParameters.add(parameterName);
     }
-
+    
+    protected final void registerApiChangeParameter(String parameterName) {
+        this.apiChangeParameters.add(parameterName);
+    }
+    
     protected final void registerProperty(Property property) {
         this.properties.add(property);
     }
@@ -259,7 +272,53 @@ public abstract class DeviceBase extends LoggingEntityBase {
     public void updateParameter(String parameter, Object value) {
         throw new IllegalArgumentException("Cannot update parameter " + parameter);
     }
-
+    
+    public boolean parametersHaveChanged() {
+        boolean result = false;
+        
+        
+        
+        //Check if the parameters since last time this function was called is available.
+        if(currentParameters == null) {
+            
+            //Get all API parameters and save only those which do not change automatically/often
+            JSONObject allParameters = this.parametersToJSON();
+            for(String key : apiChangeParameters) {
+                //TODO mabe check if the allParameters contains the given key
+                currentParameters.put(key, allParameters.get(key));
+            }
+            
+            
+            
+        } else {
+            //get the current parameters
+            JSONObject allParameters = this.parametersToJSON();
+            JSONObject newParameters = new JSONObject();
+            //filter out parameters that always change
+            for(String key : apiChangeParameters) {
+                //TODO mabe check if the allParameters contains the given key
+                newParameters.put(key, allParameters.get(key));
+            }
+            
+            //Convert the current and new parameters to Strings and compare
+            //Avoids having to know all API parameter types and structures
+            if(!currentParameters.toJSONString().equals(newParameters.toJSONString())) {
+                //Parameters have changed since last function call
+                result = true;
+            }
+            
+            
+            
+            
+            
+            
+            
+        }
+        
+        
+        return result;
+    }
+    
     // ENUMS AND NESTED CLASSES
     /**
      * Describes the state of a device

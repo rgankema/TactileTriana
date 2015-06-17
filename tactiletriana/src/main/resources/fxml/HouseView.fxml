@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.image.*?>
 <?import javafx.scene.shape.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
@@ -7,8 +8,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<fx:root styleClass="house-view" type="Pane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root styleClass="house-view" type="StackPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Rectangle fx:id="rectangle" arcHeight="5.0" arcWidth="5.0" fill="#cdcdcd" height="200.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="5.0" width="450.0" />
+      <Rectangle fx:id="rectangle" arcHeight="5.0" arcWidth="5.0" fill="#cdcdcd" height="200.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="5.0" styleClass="house-view-child" width="450.0" />
    </children>
 </fx:root>

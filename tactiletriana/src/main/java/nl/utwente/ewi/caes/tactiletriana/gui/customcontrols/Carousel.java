@@ -21,12 +21,9 @@ import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
  */
 public class Carousel extends BorderPane {
 
-    @FXML
-    Label valueLabel;
-    @FXML
-    Node leftArrow;
-    @FXML
-    Node rightArrow;
+    @FXML Label valueLabel;
+    @FXML Node leftArrow;
+    @FXML Node rightArrow;
 
     private ObjectProperty property;
     private Function<Object, String> objectToString;

@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
-import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
+import nl.utwente.ewi.caes.tactiletriana.GlobalSettings;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.House;
 import nl.utwente.ewi.caes.tactiletriana.simulation.IController;
@@ -447,7 +447,7 @@ public class ServerConnection implements Runnable, IController {
     }
 
     public void processGetHouses() {
-        log("Processing GetDevices request...");
+        log("Processing GetHouses request...");
         //Get the houses in JSON format
         House[] houses = server.getSimulation().getHouses();
         JSONArray housesJSON = new JSONArray();
@@ -577,7 +577,7 @@ public class ServerConnection implements Runnable, IController {
         jsonResponse.put("isStarted", (sim.getState() != Simulation.SimulationState.STOPPED));
         //Minute of the year in the simulation.
         jsonResponse.put("simTime", (sim.getCurrentTime().getDayOfYear() - 1) * 24 * 60 + sim.getCurrentTime().getHour() * 60 + sim.getCurrentTime().getMinute());
-        jsonResponse.put("timeStep", SimulationConfig.TICK_MINUTES);
+        jsonResponse.put("timeStep", GlobalSettings.TICK_MINUTES);
         sendMessage(jsonResponse.toJSONString());
     }
 
@@ -764,27 +764,37 @@ public class ServerConnection implements Runnable, IController {
         //Send the RequestPlanning request
         JSONObject response = new JSONObject();
         Simulation sim = server.getSimulation();
+        //Check if the the device parameters have changed
+        boolean parametersHaveChanged = false;
+        for (DeviceBase device : sim.getDevices()) {
+            if(device.parametersHaveChanged()) {
+                parametersHaveChanged = true;
+                break;
+            }
+        }
+        
+        response.put("devicesChanged", parametersHaveChanged);
         response.put("category", "request");
         response.put("type", "RequestPlanning");
         response.put("simTime", (sim.getCurrentTime().getDayOfYear() - 1) * 24 * 60 + sim.getCurrentTime().getHour() * 60 + sim.getCurrentTime().getMinute());
-        response.put("timeStep", SimulationConfig.TICK_MINUTES);
+        response.put("timeStep", GlobalSettings.TICK_MINUTES);
         sendMessage(response.toJSONString());
         log("Sent request for planning...");
 
         //Now wait for the timeout period specified or until a SubmitPlanning request has been received. 
         boolean planningReceived = false;
-        log("a");
+    
         int looptime = 0;
         while (!planningReceived && looptime < timeout) {
             log(planningReceived + " " + looptime + " " + timeout);
             //The lastPlanningTime will be updated when the new planning is received
-            log("b");
-            if (this.lastUpdatedPlanning.equals(this.lastRequestPlanning)) {
+          
+            if (this.lastRequestPlanning.equals(this.lastUpdatedPlanning)) {
                 planningReceived = true;
             }
-            log("c");
+         
             try {
-                Thread.sleep(100);
+                Thread.sleep(10);
             } catch (InterruptedException e) {
                 log("Sleep interrupted");
             }
@@ -792,7 +802,7 @@ public class ServerConnection implements Runnable, IController {
             looptime++;
 
         }
-        log("d");
+   
         if (planningReceived) {
             //Planning accepted, going back to Control
             setClientState(ClientState.CONTROL);
@@ -800,7 +810,7 @@ public class ServerConnection implements Runnable, IController {
         } else {
             log("Failed to receive planning from Controller. Timeout expired...");
         }
-        log("e");
+     
 
         return planningReceived;
     }

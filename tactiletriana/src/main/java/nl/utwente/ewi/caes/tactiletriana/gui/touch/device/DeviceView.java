@@ -23,6 +23,7 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import nl.utwente.ewi.caes.tactilefx.control.TactilePane;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 import nl.utwente.ewi.caes.tactiletriana.gui.events.EventUtil;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.DeviceVM.State;
@@ -72,12 +73,17 @@ public class DeviceView extends StackPane {
         } else if (type == BufferConverter.class) {
             deviceIcon.setImage(new Image("images/bufferconverter.png", 50, 50, false, true));
             getStyleClass().add("bufferconverter");
+        } else if (type == TrianaHouseController.class) { 
+            deviceIcon.setImage(new Image("images/triana.png", 50, 50, false, true));
+            getStyleClass().add("house-controller");
         } else {
             throw new UnsupportedOperationException("No DeviceView for type " + type.toString());
         }
 
         this.setBackground(new Background(new BackgroundFill(Color.GREY, CornerRadii.EMPTY, Insets.EMPTY)));
-        this.setBorder(buildBorder(Color.DARKGREY));
+        this.setBorder(buildBorder(Color.BLACK));
+        
+        TactilePane.inUseProperty(this).addListener(obs -> viewModel.removeFromStack());
     }
 
     public DeviceVM getViewModel() {
@@ -104,17 +110,17 @@ public class DeviceView extends StackPane {
         batteryProgress.visibleProperty().bind(viewModel.batteryIconVisibleProperty());
         batteryProgress.progressProperty().bind(viewModel.stateOfChargeProperty());
 
-        // Bind bordercolor to state
-        this.borderProperty().bind(Bindings.createObjectBinding(() -> {
+        // Bind backgroundcolor to state   
+        this.backgroundProperty().bind(Bindings.createObjectBinding(() -> {
             Color color = Color.DARKGREY;
             if (viewModel.getState() == State.CONSUMING) {
                 color = color.interpolate(Color.RED, viewModel.getLoad());
             } else if (viewModel.getState() == State.PRODUCING) {
                 color = color.interpolate(Color.GREEN, viewModel.getLoad());
             }
-            return buildBorder(color);
+            return new Background(new BackgroundFill((Paint)color, null,null));
         }, viewModel.loadProperty(), viewModel.stateProperty()));
-
+        
         // Handle touch events on config icon
         configIcon.setOnTouchPressed(e -> {
             viewModel.configIconPressed();
@@ -138,7 +144,7 @@ public class DeviceView extends StackPane {
             viewModel.longPressed();
         });
 
-        // Add CSS classes for charts
+        // Sync CSS classes
         viewModel.shownOnChartProperty().addListener(obs -> {
             if (viewModel.isShownOnChart()) {
                 getStyleClass().add("on-chart");
@@ -160,6 +166,6 @@ public class DeviceView extends StackPane {
     // HELPER METHODS
     // Returns a Border for a given color
     private Border buildBorder(Paint color) {
-        return new Border(new BorderStroke(color, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(5)));
+        return new Border(new BorderStroke(color, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(1)));
     }
 }

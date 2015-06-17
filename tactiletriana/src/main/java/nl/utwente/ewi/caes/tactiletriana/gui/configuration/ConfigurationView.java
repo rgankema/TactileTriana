@@ -9,35 +9,29 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.BorderPane;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
-import nl.utwente.ewi.caes.tactiletriana.gui.configuration.scenario.ScenarioView;
 
 /**
  *
  * @author Richard
  */
-public class ConfigurationView extends GridPane {
+public class ConfigurationView extends BorderPane {
 
-    @FXML
-    private TextField portField;
-    @FXML
-    private ComboBox touchScreenComboBox;
-    @FXML
-    private ComboBox detailScreenComboBox;
-    @FXML
-    private CheckBox fullScreenCheckBox;
-    @FXML
-    private Button startButton;
-    @FXML
-    private Button resetButton;
-    @FXML
-    private Pane scenarioViewContainer;
-
-    private ScenarioView scenarioView;
-
+    @FXML private TextField portField;
+    @FXML private ComboBox touchScreenComboBox;
+    @FXML private ComboBox detailScreenComboBox;
+    @FXML private CheckBox fullScreenCheckBox;
+    @FXML private Button startButton;
+    @FXML private Button resetButton;
+    @FXML private Button toggleServerButton;
+    @FXML private Button loadSettingsButton;
+    @FXML private Label connectionInfoLabel;
+    @FXML private TextArea textArea;
+    
     private ConfigurationVM viewModel;
 
     public ConfigurationView() {
@@ -50,11 +44,6 @@ public class ConfigurationView extends GridPane {
         }
 
         this.viewModel = viewModel;
-
-        // Initialize ScenarioView
-        scenarioView = new ScenarioView();
-        scenarioView.setViewModel(viewModel.getScenarioVM());
-        scenarioViewContainer.getChildren().add(scenarioView);
 
         // Bind control properties to VM
         fullScreenCheckBox.selectedProperty().bindBidirectional(viewModel.fullScreenCheckedProperty());
@@ -69,10 +58,14 @@ public class ConfigurationView extends GridPane {
         startButton.disableProperty().bind(viewModel.startButtonDisabledProperty());
         startButton.textProperty().bind(viewModel.startButtonTextProperty());
         resetButton.disableProperty().bind(viewModel.resetButtonDisabledProperty());
-        scenarioView.disableProperty().bind(viewModel.scenarioViewDisableProperty());
-
+        toggleServerButton.textProperty().bind(viewModel.toggleServerButtonTextProperty());
+        connectionInfoLabel.textProperty().bind(viewModel.connectionInfoTextProperty());
+        textArea.textProperty().bind(viewModel.settingsTextProperty());
+        
         // Event handling
         startButton.setOnAction(e -> viewModel.start());
         resetButton.setOnAction(e -> viewModel.reset());
+        toggleServerButton.setOnAction(e -> viewModel.toggleServer());
+        loadSettingsButton.setOnAction(e -> viewModel.loadSettingsFile());
     }
 }

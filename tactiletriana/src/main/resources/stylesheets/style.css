@@ -12,7 +12,7 @@ application.
 // TIME
 
 .date-time-view .time-label {
-    -fx-font-size: 80px;
+    -fx-font-size: 100px;
 }
 
 .date-time-view .date-label {
@@ -72,5 +72,83 @@ application.
 .house-view.on-chart,
 .device-view.on-chart,
 .cable-view.on-chart {
-    -fx-effect: dropshadow(gaussian, white, 10, 0.3, 0, 0);
+    -fx-effect: dropshadow(gaussian, yellow, 10, 0.1, 0, 0);
 }
+
+.house-view-child {
+    -fx-fill: #BDC3CC;
+    -fx-stroke-width:10px;
+}
+
+.fuse-blown .house-view-child {
+    -fx-fill: orangered;
+    -fx-stroke: blue;
+    -fx-stroke-width: 10px;
+}
+
+
+.battery-progress {
+    -fx-accent: green;  
+}
+
+.device-view {
+    -fx-background-color: #D6D6D6;
+    -fx-border-color: black;
+    -fx-border-width: 1px;
+}
+
+.control-view-button {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-focus-color: transparent;
+    -fx-padding: 35px 50px;
+    -fx-background-color: #BDC3CC;
+}
+
+
+.paused #pauseButton {
+    -fx-background-image: url("../images/play.png");
+}
+
+#pauseButton {
+    -fx-background-image: url("../images/pause.png");
+    -fx-background-repeat: stretch;   
+    -fx-background-size: 50 50;
+    -fx-background-position: center center;
+}
+
+#disableTrianaButton {
+    -fx-background-image: url("../images/notriana.png");
+    -fx-background-repeat: stretch;   
+    -fx-background-size: 50 50;
+    -fx-background-position: center center;
+}
+
+.trash-view {
+    -fx-background-color: white;
+}
+
+.device-config-view {
+    -fx-padding:10px;
+}
+
+.detail-view {
+    -fx-background-color: #BBCCCC;
+}
+
+#chart-main .chart-series-line {
+    -fx-stroke-width:4px;
+}
+
+.chart-vertical-grid-lines {
+    -fx-stroke: #A8B7B7;
+}
+.chart-horizontal-grid-lines {
+    -fx-stroke: #A8B7B7;
+}
+
+//Sets current history consumption line: red
+.default-color0.chart-series-line { -fx-stroke: #FF4747; }
+//Sets future consumption line: blue
+.default-color1.chart-series-line { -fx-stroke: #3F6FFF; }
+

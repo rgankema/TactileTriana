@@ -5,18 +5,8 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.customcontrols;
 
-import com.sun.javafx.css.converters.EnumConverter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.ListChangeListener;
-import javafx.css.CssMetaData;
-import javafx.css.SimpleStyleableObjectProperty;
-import javafx.css.StyleConverter;
-import javafx.css.Styleable;
-import javafx.css.StyleableProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -28,10 +18,15 @@ import javafx.scene.layout.Pane;
  */
 public class FloatPane extends Pane {
 
+    // KEYS FOR ATTACHED PROPERTIES
     static final String ALIGNMENT = "float-pane-alignment";
     static final String MARGIN = "float-pane-margin";
 
     // ATTACHED PROPERTIES
+    
+    /**
+     * Defines where the specified node will be aligned if it is added to this pane.
+     */
     public static final ObjectProperty<Pos> alignmentProperty(Node child) {
         ObjectProperty<Pos> property = (ObjectProperty<Pos>) getConstraint(child, ALIGNMENT);
         if (property == null) {
@@ -49,6 +44,9 @@ public class FloatPane extends Pane {
         alignmentProperty(child).set(alignment);
     }
 
+    /**
+     * Defines the margin that the specified node will have when it is added to this pane.
+     */
     public static final ObjectProperty<Insets> marginProperty(Node child) {
         ObjectProperty<Insets> property = (ObjectProperty<Insets>) getConstraint(child, MARGIN);
         if (property == null) {
@@ -67,6 +65,8 @@ public class FloatPane extends Pane {
     }
 
     // STATIC HELPER METHODS
+    
+    // Used to attach a property to a Node
     static void setConstraint(Node node, Object key, Object value) {
         if (value == null) {
             node.getProperties().remove(key);
@@ -78,6 +78,7 @@ public class FloatPane extends Pane {
         }
     }
 
+    // Used to get an attached property of a Node
     static Object getConstraint(Node node, Object key) {
         if (node.hasProperties()) {
             Object value = node.getProperties().get(key);
@@ -120,16 +121,5 @@ public class FloatPane extends Pane {
     }
 
     // STYLESHEET HANDLING
-    private static final String DEFAULT_STYLE_CLASS = "customfx-float-pane";
-
-    private static class Styleables {
-
-        private static final List<CssMetaData<? extends Styleable, ?>> STYLEABLES;
-
-        static {
-            final List<CssMetaData<? extends Styleable, ?>> styleables
-                    = new ArrayList<>(Pane.getClassCssMetaData());
-            STYLEABLES = Collections.unmodifiableList(styleables);
-        }
-    }
+    private static final String DEFAULT_STYLE_CLASS = "tactiletriana-float-pane";
 }

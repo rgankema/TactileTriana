@@ -8,17 +8,20 @@ package nl.utwente.ewi.caes.tactiletriana.gui.touch.device.deviceconfig;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.StringBinding;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ObservableObjectValue;
+import nl.utwente.ewi.caes.tactiletriana.GlobalSettings;
 import nl.utwente.ewi.caes.tactiletriana.Util;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.Buffer;
+import nl.utwente.ewi.caes.tactiletriana.simulation.devices.BufferConverter;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.ElectricVehicle;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.ElectricVehicle.Model;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.SolarPanel;
@@ -34,6 +37,7 @@ public class DeviceConfigVM {
     private final List<Row> rows = new ArrayList<>();
 
     // CONSTRUCTOR
+    
     public DeviceConfigVM(DeviceBase device) {
 
         headerText.set(device.getDisplayName());
@@ -46,7 +50,9 @@ public class DeviceConfigVM {
             initSolarPanel((SolarPanel) device);
         } else if (device instanceof ElectricVehicle) {
             initElectricVehicle((ElectricVehicle) device);
-        }
+        } else if (device instanceof BufferConverter) {
+            initBufferConverter((BufferConverter) device);
+        } // else no parameters available
     }
 
     private void initBuffer(Buffer buffer) {
@@ -92,6 +98,16 @@ public class DeviceConfigVM {
         DoubleProperty area = solarPanel.areaProperty();
 
         rows.add(new DoubleRow("Area", area, 1, 50, area.asString("%.0f m²")));
+        
+        if (GlobalSettings.EXTENDED_PARAMETERS) {
+            DoubleProperty efficiency = solarPanel.efficiencyProperty();
+            DoubleProperty orientation = solarPanel.orientationProperty();
+            DoubleProperty elevation = solarPanel.elevationProperty();
+            
+            rows.add(new DoubleRow("Efficiency", efficiency, 0, 100, efficiency.asString("%.0f%%")));
+            rows.add(new DoubleRow("Orientation", orientation, 0, 360, orientation.asString("%.0f°")));
+            rows.add(new DoubleRow("Elevation", elevation, 0, 90, elevation.asString("%.0f°")));
+        }
     }
 
     private void initElectricVehicle(ElectricVehicle ev) {
@@ -100,7 +116,20 @@ public class DeviceConfigVM {
         rows.add(new CategoryRow("Model", model, Bindings.createStringBinding(() -> ev.getModelName(), model), Model.values()));
     }
 
+    private void initBufferConverter(BufferConverter bc) {
+        
+        DoubleProperty desiredTemp = bc.desiredTemperatureProperty();        
+        rows.add(new DoubleRow("Desired temperature", desiredTemp, 0, 30, desiredTemp.asString("%.0f °C")));
+        
+        if (GlobalSettings.EXTENDED_PARAMETERS) {
+            DoubleProperty efficiency = bc.COPProperty();
+            
+            rows.add(new DoubleRow("Performance Coefficient", efficiency, 0.5, 10, efficiency.asString("%.1f")));
+        }
+    }
+    
     // PROPERTIES
+    
     /**
      * The text that should be shown in the header.
      */
@@ -118,6 +147,7 @@ public class DeviceConfigVM {
     }
 
     // NESTED CLASSES
+    
     /**
      * Represents a row in the configuration view.
      */
@@ -125,9 +155,9 @@ public class DeviceConfigVM {
 
         private final String label;
         private final Property valueProperty;
-        private final StringBinding valueStringBinding;
+        private final ObservableObjectValue<String> valueStringBinding;
 
-        public Row(String label, Property valueProperty, StringBinding valueStringBinding) {
+        public Row(String label, Property valueProperty, ObservableObjectValue<String> valueStringBinding) {
             this.label = label;
             this.valueProperty = valueProperty;
             this.valueStringBinding = valueStringBinding;
@@ -141,7 +171,7 @@ public class DeviceConfigVM {
             return valueProperty;
         }
 
-        public StringBinding getValueStringBinding() {
+        public ObservableObjectValue<String> getValueStringBinding() {
             return valueStringBinding;
         }
     }
@@ -155,7 +185,7 @@ public class DeviceConfigVM {
         private final double min;
         private final double max;
 
-        public DoubleRow(String label, DoubleProperty valueProperty, double min, double max, StringBinding valueStringBinding) {
+        public DoubleRow(String label, DoubleProperty valueProperty, double min, double max, ObservableObjectValue<String> valueStringBinding) {
             super(label, valueProperty, valueStringBinding);
 
             this.min = min;
@@ -184,7 +214,7 @@ public class DeviceConfigVM {
 
         private final Object[] possibleValues;
 
-        public CategoryRow(String label, Property valueProperty, StringBinding valueStringBinding, Object[] possibleValues) {
+        public CategoryRow(String label, Property valueProperty, ObservableObjectValue<String> valueStringBinding, Object[] possibleValues) {
             super(label, valueProperty, valueStringBinding);
 
             this.possibleValues = possibleValues;

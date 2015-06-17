@@ -9,7 +9,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
+import nl.utwente.ewi.caes.tactiletriana.GlobalSettings;
 import static nl.utwente.ewi.caes.tactiletriana.Util.toTimeStep;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.SimulationBase;
@@ -25,7 +25,10 @@ import org.json.simple.JSONObject;
 public class BufferConverter extends DeviceBase {
 
     public static int profileCounter = 0;
-
+    
+    //Default desired temperature
+    private final double DEFAULT_TEMPERATURE = 19.0;
+    
     //coefficient of performance
     public static final String API_COP = "COP";
     public static final String API_PROFILE = "profile";
@@ -56,6 +59,7 @@ public class BufferConverter extends DeviceBase {
         registerAPIParameter(API_COP);
 
         // Register properties for prediction
+        registerProperty(desiredTemperature);
         registerProperty(COP);
         registerProperty(this.profileNumber);
 
@@ -85,6 +89,20 @@ public class BufferConverter extends DeviceBase {
     public final void setCOP(double power) {
         this.COP.set(power);
     }
+    
+    private DoubleProperty desiredTemperature = new SimpleDoubleProperty(DEFAULT_TEMPERATURE);
+    
+    public DoubleProperty desiredTemperatureProperty(){
+        return desiredTemperature;
+    }
+    
+    public double getDesiredTemperature(){
+        return desiredTemperature.get();
+    }
+    
+    public void setDesiredTemperature(double val){
+        this.desiredTemperature.set(val);
+    }
 
     @Override
     public void updateParameter(String parameter, Object value) {
@@ -97,7 +115,9 @@ public class BufferConverter extends DeviceBase {
 
     @Override
     public void doTick(boolean connected) {
-        setCurrentConsumption(data.getProfile(profileNumber.get())[toTimeStep(simulation.getCurrentTime())] / getCOP());
+        //Increases or decreases consumption based on the desired 
+        double factor = getDesiredTemperature() / DEFAULT_TEMPERATURE;
+        setCurrentConsumption((data.getProfile(profileNumber.get())[toTimeStep(simulation.getCurrentTime())] / getCOP())*factor);
     }
 
     @Override
@@ -106,7 +126,7 @@ public class BufferConverter extends DeviceBase {
         JSONArray jsonProfile = new JSONArray();
 
         int time = toTimeStep(simulation.getCurrentTime());
-        for (int i = time; i < time + 24 * 60 / SimulationConfig.TICK_MINUTES; i++) {
+        for (int i = time; i < time + 24 * 60 / GlobalSettings.TICK_MINUTES; i++) {
             jsonProfile.add(data.getProfile(profileNumber)[i]);
         }
         result.put(API_PROFILE, jsonProfile);

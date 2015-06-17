@@ -10,9 +10,8 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.TreeMap;
-import nl.utwente.ewi.caes.tactiletriana.SimulationConfig;
-import static nl.utwente.ewi.caes.tactiletriana.Util.TOTAL_TICKS_IN_YEAR;
-import static nl.utwente.ewi.caes.tactiletriana.Util.nextRandomInt;
+import nl.utwente.ewi.caes.tactiletriana.GlobalSettings;
+import static nl.utwente.ewi.caes.tactiletriana.Util.*;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.BufferConverter;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -63,17 +62,18 @@ public class BufferConverterData implements IDeviceDataProvider<BufferConverter>
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException("Error while heat demand dataset", e);
+            throw new RuntimeException("Error while reading heat demand dataset", e);
         }
 
         // Convert to profile with value per timestep   
-        int tickMinutes = SimulationConfig.TICK_MINUTES;
+        int tickMinutes = GlobalSettings.TICK_MINUTES;
         int minutesInYear = 365 * 24 * 60;
-
+        int ticksInYear = getTotalTicksInYear();
+        
         for (int key = 0; key < 6; key++) {
-            double[] profile = new double[TOTAL_TICKS_IN_YEAR];
+            double[] profile = new double[ticksInYear];
             // Get average of all minutes in timestep
-            for (int ts = 0; ts < TOTAL_TICKS_IN_YEAR; ts++) {
+            for (int ts = 0; ts < ticksInYear; ts++) {
                 profile[ts] = 0;
                 int minutesInTimeStep = 0;
                 for (int min = ts * tickMinutes; min < (ts + 1) * tickMinutes && min < minutesInYear; min++) {
