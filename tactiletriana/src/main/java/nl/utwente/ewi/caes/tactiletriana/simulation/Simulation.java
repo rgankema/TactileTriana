@@ -16,6 +16,8 @@ import javafx.beans.property.SimpleObjectProperty;
 import nl.utwente.ewi.caes.tactiletriana.Concurrent;
 import static nl.utwente.ewi.caes.tactiletriana.Concurrent.runOnJavaFXThreadSynchronously;
 import nl.utwente.ewi.caes.tactiletriana.GlobalSettings;
+import nl.utwente.ewi.caes.tactiletriana.simulation.devices.BufferBase;
+import nl.utwente.ewi.caes.tactiletriana.simulation.devices.TimeShiftableBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.UncontrollableLoad;
 
 /**
@@ -25,10 +27,13 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.devices.UncontrollableLoad;
 public class Simulation extends SimulationBase {
 
     private static final TimeScenario DEFAULT_SCENARIO = new TimeScenario(new TimeScenario.TimeSpan(LocalDate.of(2014, 1, 1), LocalDate.of(2014, 12, 31)));
-
+    
+    private boolean apiEnabled;
+    private boolean apiDisabledTickPassed;
+    
     public Simulation() {
         this.setState(SimulationState.STOPPED);
-
+        this.apiEnabled = true;
         // Initialise time
         setCurrentTime(getTimeScenario().getCurrentTime());
     }
@@ -158,11 +163,53 @@ public class Simulation extends SimulationBase {
             incrementTime();
         });
 
-        if (getController() != null) {
+        if (getController() != null && apiEnabled) {
             getController().retrievePlanning(50, getCurrentTime());
         }
+        
+        //If the api was just disabled, clear all the current plannings
+        if(!apiEnabled && !apiDisabledTickPassed) {
+            apiDisabledTickPassed = true;
+            //Clear all currently set plannings
+            for(DeviceBase device : this.getDevices()) {
+                if (device instanceof BufferBase) {
+                    ((BufferBase)device).getPlanning().clear();
+                } else if (device instanceof TimeShiftableBase) {
+                    ((TimeShiftableBase)device).getPlanning().clear();
+                }
+            }
+        }
     }
-
+    
+    
+    /** 
+     * Returns if the Simulation uses the API to request plannings or not
+     * 
+     * @return boolean indicating if the API is enabled or not 
+     */
+    public boolean getAPIState() {
+        return this.apiEnabled;
+    }
+    
+    /**
+     * Enable the requests for plannings by the API
+     */
+    public void enableAPI() {
+        this.apiEnabled = true;
+        this.apiDisabledTickPassed = false;
+    }
+    
+    /**
+     * Prevent the API from requesting plannings  
+     */
+    public void disableAPI() {
+        this.apiEnabled = false;
+        
+        
+        
+        
+    }
+    
     /**
      * Increments the time by either the tick time, or leaps to the next time
      * span if required.

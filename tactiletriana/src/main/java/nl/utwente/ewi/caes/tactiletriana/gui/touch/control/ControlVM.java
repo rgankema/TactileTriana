@@ -62,7 +62,11 @@ public class ControlVM {
      * Toggles Triana from on to off and vice versa
      */
     public void toggleTriana() {
-        
+        if (simulation.getAPIState()) {
+            simulation.disableAPI();
+        } else {
+            simulation.enableAPI();
+        }
     }
     
     
