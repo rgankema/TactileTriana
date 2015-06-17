@@ -73,7 +73,7 @@ public class SimulationPrediction extends SimulationBase {
             if (mainSimulationChanged) {
                 mainSimulationChanged = false;
                 cancelled = true;
-                setCurrentTime(oldValue);
+                setCurrentTime(newValue);
 
                 // Clear the invalid log values
                 int minuteOfYear = toMinuteOfYear(oldValue);

@@ -47,6 +47,7 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
         registerProperty(leaveTime);
         registerProperty(returnTime);
         registerProperty(kilometersToWork);
+        registerProperty(this.model);
     }
 
     public ElectricVehicle(Simulation simulation) {
@@ -115,7 +116,6 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
             if (value == null) {
                 throw new NullPointerException("Model may not be null");
             }
-
             setStateOfCharge(0);
             switch (value) {
                 case TESLA_MODEL_S:
@@ -149,6 +149,7 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
                     setKilometersPerkWh(150.0 / 125.0);
                     break;
             }
+            setDesiredCharge(getCapacity());
             setKilometersToWork(determineKilometersToWork());
             super.set(value);
         }
@@ -223,7 +224,7 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
             return;
         }
 
-        if (power > 0 && getStateOfCharge() < getDesiredCharge()) {
+        if (power > 0 && getStateOfCharge() < getCapacity()) {
             setStateOfCharge(getStateOfCharge() + power * (timestep / 60));
         } else if (power < 0) {
             setStateOfCharge(getStateOfCharge() + power * (timestep / 60));
