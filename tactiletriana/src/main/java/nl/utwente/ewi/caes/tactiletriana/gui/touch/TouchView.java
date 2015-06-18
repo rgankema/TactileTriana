@@ -311,7 +311,8 @@ public class TouchView extends TactilePane {
     private void addWarningIcon(Node node, ObservableBooleanValue showWarningBinding) {
         ImageView warning = new ImageView(WARNING_ICON);
         TactilePane.setDraggable(warning, false);
-        TactilePane.setAnchor(warning, new Anchor(node, Pos.CENTER));
+        TactilePane.setAnchor(warning, new Anchor(node, 0, 0, Pos.CENTER, true));
+        warning.setDisable(true);
         warning.visibleProperty().bind(showWarningBinding);
         getChildren().add(warning);
         rotateNode(warning);

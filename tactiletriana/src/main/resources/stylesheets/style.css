@@ -70,15 +70,15 @@ application.
 
 
 .on-chart.chart-0 {
-    -fx-effect: dropshadow(gaussian, yellow, 20, 0.1, 0, 0);
+    -fx-effect: dropshadow(gaussian, yellow, 5, 0.8, 0, 0);
 }
 
 .on-chart.chart-1 {
-    -fx-effect: dropshadow(gaussian, purple, 20, 0.1, 0, 0);
+    -fx-effect: dropshadow(gaussian, purple, 5, 0.8, 0, 0);
 }
 
 .on-chart.chart-2 {
-    -fx-effect: dropshadow(gaussian, green, 20, 0.1, 0, 0);
+    -fx-effect: dropshadow(gaussian, green, 5, 0.8, 0, 0);
 }
 
 
