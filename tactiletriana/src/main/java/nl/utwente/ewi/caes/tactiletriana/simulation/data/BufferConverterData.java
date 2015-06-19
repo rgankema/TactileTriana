@@ -5,8 +5,10 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation.data;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.TreeMap;
@@ -53,9 +55,9 @@ public class BufferConverterData implements IDeviceDataProvider<BufferConverter>
         //Load the profile data into an array from the CSV file containing power consumptions for 6 houses.
         double[][] profiles = new double[6][525601];
 
-        File csvData = new File(getClass().getResource("/datasets/house_profiles_heat_demand.csv").getPath());
+        BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/datasets/house_profiles_heat_demand.csv")));
         CSVFormat format = CSVFormat.DEFAULT.withDelimiter(';');
-        try (CSVParser parser = CSVParser.parse(csvData, Charset.defaultCharset(), format)) {
+        try (CSVParser parser = format.parse(reader)) {
             for (CSVRecord csvRecord : parser) {
                 for (int p = 0; p < 6; p++) {
                     profiles[p][(int) parser.getRecordNumber()] = Double.parseDouble(csvRecord.get(p));

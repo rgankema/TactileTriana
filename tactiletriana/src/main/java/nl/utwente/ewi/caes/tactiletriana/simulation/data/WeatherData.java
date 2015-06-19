@@ -5,6 +5,10 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation.data;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
@@ -38,16 +42,17 @@ public final class WeatherData implements IWeatherDataProvider {
         double[] tempByHour = new double[365 * 24];
         double[] radianceByHour = new double[365 * 24];
         
-        try (Stream<String> dataset = Files.lines(Paths.get(getClass().getResource("/datasets/KNMI_dataset.txt").toURI()))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/datasets/KNMI_dataset.txt")))) {
 
             // Wrapper for hour, because Java's lambda functions are idiotic
             class Wrapper {
-
                 int value = 0;
             }
             Wrapper hourOfYear = new Wrapper();
-            dataset.filter(line -> !line.startsWith("#"))
-                    .forEachOrdered(line -> {
+            
+            reader.lines()
+                  .filter(line -> !line.startsWith("#"))
+                  .forEachOrdered(line -> {
                         String[] tokens = line.split(",");
                         // tokens[1] = YYYYMMDD, tokens[2] = hour, tokens[3] = temperature, tokens[4] = radiance
                         float temperature = Float.valueOf(tokens[3].trim());
@@ -62,9 +67,12 @@ public final class WeatherData implements IWeatherDataProvider {
             throw new RuntimeException("Could not load KNMI dataset", e);
         }
 
+        System.out.println("a");
         // Convert to profile with value per timestep   
         int tickMinutes = GlobalSettings.TICK_MINUTES;
+        System.out.println("b");
         int ticksInYear = getTotalTicksInYear();
+        System.out.println(ticksInYear);
         temperatureProfile = new double[ticksInYear];
         radianceProfile = new double[ticksInYear];
 

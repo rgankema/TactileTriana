@@ -63,6 +63,7 @@ public final class GlobalSettings {
             properties.load(inputStream);
         } catch (IOException e) {
             System.err.println("Warning: Could not read the config file, using default values instead.");
+            validate();
             return;
         }
         
@@ -129,11 +130,15 @@ public final class GlobalSettings {
         if (!inRange(SYSTEM_TICK_TIME, 1, Integer.MAX_VALUE)) {
             SYSTEM_TICK_TIME = 200;
         }
-        for (TimeSpan timeSpan : TIME_SCENARIO.getTimeSpans()) {
-            if (timeSpan.getStart().isBefore(LocalDate.of(2014, 1, 1)) || timeSpan.getEnd().isAfter(LocalDate.of(2014, 12, 31))) {
-                TIME_SCENARIO = new TimeScenario(new TimeSpan(LocalDate.of(2014, 1, 1), LocalDate.of(2014, 12, 31)));
-                break;
+        if (TIME_SCENARIO != null) {
+            for (TimeSpan timeSpan : TIME_SCENARIO.getTimeSpans()) {
+                if (timeSpan.getStart().isBefore(LocalDate.of(2014, 1, 1)) || timeSpan.getEnd().isAfter(LocalDate.of(2014, 12, 31))) {
+                    TIME_SCENARIO = new TimeScenario(new TimeSpan(LocalDate.of(2014, 1, 1), LocalDate.of(2014, 12, 31)));
+                    break;
+                }
             }
+        } else {
+            TIME_SCENARIO = new TimeScenario(new TimeSpan(LocalDate.of(2014, 1, 1), LocalDate.of(2014, 12, 31)));
         }
         
         // Cannot validate screen ID's yet because the StageController needs to initalize first, which

@@ -5,13 +5,17 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation.data;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nl.utwente.ewi.caes.tactiletriana.Concurrent;
 import nl.utwente.ewi.caes.tactiletriana.GlobalSettings;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.UncontrollableLoad;
@@ -70,9 +74,9 @@ public final class UncontrollableData implements IDeviceDataProvider<Uncontrolla
         //Load the profile data into an array from the CSV file containing power consumptions for 6 houses.
         double[][] profiles = new double[6][525608];
         
-        File csvData = new File(getClass().getResource("/datasets/house_profiles.csv").getPath());
+        BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/datasets/house_profiles.csv")));
         CSVFormat format = CSVFormat.DEFAULT.withDelimiter(';');
-        try (CSVParser parser = CSVParser.parse(csvData, Charset.defaultCharset(), format)) {
+        try (CSVParser parser = format.parse(reader)) {
             for (CSVRecord csvRecord : parser) {
                 for (int p = 0; p < 6; p++) {
                     profiles[p][(int) parser.getRecordNumber()] = Double.parseDouble(csvRecord.get(p));

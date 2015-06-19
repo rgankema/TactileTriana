@@ -5,7 +5,9 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation.data;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
@@ -32,8 +34,10 @@ public class WashingMachineData implements IDeviceDataProvider<WashingMachine> {
     private WashingMachineData() {
         double[] minuteProfile = new double[72];
 
-        try (Stream<String> dataset = Files.lines(Paths.get(getClass().getResource("/datasets/washing_machine_dataset.txt").toURI()))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/datasets/washing_machine_dataset.txt")))) {
 
+            Stream<String> dataset = reader.lines();
+            
             // Wrapper for i, because Java's lambda functions are idiotic
             class Wrapper {
 
