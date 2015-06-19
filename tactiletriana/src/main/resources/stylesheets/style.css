@@ -70,11 +70,11 @@ application.
 
 
 .on-chart.chart-0 {
-    -fx-effect: dropshadow(gaussian, yellow, 5, 0.8, 0, 0);
+    -fx-effect: dropshadow(gaussian, orange, 5, 0.8, 0, 0);
 }
 
 .on-chart.chart-1 {
-    -fx-effect: dropshadow(gaussian, purple, 5, 0.8, 0, 0);
+    -fx-effect: dropshadow(gaussian, blue, 5, 0.8, 0, 0);
 }
 
 .on-chart.chart-2 {
@@ -121,14 +121,12 @@ application.
     -fx-font-size: 18px;
     -fx-font-weight: bold;
     -fx-focus-color: transparent;
-    -fx-padding: 35px 50px;
+    -fx-padding: 25px 40px;
     -fx-background-color: #BDC3CC;
+    -fx-background-radius: 10px;
+    -fx-effect: dropshadow( gaussian, black, 5, 0.3, 0, 0);
 }
 
-
-.paused #pauseButton {
-    -fx-background-image: url("../images/play.png");
-}
 
 #pauseButton {
     -fx-background-image: url("../images/pause.png");
@@ -137,11 +135,19 @@ application.
     -fx-background-position: center center;
 }
 
+.paused #pauseButton {
+    -fx-background-image: url("../images/play.png");
+}
+
 #disableTrianaButton {
-    -fx-background-image: url("../images/notriana.png");
+    -fx-background-image: url("../images/triana.png");
     -fx-background-repeat: stretch;   
     -fx-background-size: 50 50;
     -fx-background-position: center center;
+}
+
+.triana-disabled #disableTrianaButton {
+    -fx-background-image: url("../images/notriana.png");
 }
 
 
@@ -154,6 +160,8 @@ application.
     -fx-background-color:darkgray;
     -fx-border-color: black;
     -fx-border-width: 1px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
 }
 
 
@@ -174,12 +182,12 @@ application.
     -fx-stroke: #A8B7B7;
 }
 
-#chart-0 .default-color1.chart-series-line { -fx-stroke: yellow; }
-#chart-1 .default-color1.chart-series-line { -fx-stroke: purple; }
-#chart-2 .default-color1.chart-series-line { -fx-stroke: green; }
+#chart-0 .default-color0.chart-series-line { -fx-stroke: orange; }
+#chart-1 .default-color0.chart-series-line { -fx-stroke: blue; }
+#chart-2 .default-color0.chart-series-line { -fx-stroke: green; }
 
 //Sets current history consumption line: red
 .default-color0.chart-series-line { -fx-stroke: #FF4747; }
 //Sets future consumption line: blue
-.default-color1.chart-series-line { -fx-stroke: #3F6FFF; }
+.default-color1.chart-series-line { -fx-stroke: darkgrey; }//#3F6FFF; }
 

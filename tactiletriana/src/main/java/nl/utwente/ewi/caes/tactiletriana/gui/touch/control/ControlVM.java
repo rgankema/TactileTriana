@@ -5,11 +5,8 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.touch.control;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ReadOnlyStringProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation.SimulationState;
 
@@ -32,20 +29,43 @@ public class ControlVM {
                 setPaused(true);
             }
         });
+        
+        isTrianaEnabled.bind(simulation.trianaEnabledProperty());
     }
+    
+    // PROPERTIES
 
     /**
-     * The text for the pause button
+     * Whether the simulation is paused
      */
-    private final BooleanProperty isPaused = new SimpleBooleanProperty(false);
+    private final ReadOnlyBooleanWrapper paused = new ReadOnlyBooleanWrapper(false);
 
-    public BooleanProperty isPausedProperty() {
-        return isPaused;
+    public ReadOnlyBooleanProperty pausedProperty() {
+        return paused.getReadOnlyProperty();
     }
 
+    public final boolean isPaused() {
+        return pausedProperty().get();
+    }
+    
     protected final void setPaused(boolean b) {
-        isPaused.set(b);
+        paused.set(b);
     }
+    
+    /**
+     * Whether Triana is enabled/disabled
+     */
+    private final ReadOnlyBooleanWrapper isTrianaEnabled = new ReadOnlyBooleanWrapper(true);
+    
+    public ReadOnlyBooleanProperty trianaEnabledProperty() {
+        return simulation.trianaEnabledProperty();
+    }
+    
+    public final boolean isTrianaEnabled() {
+        return trianaEnabledProperty().get();
+    }
+    
+    // EVENT HANDLING
 
     /**
      * Resumes the simulation when paused and pauses it when running
@@ -62,11 +82,7 @@ public class ControlVM {
      * Toggles Triana from on to off and vice versa
      */
     public void toggleTriana() {
-        if (simulation.getAPIState()) {
-            simulation.disableAPI();
-        } else {
-            simulation.enableAPI();
-        }
+        simulation.setTrianaEnabled(!simulation.isTrianaEnabled());
     }
     
     

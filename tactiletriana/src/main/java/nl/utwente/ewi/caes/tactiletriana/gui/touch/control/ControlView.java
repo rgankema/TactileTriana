@@ -33,15 +33,23 @@ public class ControlView extends HBox {
         this.viewModel = viewModel;
 
         pauseButton.setOnAction(e -> viewModel.toggleSimulationState());
-        
         disableTrianaButton.setOnAction(e -> viewModel.toggleTriana());
         
-        // Add CSS class for broken
-        viewModel.isPausedProperty().addListener(obs -> {
-            if (viewModel.isPausedProperty().get()) {
+        // Add CSS class for paused
+        viewModel.pausedProperty().addListener(obs -> {
+            if (viewModel.isPaused()) {
                 getStyleClass().add("paused");
             } else {
                 getStyleClass().remove("paused");
+            }
+        });
+        
+        // Add CSS class for triana active
+        viewModel.trianaEnabledProperty().addListener(obs -> {
+            if (!viewModel.isTrianaEnabled()) {
+                getStyleClass().add("triana-disabled");
+            } else {
+                getStyleClass().remove("triana-disabled");
             }
         });
     }

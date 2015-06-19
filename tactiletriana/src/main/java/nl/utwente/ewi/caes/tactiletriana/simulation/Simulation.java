@@ -9,9 +9,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import nl.utwente.ewi.caes.tactiletriana.Concurrent;
 import static nl.utwente.ewi.caes.tactiletriana.Concurrent.runOnJavaFXThreadSynchronously;
@@ -28,12 +30,8 @@ public class Simulation extends SimulationBase {
 
     private static final TimeScenario DEFAULT_SCENARIO = new TimeScenario(new TimeScenario.TimeSpan(LocalDate.of(2014, 1, 1), LocalDate.of(2014, 12, 31)));
     
-    private boolean apiEnabled;
-    private boolean apiDisabledTickPassed;
-    
     public Simulation() {
         this.setState(SimulationState.STOPPED);
-        this.apiEnabled = true;
         // Initialise time
         setCurrentTime(getTimeScenario().getCurrentTime());
     }
@@ -71,6 +69,23 @@ public class Simulation extends SimulationBase {
 
     public final void setTimeScenario(TimeScenario timeScenario) {
         timeScenarioProperty().set(timeScenario);
+    }
+    
+    /**
+     * Whether the Simulation will use its controller for device plannings.
+     */
+    private final BooleanProperty trianaEnabled = new SimpleBooleanProperty(true);
+    
+    public BooleanProperty trianaEnabledProperty() {
+        return trianaEnabled;
+    }
+    
+    public final boolean isTrianaEnabled() {
+        return trianaEnabledProperty().get();
+    }
+    
+    public final void setTrianaEnabled(boolean trianaEnabled) {
+        trianaEnabledProperty().set(trianaEnabled);
     }
 
     // EVENT HANDLING
@@ -163,13 +178,12 @@ public class Simulation extends SimulationBase {
             incrementTime();
         });
 
-        if (getController() != null && apiEnabled) {
+        if (getController() != null && isTrianaEnabled()) {
             getController().retrievePlanning(50, getCurrentTime());
         }
         
         //If the api was just disabled, clear all the current plannings
-        if(!apiEnabled && !apiDisabledTickPassed) {
-            apiDisabledTickPassed = true;
+        if(!isTrianaEnabled()) {
             //Clear all currently set plannings
             for(DeviceBase device : this.getDevices()) {
                 if (device instanceof BufferBase) {
@@ -179,35 +193,6 @@ public class Simulation extends SimulationBase {
                 }
             }
         }
-    }
-    
-    
-    /** 
-     * Returns if the Simulation uses the API to request plannings or not
-     * 
-     * @return boolean indicating if the API is enabled or not 
-     */
-    public boolean getAPIState() {
-        return this.apiEnabled;
-    }
-    
-    /**
-     * Enable the requests for plannings by the API
-     */
-    public void enableAPI() {
-        this.apiEnabled = true;
-        this.apiDisabledTickPassed = false;
-    }
-    
-    /**
-     * Prevent the API from requesting plannings  
-     */
-    public void disableAPI() {
-        this.apiEnabled = false;
-        
-        
-        
-        
     }
     
     /**

@@ -19,7 +19,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
  */
 public class APIServer implements Runnable {
 
-    protected int serverPort = 8080;
+    protected int serverPort;
     protected ServerSocket serverSocket = null;
     protected Simulation simulation = null;
     protected boolean isStopped = false;

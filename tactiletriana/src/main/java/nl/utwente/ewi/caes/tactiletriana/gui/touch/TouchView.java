@@ -9,9 +9,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import javafx.animation.FadeTransition;
-import javafx.animation.Interpolator;
 import javafx.animation.PauseTransition;
-import javafx.animation.TranslateTransition;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.ListChangeListener;
@@ -24,6 +22,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Duration;
 import nl.utwente.ewi.caes.tactilefx.control.Anchor;
+import nl.utwente.ewi.caes.tactilefx.control.Bond;
 import nl.utwente.ewi.caes.tactilefx.control.TactilePane;
 import nl.utwente.ewi.caes.tactilefx.debug.MouseToTouchMapper;
 import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
@@ -240,24 +239,20 @@ public class TouchView extends TactilePane {
         device.setViewModel(deviceVM);
         TactilePane.setAnchor(device, new Anchor(this, xOffset, 0, Pos.CENTER, false));
         rotateNode(device);
-        // Animate new device
+        // Fade in new device
         FadeTransition ft = new FadeTransition(Duration.millis(500), device);
         ft.setFromValue(0);
         ft.setToValue(1);
         ft.playFromStart();
         // Add device to pane, in background
         getChildren().add(3, device);
-        // Track device
+        // Track device for collisions
         getActiveNodes().add(device);
        
         // Animation that moves device to trash bin if it's been unused for too long
-        final TranslateTransition transition = new TranslateTransition(Duration.millis(1000), device);
-        transition.setInterpolator(Interpolator.EASE_IN);
         final PauseTransition pause = new PauseTransition(Duration.millis(3500));
         pause.setOnFinished(e -> { 
-            transition.setByX(trashView.getLayoutX() - device.getLayoutX());
-            transition.setByY(trashView.getLayoutY() - device.getLayoutY());
-            transition.play();
+            TactilePane.getBonds(device).add(new Bond(trashView, 0, 0.2));
         });
         
         // If device is not in use and collides with house, connect to house.
@@ -277,7 +272,7 @@ public class TouchView extends TactilePane {
                 }
             } else {
                 pause.stop();
-                transition.stop();
+                TactilePane.getBonds(device).clear();
             }
         });
         

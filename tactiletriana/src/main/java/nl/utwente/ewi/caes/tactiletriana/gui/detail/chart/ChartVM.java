@@ -35,7 +35,7 @@ public class ChartVM {
     /**
      * The name of the chart
      */
-    private final ReadOnlyStringWrapper chartTitle = new ReadOnlyStringWrapper("Long press to show on chart");
+    private final ReadOnlyStringWrapper chartTitle = new ReadOnlyStringWrapper("Press and hold to show on chart");
 
     public ReadOnlyStringProperty chartTitleProperty() {
         return chartTitle.getReadOnlyProperty();
