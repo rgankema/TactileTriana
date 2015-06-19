@@ -10,11 +10,14 @@ import java.util.Iterator;
 import java.util.List;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
@@ -238,7 +241,8 @@ public class TouchView extends TactilePane {
         DeviceView device = new DeviceView(type);
         device.setViewModel(deviceVM);
         TactilePane.setAnchor(device, new Anchor(this, xOffset, 0, Pos.CENTER, false));
-        rotateNode(device);
+        TactilePane.setSlideOnRelease(device, true);
+        rotateNode(device, false);
         // Fade in new device
         FadeTransition ft = new FadeTransition(Duration.millis(500), device);
         ft.setFromValue(0);
@@ -255,36 +259,41 @@ public class TouchView extends TactilePane {
             TactilePane.getBonds(device).add(new Bond(trashView, 0, 0.2));
         });
         
-        // If device is not in use and collides with house, connect to house.
-        // Else, if device is not in use, start timer to move it to trash.
-        // Else (if device is being used) stop that timer.
+        // If device is not in use, and is not in a house, start a timer to remove
+        // the device from the screen. If it is in use again, reset that timer.
         TactilePane.inUseProperty(device).addListener(obs -> {
-            if (!TactilePane.isInUse(device)) {
-                if (TactilePane.getNodesColliding(device).stream().anyMatch(node -> node instanceof HouseView)) {
-                    for (Node node : TactilePane.getNodesColliding(device)) {
-                        if (node instanceof HouseView) {
-                            device.getViewModel().droppedOnHouse(((HouseView) node).getViewModel());
-                            break;
-                        }
-                    }
-                } else {
-                    pause.playFromStart();
-                }
-            } else {
+            if (TactilePane.isInUse(device)) {
                 pause.stop();
                 TactilePane.getBonds(device).clear();
+            } else {
+                TactilePane.vectorProperty(device).addListener(new InvalidationListener() {
+                    @Override
+                    public void invalidated(Observable observable) {
+                        if (TactilePane.getVector(device).equals(Point2D.ZERO)) {
+                            if (!TactilePane.getNodesColliding(device).stream().anyMatch(node -> node instanceof HouseView)) {
+                                pause.playFromStart();
+                            }
+                            TactilePane.vectorProperty(device).removeListener(this);
+                        }
+                    }
+                });
             }
         });
         
-        // When the device is dropped on the trash bin, remove it
+        // When the device is dropped on the trash bin, remove it. If it's dropped
+        // on a house, connect it.
         TactilePane.setOnInArea(device, e -> {
             if (e.getOther() == trashView.getActiveZone() && !TactilePane.isInUse(device)) {
                 getChildren().remove(device);
                 StageController.getInstance().removeFromChart(device.getViewModel());
+            } else if (e.getOther() instanceof HouseView) {
+                if (!TactilePane.isInUse(device)) {
+                    device.getViewModel().droppedOnHouse(((HouseView) e.getOther()).getViewModel());
+                }
             }
         });
         
-        // When the device leaves the area of its house, disconnect it
+        // When the device leaves the area of a house, disconnect it
         TactilePane.setOnAreaLeft(device, e -> { 
             if (e.getOther() instanceof HouseView) {
                 device.getViewModel().droppedOnHouse(null);
@@ -310,11 +319,11 @@ public class TouchView extends TactilePane {
         warning.setDisable(true);
         warning.visibleProperty().bind(showWarningBinding);
         getChildren().add(warning);
-        rotateNode(warning);
+        rotateNode(warning, true);
     }
     
     // Adds a listener to the node that will make it rotate towards the edge of the screen that its closest to
-    private void rotateNode(Node node) {
+    private void rotateNode(Node node, boolean snapTo90Degrees) {
         node.rotateProperty().bind(Bindings.createDoubleBinding(() -> {
             double rotate = -getHeight() / 2 + node.getBoundsInLocal().getHeight() / 2 + node.getLayoutY() + node.getTranslateY();
             if (rotate < -90) {
@@ -322,6 +331,15 @@ public class TouchView extends TactilePane {
             }
             if (rotate > 90) {
                 rotate = 90.0;
+            }
+            if (snapTo90Degrees) {
+                if (rotate > 45) {
+                    rotate = 90;
+                } else if (rotate < -45) {
+                    rotate = -90;
+                } else {
+                    rotate = 0;
+                }
             }
             return 90.0 - rotate;
         }, node.layoutYProperty(), node.translateYProperty(), heightProperty()));
