@@ -243,6 +243,7 @@ public class TouchView extends TactilePane {
         TactilePane.setAnchor(device, new Anchor(this, xOffset, 0, Pos.CENTER, false));
         TactilePane.setSlideOnRelease(device, true);
         rotateNode(device, false);
+        device.setSnapToPixel(true);
         // Fade in new device
         FadeTransition ft = new FadeTransition(Duration.millis(500), device);
         ft.setFromValue(0);
