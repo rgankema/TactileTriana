@@ -87,6 +87,13 @@ public class DetailVM {
     public void showOnChart(LoggingEntityVMBase loggerVM, LoggingEntityBase actual, LoggingEntityBase future) {
         loggerVM.setShownOnChart(true);
         loggerVM.setChartIndex(subChartIndex);
+        
+        for (int i = 0; i < loggersOnCharts.length; i++) {
+            if (loggersOnCharts[(i + subChartIndex) % loggersOnCharts.length] == null) {
+                subChartIndex = subChartIndex + i;
+                break;
+            }
+        }
 
         LoggingEntityVMBase old = loggersOnCharts[subChartIndex];
         loggersOnCharts[subChartIndex] = loggerVM;
