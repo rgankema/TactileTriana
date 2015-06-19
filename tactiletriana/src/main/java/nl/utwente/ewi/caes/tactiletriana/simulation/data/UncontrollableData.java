@@ -69,8 +69,8 @@ public final class UncontrollableData implements IDeviceDataProvider<Uncontrolla
     private void loadProfile() {
         //Load the profile data into an array from the CSV file containing power consumptions for 6 houses.
         double[][] profiles = new double[6][525608];
-
-        File csvData = new File("src/main/resources/datasets/house_profiles.csv");
+        
+        File csvData = new File(getClass().getResource("/datasets/house_profiles.csv").getPath());
         CSVFormat format = CSVFormat.DEFAULT.withDelimiter(';');
         try (CSVParser parser = CSVParser.parse(csvData, Charset.defaultCharset(), format)) {
             for (CSVRecord csvRecord : parser) {

@@ -32,7 +32,7 @@ public class WashingMachineData implements IDeviceDataProvider<WashingMachine> {
     private WashingMachineData() {
         double[] minuteProfile = new double[72];
 
-        try (Stream<String> dataset = Files.lines(Paths.get("src/main/resources/datasets/washing_machine_dataset.txt"))) {
+        try (Stream<String> dataset = Files.lines(Paths.get(getClass().getResource("/datasets/washing_machine_dataset.txt").toURI()))) {
 
             // Wrapper for i, because Java's lambda functions are idiotic
             class Wrapper {
@@ -44,7 +44,7 @@ public class WashingMachineData implements IDeviceDataProvider<WashingMachine> {
                 minuteProfile[i.value] = Float.parseFloat(s);
                 i.value++;
             });
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             throw new RuntimeException("Error while parsing washing machine dataset");
         }
 
