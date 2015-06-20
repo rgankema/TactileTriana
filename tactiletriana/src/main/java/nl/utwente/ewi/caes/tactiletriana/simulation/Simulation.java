@@ -29,7 +29,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.devices.UncontrollableLoad;
 public class Simulation extends SimulationBase {
 
     private static final TimeScenario DEFAULT_SCENARIO = new TimeScenario(new TimeScenario.TimeSpan(LocalDate.of(2014, 1, 1), LocalDate.of(2014, 12, 31)));
-    
+
     public Simulation() {
         this.setState(SimulationState.STOPPED);
         // Initialise time
@@ -70,20 +70,20 @@ public class Simulation extends SimulationBase {
     public final void setTimeScenario(TimeScenario timeScenario) {
         timeScenarioProperty().set(timeScenario);
     }
-    
+
     /**
      * Whether the Simulation will use its controller for device plannings.
      */
     private final BooleanProperty trianaEnabled = new SimpleBooleanProperty(true);
-    
+
     public BooleanProperty trianaEnabledProperty() {
         return trianaEnabled;
     }
-    
+
     public final boolean isTrianaEnabled() {
         return trianaEnabledProperty().get();
     }
-    
+
     public final void setTrianaEnabled(boolean trianaEnabled) {
         trianaEnabledProperty().set(trianaEnabled);
     }
@@ -159,42 +159,57 @@ public class Simulation extends SimulationBase {
     @Override
     protected final void tick() {
         // Run anything that involves the UI on the JavaFX thread
-        runOnJavaFXThreadSynchronously(() -> {
+        try {
+            runOnJavaFXThreadSynchronously(() -> {
+                getTransformer().tick(true);
+            });
+        } catch (IllegalStateException e) {
+            //System.out.println("Can not run on JavaFX Thread!");
             getTransformer().tick(true);
-        });
+        }
 
         // Reset the nodes.
         prepareForwardBackwardSweep();
         // Calculate forward backward sweep
         doForwardBackwardSweep();
 
-        // Run anything that involves the UI on the JavaFX thread
-        runOnJavaFXThreadSynchronously(() -> {
+        try {
+            // Run anything that involves the UI on the JavaFX thread
+            runOnJavaFXThreadSynchronously(() -> {
+                // Finish forward backward sweep
+                finishForwardBackwardSweep();
+                // Log total power consumption in network
+                log(getCurrentTime(), transformer.getCables().get(0).getCurrent() * 230d);
+                // Increment time
+                incrementTime();
+            });
+        } catch (IllegalStateException e) {
+            //System.out.println("Can not run on JavaFX Thread!");
             // Finish forward backward sweep
             finishForwardBackwardSweep();
             // Log total power consumption in network
             log(getCurrentTime(), transformer.getCables().get(0).getCurrent() * 230d);
             // Increment time
             incrementTime();
-        });
+        }
 
         if (getController() != null && isTrianaEnabled()) {
             getController().retrievePlanning(50, getCurrentTime());
         }
-        
+
         //If the api was just disabled, clear all the current plannings
-        if(!isTrianaEnabled()) {
+        if (!isTrianaEnabled()) {
             //Clear all currently set plannings
-            for(DeviceBase device : this.getDevices()) {
+            for (DeviceBase device : this.getDevices()) {
                 if (device instanceof BufferBase) {
-                    ((BufferBase)device).getPlanning().clear();
+                    ((BufferBase) device).getPlanning().clear();
                 } else if (device instanceof TimeShiftableBase) {
-                    ((TimeShiftableBase)device).getPlanning().clear();
+                    ((TimeShiftableBase) device).getPlanning().clear();
                 }
             }
         }
     }
-    
+
     /**
      * Increments the time by either the tick time, or leaps to the next time
      * span if required.

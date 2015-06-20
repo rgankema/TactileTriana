@@ -130,12 +130,7 @@ public abstract class BufferBase extends DeviceBase {
             } else if (value > getCapacity()) {
                 value = getCapacity();
             }
-            
-           // Log state of charge
-            if (simulation instanceof Simulation){
-                System.out.println(getDisplayName()+" SOC: "+value);
-            }
-            
+           
             super.set(value);
         }
     };

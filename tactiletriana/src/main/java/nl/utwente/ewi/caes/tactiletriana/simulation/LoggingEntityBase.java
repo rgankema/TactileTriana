@@ -60,7 +60,7 @@ public abstract class LoggingEntityBase {
         }
     }
 
-    protected final int toMinuteOfYear(LocalDateTime time) {
+    public final static int toMinuteOfYear(LocalDateTime time) {
         return (time.getDayOfYear() - 1) * 24 * 60 + time.getHour() * 60 + time.getMinute();
     }
 
