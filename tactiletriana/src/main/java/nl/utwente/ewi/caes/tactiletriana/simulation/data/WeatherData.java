@@ -6,12 +6,7 @@
 package nl.utwente.ewi.caes.tactiletriana.simulation.data;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.stream.Stream;
 import nl.utwente.ewi.caes.tactiletriana.GlobalSettings;
 import static nl.utwente.ewi.caes.tactiletriana.Util.*;
 
@@ -67,12 +62,9 @@ public final class WeatherData implements IWeatherDataProvider {
             throw new RuntimeException("Could not load KNMI dataset", e);
         }
 
-        System.out.println("a");
         // Convert to profile with value per timestep   
         int tickMinutes = GlobalSettings.TICK_MINUTES;
-        System.out.println("b");
         int ticksInYear = getTotalTicksInYear();
-        System.out.println(ticksInYear);
         temperatureProfile = new double[ticksInYear];
         radianceProfile = new double[ticksInYear];
 
