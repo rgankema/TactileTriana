@@ -159,39 +159,24 @@ public class Simulation extends SimulationBase {
     @Override
     protected final void tick() {
         // Run anything that involves the UI on the JavaFX thread
-        try {
-            runOnJavaFXThreadSynchronously(() -> {
-                getTransformer().tick(true);
-            });
-        } catch (IllegalStateException e) {
-            //System.out.println("Can not run on JavaFX Thread!");
+        runOnJavaFXThreadSynchronously(() -> {
             getTransformer().tick(true);
-        }
+        });
 
         // Reset the nodes.
         prepareForwardBackwardSweep();
         // Calculate forward backward sweep
         doForwardBackwardSweep();
-
-        try {
-            // Run anything that involves the UI on the JavaFX thread
-            runOnJavaFXThreadSynchronously(() -> {
-                // Finish forward backward sweep
-                finishForwardBackwardSweep();
-                // Log total power consumption in network
-                log(getCurrentTime(), transformer.getCables().get(0).getCurrent() * 230d);
-                // Increment time
-                incrementTime();
-            });
-        } catch (IllegalStateException e) {
-            //System.out.println("Can not run on JavaFX Thread!");
+        
+        // Run anything that involves the UI on the JavaFX thread
+        runOnJavaFXThreadSynchronously(() -> {
             // Finish forward backward sweep
             finishForwardBackwardSweep();
             // Log total power consumption in network
             log(getCurrentTime(), transformer.getCables().get(0).getCurrent() * 230d);
             // Increment time
             incrementTime();
-        }
+        });
 
         if (getController() != null && isTrianaEnabled()) {
             getController().retrievePlanning(50, getCurrentTime());

@@ -25,7 +25,8 @@ public class Concurrent {
 
     /**
      * Runs a given task on the JavaFX thread, and blocks until the task is
-     * done.
+     * done. If the JavaFX thread has not been initialised, it will run on
+     * the calling thread.
      *
      * @param task that needs to be run on the JavaFX thread
      */
@@ -35,10 +36,15 @@ public class Concurrent {
             task.run();
         } else {
             CountDownLatch latch = new CountDownLatch(1);
-            Platform.runLater(() -> {
+            try {
+                Platform.runLater(() -> {
+                    task.run();
+                    latch.countDown();
+                });
+            } catch (IllegalStateException e) { // thrown if JavaFX thread has not been initialised
                 task.run();
                 latch.countDown();
-            });
+            }
             // Wait until the JavaFX thread is done to avoid synchronization
             // issues
             try {

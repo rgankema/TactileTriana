@@ -162,7 +162,7 @@ public class Cable extends LoggingEntityBase {
 
     public void prepareForwardBackwardSweep() {
         tempCurrent = 0;
-        
+        getChildNode().prepareForwardBackwardSweep();
     }
 
     public double doForwardBackwardSweep(double voltage) {

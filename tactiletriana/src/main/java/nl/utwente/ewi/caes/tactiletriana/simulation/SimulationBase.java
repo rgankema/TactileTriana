@@ -156,11 +156,10 @@ public abstract class SimulationBase extends LoggingEntityBase {
      * @return ArrayList of Devices in the simulation
      */
     public ArrayList<DeviceBase> getDevices() {
-        ArrayList<DeviceBase> result = new ArrayList<DeviceBase>();
+        ArrayList<DeviceBase> result = new ArrayList<>();
         for (House house : houses) {
             result.addAll(house.getDevices());
         }
-
         return result;
     }
 
@@ -198,6 +197,11 @@ public abstract class SimulationBase extends LoggingEntityBase {
 
     protected final void prepareForwardBackwardSweep() {
         transformer.prepareForwardBackwardSweep();
+        
+        // Store last voltage to check for convergence
+        for (Node node : this.lastVoltageByNode.keySet()) {
+            lastVoltageByNode.put(node, node.tempVoltage);
+        }
     }
 
     protected final void doForwardBackwardSweep() {
@@ -205,13 +209,14 @@ public abstract class SimulationBase extends LoggingEntityBase {
         for (int i = 0; i < 20; i++) {
             transformer.doForwardBackwardSweep(230);
 
-            if (hasFBSConverged(0.0001)) {
+            // Only makes sense to check for convergence if we have done at least two iterations.
+            if (i > 0 && hasFBSConverged(0.0001)) {
                 break;
             }
 
             // Store last voltage to check for convergence
             for (Node node : this.lastVoltageByNode.keySet()) {
-                lastVoltageByNode.put(node, node.getVoltage());
+                lastVoltageByNode.put(node, node.tempVoltage);
             }
         }
     }
@@ -221,13 +226,14 @@ public abstract class SimulationBase extends LoggingEntityBase {
     }
 
     // Calculate if the FBS algorithm has converged. 
-    private final boolean hasFBSConverged(double error) {
+    private boolean hasFBSConverged(double error) {
         boolean result = true;
 
         //Loop through the network-tree and compare the previous voltage from each with the current voltage.
         //If the difference between the previous and current voltage is smaller than the given error, the result is true
         for (Node node : this.lastVoltageByNode.keySet()) {
-            result = (Math.abs(lastVoltageByNode.get(node) - node.getVoltage()) < error);
+            
+            result = (Math.abs(lastVoltageByNode.get(node) - node.tempVoltage) < error);
             if (!result) {
                 break;
             }

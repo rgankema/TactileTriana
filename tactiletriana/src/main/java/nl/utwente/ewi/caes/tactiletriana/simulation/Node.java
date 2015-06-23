@@ -80,12 +80,11 @@ public class Node extends LoggingEntityBase {
     }
 
     // FORWARD BACKWARD SWEEP METHODS
-    private double tempVoltage;
+    double tempVoltage;
 
     public void prepareForwardBackwardSweep() {
         tempVoltage = 230d;
 
-        // Richard: WAAROM IS DIT?
         for (Cable c : cables) {
             c.prepareForwardBackwardSweep();
         }
@@ -98,11 +97,11 @@ public class Node extends LoggingEntityBase {
         tempVoltage = voltage;
 
         for (Cable c : cables) {
-            current += c.doForwardBackwardSweep(this.getVoltage());
+            current += c.doForwardBackwardSweep(tempVoltage);
         }
         if (house != null) {
             if (this.getVoltage() != 0) {
-                current += (house.getCurrentConsumption() / this.getVoltage()); //I = P/U //Apparently this one is inversed?
+                current += (house.getCurrentConsumption() / tempVoltage); //I = P/U //Apparently this one is inversed?
             }
         }
         return current;
