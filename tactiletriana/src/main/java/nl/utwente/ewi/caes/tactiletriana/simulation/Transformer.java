@@ -20,7 +20,7 @@ public class Transformer extends Node {
     
     @Override
     public void prepareForwardBackwardSweep(){
-        tempVoltage = TRANSFORMER_CURRENT;
+        
         this.getCables().get(0);
     }
 }

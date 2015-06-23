@@ -83,6 +83,7 @@ public class Node extends LoggingEntityBase {
     double tempVoltage;
 
     public void prepareForwardBackwardSweep() {
+        tempVoltage = 230d;
         for (Cable c : cables) {
             if (!c.getChildNode().equals(this)){
                 c.prepareForwardBackwardSweep();
