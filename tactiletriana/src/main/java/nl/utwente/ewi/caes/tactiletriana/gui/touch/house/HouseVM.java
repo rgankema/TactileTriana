@@ -27,12 +27,6 @@ public class HouseVM extends LoggingEntityVMBase {
         this.load.bind(Bindings.createDoubleBinding(() -> {
             return Math.min(1.0, Math.abs(model.getCurrentConsumption()) / model.getMaximumConsumption());
         }, model.currentConsumptionProperty(), model.maximumConsumptionProperty()));
-
-        model.fuseBlownProperty().addListener((observable, wasBlown, isBlown) -> {
-            if (isBlown) {
-                StageController.getInstance().showNotification("The fuse in a house was blown due to heavy load!");
-            }
-        });
     }
 
     public House getModel() {

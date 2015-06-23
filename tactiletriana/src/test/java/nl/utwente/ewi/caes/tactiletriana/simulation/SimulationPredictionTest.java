@@ -99,7 +99,7 @@ public class SimulationPredictionTest {
         }
     }
     
-    public void checkPredictionCorrect() throws InterruptedException{
+    private void checkPredictionCorrect() throws InterruptedException{
         List<Data<Integer,Float>> predictionLog = pred.getLog();
         
         // loop X uur vooruit
