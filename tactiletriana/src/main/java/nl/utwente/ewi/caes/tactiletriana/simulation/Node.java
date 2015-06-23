@@ -80,14 +80,13 @@ public class Node extends LoggingEntityBase {
     }
 
     // FORWARD BACKWARD SWEEP METHODS
-    private double tempVoltage;
+    double tempVoltage;
 
     public void prepareForwardBackwardSweep() {
-        tempVoltage = 230d;
-
-        // Richard: WAAROM IS DIT?
         for (Cable c : cables) {
-            c.prepareForwardBackwardSweep();
+            if (!c.getChildNode().equals(this)){
+                c.prepareForwardBackwardSweep();
+            }
         }
     }
 
