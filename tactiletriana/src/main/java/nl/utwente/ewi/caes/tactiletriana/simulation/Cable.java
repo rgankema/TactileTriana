@@ -160,15 +160,9 @@ public class Cable extends LoggingEntityBase {
     // FORWARD BACKWARD SWEEP
     private double tempCurrent;
 
-    /**
-     * Initialises the cable with 0 current, and its child node with the given
-     * voltage.
-     * 
-     * @param voltage the voltage to initialise the child node at
-     */
-    public void prepareForwardBackwardSweep(double voltage) {
+    public void prepareForwardBackwardSweep() {
         tempCurrent = 0;
-        getChildNode().prepareForwardBackwardSweep(voltage);
+        getChildNode().prepareForwardBackwardSweep();
         
     }
 

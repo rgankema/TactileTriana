@@ -11,17 +11,16 @@ package nl.utwente.ewi.caes.tactiletriana.simulation;
  */
 public class Transformer extends Node {
 
+    public final double TRANSFORMER_CURRENT = 230.0;
+
     public Transformer(SimulationBase simulation) {
         super(null, simulation);
         setVoltage(230);
     }
     
-    /**
-     * Initialises the network with voltage at 230 and current at 0.
-     */
-    public void prepareForwardBackwardSweep() {
-        for (Cable c : getCables()) {
-            c.prepareForwardBackwardSweep(230);
-        }
+    @Override
+    public void prepareForwardBackwardSweep(){
+        
+        this.getCables().get(0);
     }
 }

@@ -82,15 +82,12 @@ public class Node extends LoggingEntityBase {
     // FORWARD BACKWARD SWEEP METHODS
     double tempVoltage;
 
-    /**
-     * Initialises the node with the given voltage, and all cables at 0 current
-     * 
-     * @param voltage the voltage to initialise the node at
-     */
-    public void prepareForwardBackwardSweep(double voltage) {
-        tempVoltage = voltage;
+    public void prepareForwardBackwardSweep() {
+        tempVoltage = 230d;
         for (Cable c : cables) {
-            c.prepareForwardBackwardSweep(voltage);
+            if (!c.getChildNode().equals(this)){
+                c.prepareForwardBackwardSweep();
+            }
         }
     }
 
@@ -101,11 +98,11 @@ public class Node extends LoggingEntityBase {
         tempVoltage = voltage;
 
         for (Cable c : cables) {
-            current += c.doForwardBackwardSweep(tempVoltage);
+            current += c.doForwardBackwardSweep(this.getVoltage());
         }
         if (house != null) {
             if (this.getVoltage() != 0) {
-                current += (house.getCurrentConsumption() / tempVoltage); //I = P/U //Apparently this one is inversed?
+                current += (house.getCurrentConsumption() / this.getVoltage()); //I = P/U //Apparently this one is inversed?
             }
         }
         return current;
