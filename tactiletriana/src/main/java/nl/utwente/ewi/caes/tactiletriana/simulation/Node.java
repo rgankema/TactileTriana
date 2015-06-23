@@ -85,6 +85,7 @@ public class Node extends LoggingEntityBase {
     public void prepareForwardBackwardSweep() {
         tempVoltage = 230d;
 
+        // Richard: WAAROM IS DIT?
         for (Cable c : cables) {
             c.prepareForwardBackwardSweep();
         }
