@@ -19,7 +19,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 /**
- *
+ * Class that simulates a buffer converter.
  * @author niels
  */
 public class BufferConverter extends DeviceBase {
@@ -38,9 +38,10 @@ public class BufferConverter extends DeviceBase {
     private final IDeviceDataProvider<BufferConverter> data;
 
     /**
-     *
+     * Instantiates a BufferConverter object. Using one of the 6 heat demand profiles 
+     * provided by {@link BufferConverterData}.
      * @param profileNumber a number between 0 and 5 (inclusive) which selects
-     * the profile data on which this instance is based
+     * the profile data on which this instance is based. 
      * @param simulation the Simulation this device belongs to
      */
     public BufferConverter(int profileNumber, SimulationBase simulation) {
@@ -66,7 +67,11 @@ public class BufferConverter extends DeviceBase {
         //Set default of COP to 4
         setCOP(4);
     }
-
+    
+    /**
+     * Instantiates a BufferConverter object with a unique profile.
+     * @param simulation the Simulation this device belongs to.
+     */
     public BufferConverter(SimulationBase simulation) {
         //Make sure profiles cycle
         this(BufferConverter.profileCounter % 6, simulation);
@@ -90,6 +95,9 @@ public class BufferConverter extends DeviceBase {
         this.COP.set(power);
     }
     
+    /**
+     * Property that can be modified to higher or lower the heat demand.
+     */
     private DoubleProperty desiredTemperature = new SimpleDoubleProperty(DEFAULT_TEMPERATURE);
     
     public DoubleProperty desiredTemperatureProperty(){
@@ -115,7 +123,7 @@ public class BufferConverter extends DeviceBase {
 
     @Override
     public void doTick(boolean connected) {
-        //Increases or decreases consumption based on the desired 
+        //Increases or decreases consumption based on the desired temperature.
         double factor = getDesiredTemperature() / DEFAULT_TEMPERATURE;
         setCurrentConsumption((data.getProfile(profileNumber.get())[toTimeStep(simulation.getCurrentTime())] / getCOP())*factor);
     }

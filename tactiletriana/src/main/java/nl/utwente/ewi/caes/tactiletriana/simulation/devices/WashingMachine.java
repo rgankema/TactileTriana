@@ -9,11 +9,15 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.SimulationBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.data.WashingMachineData;
 
 /**
- *
- * @author niels
+ * Class that simulates a washing machine based on a realistic profile.
  */
 public class WashingMachine extends TimeShiftableBase {
-
+    
+    /**
+     * Instantiates a WashingMachine object. Using the consumption profile provided
+     * by {@link WashingMachineData}.
+     * @param simulation The object of the current running simulation.
+     */
     public WashingMachine(SimulationBase simulation) {
         super(simulation, "WashingMachine", WashingMachineData.getInstance().getProfile());
     }

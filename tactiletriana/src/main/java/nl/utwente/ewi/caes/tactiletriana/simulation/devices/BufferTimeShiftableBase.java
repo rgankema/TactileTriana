@@ -98,7 +98,7 @@ public abstract class BufferTimeShiftableBase extends BufferBase {
     }
 
     /**
-     *
+     * The desired charge of the buffer. Can not be below zero.
      */
     protected final DoubleProperty desiredCharge = new SimpleDoubleProperty() {
         @Override
