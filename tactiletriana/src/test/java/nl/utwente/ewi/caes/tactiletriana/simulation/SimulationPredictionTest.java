@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import javafx.scene.chart.XYChart.Data;
 import nl.utwente.ewi.caes.tactiletriana.GlobalSettings;
+import static nl.utwente.ewi.caes.tactiletriana.Util.toMinuteOfYear;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.ElectricVehicle;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.SolarPanel;
 import nl.utwente.ewi.caes.tactiletriana.simulation.prediction.SimulationPrediction;
@@ -120,10 +121,10 @@ public class SimulationPredictionTest {
     }
     
     private Float findTimeInLog(List<Data<Integer,Float>> log, LocalDateTime time){
-        Integer value = LoggingEntityBase.toMinuteOfYear(time);
+        Integer value = toMinuteOfYear(time);
         for (int i = 0; i < log.size(); i++){
             Data<Integer,Float> datapoint = log.get(i);
-            if (datapoint.XValueProperty().equals(value)){
+            if (datapoint.getXValue().equals(value)){
                 return datapoint.YValueProperty().get();
             }
         }

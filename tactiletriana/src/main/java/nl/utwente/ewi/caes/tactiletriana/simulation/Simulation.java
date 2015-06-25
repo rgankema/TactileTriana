@@ -87,6 +87,23 @@ public class Simulation extends SimulationBase {
     public final void setTrianaEnabled(boolean trianaEnabled) {
         trianaEnabledProperty().set(trianaEnabled);
     }
+    
+    /**
+     * The Controller that controls the devices in this simulation. May be null.
+     */
+    private final ObjectProperty<IController> controller = new SimpleObjectProperty<>(null);
+    
+    public ObjectProperty<IController> controllerProperty() {
+        return controller;
+    }
+    
+    public final IController getController() {
+        return controllerProperty().get();
+    }
+
+    public final void setController(IController controller) {
+        controllerProperty().set(controller);
+    }
 
     // EVENT HANDLING
     private final List<Runnable> timeSpanShiftedCallbacks = new ArrayList<>();
