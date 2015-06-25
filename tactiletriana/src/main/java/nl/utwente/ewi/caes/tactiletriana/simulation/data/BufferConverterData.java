@@ -20,7 +20,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
 /**
- *
+ * Data provider for buffer converters. Provides six different heat demand profiles.
  * @author niels
  */
 public class BufferConverterData implements IDeviceDataProvider<BufferConverter> {

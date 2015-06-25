@@ -16,7 +16,7 @@ import static nl.utwente.ewi.caes.tactiletriana.GlobalSettings.TICK_MINUTES;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.DishWasher;
 
 /**
- *
+ * Data provider for dishwashers. Uses a consumption profile of a real dishwasher.
  * @author Richard
  */
 public class DishWasherData implements IDeviceDataProvider<DishWasher> {

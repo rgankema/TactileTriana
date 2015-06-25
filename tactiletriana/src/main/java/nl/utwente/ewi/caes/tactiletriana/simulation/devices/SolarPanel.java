@@ -13,13 +13,14 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import nl.utwente.ewi.caes.tactiletriana.GlobalSettings;
 import nl.utwente.ewi.caes.tactiletriana.simulation.*;
-import nl.utwente.ewi.caes.tactiletriana.simulation.data.WeatherData;
 import static nl.utwente.ewi.caes.tactiletriana.Util.*;
+import nl.utwente.ewi.caes.tactiletriana.simulation.data.WeatherData;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 /**
- *
+ * Simulates a solar panel. Bases its production of energy of KNMI data of the
+ * temperature and radiance of 2014. This data is provided by the class {@link WeatherData}.
  * @author niels
  */
 public class SolarPanel extends DeviceBase {
