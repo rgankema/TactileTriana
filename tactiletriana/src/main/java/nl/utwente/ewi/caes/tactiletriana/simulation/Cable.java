@@ -30,7 +30,7 @@ public class Cable extends LoggingEntityBase {
      * @param simulation The Simulation this cable belongs to
      */
     public Cable(Node childNode, double maxCurrent, double length, SimulationBase simulation) {
-        super("Cable", QuantityType.CURRENT);
+        super("Cable", UnitOfMeasurement.CURRENT);
         this.childNode = childNode;
         this.resistance = 0.0005;
         this.simulation = simulation;

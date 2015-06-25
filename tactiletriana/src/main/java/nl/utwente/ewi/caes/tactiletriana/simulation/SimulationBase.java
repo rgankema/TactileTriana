@@ -42,7 +42,7 @@ public abstract class SimulationBase extends LoggingEntityBase {
 
     // CONSTRUCTOR
     public SimulationBase() {
-        super("Network", QuantityType.POWER);
+        super("Network", UnitOfMeasurement.POWER);
 
         // keep an array of nodes for later reference
         this.lastVoltageByNode = new HashMap<>();

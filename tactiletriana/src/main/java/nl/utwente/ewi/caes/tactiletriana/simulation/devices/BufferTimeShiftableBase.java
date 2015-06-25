@@ -48,7 +48,13 @@ public abstract class BufferTimeShiftableBase extends BufferBase {
     /**
      * Whether the BufferTimeShiftable can provide energy back to the grid.
      */
-    private final BooleanProperty vehicle2Grid = new SimpleBooleanProperty(false);
+    private final BooleanProperty vehicle2Grid = new SimpleBooleanProperty(false) {
+        @Override
+        public void set(boolean value) {
+            super.set(value);
+            setDirty(true);
+        }
+    };
 
     public BooleanProperty vehicle2GridProperty() {
         return vehicle2Grid;
@@ -66,7 +72,13 @@ public abstract class BufferTimeShiftableBase extends BufferBase {
      * The time (in minutes from the start of the day) from which point the
      * device may start operating
      */
-    private final DoubleProperty startTime = new SimpleDoubleProperty();
+    private final DoubleProperty startTime = new SimpleDoubleProperty() {
+        @Override
+        public void set(double value) {
+            super.set(value);
+            setDirty(true);
+        }
+    };
 
     public DoubleProperty startTimeProperty() {
         return startTime;
@@ -83,7 +95,13 @@ public abstract class BufferTimeShiftableBase extends BufferBase {
     /**
      * Last moment in minutes that the device may start its program
      */
-    protected final DoubleProperty endTime = new SimpleDoubleProperty();
+    protected final DoubleProperty endTime = new SimpleDoubleProperty() {
+        @Override
+        public void set(double value) {
+            super.set(value);
+            setDirty(true);
+        }
+    };
 
     public DoubleProperty endTimeProperty() {
         return endTime;
@@ -110,6 +128,7 @@ public abstract class BufferTimeShiftableBase extends BufferBase {
                 value = 0;
             }
             super.set(value);
+            setDirty(true);
         }
     };
 

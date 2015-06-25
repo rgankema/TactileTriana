@@ -22,7 +22,7 @@ public class Node extends LoggingEntityBase {
     protected SimulationBase simulation;
 
     public Node(House house, SimulationBase simulation) {
-        super("Node", QuantityType.VOLTAGE);
+        super("Node", UnitOfMeasurement.VOLTAGE);
 
         this.simulation = simulation;
         this.cables = new ArrayList<>();

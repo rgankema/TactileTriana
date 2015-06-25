@@ -7,17 +7,17 @@ package nl.utwente.ewi.caes.tactiletriana.simulation;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
@@ -33,11 +33,9 @@ public abstract class DeviceBase extends LoggingEntityBase {
     private final int id;
     private final String apiDeviceType;
     private final Set<String> apiParameters;
-    private final Set<String>  apiChangeParameters;
     private final List<Property> properties;
     private final List<ObservableList> lists;
     private final List<ObservableMap> maps;
-    private JSONObject currentParameters;
 
     protected final SimulationBase simulation;
 
@@ -50,14 +48,13 @@ public abstract class DeviceBase extends LoggingEntityBase {
      * @param apiDeviceType the name of the device as specified in the API
      */
     public DeviceBase(SimulationBase simulation, String displayName, String apiDeviceType) {
-        super(displayName, QuantityType.POWER);
+        super(displayName, UnitOfMeasurement.POWER);
 
         id = DEVICE_ID;
         DEVICE_ID++;
 
         this.apiDeviceType = apiDeviceType;
         this.apiParameters = new HashSet<>();
-        this.apiChangeParameters = new HashSet<>();
         this.properties = new ArrayList<>();
         this.lists = new ArrayList<>();
         this.maps = new ArrayList<>();
@@ -118,8 +115,7 @@ public abstract class DeviceBase extends LoggingEntityBase {
     }
 
     /**
-     *
-     * @return the state of this device
+     * The state of this device
      */
     private final ObjectProperty<State> state = new SimpleObjectProperty<State>(DeviceBase.State.NOT_IN_HOUSE) {
         @Override
@@ -143,7 +139,24 @@ public abstract class DeviceBase extends LoggingEntityBase {
     protected final void setState(State s) {
         this.stateProperty().set(s);
     }
+    
+    /**
+     * Whether parameters have changed for this device
+     */
+    private final BooleanProperty dirty = new SimpleBooleanProperty(false);
 
+    public BooleanProperty dirtyProperty() {
+        return dirty;
+    }
+    
+    public final boolean isDirty() {
+        return dirtyProperty().get();
+    }
+    
+    public final void setDirty(boolean dirty) {
+        dirtyProperty().set(dirty);
+    }
+    
     /**
      * Returns the set of property keys that the device has, as specified in the
      * API documentation. These are they key values for the JSON representation
@@ -187,6 +200,13 @@ public abstract class DeviceBase extends LoggingEntityBase {
     }
 
     // METHODS
+    
+    /**
+     * Called once for every tick in the simulation. Updates the device's 
+     * power consumption and state, and logs the new consumption.
+     * 
+     * @param connected whether the device is connected to the grid
+     */
     public final void tick(boolean connected) {
         if (!connected) {
             setState(DeviceBase.State.DISCONNECTED);
@@ -202,8 +222,15 @@ public abstract class DeviceBase extends LoggingEntityBase {
         }
     }
 
+    /**
+     * Calculates the consumption for the current time. This method is called
+     * by {@link DeviceBase#tick(boolean) } after updating state, but before
+     * logging the device's power consumption.
+     * 
+     * @param connected whether the device is connected to the grid
+     */
     protected abstract void doTick(boolean connected);
-
+    
     /**
      * Register an API parameter. Registered API parameters can be updated using
      * the updateParameters() method. See the API documentation for the
@@ -215,23 +242,39 @@ public abstract class DeviceBase extends LoggingEntityBase {
         this.apiParameters.add(parameterName);
     }
     
-    protected final void registerApiChangeParameter(String parameterName) {
-        this.apiChangeParameters.add(parameterName);
-    }
-    
+    /**
+     * Registers a property for use by SimulationPrediction to synchronise
+     * devices. Any property that may be changed by the user or API must be
+     * registered.
+     * 
+     * @param property the Property to register
+     */
     protected final void registerProperty(Property property) {
         this.properties.add(property);
     }
 
+    /**
+     * Registers an observable list for use by SimulationPrediction to synchronise
+     * devices.
+     * 
+     * @param list the ObservableList to register
+     */
     protected final void registerList(ObservableList list) {
         this.lists.add(list);
     }
 
+    /**
+     * Registers an observable map for use by SimulationPrediction to synchronise
+     * devices.
+     * 
+     * @param map the ObservableMap to register
+     */
     protected final void registerMap(ObservableMap map) {
         this.maps.add(map);
     }
 
     // API
+    
     /**
      * Convert this Device and its parameters to a JSON representation as
      * specified in the API.
@@ -271,52 +314,6 @@ public abstract class DeviceBase extends LoggingEntityBase {
      */
     public void updateParameter(String parameter, Object value) {
         throw new IllegalArgumentException("Cannot update parameter " + parameter);
-    }
-    
-    public boolean parametersHaveChanged() {
-        boolean result = false;
-        
-        
-        
-        //Check if the parameters since last time this function was called is available.
-        if(currentParameters == null) {
-            
-            //Get all API parameters and save only those which do not change automatically/often
-            JSONObject allParameters = this.parametersToJSON();
-            for(String key : apiChangeParameters) {
-                //TODO mabe check if the allParameters contains the given key
-                currentParameters.put(key, allParameters.get(key));
-            }
-            
-            
-            
-        } else {
-            //get the current parameters
-            JSONObject allParameters = this.parametersToJSON();
-            JSONObject newParameters = new JSONObject();
-            //filter out parameters that always change
-            for(String key : apiChangeParameters) {
-                //TODO mabe check if the allParameters contains the given key
-                newParameters.put(key, allParameters.get(key));
-            }
-            
-            //Convert the current and new parameters to Strings and compare
-            //Avoids having to know all API parameter types and structures
-            if(!currentParameters.toJSONString().equals(newParameters.toJSONString())) {
-                //Parameters have changed since last function call
-                result = true;
-            }
-            
-            
-            
-            
-            
-            
-            
-        }
-        
-        
-        return result;
     }
     
     // ENUMS AND NESTED CLASSES

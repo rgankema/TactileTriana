@@ -36,7 +36,7 @@ public class HouseVM extends LoggingEntityVMBase {
     /**
      * The load of the house on a scale of 0 to 1. The load is the absolute
      * amount of consumption of the house, divided by the maximum consumption.
-     * When this is higher than 1, load will still return 1.
+     * When this is higher than 1, load will be capped at 1.
      */
     private final ReadOnlyDoubleWrapper load = new ReadOnlyDoubleWrapper(0.0);
 

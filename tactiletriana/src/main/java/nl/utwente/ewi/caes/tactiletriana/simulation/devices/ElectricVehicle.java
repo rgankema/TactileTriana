@@ -55,6 +55,7 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
     }
 
     // PROPERTIES
+    
     /**
      * Time when this vechicle typically leaves the grid on workdays
      */

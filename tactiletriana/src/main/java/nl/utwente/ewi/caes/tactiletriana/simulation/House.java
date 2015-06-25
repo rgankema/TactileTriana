@@ -30,7 +30,7 @@ public class House extends LoggingEntityBase {
     protected final SimulationBase simulation;
 
     public House(SimulationBase simulation) {
-        super("House", QuantityType.POWER);
+        super("House", UnitOfMeasurement.POWER);
 
         this.simulation = simulation;
 

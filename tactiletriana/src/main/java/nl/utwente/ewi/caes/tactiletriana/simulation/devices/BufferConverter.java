@@ -44,7 +44,7 @@ public class BufferConverter extends DeviceBase {
      * @param simulation the Simulation this device belongs to
      */
     public BufferConverter(int profileNumber, SimulationBase simulation) {
-        super(simulation, "BufferConverter", "BufferConverter");
+        super(simulation, "Buffer Converter", "BufferConverter");
 
         if (profileNumber < 0 || profileNumber > 5) {
             throw new IllegalArgumentException("profileNumber must be in the range of 0 to 5");
@@ -73,10 +73,18 @@ public class BufferConverter extends DeviceBase {
         profileCounter++;
     }
 
+    // PROPERTIES
+    
     /**
      * Coefficient of performance of this BufferConverter
      */
-    private final DoubleProperty COP = new SimpleDoubleProperty();
+    private final DoubleProperty COP = new SimpleDoubleProperty() {
+        @Override
+        public void set(double value) {
+            super.set(value);
+            setDirty(true);
+        }
+    };
 
     public DoubleProperty COPProperty() {
         return COP;
@@ -90,7 +98,16 @@ public class BufferConverter extends DeviceBase {
         this.COP.set(power);
     }
     
-    private DoubleProperty desiredTemperature = new SimpleDoubleProperty(DEFAULT_TEMPERATURE);
+    /**
+     * 
+     */
+    private final DoubleProperty desiredTemperature = new SimpleDoubleProperty(DEFAULT_TEMPERATURE) {
+        @Override
+        public void set(double value) {
+            super.set(value); 
+            setDirty(true);
+        }
+    };
     
     public DoubleProperty desiredTemperatureProperty(){
         return desiredTemperature;
@@ -104,14 +121,7 @@ public class BufferConverter extends DeviceBase {
         this.desiredTemperature.set(val);
     }
 
-    @Override
-    public void updateParameter(String parameter, Object value) {
-        if (parameter.equals(API_COP)) {
-            setCOP((double) value);
-        } else {
-            super.updateParameter(parameter, value);
-        }
-    }
+    // METHODS
 
     @Override
     public void doTick(boolean connected) {
@@ -131,6 +141,15 @@ public class BufferConverter extends DeviceBase {
         }
         result.put(API_PROFILE, jsonProfile);
         return result;
+    }
+    
+    @Override
+    public void updateParameter(String parameter, Object value) {
+        if (parameter.equals(API_COP)) {
+            setCOP((double) value);
+        } else {
+            super.updateParameter(parameter, value);
+        }
     }
 
 }

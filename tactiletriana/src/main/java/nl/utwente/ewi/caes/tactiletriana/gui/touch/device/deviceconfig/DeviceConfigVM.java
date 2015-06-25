@@ -8,8 +8,8 @@ package nl.utwente.ewi.caes.tactiletriana.gui.touch.device.deviceconfig;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyStringProperty;
@@ -112,8 +112,10 @@ public class DeviceConfigVM {
 
     private void initElectricVehicle(ElectricVehicle ev) {
         ObjectProperty<Model> model = ev.modelProperty();
-
+        BooleanProperty vehicle2Grid = ev.vehicle2GridProperty();
+        
         rows.add(new CategoryRow("Model", model, Bindings.createStringBinding(() -> ev.getModelName(), model), Model.values()));
+        rows.add(new BooleanRow("Vehicle2Grid", vehicle2Grid));
     }
 
     private void initBufferConverter(BufferConverter bc) {
@@ -203,6 +205,23 @@ public class DeviceConfigVM {
 
         public double getMax() {
             return max;
+        }
+    }
+    
+    /**
+     * Represents a row in the configuration view where a certain boolean value will
+     * be configured. It does not have a value string binding since it can always
+     * only be "true" or "false".
+     */
+    public final class BooleanRow extends Row {
+
+        public BooleanRow(String label, BooleanProperty valueProperty) {
+            super(label, valueProperty, null);
+        }
+        
+        @Override
+        public BooleanProperty getValueProperty() {
+            return (BooleanProperty) super.getValueProperty();
         }
     }
 

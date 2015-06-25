@@ -5,16 +5,19 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.touch.device.deviceconfig;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableObjectValue;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.input.TouchEvent;
 import javafx.scene.layout.GridPane;
 import nl.utwente.ewi.caes.tactiletriana.gui.ViewLoader;
 import nl.utwente.ewi.caes.tactiletriana.gui.customcontrols.Carousel;
+import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.deviceconfig.DeviceConfigVM.BooleanRow;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.deviceconfig.DeviceConfigVM.CategoryRow;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.deviceconfig.DeviceConfigVM.DoubleRow;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.device.deviceconfig.DeviceConfigVM.Row;
@@ -46,6 +49,10 @@ public class DeviceConfigView extends GridPane {
                 CategoryRow cRow = (CategoryRow) row;
                 Carousel carousel = new Carousel(cRow.getValueProperty(), x -> cRow.getValueStringBinding().getValue(), cRow.getPossibleValues());
                 addControl(cRow.getLabel(), carousel, null);
+            } else if (row instanceof BooleanRow) {
+                BooleanRow bRow = (BooleanRow) row;
+                CheckBox checkBox = buildCheckBox(bRow.getValueProperty());
+                addControl(bRow.getLabel(), checkBox, null);
             }
         }
     }
@@ -76,6 +83,14 @@ public class DeviceConfigView extends GridPane {
         Slider result = new Slider(min, max, min);
         // Consume touch events so that the deviceview won't be dragged while using the slider
         result.addEventFilter(TouchEvent.ANY, e -> e.consume());
+        return result;
+    }
+    
+    private CheckBox buildCheckBox(BooleanProperty property) {
+        CheckBox result = new CheckBox();
+        // Consume touch events so that the deviceview won't be dragged while using the slider
+        result.addEventFilter(TouchEvent.ANY, e -> e.consume());
+        result.selectedProperty().bindBidirectional(property);
         return result;
     }
 
