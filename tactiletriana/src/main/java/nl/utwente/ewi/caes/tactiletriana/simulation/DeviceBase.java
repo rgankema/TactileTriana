@@ -96,6 +96,10 @@ public abstract class DeviceBase extends LoggingEntityBase {
         return currentConsumptionProperty().get();
     }
 
+    /**
+     * Sets the consumption of this device at the current time of the Simulation.
+     * @param value 
+     */
     public final void setCurrentConsumption(double value) {
         currentConsumption.set(value);
     }
@@ -109,10 +113,18 @@ public abstract class DeviceBase extends LoggingEntityBase {
         return parentHouse.getReadOnlyProperty();
     }
 
+    /**
+     * 
+     * @return the house of which this device is part.
+     */
     public House getParentHouse() {
         return parentHouse.get();
     }
 
+    /**
+     * Sets the house of this device
+     * @param house 
+     */
     void setParentHouse(House house) {
         parentHouse.set(house);
     }
