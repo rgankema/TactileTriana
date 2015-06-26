@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javafx.scene.chart.XYChart.Data;
 import nl.utwente.ewi.caes.tactiletriana.GlobalSettings;
+import static nl.utwente.ewi.caes.tactiletriana.Util.toMinuteOfYear;
 
 /**
  * Superclass of any class that needs to log a certain value at a certain time.
@@ -18,14 +19,14 @@ import nl.utwente.ewi.caes.tactiletriana.GlobalSettings;
 public abstract class LoggingEntityBase {
 
     private final String displayName;
-    private final QuantityType qType;
+    private final UnitOfMeasurement unitOfMeasurement;
     private final List<Data<Integer, Float>> log;
 
     public boolean invalid = false;
 
-    public LoggingEntityBase(String displayName, QuantityType qType) {
+    public LoggingEntityBase(String displayName, UnitOfMeasurement unitOfMeasurement) {
         this.displayName = displayName;
-        this.qType = qType;
+        this.unitOfMeasurement = unitOfMeasurement;
         this.log = new ArrayList<>();
     }
 
@@ -34,8 +35,8 @@ public abstract class LoggingEntityBase {
         return this.displayName;
     }
 
-    public final QuantityType getQuantityType() {
-        return this.qType;
+    public final UnitOfMeasurement getUnitOfMeasurement() {
+        return this.unitOfMeasurement;
     }
 
     public final List<Data<Integer, Float>> getLog() {
@@ -60,15 +61,11 @@ public abstract class LoggingEntityBase {
         }
     }
 
-    public final static int toMinuteOfYear(LocalDateTime time) {
-        return (time.getDayOfYear() - 1) * 24 * 60 + time.getHour() * 60 + time.getMinute();
-    }
-
     // ENUMS
     /**
      * Describes a physical quantity that may be logged.
      */
-    public static enum QuantityType {
+    public static enum UnitOfMeasurement {
 
         CURRENT, POWER, VOLTAGE
     }

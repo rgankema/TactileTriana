@@ -259,10 +259,6 @@ public final class StageController {
         detailVM.removeFromChart(logger);
     }
 
-    public void showNotification(String message) {
-        detailVM.showNotification(message);
-    }
-
     public void resetSimulation() {
         this.simulation.reset();
         this.touchVM.reset();

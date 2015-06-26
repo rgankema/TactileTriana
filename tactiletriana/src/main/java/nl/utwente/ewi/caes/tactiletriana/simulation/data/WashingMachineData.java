@@ -15,7 +15,7 @@ import static nl.utwente.ewi.caes.tactiletriana.GlobalSettings.TICK_MINUTES;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.WashingMachine;
 
 /**
- *
+ * Data provider for Washing machines. Uses a consumption profile of a real washing machine.
  * @author Richard
  */
 public class WashingMachineData implements IDeviceDataProvider<WashingMachine> {

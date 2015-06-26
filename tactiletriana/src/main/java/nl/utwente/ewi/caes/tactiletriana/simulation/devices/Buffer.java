@@ -42,9 +42,6 @@ public class Buffer extends BufferBase {
         // If no planning available, help out parent house
         if (getPlanning() == null || getPlanning().get(currentTime) == null) {
 
-            // TODO: dit aan Gerwin vragen, dit is echt rare shit!
-            // dit is om het probleem met meerdere buffers eruit te halen.
-            // remove the influence of other batterys
             double bufferConsumption = 0;
             for (DeviceBase d : this.getParentHouse().getDevices()) {
                 if (d instanceof Buffer) {
@@ -55,7 +52,6 @@ public class Buffer extends BufferBase {
             // the next consumption is the currentConsupmtion of the house minus the influence of other buffers
             nextConsumption = -(this.getParentHouse().getCurrentConsumption() - bufferConsumption);
 
-            //System.out.println(this.getParentHouse().getCurrentConsumption());
             // The house is producing energy, so start charging
             if (nextConsumption > 0) {
                 if (nextConsumption > this.getMaxPower()) {
@@ -76,16 +72,11 @@ public class Buffer extends BufferBase {
                 if (nextConsumption < -this.getMaxPower()) {
                     nextConsumption = -this.getMaxPower();
                 }
-
-                // test:
             }
         } else {
             nextConsumption = getPlanning().get(currentTime);
         }
-
-        if (nextConsumption * timestep > this.getStateOfCharge()) {
-            //System.out.println("Error next consumption > this.getStateOfCharge())");
-        }
+        
         this.setCurrentConsumption(nextConsumption);
     }
 

@@ -18,7 +18,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 import nl.utwente.ewi.caes.tactiletriana.simulation.SimulationBase;
 
 /**
- *
+ * Class that simulates an electric vehicle. 
  * @author Richard
  */
 public class ElectricVehicle extends BufferTimeShiftableBase {
@@ -28,7 +28,8 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
 
     /**
      * Constructs a BufferTimeShiftable device (electric vehicle). The model is
-     * determined by the model parameter.
+     * determined by the model parameter. On constructing the leaveTime and returnTime
+     * variables are set for random work hours.
      *
      * @param simulation The simulation object of the current simulation.
      * @param model The model of the EV
@@ -49,12 +50,17 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
         registerProperty(kilometersToWork);
         registerProperty(this.model);
     }
-
+    
+    /**
+     * Constructor without the model parameter, this constructor instantiates a random vehicle model.
+     * @param simulation The simulation object of the current simulation.
+     */
     public ElectricVehicle(Simulation simulation) {
         this(simulation, Model.values()[(int) (Model.values().length * Math.random())]);
     }
 
     // PROPERTIES
+    
     /**
      * Time when this vechicle typically leaves the grid on workdays
      */
@@ -217,8 +223,13 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
             }
         }
     }
-
-    //Charge the buffer with an amount of power times timestep, can also be negative (draining the battery)
+    
+    /**
+     * Charge the buffer with an amount of power multiplied by the timestep of the simulation,
+     * can also be negative (draining the battery).
+     * @param power The amount of power the buffer is going to be charged with.
+     * @param timestep The timestep of the simulation.
+     */
     private void chargeBuffer(double power, double timestep) {
         if (power == 0) {
             return;
@@ -254,14 +265,14 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
     }
 
     /**
-     * Function that determines the amount of kilometers this vehicle has to
+     * Help function that determines the amount of kilometers this vehicle has to
      * drive on workdays. The function looks at the range the vehicle has and
      * thus never returns a higher value than the range.
      *
      * @return the amount of kilometers this vehicle has to drive on workdays.
      * is a value between the max / 2 and the max.
      */
-    public int determineKilometersToWork() {
+    private int determineKilometersToWork() {
 
         //Calculate max amount of kilometers that can be driven with the capacity
         int maxKm = (int) (getKilometersPerkWh() * getCapacity() / 1000);

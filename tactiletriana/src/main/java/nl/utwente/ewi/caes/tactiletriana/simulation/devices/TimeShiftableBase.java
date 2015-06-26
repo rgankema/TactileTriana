@@ -19,6 +19,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import nl.utwente.ewi.caes.tactiletriana.GlobalSettings;
+import static nl.utwente.ewi.caes.tactiletriana.Util.toMinuteOfYear;
 import nl.utwente.ewi.caes.tactiletriana.simulation.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -70,8 +71,16 @@ public abstract class TimeShiftableBase extends DeviceBase {
     // PROPERTIES
     /**
      * The consumption in watt for every time step from start to finish.
+     * Note that setting this property to a different value will automatically 
+     * mark the  device dirty, but changing values of the array itself won't.
      */
-    private final ObjectProperty<double[]> staticProfile = new SimpleObjectProperty<>();
+    private final ObjectProperty<double[]> staticProfile = new SimpleObjectProperty<double[]>() {
+        @Override
+        public void set(double[] value) {
+            super.set(value);
+            setDirty(true);
+        }
+    };
 
     public ObjectProperty<double[]> staticProfileProperty() {
         return this.staticProfile;
@@ -97,7 +106,13 @@ public abstract class TimeShiftableBase extends DeviceBase {
      * The time (in minutes from the start of the day) from which point the
      * device may start operating
      */
-    private final IntegerProperty startTime = new SimpleIntegerProperty();
+    private final IntegerProperty startTime = new SimpleIntegerProperty() { 
+        @Override
+        public void set(int value) {
+            super.set(value);
+            setDirty(true);
+        }
+    };
 
     public IntegerProperty startTimeProperty() {
         return startTime;
@@ -114,7 +129,13 @@ public abstract class TimeShiftableBase extends DeviceBase {
     /**
      * Last moment in minutes that the device may start its program
      */
-    private final IntegerProperty endTime = new SimpleIntegerProperty();
+    private final IntegerProperty endTime = new SimpleIntegerProperty() {
+        @Override
+        public void set(int value) {
+            super.set(value);
+            setDirty(true);
+        }
+    };
 
     public IntegerProperty endTimeProperty() {
         return endTime;

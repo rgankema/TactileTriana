@@ -15,6 +15,7 @@ import javafx.collections.ListChangeListener;
 import javafx.scene.chart.XYChart.Data;
 import nl.utwente.ewi.caes.tactiletriana.Concurrent;
 import nl.utwente.ewi.caes.tactiletriana.GlobalSettings;
+import static nl.utwente.ewi.caes.tactiletriana.Util.toMinuteOfYear;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Cable;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.House;

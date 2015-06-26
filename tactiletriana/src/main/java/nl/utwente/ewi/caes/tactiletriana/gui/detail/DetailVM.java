@@ -5,13 +5,8 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.gui.detail;
 
-import java.util.concurrent.TimeUnit;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import nl.utwente.ewi.caes.tactiletriana.Concurrent;
 import nl.utwente.ewi.caes.tactiletriana.gui.detail.chart.ChartVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.detail.datetime.DateTimeVM;
-import nl.utwente.ewi.caes.tactiletriana.gui.detail.notification.NotificationVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.detail.weather.WeatherVM;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.LoggingEntityVMBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.LoggingEntityBase;
@@ -31,9 +26,6 @@ public class DetailVM {
     private final LoggingEntityVMBase[] loggersOnCharts;
     int subChartIndex = 0;
 
-    private final ObservableList<NotificationVM> notificationQueue;
-    private final ObservableList<NotificationVM> notificationQueueUnmodifiable;
-
     public DetailVM(Simulation simulation) {
         this.simulation = simulation;
 
@@ -45,37 +37,9 @@ public class DetailVM {
             subChartVMs[i] = new ChartVM();
         }
         loggersOnCharts = new LoggingEntityVMBase[3];
-
-        notificationQueue = FXCollections.observableArrayList();
-        notificationQueueUnmodifiable = FXCollections.unmodifiableObservableList(notificationQueue);
-    }
-
-    // PROPERTIES
-    /**
-     * An unmodifiable observable list of notifications that are to be shown. To
-     * add a notification to the queue, call {@link notifiy}. The notifications
-     * will be in the list for as long as the VM deems they should be shown.
-     *
-     * @return the list of pending notifications
-     */
-    public ObservableList<NotificationVM> getNotificationQueue() {
-        return notificationQueueUnmodifiable;
     }
 
     // METHODS
-    /**
-     * Shows a pop-up notification on the screen with the given message.
-     *
-     * @param message the notification message
-     */
-    public void showNotification(String message) {
-        NotificationVM notification = new NotificationVM(message);
-        notificationQueue.add(notification);
-        // Remove the notification after 5000ms
-        Concurrent.getExecutorService().schedule(() -> {
-            notificationQueue.remove(notification);
-        }, 5000, TimeUnit.MILLISECONDS);
-    }
 
     /**
      * Shows a LoggingEntityBase on a chart.

@@ -43,12 +43,6 @@ public class CableVM extends LoggingEntityVMBase {
                 direction.set(Direction.NONE);
             }
         });
-
-        model.brokenProperty().addListener((observable, wasBroken, isBroken) -> {
-            if (isBroken) {
-                StageController.getInstance().showNotification("A cable is broken due to heavy load!");
-            }
-        });
     }
 
     public Cable getModel() {

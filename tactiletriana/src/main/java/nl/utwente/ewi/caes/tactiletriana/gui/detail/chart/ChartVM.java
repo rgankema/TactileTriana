@@ -72,8 +72,8 @@ public class ChartVM {
      *
      * @return the type of value that is shown on the chart
      */
-    public LoggingEntityBase.QuantityType getValueType() {
-        return actual.getQuantityType();
+    public LoggingEntityBase.UnitOfMeasurement getValueType() {
+        return actual.getUnitOfMeasurement();
     }
 
     /**
@@ -128,7 +128,7 @@ public class ChartVM {
         }
 
         // Set label of series
-        switch (actual.getQuantityType()) {
+        switch (actual.getUnitOfMeasurement()) {
             case POWER:
                 seriesName.set("Power Consumption (W)");
                 break;

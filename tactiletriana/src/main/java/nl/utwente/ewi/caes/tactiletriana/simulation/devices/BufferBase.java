@@ -12,8 +12,8 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import static nl.utwente.ewi.caes.tactiletriana.Util.toLocalDateTime;
+import static nl.utwente.ewi.caes.tactiletriana.Util.toMinuteOfYear;
 import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
-import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 import nl.utwente.ewi.caes.tactiletriana.simulation.SimulationBase;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -53,7 +53,6 @@ public abstract class BufferBase extends DeviceBase {
         // register properties for prediction
         registerProperty(capacity);
         registerProperty(maxPower);
-        //registerProperty(stateOfCharge);
         registerMap(planning);
     }
 
@@ -75,6 +74,7 @@ public abstract class BufferBase extends DeviceBase {
                 value = 0;
             }
             super.set(value);
+            setDirty(true);
         }
     };
 
@@ -103,6 +103,7 @@ public abstract class BufferBase extends DeviceBase {
                 value = 0;
             }
             super.set(value);
+            setDirty(true);
         }
     };
 
@@ -130,7 +131,6 @@ public abstract class BufferBase extends DeviceBase {
             } else if (value > getCapacity()) {
                 value = getCapacity();
             }
-           
             super.set(value);
         }
     };

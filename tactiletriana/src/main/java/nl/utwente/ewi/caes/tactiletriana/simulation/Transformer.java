@@ -17,10 +17,4 @@ public class Transformer extends Node {
         super(null, simulation);
         setVoltage(230);
     }
-    
-    @Override
-    public void prepareForwardBackwardSweep(){
-        
-        this.getCables().get(0);
-    }
 }

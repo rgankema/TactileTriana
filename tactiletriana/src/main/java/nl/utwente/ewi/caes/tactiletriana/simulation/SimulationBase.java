@@ -9,10 +9,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.SimpleObjectProperty;
 import nl.utwente.ewi.caes.tactiletriana.GlobalSettings;
 import static nl.utwente.ewi.caes.tactiletriana.Util.toTimeStep;
 import static nl.utwente.ewi.caes.tactiletriana.simulation.Simulation.NUMBER_OF_HOUSES;
@@ -42,7 +40,7 @@ public abstract class SimulationBase extends LoggingEntityBase {
 
     // CONSTRUCTOR
     public SimulationBase() {
-        super("Network", QuantityType.POWER);
+        super("Network", UnitOfMeasurement.POWER);
 
         // keep an array of nodes for later reference
         this.lastVoltageByNode = new HashMap<>();
@@ -116,23 +114,6 @@ public abstract class SimulationBase extends LoggingEntityBase {
     }
 
     /**
-     * The Controller that controls the devices in this simulation. May be null.
-     */
-    private final ObjectProperty<IController> controller = new SimpleObjectProperty<>(null);
-    
-    public ObjectProperty<IController> controllerProperty() {
-        return controller;
-    }
-    
-    public final IController getController() {
-        return controllerProperty().get();
-    }
-
-    public final void setController(IController controller) {
-        controllerProperty().set(controller);
-    }
-
-    /**
      * The root of the network.
      *
      * @return
@@ -156,11 +137,10 @@ public abstract class SimulationBase extends LoggingEntityBase {
      * @return ArrayList of Devices in the simulation
      */
     public ArrayList<DeviceBase> getDevices() {
-        ArrayList<DeviceBase> result = new ArrayList<DeviceBase>();
+        ArrayList<DeviceBase> result = new ArrayList<>();
         for (House house : houses) {
             result.addAll(house.getDevices());
         }
-
         return result;
     }
 
@@ -198,6 +178,11 @@ public abstract class SimulationBase extends LoggingEntityBase {
 
     protected final void prepareForwardBackwardSweep() {
         transformer.prepareForwardBackwardSweep();
+        
+        // Store last voltage to check for convergence
+        for (Node node : this.lastVoltageByNode.keySet()) {
+            lastVoltageByNode.put(node, node.tempVoltage);
+        }
     }
 
     protected final void doForwardBackwardSweep() {
@@ -205,13 +190,14 @@ public abstract class SimulationBase extends LoggingEntityBase {
         for (int i = 0; i < 20; i++) {
             transformer.doForwardBackwardSweep(230);
 
-            if (hasFBSConverged(0.0001)) {
+            // Only makes sense to check for convergence if we have done at least two iterations.
+            if (i > 0 && hasFBSConverged(0.0001)) {
                 break;
             }
 
             // Store last voltage to check for convergence
             for (Node node : this.lastVoltageByNode.keySet()) {
-                lastVoltageByNode.put(node, node.getVoltage());
+                lastVoltageByNode.put(node, node.tempVoltage);
             }
         }
     }
@@ -221,13 +207,14 @@ public abstract class SimulationBase extends LoggingEntityBase {
     }
 
     // Calculate if the FBS algorithm has converged. 
-    private final boolean hasFBSConverged(double error) {
+    private boolean hasFBSConverged(double error) {
         boolean result = true;
 
         //Loop through the network-tree and compare the previous voltage from each with the current voltage.
         //If the difference between the previous and current voltage is smaller than the given error, the result is true
         for (Node node : this.lastVoltageByNode.keySet()) {
-            result = (Math.abs(lastVoltageByNode.get(node) - node.getVoltage()) < error);
+            
+            result = (Math.abs(lastVoltageByNode.get(node) - node.tempVoltage) < error);
             if (!result) {
                 break;
             }

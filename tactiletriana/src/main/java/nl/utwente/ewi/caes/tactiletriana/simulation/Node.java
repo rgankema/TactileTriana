@@ -22,7 +22,7 @@ public class Node extends LoggingEntityBase {
     protected SimulationBase simulation;
 
     public Node(House house, SimulationBase simulation) {
-        super("Node", QuantityType.VOLTAGE);
+        super("Node", UnitOfMeasurement.VOLTAGE);
 
         this.simulation = simulation;
         this.cables = new ArrayList<>();
@@ -84,10 +84,9 @@ public class Node extends LoggingEntityBase {
 
     public void prepareForwardBackwardSweep() {
         tempVoltage = 230d;
+
         for (Cable c : cables) {
-            if (!c.getChildNode().equals(this)){
-                c.prepareForwardBackwardSweep();
-            }
+            c.prepareForwardBackwardSweep();
         }
     }
 
@@ -98,11 +97,11 @@ public class Node extends LoggingEntityBase {
         tempVoltage = voltage;
 
         for (Cable c : cables) {
-            current += c.doForwardBackwardSweep(this.getVoltage());
+            current += c.doForwardBackwardSweep(tempVoltage);
         }
         if (house != null) {
             if (this.getVoltage() != 0) {
-                current += (house.getCurrentConsumption() / this.getVoltage()); //I = P/U //Apparently this one is inversed?
+                current += (house.getCurrentConsumption() / tempVoltage); //I = P/U //Apparently this one is inversed?
             }
         }
         return current;

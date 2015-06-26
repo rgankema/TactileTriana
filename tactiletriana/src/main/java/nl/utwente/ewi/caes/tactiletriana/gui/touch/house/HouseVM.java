@@ -27,12 +27,6 @@ public class HouseVM extends LoggingEntityVMBase {
         this.load.bind(Bindings.createDoubleBinding(() -> {
             return Math.min(1.0, Math.abs(model.getCurrentConsumption()) / model.getMaximumConsumption());
         }, model.currentConsumptionProperty(), model.maximumConsumptionProperty()));
-
-        model.fuseBlownProperty().addListener((observable, wasBlown, isBlown) -> {
-            if (isBlown) {
-                StageController.getInstance().showNotification("The fuse in a house was blown due to heavy load!");
-            }
-        });
     }
 
     public House getModel() {
@@ -42,7 +36,7 @@ public class HouseVM extends LoggingEntityVMBase {
     /**
      * The load of the house on a scale of 0 to 1. The load is the absolute
      * amount of consumption of the house, divided by the maximum consumption.
-     * When this is higher than 1, load will still return 1.
+     * When this is higher than 1, load will be capped at 1.
      */
     private final ReadOnlyDoubleWrapper load = new ReadOnlyDoubleWrapper(0.0);
 
