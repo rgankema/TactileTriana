@@ -32,27 +32,27 @@ public class SimulationPredictionTest {
         pred = new SimulationPrediction(sim);
     }
     
-    @Ignore
+    @Ignore // Haal weg als je wil testen, standaard ignoren omdat test lang duurt
     @Test
     public void EmptySimulationTest() throws InterruptedException{
         initializeSimulation();
         checkPredictionCorrect();
     }
     
-    @Ignore
+    @Ignore // Haal weg als je wil testen, standaard ignoren omdat test lang duurt
     @Test
     public void SolarPanelTest() throws InterruptedException{
         initializeSimulation();
         SolarPanel solar = new SolarPanel(sim);
         sim.houses[0].getDevices().add(solar);
         
-        // check of het solarpanel er in zzit
+        // check of het solarpanel er in zit
         assertTrue(sim.houses[0].getDevices().contains(solar));
         
         checkPredictionCorrect();
     }
     
-    @Ignore
+    @Ignore // Haal weg als je wil testen, standaard ignoren omdat test lang duurt
     @Test
     public void ElectricVehicleTest() throws InterruptedException{
         initializeSimulation();
@@ -104,7 +104,7 @@ public class SimulationPredictionTest {
         }
     }
     
-    private void checkPredictionCorrect() throws InterruptedException{
+    private void checkPredictionCorrect() throws InterruptedException {
         
         // loop X uur vooruit
         int numberOfTicks = NUMBER_OF_HOURS_TO_TEST * 60 * 60 / GlobalSettings.TICK_MINUTES;
@@ -114,20 +114,20 @@ public class SimulationPredictionTest {
             sim.tick();
             
             // let the parallel test do its work
-            Thread.sleep(1);
+            Thread.sleep(10);
             
-            Float simValue = findTimeInLog(sim.getLog(), sim.getCurrentTime());
-            Float predValue = findTimeInLog(pred.getLog(), sim.getCurrentTime());
+            Float simValue = findValueForTime(sim.getLog(), sim.getCurrentTime().minusMinutes(GlobalSettings.TICK_MINUTES));
+            Float predValue = findValueForTime(pred.getLog(), sim.getCurrentTime().minusMinutes(GlobalSettings.TICK_MINUTES));
             assertEquals(simValue, predValue);
        }
     }
     
-    private Float findTimeInLog(List<Data<Integer,Float>> log, LocalDateTime time){
+    private Float findValueForTime(List<Data<Integer,Float>> log, LocalDateTime time){
         Integer value = toMinuteOfYear(time);
         for (int i = 0; i < log.size(); i++){
             Data<Integer,Float> datapoint = log.get(i);
             if (datapoint.getXValue().equals(value)){
-                return datapoint.YValueProperty().get();
+                return datapoint.getYValue();
             }
         }
         
