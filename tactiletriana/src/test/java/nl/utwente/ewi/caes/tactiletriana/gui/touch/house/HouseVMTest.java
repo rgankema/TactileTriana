@@ -7,15 +7,10 @@ package nl.utwente.ewi.caes.tactiletriana.gui.touch.house;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import nl.utwente.ewi.caes.tactiletriana.simulation.House;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -31,17 +26,6 @@ public class HouseVMTest {
     private DoubleProperty houseMaxConsumption;
     private BooleanProperty fuseBlown;
     
-    public HouseVMTest() {
-    }
-    
-    @BeforeClass
-    public static void setUpClass() {
-    }
-    
-    @AfterClass
-    public static void tearDownClass() {
-    }
-    
     @Before
     public void setUp() {
         /* Mock het huis en geef hem standaard 'antwoord'. */
@@ -55,17 +39,11 @@ public class HouseVMTest {
         when(mockedHouse.maximumConsumptionProperty()).thenReturn(houseMaxConsumption);
         when(mockedHouse.fuseBlownProperty()).thenReturn(fuseBlown);
     }
-    
-    @After
-    public void tearDown() {
-    }
 
-    /**
-     * Test of loadProperty method, of class HouseVM.
-     */
+    // LOAD PROPERTY
+    
     @Test
-    public void testLoadPropertyPositiveConsumption() {
-        System.out.println("loadPropertyPositiveConsumption");
+    public void testLoadProperty_PositiveConsumption() {
         HouseVM instance = new HouseVM(mockedHouse);
         
         houseCurrentConsumption.set(5);
@@ -74,12 +52,8 @@ public class HouseVMTest {
         assertEquals(0.5, instance.getLoad(), 0.01);
     }
     
-    /**
-     * Test of loadProperty method, of class HouseVM.
-     */
     @Test
-    public void testLoadPropertyNegativeConsumption() {
-        System.out.println("loadPropertyNegativeConsumption");
+    public void testLoadProperty_NegativeConsumption() {
         HouseVM instance = new HouseVM(mockedHouse);
         
         houseCurrentConsumption.set(-5);
@@ -88,12 +62,8 @@ public class HouseVMTest {
         assertEquals(0.5, instance.getLoad(), 0.01);
     }
     
-    /**
-     * Test of loadProperty method, of class HouseVM.
-     */
     @Test
-    public void testLoadPropertyConsumptionOverMax() {
-        System.out.println("loadPropertyNegativeConsumption");
+    public void testLoadProperty_ConsumptionOverMax_CappedAt1() {
         HouseVM instance = new HouseVM(mockedHouse);
         
         houseCurrentConsumption.set(15);
@@ -102,12 +72,8 @@ public class HouseVMTest {
         assertEquals(1.0, instance.getLoad(), 0.01);
     }
     
-    /**
-     * Test of loadProperty method, of class HouseVM.
-     */
     @Test
-    public void testLoadPropertyNoConsumption() {
-        System.out.println("loadPropertyNoConsumption");
+    public void testLoadProperty_NoConsumption_LoadAt0() {
         HouseVM instance = new HouseVM(mockedHouse);
         
         houseCurrentConsumption.set(0);
@@ -116,26 +82,10 @@ public class HouseVMTest {
         assertEquals(0.0, instance.getLoad(), 0.01);
     }
 
-    /**
-     * Test of getLoad method, of class HouseVM.
-     */
+    // FUSE BLOWN
+    
     @Test
-    public void testGetLoad() {
-        System.out.println("getLoad");
-        HouseVM instance = new HouseVM(mockedHouse);
-        
-        double expResult = instance.loadProperty().get();
-        double result = instance.getLoad();
-        
-        assertEquals(expResult, result, 0.0);
-    }
-
-    /**
-     * Test of fuseBlownProperty method, of class HouseVM.
-     */
-    @Test
-    public void testFuseBlownPropertyTrue() {
-        System.out.println("fuseBlownProperty");
+    public void testFuseBlownProperty_ModelFuseBlownTrue_VMFuseBlownTrue() {
         HouseVM instance = new HouseVM(mockedHouse);
         
         fuseBlown.set(true);
@@ -143,12 +93,8 @@ public class HouseVMTest {
         assertEquals(true, instance.isFuseBlown());
     }
     
-        /**
-     * Test of fuseBlownProperty method, of class HouseVM.
-     */
     @Test
-    public void testFuseBlownPropertyFalse() {
-        System.out.println("fuseBlownProperty");
+    public void testFuseBlownProperty_ModelFuseBlownFalse_VMFuseBlownFalse() {
         HouseVM instance = new HouseVM(mockedHouse);
         
         fuseBlown.set(false);
@@ -156,26 +102,10 @@ public class HouseVMTest {
         assertEquals(false, instance.isFuseBlown());
     }
 
-    /**
-     * Test of isFuseBlown method, of class HouseVM.
-     */
+    // REPAIR FUSE
+    
     @Test
-    public void testIsFuseBlown() {
-        System.out.println("isFuseBlown");
-        HouseVM instance = new HouseVM(mockedHouse);
-        
-        boolean expResult = instance.fuseBlownProperty().get();
-        boolean result = instance.isFuseBlown();
-        
-        assertEquals(expResult, result);
-    }
-
-    /**
-     * Test of repairFuse method, of class HouseVM.
-     */
-    @Test
-    public void testRepairFuse() {
-        System.out.println("repairFuse");
+    public void testRepairFuse_CallsModelRepairFuse() {
         HouseVM instance = new HouseVM(mockedHouse);
         
         instance.pressed();

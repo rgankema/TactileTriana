@@ -11,7 +11,6 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import nl.utwente.ewi.caes.tactiletriana.gui.StageController;
 import nl.utwente.ewi.caes.tactiletriana.gui.touch.LoggingEntityVMBase;
-import nl.utwente.ewi.caes.tactiletriana.simulation.DeviceBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.House;
 
 /**
@@ -68,25 +67,5 @@ public class HouseVM extends LoggingEntityVMBase {
 
     public void longPressed() {
         StageController.getInstance().showOnChart(this, model);
-    }
-
-    /**
-     * Adds a device to the house
-     *
-     * @param device the device to be added
-     */
-    public void addDevice(DeviceBase device) {
-        if (!this.model.getDevices().contains(device)) {
-            this.model.getDevices().add(device);
-        }
-    }
-
-    /**
-     * Removes a device from the house
-     *
-     * @param device the device to be removed
-     */
-    public void removeDevice(DeviceBase device) {
-        this.model.getDevices().remove(device);
     }
 }

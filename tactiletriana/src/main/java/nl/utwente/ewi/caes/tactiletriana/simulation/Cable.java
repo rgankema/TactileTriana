@@ -187,7 +187,7 @@ public class Cable extends LoggingEntityBase {
     }
 
     // FORWARD BACKWARD SWEEP
-    private double tempCurrent;
+    double tempCurrent;
 
     
     /**

@@ -213,13 +213,13 @@ public class DeviceVM extends LoggingEntityVMBase {
         }
 
         if (this.house != null) {
-            this.house.removeDevice(model);
+            this.house.getModel().getDevices().remove(model);
         }
 
         this.house = house;
 
         if (house != null) {
-            house.addDevice(model);
+            house.getModel().getDevices().add(model);
         }
     }
 

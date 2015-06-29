@@ -41,7 +41,6 @@ public class House extends LoggingEntityBase {
         devices.addListener((ListChangeListener.Change<? extends DeviceBase> c) -> {
             while (c.next()) {
                 for (DeviceBase removedDevice : c.getRemoved()) {
-                    removedDevice.setState(DeviceBase.State.NOT_IN_HOUSE);
                     removedDevice.setParentHouse(null);
                 }
                 for (DeviceBase addedDevice : c.getAddedSubList()) {

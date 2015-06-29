@@ -28,12 +28,10 @@ public class NodeVMTest {
         when(mockedNode.voltageProperty()).thenReturn(nodeVoltage);
     }
 
-    /**
-     * Test of voltageErrorProperty method, of class NodeVM.
-     */
+    // VOLTAGE ERROR PROPERTY
+    
     @Test
-    public void testVoltageErrorPropertyPerfectVoltage() {
-        System.out.println("voltageErrorPropertyPerfectVoltage");
+    public void testVoltageErrorProperty_ModelVoltage230_Error0() {
         NodeVM instance = new NodeVM(mockedNode);
         
         nodeVoltage.set(230d);
@@ -41,12 +39,8 @@ public class NodeVMTest {
         assertEquals(instance.getVoltageError(), 0.0, 0.01);
     }
     
-    /**
-     * Test of voltageErrorProperty method, of class NodeVM.
-     */
     @Test
-    public void testVoltageErrorPropertyVoltageOffBy5Percent() {
-        System.out.println("voltageErrorPropertyOffBy5Percent");
+    public void testVoltageErrorProperty_VoltageOffBy5Percent() {
         NodeVM instance = new NodeVM(mockedNode);
         
         nodeVoltage.set(230d + 23d/2d);
@@ -54,12 +48,8 @@ public class NodeVMTest {
         assertEquals(instance.getVoltageError(), 0.5, 0.01);
     }
     
-    /**
-     * Test of voltageErrorProperty method, of class NodeVM.
-     */
     @Test
-    public void testVoltageErrorPropertyVoltageOffBy10Percent() {
-        System.out.println("voltageErrorPropertyOffBy10Percent");
+    public void testVoltageErrorProperty_VoltageOffBy10Percent() {
         NodeVM instance = new NodeVM(mockedNode);
         
         nodeVoltage.set(230d + 23d);
@@ -67,12 +57,8 @@ public class NodeVMTest {
         assertEquals(instance.getVoltageError(), 1.0, 0.01);
     }
     
-    /**
-     * Test of voltageErrorProperty method, of class NodeVM.
-     */
     @Test
-    public void testVoltageErrorPropertyVoltageOffBy20Percent() {
-        System.out.println("voltageErrorPropertyOffBy20Percent");
+    public void testVoltageErrorProperty_VoltageOffBy20Percent() {
         NodeVM instance = new NodeVM(mockedNode);
         
         nodeVoltage.set(230d + 46d);
@@ -80,17 +66,12 @@ public class NodeVMTest {
         assertEquals(instance.getVoltageError(), 1.0, 0.01);
     }
     
-    /**
-     * Test of voltageErrorProperty method, of class NodeVM.
-     */
     @Test
-    public void testVoltageErrorPropertyVoltageOffBy5PercentNegative() {
-        System.out.println("voltageErrorPropertyOffBy5PercentNegative");
+    public void testVoltageErrorProperty_VoltageOffBy5PercentNegative() {
         NodeVM instance = new NodeVM(mockedNode);
         
         nodeVoltage.set(230d - 23d/2d);
         
         assertEquals(instance.getVoltageError(), 0.5, 0.01);
     }
-    
 }

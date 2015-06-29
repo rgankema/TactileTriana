@@ -11,14 +11,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import org.json.simple.JSONObject;
@@ -50,6 +48,10 @@ public abstract class DeviceBase extends LoggingEntityBase {
     public DeviceBase(SimulationBase simulation, String displayName, String apiDeviceType) {
         super(displayName, UnitOfMeasurement.POWER);
 
+        if (simulation == null) {
+            throw new NullPointerException("Simulation may not be null");
+        }
+        
         id = DEVICE_ID;
         DEVICE_ID++;
 
@@ -66,7 +68,7 @@ public abstract class DeviceBase extends LoggingEntityBase {
     /**
      * @return a unique identifier for this device
      */
-    public int getId() {
+    public final int getId() {
         return this.id;
     }
 
@@ -104,7 +106,15 @@ public abstract class DeviceBase extends LoggingEntityBase {
     /**
      * The house that hosts this device
      */
-    private final ReadOnlyObjectWrapper<House> parentHouse = new ReadOnlyObjectWrapper<>();
+    private final ReadOnlyObjectWrapper<House> parentHouse = new ReadOnlyObjectWrapper<House>() {
+        @Override
+        public void set(House value) {
+            if (value == null) {
+                setState(State.NOT_IN_HOUSE);
+            }
+            super.set(value);
+        }
+    };
 
     public ReadOnlyObjectProperty<House> parentHouseProperty() {
         return parentHouse.getReadOnlyProperty();
@@ -129,10 +139,10 @@ public abstract class DeviceBase extends LoggingEntityBase {
     /**
      * The state of this device
      */
-    private final ObjectProperty<State> state = new SimpleObjectProperty<State>(DeviceBase.State.NOT_IN_HOUSE) {
+    private final ReadOnlyObjectWrapper<State> state = new ReadOnlyObjectWrapper<State>(State.NOT_IN_HOUSE) {
         @Override
         public void set(State value) {
-            if (value != DeviceBase.State.CONNECTED) {
+            if (value != State.CONNECTED) {
                 // when not connected, no consumption
                 setCurrentConsumption(0);
             }
@@ -140,16 +150,16 @@ public abstract class DeviceBase extends LoggingEntityBase {
         }
     };
 
-    public ObjectProperty<State> stateProperty() {
-        return this.state;
+    public ReadOnlyObjectProperty<State> stateProperty() {
+        return this.state.getReadOnlyProperty();
     }
 
     public final State getState() {
         return stateProperty().get();
     }
 
-    protected final void setState(State s) {
-        this.stateProperty().set(s);
+    private void setState(State state) {
+        this.state.set(state);
     }
     
     /**
@@ -332,7 +342,7 @@ public abstract class DeviceBase extends LoggingEntityBase {
     /**
      * Describes the state of a device
      */
-    public enum State {
+    public static enum State {
 
         /**
          * The device is not connected to a house

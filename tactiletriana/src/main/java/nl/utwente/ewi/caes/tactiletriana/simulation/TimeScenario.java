@@ -18,11 +18,12 @@ public final class TimeScenario {
 
     // STATIC METHODS
     /**
-     * Parse a representation of a TimeScenario: Format:
-     * DateBegin,DateEnd|DateBegin,DateEnd| etc
+     * Parses a string as a TimeScenario. The format for such a string is:
+     * DateBegin,DateEnd|DateBegin,DateEnd|, where dates follow the same
+     * format as required for LocalDate.
      *
-     * @param input
-     * @return
+     * @param input String representation of the TimeScenario
+     * @return a new TimeScenario
      */
     public static TimeScenario parse(String input) {
         String[] tokens = input.split("[|]");

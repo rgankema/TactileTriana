@@ -41,12 +41,13 @@ public final class GlobalSettings {
     private static final List<Runnable> callbacks = new ArrayList<>();
     private static Properties properties;
     
-    public static int TICK_MINUTES = -1;                        // time in minutes that passes in the simulation with each tick
-    public static int SYSTEM_TICK_TIME = -1;                    // time between ticks in ms
+    public static int TICK_MINUTES = 5;                         // time in minutes that passes in the simulation with each tick
+    public static int SYSTEM_TICK_TIME = 200;                   // time between ticks in ms
     public static boolean UNCONTROLLABLE_LOAD_ENABLED = true;   // staat de uncontrolable load aan?
-    public static int HOUSE_FUSE_MAX_CURRENT = -1;              // max current before a fuse breaks
+    public static int HOUSE_FUSE_MAX_CURRENT = 3 * 35;          // max current before a fuse breaks
     public static boolean EXTENDED_PARAMETERS = false;          // whether the users have access to the full range of device parameters
-    public static TimeScenario TIME_SCENARIO = null;            // time scenario used by the simulation
+    public static TimeScenario TIME_SCENARIO                    // time scenario used by the simulation
+            = new TimeScenario(new TimeSpan(LocalDate.of(2014, 1, 1), LocalDate.of(2014, 12, 31)));;            
     public static int TOUCH_SCREEN_ID = 1;
     public static int DETAIL_SCREEN_ID = 1;
     public static boolean FULLSCREEN = true;
@@ -130,15 +131,11 @@ public final class GlobalSettings {
         if (!inRange(SYSTEM_TICK_TIME, 1, Integer.MAX_VALUE)) {
             SYSTEM_TICK_TIME = 200;
         }
-        if (TIME_SCENARIO != null) {
-            for (TimeSpan timeSpan : TIME_SCENARIO.getTimeSpans()) {
-                if (timeSpan.getStart().isBefore(LocalDate.of(2014, 1, 1)) || timeSpan.getEnd().isAfter(LocalDate.of(2014, 12, 31))) {
-                    TIME_SCENARIO = new TimeScenario(new TimeSpan(LocalDate.of(2014, 1, 1), LocalDate.of(2014, 12, 31)));
-                    break;
-                }
+        for (TimeSpan timeSpan : TIME_SCENARIO.getTimeSpans()) {
+            if (timeSpan.getStart().isBefore(LocalDate.of(2014, 1, 1)) || timeSpan.getEnd().isAfter(LocalDate.of(2014, 12, 31))) {
+                TIME_SCENARIO = new TimeScenario(new TimeSpan(LocalDate.of(2014, 1, 1), LocalDate.of(2014, 12, 31)));
+                break;
             }
-        } else {
-            TIME_SCENARIO = new TimeScenario(new TimeSpan(LocalDate.of(2014, 1, 1), LocalDate.of(2014, 12, 31)));
         }
         
         // Cannot validate screen ID's yet because the StageController needs to initalize first, which

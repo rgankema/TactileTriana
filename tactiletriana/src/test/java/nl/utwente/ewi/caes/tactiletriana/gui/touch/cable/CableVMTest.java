@@ -10,10 +10,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Cable;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -28,17 +25,6 @@ public class CableVMTest {
     private DoubleProperty cableMaxCurrent;
     private BooleanProperty cableBroken;
     
-    public CableVMTest() {
-    }
-    
-    @BeforeClass
-    public static void setUpClass() {
-    }
-    
-    @AfterClass
-    public static void tearDownClass() {
-    }
-    
     @Before
     public void setUp() {
         mockedCable = mock(Cable.class);
@@ -49,17 +35,11 @@ public class CableVMTest {
         when(mockedCable.maximumCurrentProperty()).thenReturn(cableMaxCurrent);
         when(mockedCable.brokenProperty()).thenReturn(cableBroken);
     }
-    
-    @After
-    public void tearDown() {
-    }
 
-    /**
-     * Test of loadProperty method, of class CableVM.
-     */
+    // LOAD PROPERTY
+    
     @Test
-    public void testLoadPropertyPositiveCurrent() {
-        System.out.println("loadPropertyPositiveCurrent");
+    public void testLoadProperty_PositiveCurrent() {
         CableVM instance = new CableVM(mockedCable);
         cableCurrent.set(2);
         cableMaxCurrent.set(10);
@@ -67,12 +47,8 @@ public class CableVMTest {
         assertEquals(0.2, instance.getLoad(), 0.01);
     }
     
-    /**
-     * Test of loadProperty method, of class CableVM.
-     */
     @Test
-    public void testLoadPropertyNegativeCurrent() {
-        System.out.println("loadPropertyNegativeCurrent");
+    public void testLoadProperty_NegativeCurrent() {
         CableVM instance = new CableVM(mockedCable);
         cableCurrent.set(-5);
         cableMaxCurrent.set(10);
@@ -80,12 +56,8 @@ public class CableVMTest {
         assertEquals(0.5, instance.getLoad(), 0.01);
     }
     
-    /**
-     * Test of loadProperty method, of class CableVM.
-     */
     @Test
-    public void testLoadPropertyMoreThanMaxCurrent() {
-        System.out.println("loadPropertyMoreThanMaxCurrent");
+    public void testLoadProperty_SetMoreThanMax_LoadCappedAt1() {
         CableVM instance = new CableVM(mockedCable);
         cableCurrent.set(15);
         cableMaxCurrent.set(10);
@@ -93,47 +65,34 @@ public class CableVMTest {
         assertEquals(1.0, instance.getLoad(), 0.01);
     }
 
-    /**
-     * Test of directionProperty method, of class CableVM.
-     */
+    // DIRECTION PROPERTY
+    
     @Test
-    public void testDirectionPropertyPositiveCurrent() {
-        System.out.println("directionPropertyPostiveCurrent");
+    public void testDirectionProperty_PositiveCurrent_DirectionIsEnd() {
         CableVM instance = new CableVM(mockedCable);
         cableCurrent.set(5);
         
         assertEquals(CableVM.Direction.END, instance.getDirection());
     }
     
-    /**
-     * Test of directionProperty method, of class CableVM.
-     */
     @Test
-    public void testDirectionPropertyNegativeCurrent() {
-        System.out.println("directionPropertyNegativeCurrent");
+    public void testDirectionProperty_NegativeCurrent_DirectionIsStart() {
         CableVM instance = new CableVM(mockedCable);
         cableCurrent.set(-5);
         
         assertEquals(CableVM.Direction.START, instance.getDirection());
     }
     
-    /**
-     * Test of directionProperty method, of class CableVM.
-     */
     @Test
-    public void testDirectionPropertyNoCurrent() {
-        System.out.println("directionPropertyNoCurrent");
+    public void testDirectionProperty_NoCurrent_DirectionIsNone() {
         CableVM instance = new CableVM(mockedCable);
         cableCurrent.set(0);
         
         assertEquals(CableVM.Direction.NONE, instance.getDirection());
     }
     
-    /**
-     * Test of directionProperty method, of class CableVM.
-     */
     @Test
-    public void testDirectionPropertyBroken() {
+    public void testDirectionProperty_CableBroken_DirectionIsNone() {
         System.out.println("directionPropertyNoCurrent");
         CableVM instance = new CableVM(mockedCable);
         cableCurrent.set(5);

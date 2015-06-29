@@ -15,12 +15,8 @@ import static org.junit.Assert.*;
  */
 public class SimulationTest {
     
-    /**
-     * Test of getTransformer method, of class Simulation.
-     */
     @Test
     public void testNetworkInitialization() {
-        System.out.println("networkInitialization");
         Simulation simulation = new Simulation();
         Transformer transformer = simulation.getTransformer();
         

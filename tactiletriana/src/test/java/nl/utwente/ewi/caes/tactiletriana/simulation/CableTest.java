@@ -5,6 +5,8 @@
  */
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
+import java.time.LocalDateTime;
+import javafx.beans.property.SimpleObjectProperty;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -25,114 +27,62 @@ public class CableTest {
     @Before
     public void setUp() {
         mockedSimulation = mock(Simulation.class);
+        when(mockedSimulation.currentTimeProperty()).thenReturn(new SimpleObjectProperty<>(LocalDateTime.of(2014, 1, 1, 1, 1)));
         mockedChildNode = mock(Node.class);
-        instance = new Cable(mockedChildNode, 100, 10, mockedSimulation);
-    }
-
-    /**
-     * Test of lengthProperty method, of class Cable.
-     */
-    @Test
-    public void testLengthProperty() {
-        System.out.println("lengthProperty");
-        
-        assertNotNull(instance.lengthProperty());
-        assertEquals(instance.lengthProperty().get(), LENGTH, 0.01);
+        instance = new Cable(mockedChildNode, MAX_CURRENT, LENGTH, mockedSimulation);
     }
     
+    // LENGTH PROPERTY
+    
     @Test
-    public void testLengthPropertyPositiveValue() {
-        System.out.println("lengthPropertyPositiveValue");
-        
+    public void testLengthProperty_SetPositive() {
         instance.lengthProperty().set(5);
         
         assertEquals(instance.lengthProperty().get(), 5, 0.01);
     }
     
     @Test(expected=IllegalArgumentException.class)
-    public void testLengthPropertyNotNegative() {
-        System.out.println("lengthPropertyNotNegative");
-        
+    public void testLengthProperty_SetNegative_ThrowsException() {
         instance.lengthProperty().set(-5);
     }
-
-    /**
-     * Test of currentProperty method, of class Cable.
-     */
+    
+    // CURRENT PROPERTY
+    
     @Test
-    public void testCurrentProperty() {
-        System.out.println("currentProperty");
+    public void testCurrentProperty_SetWithinRange() {
+        instance.setCurrent(MAX_CURRENT * 0.5);
+        instance.setCurrent(MAX_CURRENT * -0.5);
         
-        assertNotNull(instance.currentProperty());
-    }
-
-    /**
-     * Test of maximumCurrentProperty method, of class Cable.
-     */
-    @Test
-    public void testMaximumCurrentProperty() {
-        System.out.println("maximumCurrentProperty");
-        
-        assertNotNull(instance.maximumCurrentProperty());
-        assertEquals(instance.maximumCurrentProperty().get(), MAX_CURRENT, 0.01);
+        assertFalse(instance.isBroken());
     }
     
     @Test
-    public void testCurrentAboveMaxBreaksCable() {
-        System.out.println("currentAboveMaxBreaksCable");
-        
+    public void testCurrentProperty_SetAboveMax_BreaksCable() {
         instance.setCurrent(MAX_CURRENT * 2);
         
         assert(instance.isBroken());
     }
     
     @Test
-    public void testCurrentBelowAbsMaxBreaksCable() {
-        System.out.println("currentBelowAbsMaxsBreaksCable");
-        
+    public void testCurrentProperty_SetBelowAbsMax_BreaksCable() {
         instance.setCurrent(MAX_CURRENT * -2);
         
         assert(instance.isBroken());
     }
     
-    @Test
-    public void testCurrentWithinRangeIsOkay() {
-        System.out.println("currentWithinRangeIsOkay");
-        
-        instance.setCurrent(MAX_CURRENT * 0.5);
-        instance.setCurrent(MAX_CURRENT * -0.5);
-        
-        assertFalse(instance.isBroken());
-    }
-
-    /**
-     * Test of brokenProperty method, of class Cable.
-     */
-    @Test
-    public void testBrokenProperty() {
-        System.out.println("brokenProperty");
-        
-        assertNotNull(instance.brokenProperty());
-    }
+    // BROKEN
     
     @Test
-    public void testNoCurrentWhenBroken() {
-        System.out.println("noCurrentWhenBroken");
-        
+    public void testBrokenProperty_SetTrue_NoCurrent() {
         instance.setCurrent(10);
+        
         instance.setBroken(true);
         
         assertEquals(instance.getCurrent(), 0, 0.01);
     }
 
-    /**
-     * Test of repair method, of class Cable.
-     */
     @Test
-    public void testRepair() {
-        System.out.println("repair");
-        
-        //break cable
+    public void testRepair_BrokenIsFalse() {
         instance.setBroken(true);
         
         instance.repair();
@@ -140,37 +90,42 @@ public class CableTest {
         assertFalse(instance.isBroken());
     }
 
+    // TICK
     
     @Test
-    public void testTick() {
-        System.out.println("tick");
-        
+    public void testTick_TrueConnected_CallsChildNodeTickTrue() {
         instance.tick(true);
         
         verify(instance.getChildNode()).tick(true);
     }
     
     @Test
-    public void testTickBroken() {
-        System.out.println("tickBroken");
-        
+    public void testTick_FalseConnected_CallsChildNodeTickFalse() {
         instance.setBroken(true);
         instance.tick(true);
         
         verify(instance.getChildNode()).tick(false);
     }
     
-    /**
-     * Test of doForwardBackwardSweep method, of class Cable.
-     */
     @Test
-    public void testDoForwardBackwardSweep() {
-        System.out.println("doForwardBackwardSweep");
+    public void testPrepareForwardBackwardSweep_CallsChildNodePrepareForwardBackwardSweep() {
+        instance.prepareForwardBackwardSweep();
         
-        double v = 200;
-        when(mockedChildNode.doForwardBackwardSweep(v)).thenReturn(100.0);
+        verify(mockedChildNode).prepareForwardBackwardSweep();
+    }
+    
+    @Test
+    public void testDoForwardBackwardSweep_CallsChildNodeDoForwardBackwardSweep() {
+        instance.doForwardBackwardSweep(0);
         
-        assertEquals(100, instance.doForwardBackwardSweep(v), 0.01);
+        verify(mockedChildNode).doForwardBackwardSweep(0);
+    }
+    
+    @Test
+    public void testFinishForwardBackwardSweep_CallsChildNodeFinishForwardBackwardSweep() {
+        instance.finishForwardBackwardSweep();
+        
+        verify(mockedChildNode).finishForwardBackwardSweep();
     }
     
 }
