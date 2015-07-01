@@ -32,14 +32,14 @@ public class SimulationPredictionTest {
         pred = new SimulationPrediction(sim);
     }
     
-    // Haal weg als je wil testen, standaard ignoren omdat test lang duurt
+    @Ignore
     @Test
     public void EmptySimulationTest() throws InterruptedException{
         initializeSimulation();
         checkPredictionCorrect();
     }
     
-    // Haal weg als je wil testen, standaard ignoren omdat test lang duurt
+    @Ignore
     @Test
     public void SolarPanelTest() throws InterruptedException{
         initializeSimulation();
@@ -51,7 +51,7 @@ public class SimulationPredictionTest {
         
         checkPredictionCorrect();
     }
-    
+    @Ignore
      // Haal weg als je wil testen, standaard ignoren omdat test lang duurt
     @Test
     public void ElectricVehicle_SingleVehicle() throws InterruptedException{
@@ -71,7 +71,7 @@ public class SimulationPredictionTest {
         ev.setModel(ElectricVehicle.Model.BMW_I3);
         checkPredictionCorrect();
     }
-    
+    @Ignore
     @Test
     public void ElectricVehicle_TwoVehicles_DifferentHouses() throws InterruptedException{
         initializeSimulation();
@@ -88,6 +88,7 @@ public class SimulationPredictionTest {
         checkPredictionCorrect();
     }
     
+    @Ignore
     @Test
     public void ElectricVehicle_TreeVehicles_FuseBlown() throws InterruptedException{
         initializeSimulation();
@@ -117,6 +118,7 @@ public class SimulationPredictionTest {
         checkPredictionCorrect();
     }
     
+    @Ignore
     @Test
     public void ElectricVehicleTest_Full() throws InterruptedException{
         initializeSimulation();
