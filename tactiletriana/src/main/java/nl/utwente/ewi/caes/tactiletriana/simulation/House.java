@@ -17,8 +17,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 /**
- *
- * @author Richard
+ * House in the Simulation.
+ * 
  */
 public class House extends LoggingEntityBase {
 
@@ -29,6 +29,10 @@ public class House extends LoggingEntityBase {
 
     protected final SimulationBase simulation;
 
+    /**
+     * Creates a House object
+     * @param simulation the simulation of which this house is part.
+     */
     public House(SimulationBase simulation) {
         super("House", UnitOfMeasurement.POWER);
 
@@ -84,14 +88,26 @@ public class House extends LoggingEntityBase {
         }
     };
 
+    /**
+     * Returns the current consumption (in watt) property of this house.
+     * @return the current consumption of this house.
+     */
     public ReadOnlyDoubleProperty currentConsumptionProperty() {
         return currentConsumption.getReadOnlyProperty();
     }
 
+    /**
+     * Returns the current consumption (in watt) property of this house.
+     * @return the current consumption of this house.
+     */
     public final double getCurrentConsumption() {
         return currentConsumptionProperty().get();
     }
 
+    /**
+     * Set the current consumption (in watt)
+     * @param value consumption (in watt)
+     */
     protected final void setCurrentConsumption(double value) {
         this.currentConsumption.set(value);
     }
@@ -102,10 +118,18 @@ public class House extends LoggingEntityBase {
      */
     private final ReadOnlyDoubleWrapper maximumConsumption = new ReadOnlyDoubleWrapper(230 * GlobalSettings.HOUSE_FUSE_MAX_CURRENT);
 
+    /**
+     * Returns the maximum consumption property (in watt). If the current consumption exceeds this value, the fuse will be blown.
+     * @return maximum consumption property (in watt)
+     */
     public ReadOnlyDoubleProperty maximumConsumptionProperty() {
         return maximumConsumption;
     }
 
+    /**
+     * Returns the maximum consumption (in watt). If the current consumption exceeds this value, the fuse will be blown.
+     * @return maximum consumption (in watt)
+     */
     public final double getMaximumConsumption() {
         return maximumConsumptionProperty().get();
     }
@@ -115,14 +139,30 @@ public class House extends LoggingEntityBase {
      */
     private final ReadOnlyBooleanWrapper fuseBlown = new ReadOnlyBooleanWrapper(false);
 
+    
+    /**
+     * Returns the fuseBlown property. If the currentConsumption exceeds the maximumConsumption the fuse will be blown. 
+     * All the devices will get the state DeviceBase.State.DISCONNECTED (in the next tick) when the fuse is blown.
+     * @return fuseBlown property
+     */
     public ReadOnlyBooleanProperty fuseBlownProperty() {
         return fuseBlown.getReadOnlyProperty();
     }
+    
+    /**
+     * Returns whether the fuse is blown. If the currentConsumption exceeds the maximumConsumption the fuse will be blown. 
+     * All the devices will get the state DeviceBase.State.DISCONNECTED (in the next tick) when the fuse is blown.
+     * @return fuseBlown property
+     */
 
     public final boolean isFuseBlown() {
         return fuseBlownProperty().get();
     }
 
+    /**
+     * Sets the fuseBlown value.
+     * @param fuseBlown 
+     */
     protected final void setFuseBlown(boolean fuseBlown) {
         this.fuseBlown.set(fuseBlown);
     }
@@ -135,6 +175,10 @@ public class House extends LoggingEntityBase {
         fuseBlown.set(false);
     }
 
+    /**
+     * Calculates the currentConsumption for this House and calls the tick() on all its devices.
+     * @param connected is there a cable broken in the tree before this house?
+     */
     public void tick(boolean connected) {
         if (isFuseBlown()) {
             connected = false;
@@ -149,6 +193,11 @@ public class House extends LoggingEntityBase {
         log(simulation.getCurrentTime(), getCurrentConsumption());
     }
 
+    /**
+     * Creates a string representation of this House.
+     * @param indentation the lavel of indentation in the tree.
+     * @return the string representation of this House.
+     */
     public String toString(int indentation) {
         String output = "";
         for (int i = 0; i < indentation; i++) {

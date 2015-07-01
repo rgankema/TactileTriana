@@ -11,8 +11,7 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 
 /**
- *
- * @author Richard
+ * Node in the Simulation. Can be connected to a House and / or Cables
  */
 public class Node extends LoggingEntityBase {
 
@@ -21,6 +20,11 @@ public class Node extends LoggingEntityBase {
 
     protected SimulationBase simulation;
 
+    /**
+     * Creates a Node object connected to a Houses.
+     * @param house House attached to this Node
+     * @param simulation the Simulation this Node is simulated in
+     */
     public Node(House house, SimulationBase simulation) {
         super("Node", UnitOfMeasurement.VOLTAGE);
 
@@ -28,6 +32,22 @@ public class Node extends LoggingEntityBase {
         this.cables = new ArrayList<>();
         this.house = house;
     }
+
+    /**
+     * Create a Node
+     * @param simulation the Simulation this Node is simulated in
+     */
+    public Node(SimulationBase simulation) {
+        super("Node", UnitOfMeasurement.VOLTAGE);
+
+        this.simulation = simulation;
+        this.cables = new ArrayList<>();
+    }
+    
+    /**
+     * Sets the house of this node
+     * @param house house of this node
+     */
 
     public void setHouse(House house) {
         this.house = house;
@@ -37,14 +57,26 @@ public class Node extends LoggingEntityBase {
      */
     private final ReadOnlyDoubleWrapper voltage = new ReadOnlyDoubleWrapper(230.0);
 
+    /**
+     * 
+     * @return voltage property on this Node (in V)
+     */
     public ReadOnlyDoubleProperty voltageProperty() {
         return voltage.getReadOnlyProperty();
     }
 
+    /**
+     * 
+     * @return voltage on this Node (in V)
+     */
     public final double getVoltage() {
         return voltageProperty().get();
     }
 
+    /**
+     * Sets voltage on this Node
+     * @param voltage voltage on this Node (in V)
+     */
     protected void setVoltage(double voltage) {
         this.voltage.set(voltage);
     }
@@ -66,7 +98,7 @@ public class Node extends LoggingEntityBase {
     }
 
     /**
-     *
+     * Tick 
      * @param connected whether this Node is connected to the root of the
      * network
      */
