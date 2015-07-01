@@ -20,7 +20,7 @@ public class EventUtil {
 
     /**
      * Adds a handler for when a Node is pressed for a short duration and for
-     * when its pressed for a longer (>700ms) duration. The longHandler is not
+     * when its pressed for a longer (bigger than 700ms) duration. The longHandler is not
      * called when a long press is part of a drag operation.
      *
      * @param <T> The type of the Node

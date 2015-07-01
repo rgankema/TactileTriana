@@ -32,14 +32,14 @@ public class SimulationPredictionTest {
         pred = new SimulationPrediction(sim);
     }
     
-    @Ignore // Haal weg als je wil testen, standaard ignoren omdat test lang duurt
+    // Haal weg als je wil testen, standaard ignoren omdat test lang duurt
     @Test
     public void EmptySimulationTest() throws InterruptedException{
         initializeSimulation();
         checkPredictionCorrect();
     }
     
-    @Ignore // Haal weg als je wil testen, standaard ignoren omdat test lang duurt
+    // Haal weg als je wil testen, standaard ignoren omdat test lang duurt
     @Test
     public void SolarPanelTest() throws InterruptedException{
         initializeSimulation();
@@ -52,7 +52,7 @@ public class SimulationPredictionTest {
         checkPredictionCorrect();
     }
     
-    @Ignore // Haal weg als je wil testen, standaard ignoren omdat test lang duurt
+     // Haal weg als je wil testen, standaard ignoren omdat test lang duurt
     @Test
     public void ElectricVehicle_SingleVehicle() throws InterruptedException{
         initializeSimulation();
@@ -61,7 +61,6 @@ public class SimulationPredictionTest {
         checkPredictionCorrect();
     }
     
-    @Ignore
     @Test
     public void ElectricVehicle_SingleVehicle_ChangeModel() throws InterruptedException{
         initializeSimulation();
@@ -73,7 +72,6 @@ public class SimulationPredictionTest {
         checkPredictionCorrect();
     }
     
-    @Ignore
     @Test
     public void ElectricVehicle_TwoVehicles_DifferentHouses() throws InterruptedException{
         initializeSimulation();
@@ -90,7 +88,6 @@ public class SimulationPredictionTest {
         checkPredictionCorrect();
     }
     
-    @Ignore
     @Test
     public void ElectricVehicle_TreeVehicles_FuseBlown() throws InterruptedException{
         initializeSimulation();
@@ -120,7 +117,6 @@ public class SimulationPredictionTest {
         checkPredictionCorrect();
     }
     
-    @Ignore
     @Test
     public void ElectricVehicleTest_Full() throws InterruptedException{
         initializeSimulation();
@@ -182,7 +178,7 @@ public class SimulationPredictionTest {
             sim.tick();
             
             // let the parallel test do its work
-            Thread.sleep(50);
+            Thread.sleep(100);
             
             Float simValue = findValueForTime(sim.getLog(), sim.getCurrentTime().minusMinutes(GlobalSettings.TICK_MINUTES));
             Float predValue = findValueForTime(pred.getLog(), sim.getCurrentTime().minusMinutes(GlobalSettings.TICK_MINUTES));
