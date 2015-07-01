@@ -73,6 +73,10 @@ public final class TimeScenario {
     }
 
     // PROPERTIES
+    /**
+     * 
+     * @return TimeSpans in this Scenario
+     */
     public List<TimeSpan> getTimeSpans() {
         return timeSpans;
     }
@@ -86,6 +90,9 @@ public final class TimeScenario {
     }
 
     // METHODS
+    /**
+     * Resets the current time to the beginning of this Scenario
+     */
     public void reset() {
         currentTime = LocalDateTime.of(timeSpans.get(0).start, LocalTime.MIN);
     }

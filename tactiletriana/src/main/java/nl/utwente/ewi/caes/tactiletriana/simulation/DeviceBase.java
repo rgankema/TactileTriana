@@ -91,21 +91,25 @@ public abstract class DeviceBase extends LoggingEntityBase {
         return currentConsumption.getReadOnlyProperty();
     }
 
+    /**
+     * The current consumption of this device (in watt).
+     * @return 
+     */
     public final double getCurrentConsumption() {
         return currentConsumptionProperty().get();
     }
 
     /**
-     * Sets the consumption of this device at the current time of the Simulation.
+     * Sets the consumption of this device (in watt) at the current time of the Simulation.
      * @param value 
      */
     public final void setCurrentConsumption(double value) {
         currentConsumption.set(value);
     }
-
     /**
      * The house that hosts this device
      */
+    
     private final ReadOnlyObjectWrapper<House> parentHouse = new ReadOnlyObjectWrapper<House>() {
         @Override
         public void set(House value) {
@@ -115,14 +119,17 @@ public abstract class DeviceBase extends LoggingEntityBase {
             super.set(value);
         }
     };
-
+    /**
+     * The house that hosts this device property.
+     * @return House that hosts this device property.
+     */
     public ReadOnlyObjectProperty<House> parentHouseProperty() {
         return parentHouse.getReadOnlyProperty();
     }
 
     /**
-     * 
-     * @return the house of which this device is part.
+     * The house that hosts this device.
+     * @return House that hosts this device.
      */
     public House getParentHouse() {
         return parentHouse.get();
@@ -130,7 +137,7 @@ public abstract class DeviceBase extends LoggingEntityBase {
 
     /**
      * Sets the house of this device
-     * @param house 
+     * @param house House that hosts this device
      */
     void setParentHouse(House house) {
         parentHouse.set(house);
@@ -150,10 +157,18 @@ public abstract class DeviceBase extends LoggingEntityBase {
         }
     };
 
+    /**
+     * Returns the State property of this device
+     * @return state of the device
+     */
     public ReadOnlyObjectProperty<State> stateProperty() {
         return this.state.getReadOnlyProperty();
     }
 
+    /**
+     * Returns the State of this device
+     * @return state of the device
+     */
     public final State getState() {
         return stateProperty().get();
     }

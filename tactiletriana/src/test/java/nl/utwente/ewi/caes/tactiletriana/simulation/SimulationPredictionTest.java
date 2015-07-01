@@ -54,7 +54,75 @@ public class SimulationPredictionTest {
     
     @Ignore // Haal weg als je wil testen, standaard ignoren omdat test lang duurt
     @Test
-    public void ElectricVehicleTest() throws InterruptedException{
+    public void ElectricVehicle_SingleVehicle() throws InterruptedException{
+        initializeSimulation();
+        ElectricVehicle ev = new ElectricVehicle(sim);
+        sim.houses[0].getDevices().add(ev);
+        checkPredictionCorrect();
+    }
+    
+    @Ignore
+    @Test
+    public void ElectricVehicle_SingleVehicle_ChangeModel() throws InterruptedException{
+        initializeSimulation();
+        ElectricVehicle ev = new ElectricVehicle(sim);
+        ev.setModel(ElectricVehicle.Model.TESLA_MODEL_S);
+        sim.houses[0].getDevices().add(ev);
+        checkPredictionCorrect();
+        ev.setModel(ElectricVehicle.Model.BMW_I3);
+        checkPredictionCorrect();
+    }
+    
+    @Ignore
+    @Test
+    public void ElectricVehicle_TwoVehicles_DifferentHouses() throws InterruptedException{
+        initializeSimulation();
+        
+        ElectricVehicle ev = new ElectricVehicle(sim);
+        ev.setModel(ElectricVehicle.Model.TESLA_MODEL_S);
+        sim.houses[0].getDevices().add(ev);
+        
+        
+        ElectricVehicle ev2 = new ElectricVehicle(sim);
+        ev.setModel(ElectricVehicle.Model.TESLA_MODEL_S);
+        sim.houses[1].getDevices().add(ev2);
+        
+        checkPredictionCorrect();
+    }
+    
+    @Ignore
+    @Test
+    public void ElectricVehicle_TreeVehicles_FuseBlown() throws InterruptedException{
+        initializeSimulation();
+        
+        ElectricVehicle ev = new ElectricVehicle(sim);
+        ev.setModel(ElectricVehicle.Model.TESLA_MODEL_S);
+        sim.houses[0].getDevices().add(ev);
+        
+        
+        ElectricVehicle ev2 = new ElectricVehicle(sim);
+        ev.setModel(ElectricVehicle.Model.TESLA_MODEL_S);
+        sim.houses[0].getDevices().add(ev2);
+        
+        ElectricVehicle ev3 = new ElectricVehicle(sim);
+        ev.setModel(ElectricVehicle.Model.TESLA_MODEL_S);
+        sim.houses[0].getDevices().add(ev2);
+        
+        checkPredictionCorrect();
+        
+        assertTrue(sim.houses[0].isFuseBlown());
+        
+        sim.houses[0].getDevices().remove(ev2);
+        sim.houses[0].getDevices().remove(ev3);
+        checkPredictionCorrect();
+        
+        repairFuses();
+        checkPredictionCorrect();
+    }
+    
+    @Ignore
+    @Test
+    public void ElectricVehicleTest_Full() throws InterruptedException{
         initializeSimulation();
         
         ElectricVehicle ev = new ElectricVehicle(sim);
@@ -114,7 +182,7 @@ public class SimulationPredictionTest {
             sim.tick();
             
             // let the parallel test do its work
-            Thread.sleep(10);
+            Thread.sleep(50);
             
             Float simValue = findValueForTime(sim.getLog(), sim.getCurrentTime().minusMinutes(GlobalSettings.TICK_MINUTES));
             Float predValue = findValueForTime(pred.getLog(), sim.getCurrentTime().minusMinutes(GlobalSettings.TICK_MINUTES));

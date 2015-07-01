@@ -39,6 +39,9 @@ public abstract class SimulationBase extends LoggingEntityBase {
     private final Map<Node, Double> lastVoltageByNode;
 
     // CONSTRUCTOR
+    /**
+     * Creates a SimulationBase with the Transformer, Node, Cable and Houses in a tree.
+     */
     public SimulationBase() {
         super("Network", UnitOfMeasurement.POWER);
 
@@ -63,7 +66,7 @@ public abstract class SimulationBase extends LoggingEntityBase {
             }
 
             this.houseNodes[i] = new Node(houses[i], this);
-            this.internalNodes[i] = new Node(null, this);
+            this.internalNodes[i] = new Node(this);
             this.houseCables[i] = new Cable(houseNodes[i], 110, 5, this);
             this.internalNodes[i].getCables().add(houseCables[i]);
 
@@ -85,14 +88,25 @@ public abstract class SimulationBase extends LoggingEntityBase {
      */
     private final ReadOnlyObjectWrapper<LocalDateTime> currentTime = new ReadOnlyObjectWrapper<>();
 
+    /**
+     * 
+     * @return current Time in this Simulation.
+     */
     public ReadOnlyObjectProperty<LocalDateTime> currentTimeProperty() {
         return currentTime.getReadOnlyProperty();
     }
 
+    /**
+     * 
+     * @return current Time in this Simulation.
+     */
     public final LocalDateTime getCurrentTime() {
         return currentTimeProperty().get();
     }
-
+    /**
+     * 
+     * @param time current Time in this Simulation.
+     */
     protected final void setCurrentTime(LocalDateTime time) {
         currentTime.set(time);
     }
@@ -206,7 +220,11 @@ public abstract class SimulationBase extends LoggingEntityBase {
         transformer.finishForwardBackwardSweep();
     }
 
-    // Calculate if the FBS algorithm has converged. 
+    /**
+     * Calculate if the FBS algorithm has converged. 
+     * @param error the accepted error between to iterations of the algorithm
+     * @return if the ForwardBackwardSweep has converged
+     */
     private boolean hasFBSConverged(double error) {
         boolean result = true;
 

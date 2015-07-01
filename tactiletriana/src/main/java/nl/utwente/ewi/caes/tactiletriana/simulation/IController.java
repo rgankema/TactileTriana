@@ -22,17 +22,20 @@ public interface IController {
      * plans.
      * @param time Simulation time at which will be recorded as the time the
      * plannings where last updated.
-     * @return
+     * @return if new planning has been received.
      */
     public boolean retrievePlanning(int timeout, LocalDateTime time);
 
     /**
-     * Returns the time the plannings where last updated.
-     *
-     * @return
+     * Returns the time the planning was last updated.
+     * @return the time the palling was last updated
      */
     public LocalDateTime lastPlanningTime();
 
+    /**
+     * Returns the time when the last submit planning request has been sent.
+     * @return time the last submit planning request.
+     */
     public LocalDateTime lastRequestedPlanningTime();
 
 }

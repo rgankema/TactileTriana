@@ -98,7 +98,7 @@ public class Cable extends LoggingEntityBase {
     }
 
     /**
-     * Sets the current over this cable.
+     * Sets the current (in A) over this cable.
      * @param value 
      */
     protected final void setCurrent(double value) {
@@ -106,7 +106,7 @@ public class Cable extends LoggingEntityBase {
     }
 
     /**
-     * The absolute maximum current that can flow through the cable before it
+     * The absolute maximum current (in A) that can flow through the cable before it
      * breaks;
      */
     private final ReadOnlyDoubleWrapper maximumCurrent = new ReadOnlyDoubleWrapper(100d);
@@ -120,7 +120,7 @@ public class Cable extends LoggingEntityBase {
     }
 
     /**
-     * Sets the maximum current allowed over this cable. If the current over this cable is higher than the maximumCurrent value. The isBroken() property becomes true.
+     * Sets the maximum current (in A) allowed over this cable. If the current over this cable is higher than the maximumCurrent value. The isBroken() property becomes true.
      * @param maximumCurrent 
      */
     protected final void setMaximumCurrent(double maximumCurrent) {
