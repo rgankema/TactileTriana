@@ -22,7 +22,7 @@ import javafx.collections.ObservableMap;
 import org.json.simple.JSONObject;
 
 /**
- *
+ * Superclass of any Device in the Simulation
  * @author Richard
  */
 public abstract class DeviceBase extends LoggingEntityBase {

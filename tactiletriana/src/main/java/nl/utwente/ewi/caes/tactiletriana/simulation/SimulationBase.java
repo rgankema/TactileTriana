@@ -18,7 +18,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.data.WeatherData;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.UncontrollableLoad;
 
 /**
- *
+ * Superclass of both the Simulation and the SimulationPrediction.
  * @author Richard
  */
 public abstract class SimulationBase extends LoggingEntityBase {

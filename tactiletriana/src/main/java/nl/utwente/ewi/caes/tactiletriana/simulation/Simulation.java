@@ -23,8 +23,7 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.devices.TimeShiftableBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.UncontrollableLoad;
 
 /**
- *
- * @author Richard
+ * The Simulation, this class has a Transformator, Nodes, Cables and Houses connected via a tree starting at the Transformator.
  */
 public class Simulation extends SimulationBase {
 

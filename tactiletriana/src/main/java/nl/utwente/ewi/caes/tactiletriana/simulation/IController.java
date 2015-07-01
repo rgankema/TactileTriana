@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
+ * TODO: Jan Harm
  *
- * @author Richard
  */
 public interface IController {
 

@@ -17,8 +17,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 /**
- *
- * @author Richard
+ * House in the Simulation.
+ * 
  */
 public class House extends LoggingEntityBase {
 

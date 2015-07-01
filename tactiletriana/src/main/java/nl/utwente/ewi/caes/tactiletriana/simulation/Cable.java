@@ -13,7 +13,7 @@ import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.SimpleDoubleProperty;
 
 /**
- * A connection between to nodes
+ * A connection between two Nodes.
  */
 public class Cable extends LoggingEntityBase {
 

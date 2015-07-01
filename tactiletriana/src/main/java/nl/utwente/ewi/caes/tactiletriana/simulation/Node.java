@@ -11,8 +11,7 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 
 /**
- *
- * @author Richard
+ * Node in the Simulation. Can be connected to a House and / or Cables
  */
 public class Node extends LoggingEntityBase {
 

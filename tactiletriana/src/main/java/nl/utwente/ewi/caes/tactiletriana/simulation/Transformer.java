@@ -6,8 +6,7 @@
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
 /**
- *
- * @author Richard
+ * The Transformer of the grid.
  */
 public class Transformer extends Node {
 
