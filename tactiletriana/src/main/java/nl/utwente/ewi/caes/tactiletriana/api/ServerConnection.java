@@ -745,9 +745,7 @@ public class ServerConnection implements Runnable, IController {
 
     /**
      * This method updates the planning. The (@code time} argument is used to
-     * record the last time the planning was updated. The {
-     *
-     * @codetimeout} parameter specifies how long the retrieval of the planning
+     * record the last time the planning was updated. The {@code timeout} parameter specifies how long the retrieval of the planning
      * may take.
      *
      * @param timeout Timeout in 100 millisecond units
