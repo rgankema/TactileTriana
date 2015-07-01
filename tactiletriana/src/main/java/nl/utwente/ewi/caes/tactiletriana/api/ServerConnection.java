@@ -25,6 +25,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import nl.utwente.ewi.caes.tactiletriana.Concurrent;
+import nl.utwente.ewi.caes.tactiletriana.api.Util.*;
 
 /**
  *
@@ -36,59 +37,7 @@ import nl.utwente.ewi.caes.tactiletriana.Concurrent;
  */
 public class ServerConnection implements Runnable, IController {
 
-    public enum ClientState {
-
-        CONNECTED,
-        DISCONNECTED,
-        CONTROL,
-        WAITING,
-    }
-
-    public enum ClientError {
-
-        INVALID_CATEGORY("Invalid message category specified."),
-        INVALID_TYPE("Invalid message type specified."),
-        INVALID_DATATYPE("Invalid data type encountered in JSON message."),
-        UNKNOWN_TYPE("Unknown message type."),
-        UNKNOWN_CATEGORY("Unknown message category"),
-        TYPENOTACCEPTED("Message type not accepted."),
-        INVALID_DATA("Data field not accepted.");
-
-        private final String errorMessage;
-
-        ClientError(String m) {
-            this.errorMessage = m;
-        }
-
-        public String errorMessage() {
-            return this.errorMessage;
-        }
-    }
-
-    public enum MessageType {
-
-        STARTSIMULATION("StartSimulation"),
-        RESETSIMULATION("ResetSimulation"),
-        SIMULATIONINFO("SimulationInfo"),
-        DEVICEPARAMETERS("DeviceParameters"),
-        GETHOUSES("GetHouses"),
-        SUBMITPLANNING("SubmitPlanning"),
-        REQUESTCONTROL("RequestControl"),
-        RELEASECONTROL("ReleaseControl"),
-        SIMTIME("SimTime"),
-        STOPSIMULATION("StopSimulation");
-
-        private final String type;
-
-        MessageType(String type) {
-            this.type = type;
-        }
-
-        @Override
-        public String toString() {
-            return this.type;
-        }
-    }
+    
 
     Socket socket = null;
     APIServer server = null;

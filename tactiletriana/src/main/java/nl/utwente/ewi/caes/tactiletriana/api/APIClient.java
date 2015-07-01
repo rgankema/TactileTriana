@@ -8,6 +8,7 @@ package nl.utwente.ewi.caes.tactiletriana.api;
 import java.io.*;
 import java.net.*;
 import java.util.concurrent.locks.ReentrantLock;
+import nl.utwente.ewi.caes.tactiletriana.api.Util.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -19,60 +20,7 @@ import org.json.simple.parser.ParseException;
  */
 public class APIClient implements Runnable {
     
-        public enum ClientError {
-
-        INVALID_CATEGORY("Invalid message category specified."),
-        INVALID_TYPE("Invalid message type specified."),
-        INVALID_DATATYPE("Invalid data type encountered in JSON message."),
-        UNKNOWN_TYPE("Unknown message type."),
-        UNKNOWN_CATEGORY("Unknown message category"),
-        TYPENOTACCEPTED("Message type not accepted."),
-        INVALID_DATA("Data field not accepted.");
-
-        private final String errorMessage;
-
-        ClientError(String m) {
-            this.errorMessage = m;
-        }
-
-        public String errorMessage() {
-            return this.errorMessage;
-        }
-    }
         
-    public enum ClientState {
-
-        CONNECTED,
-        DISCONNECTED,
-        CONTROL,
-        WAITING,
-    }
-
-    public enum MessageType {
-
-        STARTSIMULATION("StartSimulation"),
-        RESETSIMULATION("ResetSimulation"),
-        SIMULATIONINFO("SimulationInfo"),
-        DEVICEPARAMETERS("DeviceParameters"),
-        GETHOUSES("GetHouses"),
-        SUBMITPLANNING("SubmitPlanning"),
-        REQUESTCONTROL("RequestControl"),
-        RELEASECONTROL("ReleaseControl"),
-        SIMTIME("SimTime"),
-        STOPSIMULATION("StopSimulation"),
-        REQUESTPLANNING("RequestPlanning");
-
-        private final String type;
-
-        MessageType(String type) {
-            this.type = type;
-        }
-
-        @Override
-        public String toString() {
-            return this.type;
-        }
-    }
     
     
     
@@ -291,33 +239,7 @@ public class APIClient implements Runnable {
         return this.state;
     }
     
-    public boolean getControl() {
-        boolean result = false;
-        lock.lock();
-        try {
-            log("GetControl called...");
-            
-            JSONObject request = new JSONObject();
-            request.put("category", "request");
-            request.put("type", MessageType.REQUESTCONTROL.toString());
-            sendMessage(request.toJSONString());
-            log("getControl calls getResponse...");
-            JSONObject response = getResponse(1000);
-            try {
-                if(response != null && ((Boolean)response.get("success")) == true) {
-                    this.state = ClientState.CONNECTED;
-                    result = true;
-                } else {
-                    log("RequestControl failed, did not receive response.");
-                }
-            } catch (ClassCastException e) {
-
-            }
-        } finally {
-            lock.unlock();
-        }
-        return result;
-    }
+    
     
     /**
      * 
@@ -326,6 +248,7 @@ public class APIClient implements Runnable {
      * @return JSONObject containing the response, null if no response was received within the timeout 
      */
     public JSONObject getResponse(int timeout) {
+        //Get the communication lock, if a calling function already has this lock it will go fine (usually the case in a request/reponse combination)
         lock.lock();
         JSONObject response = null;
         
@@ -434,6 +357,165 @@ public class APIClient implements Runnable {
     }
     
     
+    /* Request functions */
+    
+    /**
+     * Requests control of the simulation. Sets the Client state accordingly.
+     * 
+     * @return boolean - true if successful, false otherwise 
+     */
+    public boolean getControl() {
+        boolean result = false;
+        //Get the communication lock to avoid interference with possible SubmitPLanning Requests.
+        lock.lock();
+        try {
+            
+            
+            JSONObject request = new JSONObject();
+            request.put("category", "request");
+            request.put("type", MessageType.REQUESTCONTROL.toString());
+            sendMessage(request.toJSONString());
+            
+            JSONObject response = getResponse(1000);
+            try {
+                if(response != null && ((Boolean)response.get("success")) == true) {
+                    this.state = ClientState.CONTROL;
+                    result = true;
+                } else {
+                    log("RequestControl failed, did not receive response.");
+                }
+            } catch (ClassCastException e) {
+
+            }
+        } finally {
+            lock.unlock();
+        }
+        return result;
+    }
+    
+    /** 
+     * Releases control of the simulation, sets the Client state accordingly.
+     * 
+     * @return boolean - true if the request succeeded or if the client not in the Control state, false otherwise 
+     */
+    public boolean releaseControl() {
+        boolean result = false;
+        
+        if (this.state != ClientState.CONTROL) {
+            result = true;
+        } else {
+            
+            //Get the communication lock to avoid interference with possible SubmitPLanning Requests.
+            lock.lock();
+
+
+            try {
+                
+
+                JSONObject request = new JSONObject();
+                request.put("category", "request");
+                request.put("type", MessageType.RELEASECONTROL.toString());
+                sendMessage(request.toJSONString());
+                
+                JSONObject response = getResponse(1000);
+                try {
+                    if(response != null && ((Boolean)response.get("success")) == true) {
+                        this.state = ClientState.CONNECTED;
+                        result = true;
+                    } else {
+                        log("ReleaseControl failed, did not receive response.");
+                    }
+                } catch (ClassCastException e) {
+
+                }
+            } finally {
+                lock.unlock();
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Send a request and return a response. 
+     * This function will take over the communication channel (lock), and waits for the response after the request is made.
+     * 
+     * @param messageType - type of the message, see the API documentation and the Util class
+     * @return JSONObject containing the response, or null if no (timely) response was received 
+     */
+    public JSONObject genericRequest(String messageType) {
+        //Get the communications lock
+        JSONObject result = null;        
+        lock.lock();
+        try {
+            JSONObject request = new JSONObject();
+            request.put("category", "request");
+            request.put("type", messageType);
+            sendMessage(request.toJSONString());
+
+            result = getResponse(1000);
+        } finally {
+            lock.unlock();
+        }
+        return result;
+    }
+    
+    public boolean responseSuccess(JSONObject response) {
+        boolean result = false;
+        try {
+            if(response != null && ((Boolean)response.get("success")) == true) {
+                result = true;
+            }
+        } catch (ClassCastException e) {
+
+        }
+        
+        return result;
+    }
+    
+    
+    
+    
+    /*Test functions*/
+    
+    /**
+     * Tests basic simulation controls. Assumes the simulation is initially running.
+     * 
+     * @return 
+     */
+    public boolean testSimulationControl() {
+        boolean result = true;
+        
+        //First request control
+        result = getControl();
+        //Only continue if the client has control
+        if(result) {
+            
+            //Stop the simulation, it is assumed to be running
+            JSONObject response = genericRequest(MessageType.STOPSIMULATION.toString());
+            if(!(response != null && responseSuccess(response))){
+                result = false;
+            }
+            
+            //Start it again
+            response = genericRequest(MessageType.STARTSIMULATION.toString());
+            if(!(response != null && responseSuccess(response))){
+                result = false;
+            }
+            
+            //And leave it stopped
+            response = genericRequest(MessageType.STOPSIMULATION.toString());
+            if(!(response != null && responseSuccess(response))){
+                result = false;
+            }    
+            
+        }
+        
+        
+        return result;
+    }
+    
+    
     /**
      *
      * @param args
@@ -447,8 +529,8 @@ public class APIClient implements Runnable {
             System.out.println("Waiting for connection to server.....");
             Thread.sleep(1000);
         }
-        System.out.println("Send request control...");
-        System.out.println("Result: " + client.getControl());
+        System.out.println("Test Simulation control functions...");
+        System.out.println("Result: " + client.testSimulationControl());
         
     }
     
