@@ -28,6 +28,10 @@ import nl.utwente.ewi.caes.tactiletriana.Concurrent;
 
 /**
  *
+ * Most methods of this class are synchronized. The reason for this is that the communication should follow a request/response scheme.
+ * While a ServerConnection processes a client request, it should not be possible to simultaneously send a SubmitPlanning to the client.
+ * Because then the client expects a response and gets a request.
+ * 
  * @author jd
  */
 public class ServerConnection implements Runnable, IController {
@@ -117,6 +121,7 @@ public class ServerConnection implements Runnable, IController {
      */
     public synchronized void sendMessage(String s) {
         try {
+            log("Sending message: " + s);
             out.write(s + "\n");
             out.flush();
 
@@ -224,7 +229,7 @@ public class ServerConnection implements Runnable, IController {
      */
     @Override
     public void run() {
-
+        
         try {
             createStreams();
         } catch (IOException ex) {
@@ -262,14 +267,14 @@ public class ServerConnection implements Runnable, IController {
      *
      * @param message the JSON formatted String containing the message.
      */
-    public void processRequest(String message) {
+    public synchronized void processRequest(String message) {
         JSONParser parser = new JSONParser();
         try {
             Object e = parser.parse(message);
             //check if the message was a JSON object 
-            if (!message.startsWith("{")) {
-                //Invalid message
-            }
+            //if (!message.startsWith("{")) {
+            //    //Invalid message
+            //}
             JSONObject json = (JSONObject) e;
 
             String error = null;
@@ -438,11 +443,11 @@ public class ServerConnection implements Runnable, IController {
 
         } catch (ParseException e) {
             this.sendMessage("{\"success\" : false, \"error\" : \"Invalid JSON request received.\"}");
-            log("Invalid message received.");
+            log("Invalid message received: " + message);
 
         } catch (ClassCastException e) {
             this.sendMessage("{\"success\" : false, \"error\" : \"Invalid JSON request received.\"}");
-            log("Invalid message received.");
+            log("Invalid message received: " + message);
         }
     }
 
@@ -746,9 +751,7 @@ public class ServerConnection implements Runnable, IController {
     /**
      * This method updates the planning. The (@code time} argument is used to
      * record the last time the planning was updated. The {
-     *
-     * @codetimeout} parameter specifies how long the retrieval of the planning
-     * may take.
+     * 
      *
      * @param timeout Timeout in 100 millisecond units
      * @param time
