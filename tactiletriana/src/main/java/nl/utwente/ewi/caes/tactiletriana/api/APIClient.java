@@ -32,7 +32,10 @@ public class APIClient implements Runnable {
     private BufferedReader in;
     private BufferedWriter out;
     private ClientState state;
-    //Methods listening to the socket use this lock    
+    //Methods listening to the socket use this lock  
+    //A ReentrantLock (created with a constructor parameter) respects the order in which the lock() calls are made, 
+    //and grants the lock to longest waiting lock if there are multiple contenders.
+    //Normal synchronized methods do not.
     private final ReentrantLock lock;
     
     
@@ -503,12 +506,51 @@ public class APIClient implements Runnable {
                 result = false;
             }
             
-            //And leave it stopped
-            response = genericRequest(MessageType.STOPSIMULATION.toString());
-            if(!(response != null && responseSuccess(response))){
-                result = false;
-            }    
             
+            if(!releaseControl()) {
+                result = false;
+            }   
+            
+        }
+        
+        
+        
+        return result;
+    }
+    
+    /**
+     * Tests the SimulationInfo and SimTime requests.
+     * 
+     * 
+     * @return 
+     */
+    public boolean testSimulationInfo() {
+        boolean result = true;
+        
+        //SimulationInfo request
+        JSONObject response = genericRequest(MessageType.SIMULATIONINFO.toString());
+        //Parse the response
+        try {
+            //System.out.println(response.get("isRunning"));
+            Boolean isRunning = (Boolean) response.get("isRunning");
+            Boolean isStarted = (Boolean) response.get("isStarted");
+            if(!isRunning) {
+                result = false;
+                
+            }
+            if(!isStarted) {
+                result = false;
+            }
+            //System.out.println("Simulation info: " + isRunning + " " + isStarted);
+            //Integer simTime = (Integer) response.get("simTime");
+            Object ts = response.get("simTime");
+            int timeStep = (int) ((long) response.get("timeStep"));
+            int simTime = (int) ((long) response.get("simTime"));
+            //System.out.print("Simulation info: "  + " " + timeStep);
+            
+        } catch(ClassCastException e) {
+            System.out.println("ClassCastException");
+            result = false;
         }
         
         
@@ -524,13 +566,20 @@ public class APIClient implements Runnable {
         APIClient client = new APIClient("localhost", 4321);
         //client.start();
         new Thread(client).start();
-        //Execute a test scenario here
+        
+        //Waiting for a connection
         while (client.getClientState() != ClientState.CONNECTED) {
             System.out.println("Waiting for connection to server.....");
             Thread.sleep(1000);
         }
+        
+        //Execute a test scenario here
+        
         System.out.println("Test Simulation control functions...");
         System.out.println("Result: " + client.testSimulationControl());
+        
+        System.out.println("Test Simulation info functions... ");
+        System.out.println("Result: " + client.testSimulationInfo());
         
     }
     
