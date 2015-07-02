@@ -10,6 +10,7 @@ import java.util.List;
 import javafx.scene.chart.XYChart.Data;
 import nl.utwente.ewi.caes.tactiletriana.GlobalSettings;
 import static nl.utwente.ewi.caes.tactiletriana.Util.toMinuteOfYear;
+import nl.utwente.ewi.caes.tactiletriana.simulation.devices.Buffer;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.ElectricVehicle;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.SolarPanel;
 import nl.utwente.ewi.caes.tactiletriana.simulation.prediction.SimulationPrediction;
@@ -51,8 +52,28 @@ public class SimulationPredictionTest {
         
         checkPredictionCorrect();
     }
+    
     @Ignore
-     // Haal weg als je wil testen, standaard ignoren omdat test lang duurt
+    @Test
+    public void Buffer_SingleBuffer() throws InterruptedException {
+        initializeSimulation();
+        Buffer b = new Buffer(sim);
+        sim.houses[0].getDevices().add(b);
+        checkPredictionCorrect();
+    }
+    @Ignore
+    @Test
+    public void Buffer_SingleBuffer_ChangeParam() throws InterruptedException {
+        initializeSimulation();
+        Buffer b = new Buffer(sim);
+        sim.houses[0].getDevices().add(b);
+        checkPredictionCorrect();
+        b.setCapacity(b.getCapacity()+500);
+        b.setMaxPower(b.getMaxPower()+500);
+        checkPredictionCorrect();
+    }
+
+    @Ignore
     @Test
     public void ElectricVehicle_SingleVehicle() throws InterruptedException{
         initializeSimulation();
@@ -61,6 +82,7 @@ public class SimulationPredictionTest {
         checkPredictionCorrect();
     }
     
+    @Ignore
     @Test
     public void ElectricVehicle_SingleVehicle_ChangeModel() throws InterruptedException{
         initializeSimulation();
@@ -71,6 +93,7 @@ public class SimulationPredictionTest {
         ev.setModel(ElectricVehicle.Model.BMW_I3);
         checkPredictionCorrect();
     }
+    
     @Ignore
     @Test
     public void ElectricVehicle_TwoVehicles_DifferentHouses() throws InterruptedException{
@@ -174,16 +197,17 @@ public class SimulationPredictionTest {
         
         // loop X uur vooruit
         int numberOfTicks = NUMBER_OF_HOURS_TO_TEST * 60 * 60 / GlobalSettings.TICK_MINUTES;
-       
+       Thread.sleep(200);
         
         for(int i = 0; i < numberOfTicks; i++){
             sim.tick();
             
             // let the parallel test do its work
-            Thread.sleep(100);
+            Thread.sleep(25);
             
             Float simValue = findValueForTime(sim.getLog(), sim.getCurrentTime().minusMinutes(GlobalSettings.TICK_MINUTES));
             Float predValue = findValueForTime(pred.getLog(), sim.getCurrentTime().minusMinutes(GlobalSettings.TICK_MINUTES));
+
             assertEquals(simValue, predValue);
        }
     }
