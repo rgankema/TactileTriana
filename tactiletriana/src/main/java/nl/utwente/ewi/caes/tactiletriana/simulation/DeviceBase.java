@@ -52,6 +52,9 @@ public abstract class DeviceBase extends LoggingEntityBase {
             throw new NullPointerException("Simulation may not be null");
         }
         
+        // somehow this fixes the buffer
+        setCurrentConsumption(0d);
+        
         id = DEVICE_ID;
         DEVICE_ID++;
 

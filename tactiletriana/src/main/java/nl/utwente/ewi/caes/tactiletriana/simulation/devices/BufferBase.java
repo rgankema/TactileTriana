@@ -43,6 +43,8 @@ public abstract class BufferBase extends DeviceBase {
         super(simulation, displayName, apiDeviceType);
 
         planning = FXCollections.observableMap(new HashMap<LocalDateTime, Double>());
+        
+        
 
         // register properties for API
         registerAPIParameter(API_CAPACITY);
