@@ -13,8 +13,6 @@ import javafx.beans.property.ReadOnlyDoubleWrapper;
 /**
  * Represents a Node in the energy grid. A Node has cables, and optionally a 
  * House.
- * 
- * @author Richard
  */
 public class Node extends LoggingEntityBase {
 
@@ -38,6 +36,17 @@ public class Node extends LoggingEntityBase {
         this.simulation = simulation;
         this.cables = new ArrayList<>();
         this.house = house;
+    }
+
+    /**
+     * Create a Node
+     * @param simulation the Simulation this Node is simulated in
+     */
+    public Node(SimulationBase simulation) {
+        super("Node", UnitOfMeasurement.VOLTAGE);
+
+        this.simulation = simulation;
+        this.cables = new ArrayList<>();
     }
     
     /**
@@ -76,7 +85,8 @@ public class Node extends LoggingEntityBase {
     }
 
     /**
-     *
+     * Propagates a tick through the grid in order to reach the devices.
+     * 
      * @param connected whether this Node is connected to the root of the
      * network
      */

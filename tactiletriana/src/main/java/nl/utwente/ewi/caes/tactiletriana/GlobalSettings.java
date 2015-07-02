@@ -41,15 +41,24 @@ public final class GlobalSettings {
     private static final List<Runnable> callbacks = new ArrayList<>();
     private static Properties properties;
     
-    public static int TICK_MINUTES = 5;                         // time in minutes that passes in the simulation with each tick
-    public static int SYSTEM_TICK_TIME = 200;                   // time between ticks in ms
-    public static boolean UNCONTROLLABLE_LOAD_ENABLED = true;   // staat de uncontrolable load aan?
-    public static int HOUSE_FUSE_MAX_CURRENT = 3 * 35;          // max current before a fuse breaks
-    public static boolean EXTENDED_PARAMETERS = false;          // whether the users have access to the full range of device parameters
-    public static TimeScenario TIME_SCENARIO                    // time scenario used by the simulation
-            = new TimeScenario(new TimeSpan(LocalDate.of(2014, 1, 1), LocalDate.of(2014, 12, 31)));;            
+    /** The amount of minutes that pass in the simulation with each tick. */
+    public static int TICK_MINUTES = 5;
+    /** The interval in milliseconds between each tick. */
+    public static int SYSTEM_TICK_TIME = 200;
+    /** Whether each house has an uncontrollable load. */
+    public static boolean UNCONTROLLABLE_LOAD_ENABLED = true;
+    /** The maximum power that a house can handle before its fuse blows. */
+    public static int HOUSE_FUSE_MAX_CURRENT = 3 * 35;
+    /** Whether users have access to the full range of parameters for devices. */
+    public static boolean EXTENDED_PARAMETERS = false;
+    /** The TimeScenario that the Simulation follows. */
+    public static TimeScenario TIME_SCENARIO
+            = new TimeScenario(new TimeSpan(LocalDate.of(2014, 1, 1), LocalDate.of(2014, 12, 31)));
+    /** The ID of the screen that shows the touch view. This is only applicable if full screen is true. */
     public static int TOUCH_SCREEN_ID = 1;
+    /** The ID of the screen that shows the detail view. This is only applicable if full screen is true.*/
     public static int DETAIL_SCREEN_ID = 1;
+    /** Whether the application should run in full screen. */
     public static boolean FULLSCREEN = true;
     
     /**

@@ -10,6 +10,7 @@ import java.util.List;
 import javafx.scene.chart.XYChart.Data;
 import nl.utwente.ewi.caes.tactiletriana.GlobalSettings;
 import static nl.utwente.ewi.caes.tactiletriana.Util.toMinuteOfYear;
+import nl.utwente.ewi.caes.tactiletriana.simulation.devices.Buffer;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.ElectricVehicle;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.SolarPanel;
 import nl.utwente.ewi.caes.tactiletriana.simulation.prediction.SimulationPrediction;
@@ -33,14 +34,14 @@ public class SimulationPredictionTest {
         pred = new SimulationPrediction(sim);
     }
     
-    @Ignore // Haal weg als je wil testen, standaard ignoren omdat test lang duurt
+    @Ignore
     @Test
     public void EmptySimulationTest() throws InterruptedException{
         initializeSimulation();
         checkPredictionCorrect();
     }
     
-    @Ignore // Haal weg als je wil testen, standaard ignoren omdat test lang duurt
+    @Ignore
     @Test
     public void SolarPanelTest() throws InterruptedException{
         initializeSimulation();
@@ -53,9 +54,97 @@ public class SimulationPredictionTest {
         checkPredictionCorrect();
     }
     
-    @Ignore // Haal weg als je wil testen, standaard ignoren omdat test lang duurt
+    @Ignore
     @Test
-    public void ElectricVehicleTest() throws InterruptedException{
+    public void Buffer_SingleBuffer() throws InterruptedException {
+        initializeSimulation();
+        Buffer b = new Buffer(sim);
+        sim.houses[0].getDevices().add(b);
+        checkPredictionCorrect();
+    }
+    @Ignore
+    @Test
+    public void Buffer_SingleBuffer_ChangeParam() throws InterruptedException {
+        initializeSimulation();
+        Buffer b = new Buffer(sim);
+        sim.houses[0].getDevices().add(b);
+        checkPredictionCorrect();
+        b.setCapacity(b.getCapacity()+500);
+        b.setMaxPower(b.getMaxPower()+500);
+        checkPredictionCorrect();
+    }
+
+    @Ignore
+    @Test
+    public void ElectricVehicle_SingleVehicle() throws InterruptedException{
+        initializeSimulation();
+        ElectricVehicle ev = new ElectricVehicle(sim);
+        sim.houses[0].getDevices().add(ev);
+        checkPredictionCorrect();
+    }
+    
+    @Ignore
+    @Test
+    public void ElectricVehicle_SingleVehicle_ChangeModel() throws InterruptedException{
+        initializeSimulation();
+        ElectricVehicle ev = new ElectricVehicle(sim);
+        ev.setModel(ElectricVehicle.Model.TESLA_MODEL_S);
+        sim.houses[0].getDevices().add(ev);
+        checkPredictionCorrect();
+        ev.setModel(ElectricVehicle.Model.BMW_I3);
+        checkPredictionCorrect();
+    }
+    
+    @Ignore
+    @Test
+    public void ElectricVehicle_TwoVehicles_DifferentHouses() throws InterruptedException{
+        initializeSimulation();
+        
+        ElectricVehicle ev = new ElectricVehicle(sim);
+        ev.setModel(ElectricVehicle.Model.TESLA_MODEL_S);
+        sim.houses[0].getDevices().add(ev);
+        
+        
+        ElectricVehicle ev2 = new ElectricVehicle(sim);
+        ev.setModel(ElectricVehicle.Model.TESLA_MODEL_S);
+        sim.houses[1].getDevices().add(ev2);
+        
+        checkPredictionCorrect();
+    }
+    
+    @Ignore
+    @Test
+    public void ElectricVehicle_TreeVehicles_FuseBlown() throws InterruptedException{
+        initializeSimulation();
+        
+        ElectricVehicle ev = new ElectricVehicle(sim);
+        ev.setModel(ElectricVehicle.Model.TESLA_MODEL_S);
+        sim.houses[0].getDevices().add(ev);
+        
+        
+        ElectricVehicle ev2 = new ElectricVehicle(sim);
+        ev.setModel(ElectricVehicle.Model.TESLA_MODEL_S);
+        sim.houses[0].getDevices().add(ev2);
+        
+        ElectricVehicle ev3 = new ElectricVehicle(sim);
+        ev.setModel(ElectricVehicle.Model.TESLA_MODEL_S);
+        sim.houses[0].getDevices().add(ev2);
+        
+        checkPredictionCorrect();
+        
+        assertTrue(sim.houses[0].isFuseBlown());
+        
+        sim.houses[0].getDevices().remove(ev2);
+        sim.houses[0].getDevices().remove(ev3);
+        checkPredictionCorrect();
+        
+        repairFuses();
+        checkPredictionCorrect();
+    }
+    
+    @Ignore
+    @Test
+    public void ElectricVehicleTest_Full() throws InterruptedException{
         initializeSimulation();
         
         ElectricVehicle ev = new ElectricVehicle(sim);
@@ -109,16 +198,17 @@ public class SimulationPredictionTest {
         
         // loop X uur vooruit
         int numberOfTicks = NUMBER_OF_HOURS_TO_TEST * 60 * 60 / GlobalSettings.TICK_MINUTES;
-       
+       Thread.sleep(1000);
         
         for(int i = 0; i < numberOfTicks; i++){
             sim.tick();
             
             // let the parallel test do its work
-            Thread.sleep(10);
+            Thread.sleep(50);
             
             Float simValue = findValueForTime(sim.getLog(), sim.getCurrentTime().minusMinutes(GlobalSettings.TICK_MINUTES));
             Float predValue = findValueForTime(pred.getLog(), sim.getCurrentTime().minusMinutes(GlobalSettings.TICK_MINUTES));
+
             assertEquals(simValue, predValue);
        }
     }

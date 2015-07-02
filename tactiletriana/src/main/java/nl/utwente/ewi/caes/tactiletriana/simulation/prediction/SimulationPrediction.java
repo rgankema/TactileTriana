@@ -136,7 +136,9 @@ public class SimulationPrediction extends SimulationBase {
     }
 
     // HELPER METHODS
-    // Walks through the network tree and synchronizes equivalent LoggingEntityBases
+    /**
+     * Walks through the network tree and synchronizes equivalent LoggingEntityBases
+     */
     private void linkNetwork(Node actual, Node future) {
         futureByActual.put(actual, future);
         if (actual.getHouse() != null) {
@@ -162,7 +164,9 @@ public class SimulationPrediction extends SimulationBase {
         }
     }
 
-    // Synchronizes two houses by synchronizing its device list
+    /**
+     * Synchronizes two houses by synchronizing its device list
+    */
     private void linkHouse(House actualHouse, House futureHouse) {
         futureByActual.put(actualHouse, futureHouse);
         //futureDevice.getProperties().get(property).bind(actualDevice.getProperties().get(property));

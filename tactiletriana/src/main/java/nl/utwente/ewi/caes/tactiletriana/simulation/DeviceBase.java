@@ -53,6 +53,9 @@ public abstract class DeviceBase extends LoggingEntityBase {
             throw new NullPointerException("Simulation may not be null");
         }
         
+        // somehow this fixes the buffer
+        setCurrentConsumption(0d);
+        
         id = DEVICE_ID;
         DEVICE_ID++;
 
@@ -92,14 +95,22 @@ public abstract class DeviceBase extends LoggingEntityBase {
         return currentConsumption.getReadOnlyProperty();
     }
 
+    /**
+     * The current consumption of this device (in watt).
+     * @return 
+     */
     public final double getCurrentConsumption() {
         return currentConsumptionProperty().get();
     }
 
+    /**
+     * Sets the consumption of this device (in watt) at the current time of the Simulation.
+     * @param value 
+     */
     public final void setCurrentConsumption(double value) {
         currentConsumption.set(value);
     }
-
+    
     /**
      * The house that hosts this device
      */
@@ -117,6 +128,7 @@ public abstract class DeviceBase extends LoggingEntityBase {
         return parentHouse.getReadOnlyProperty();
     }
 
+    
     public House getParentHouse() {
         return parentHouse.get();
     }

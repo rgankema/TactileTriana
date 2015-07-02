@@ -23,15 +23,22 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.devices.TimeShiftableBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.UncontrollableLoad;
 
 /**
+<<<<<<< HEAD
  * Simulates time steps in the network. Has methods for starting and pausing the
  * simulation, and can be given a time scenario to follow.
  * 
  * @author Richard
+=======
+ * The Simulation, this class has a Transformator, Nodes, Cables and Houses connected via a tree starting at the Transformator.
+>>>>>>> origin/develop
  */
 public class Simulation extends SimulationBase {
 
     private static final TimeScenario DEFAULT_SCENARIO = new TimeScenario(new TimeScenario.TimeSpan(LocalDate.of(2014, 1, 1), LocalDate.of(2014, 12, 31)));
 
+    /**
+     * Create a Simulation. The default state will be SimulationState.STOPPED.
+     */
     public Simulation() {
         this.setState(SimulationState.STOPPED);
         // Initialise time
@@ -40,35 +47,58 @@ public class Simulation extends SimulationBase {
 
     // PROPERTIES
     /**
-     * The state of the simulation.
+     * The state of the Simulation.
      */
     private final ReadOnlyObjectWrapper<SimulationState> state = new ReadOnlyObjectWrapper<>();
 
+    /**
+     * @return the state of this Simulation
+     */
     public ReadOnlyObjectProperty<SimulationState> stateProperty() {
         return state.getReadOnlyProperty();
     }
 
+    /**
+     * 
+     * @param state the state of this Simulation
+     */
     private void setState(SimulationState state) {
         this.state.set(state);
     }
 
+    /**
+     * 
+     * @return the state of this Simulation
+     */
     public SimulationState getState() {
         return this.stateProperty().get();
     }
 
     /**
-     * The time scenario that this simulation follows.
+     * The time scenario that this Simulation follows.
      */
     private final ObjectProperty<TimeScenario> timeScenario = new SimpleObjectProperty<>(DEFAULT_SCENARIO);
 
+    /**
+     * 
+     * @return time scenario that this Simulation follows.
+     */
     public ObjectProperty<TimeScenario> timeScenarioProperty() {
         return timeScenario;
     }
 
+    /**
+     * 
+     * @return time scenario that this Simulation follows.
+     */
     public final TimeScenario getTimeScenario() {
         return timeScenarioProperty().get();
     }
 
+    /**
+     * 
+     * @param timeScenario time scenario that this Simulation follows.
+     */
     public final void setTimeScenario(TimeScenario timeScenario) {
         timeScenarioProperty().set(timeScenario);
     }
@@ -91,18 +121,30 @@ public class Simulation extends SimulationBase {
     }
     
     /**
-     * The Controller that controls the devices in this simulation. May be null.
+     * The Controller that controls the devices in this Simulation. May be null.
      */
     private final ObjectProperty<IController> controller = new SimpleObjectProperty<>(null);
     
+    /**
+     * 
+     * @return the Controller that controls the devices in this Simulation. May be null.
+     */
     public ObjectProperty<IController> controllerProperty() {
         return controller;
     }
     
+    /**
+     * 
+     * @return the Controller that controls the devices in this Simulation. May be null.
+     */
     public final IController getController() {
         return controllerProperty().get();
     }
 
+    /**
+     * 
+     * @param controller the Controller that controls the devices in this Simulation. May be null.
+     */
     public final void setController(IController controller) {
         controllerProperty().set(controller);
     }
@@ -110,10 +152,17 @@ public class Simulation extends SimulationBase {
     // EVENT HANDLING
     private final List<Runnable> timeSpanShiftedCallbacks = new ArrayList<>();
 
+    /**
+     * TODO: Richard
+     * @param handler 
+     */
     public final void addOnTimeSpanShiftedHandler(Runnable handler) {
         timeSpanShiftedCallbacks.add(handler);
     }
-
+    /**
+     * TODO: Richard
+     * @param handler 
+     */
     public final void removeOnTimeSpanShiftedHandler(Runnable handler) {
         timeSpanShiftedCallbacks.remove(handler);
     }
@@ -192,7 +241,7 @@ public class Simulation extends SimulationBase {
             // Finish forward backward sweep
             finishForwardBackwardSweep();
             // Log total power consumption in network
-            log(getCurrentTime(), transformer.getCables().get(0).getCurrent() * 230d);
+            log(getCurrentTime(), getTransformer().getCables().get(0).getCurrent() * 230d);
             // Increment time
             incrementTime();
         });
@@ -232,6 +281,9 @@ public class Simulation extends SimulationBase {
     }
 
     // HELP METHODS
+    /**
+     * Clears all the Logs.
+     */
     private void clearAllLogs() {
         for (House house : houses) {
             house.getLog().clear();

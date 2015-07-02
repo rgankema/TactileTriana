@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
  * consumption plans to devices.
  * 
  * @author Richard
+ *
  */
 public interface IController {
 
@@ -20,19 +21,22 @@ public interface IController {
      *
      * @param timeout   Time to wait on the backend to finish retrieving the
      * plans.
-     * @param time      Simulation time which will be recorded as the time the
-     * plannings were last updated.
-     * 
-     * @return
+     * @param time Simulation time at which will be recorded as the time the
+     * plannings where last updated.
+     * @return if new planning has been received.
      */
     public boolean retrievePlanning(int timeout, LocalDateTime time);
 
     /**
-     * 
-     * @return the time the plannings were last updated.
+     * Returns the time the planning was last updated.
+     * @return the time the planning was last updated
      */
     public LocalDateTime getLastPlanningTime();
 
+    /**
+     * Returns the time when the last submit planning request has been sent.
+     * @return time the last submit planning request.
+     */
     public LocalDateTime getLastRequestedPlanningTime();
 
 }
