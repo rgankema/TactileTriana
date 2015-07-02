@@ -17,7 +17,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 /**
- *
+ * Represents a House connected to the energy grid. A House is a host for devices.
+ * 
  * @author Richard
  */
 public class House extends LoggingEntityBase {
@@ -135,6 +136,14 @@ public class House extends LoggingEntityBase {
         fuseBlown.set(false);
     }
 
+    /**
+     * Calls tick for all its devices, and updates its consumption afterwards.
+     * If this is higher than the maximum consumption, its fuse will blow. If
+     * parameter connected is false, all devices in this house will update its
+     * state accordingly.
+     * 
+     * @param connected whether the House is connected to the grid
+     */
     public void tick(boolean connected) {
         if (isFuseBlown()) {
             connected = false;
@@ -149,23 +158,11 @@ public class House extends LoggingEntityBase {
         log(simulation.getCurrentTime(), getCurrentConsumption());
     }
 
-    public String toString(int indentation) {
-        String output = "";
-        for (int i = 0; i < indentation; i++) {
-            output += "\t";
-        }
-        output += "|-";
-
-        output += "(House:P=" + getCurrentConsumption() + ")";
-
-        return output;
-    }
-
     /**
      * Convert this House and the parameters to a JSON representation as
      * specified in the API
      *
-     * @return
+     * @return a JSONObject representing this House
      */
     public JSONObject toJSON() {
         JSONObject result = new JSONObject();

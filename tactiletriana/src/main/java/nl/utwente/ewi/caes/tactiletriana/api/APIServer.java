@@ -165,17 +165,4 @@ public class APIServer implements Runnable {
     public IController getController() {
         return controlConnection;
     }
-
-    /*  
-    Deze code zorgt op de een of andere manier dat er altijd een thread op 
-    de achtergrond draait na het afsluiten, dus haal het alleen uit comments als 
-    je het nodig hebt voor tests.
-    
-    public static void main(String args[]) {
-        System.out.println("Starting server...");
-        APIServer s = new APIServer(8070, new Simulation());
-        Thread t = new Thread(s);
-        t.start();
-
-    }*/
 }

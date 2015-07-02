@@ -6,12 +6,11 @@
 package nl.utwente.ewi.caes.tactiletriana.simulation;
 
 /**
- *
+ * A special kind of Node whose voltage is always 230.
+ * 
  * @author Richard
  */
 public class Transformer extends Node {
-
-    public final double TRANSFORMER_CURRENT = 230.0;
 
     public Transformer(SimulationBase simulation) {
         super(null, simulation);

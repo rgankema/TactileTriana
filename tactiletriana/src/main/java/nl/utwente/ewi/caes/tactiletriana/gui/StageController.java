@@ -31,7 +31,10 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.LoggingEntityBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.Simulation;
 
 /**
- *
+ * The StageController is responsible for instantiating new windows (Stages) and
+ * for facilitating any communication among them. StageController is implemented
+ * as a singleton.
+ * 
  * @author Richard
  */
 public final class StageController {
@@ -40,10 +43,24 @@ public final class StageController {
     private static StageController instance;
 
     // STATIC METHODS
+    
+    /**
+     * Returns the StageController instance. Requires that it has been initialized
+     * by calling {@link initialze initialize} first.
+     * 
+     * @return the StageController instance.
+     */
     public static StageController getInstance() {
         return instance;
     }
 
+    /**
+     * Sets up a new StageController if no instance exists yet. Does nothing 
+     * otherwise.
+     * 
+     * @param primaryStage the primary Stage that has been passed to the entry
+     * method of the application.
+     */
     public static void initialize(Stage primaryStage) {
         if (instance == null) {
             instance = new StageController(primaryStage);
@@ -67,6 +84,7 @@ public final class StageController {
     private final SimulationPrediction simulationPrediction;
 
     // CONSTRUCTOR
+    
     private StageController(Stage configurationStage) {
         this.simulation = new Simulation();
         this.simulationPrediction = new SimulationPrediction(simulation);
@@ -112,10 +130,19 @@ public final class StageController {
     }
 
     // PROPERTIES
+    
+    /**
+     * 
+     * @return the Simulation that is shown on screen.
+     */
     public Simulation getSimulation() {
         return this.simulation;
     }
 
+    /**
+     * 
+     * @return a list of IDs for the active screens.
+     */
     public ObservableList<Integer> getScreenIndexList() {
         return screenIndexList;
     }
@@ -134,6 +161,12 @@ public final class StageController {
     }
 
     // METHODS
+    
+    /**
+     * Sets whether the launcher (or configuration) window should be visible.
+     * 
+     * @param visible whether the window should be visible
+     */
     public void setLauncherStageVisible(boolean visible) {
         if (visible) {
             configurationStage.show();
@@ -142,6 +175,11 @@ public final class StageController {
         }
     }
 
+    /**
+     * Sets whether the touch window and detail window should be visible.
+     * 
+     * @param visible whether the windows should be visible
+     */
     public void setMainStagesVisible(boolean visible) {
         if (touchStage == null) {
             // Build touch screen stage
@@ -228,6 +266,11 @@ public final class StageController {
         }
     }
 
+    /**
+     * Sets whether the icons indicating the screen should be visible.
+     * 
+     * @param visible whether the icons should be visible
+     */
     public void setScreenIndexStagesVisible(boolean visible) {
         for (Stage stage : screenIndexStages) {
             if (visible) {
@@ -238,6 +281,9 @@ public final class StageController {
         }
     }
 
+    /**
+     * Closes all open windows.
+     */
     public void closeAllStages() {
         configurationStage.close();
         for (Stage stage : screenIndexStages) {
@@ -249,22 +295,40 @@ public final class StageController {
         }
     }
 
-    public void showOnChart(LoggingEntityVMBase logger, LoggingEntityBase entity) {
-        if (!logger.isShownOnChart()) {
-            detailVM.showOnChart(logger, entity, simulationPrediction.getFuture(entity));
+    /**
+     * Shows an entity of the simulation on one of the charts.
+     * 
+     * @param viewModel the model of the view that should indicate its on a chart
+     * @param logger    the actual model in the simulation that should be shown on a chart
+     */
+    public void showOnChart(LoggingEntityVMBase viewModel, LoggingEntityBase logger) {
+        if (!viewModel.isShownOnChart()) {
+            detailVM.showOnChart(viewModel, logger, simulationPrediction.getFuture(logger));
         }
     }
 
-    public void removeFromChart(LoggingEntityVMBase logger) {
-        detailVM.removeFromChart(logger);
+    /**
+     * Removes an entity in the Simulation associated with a view model from the
+     * chart.
+     * 
+     * @param viewModel the view model associated with the model in the simulation.
+     */
+    public void removeFromChart(LoggingEntityVMBase viewModel) {
+        detailVM.removeFromChart(viewModel);
     }
 
+    /**
+     * Resets the simulation.
+     */
     public void resetSimulation() {
         this.simulation.reset();
         this.touchVM.reset();
         this.detailVM.reset();
     }
     
+    /**
+     * Opens a file chooser to load a settings file.
+     */
     public void loadSettingsFile() {
         FileChooser chooser = new FileChooser();
         File file = chooser.showOpenDialog(configurationStage);

@@ -22,7 +22,7 @@ public abstract class LoggingEntityBase {
     private final UnitOfMeasurement unitOfMeasurement;
     private final List<Data<Integer, Float>> log;
 
-    public boolean invalid = false;
+    public boolean dirty = false;
 
     public LoggingEntityBase(String displayName, UnitOfMeasurement unitOfMeasurement) {
         this.displayName = displayName;
@@ -50,13 +50,13 @@ public abstract class LoggingEntityBase {
                 log.add(new Data<>(log.get(log.size() - 1).getXValue(), (float) value));
             }
             log.add(new Data<>(toMinuteOfYear(time), (float) value));
-            invalid = true;
+            dirty = true;
 
             // Discard values that won't be shown anymore.
             if (log.size() > 12 * 60 / GlobalSettings.TICK_MINUTES + 2) {
                 log.remove(0);
                 log.remove(0);
-                invalid = true;
+                dirty = true;
             }
         }
     }

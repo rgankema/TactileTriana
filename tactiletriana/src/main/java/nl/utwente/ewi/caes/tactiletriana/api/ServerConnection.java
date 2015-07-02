@@ -619,7 +619,7 @@ public class ServerConnection implements Runnable, IController {
         LocalDateTime time = LocalDateTime.of(2014, 1, 1, 0, 0).plusMinutes(intTime);
 
         //Check if the submitted planning is for the last requested planning.
-        if (!time.equals(lastRequestedPlanningTime())) {
+        if (!time.equals(getLastRequestedPlanningTime())) {
             error = "Submitted planning is not for the currently requested simulation time.";
             log(error);
             sendError(error);
@@ -735,11 +735,11 @@ public class ServerConnection implements Runnable, IController {
      * @return LocalDateTime containing the last time the planning was updated
      * or null
      */
-    public LocalDateTime lastPlanningTime() {
+    public LocalDateTime getLastPlanningTime() {
         return this.lastUpdatedPlanning;
     }
 
-    public LocalDateTime lastRequestedPlanningTime() {
+    public LocalDateTime getLastRequestedPlanningTime() {
         return this.lastRequestPlanning;
     }
 

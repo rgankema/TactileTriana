@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Represents a time scenario for a simulation.
+ * 
  * @author Richard
  */
 public final class TimeScenario {
@@ -73,6 +75,11 @@ public final class TimeScenario {
     }
 
     // PROPERTIES
+    
+    /**
+     * 
+     * @return the List of TimeSpans that makes up this scenario
+     */
     public List<TimeSpan> getTimeSpans() {
         return timeSpans;
     }
@@ -123,7 +130,7 @@ public final class TimeScenario {
 
     // NESTED CLASSES
     /**
-     * Represents a time span between two dates
+     * Represents a time span between two dates.
      */
     public static final class TimeSpan {
 

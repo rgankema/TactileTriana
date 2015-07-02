@@ -23,7 +23,9 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.devices.TimeShiftableBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.UncontrollableLoad;
 
 /**
- *
+ * Simulates time steps in the network. Has methods for starting and pausing the
+ * simulation, and can be given a time scenario to follow.
+ * 
  * @author Richard
  */
 public class Simulation extends SimulationBase {
@@ -233,31 +235,31 @@ public class Simulation extends SimulationBase {
     private void clearAllLogs() {
         for (House house : houses) {
             house.getLog().clear();
-            house.invalid = true;
+            house.dirty = true;
         }
         for (Node node : internalNodes) {
             node.getLog().clear();
-            node.invalid = true;
+            node.dirty = true;
         }
         for (Node node : houseNodes) {
             node.getLog().clear();
-            node.invalid = true;
+            node.dirty = true;
         }
         for (Cable cable : internalCables) {
             cable.getLog().clear();
-            cable.invalid = true;
+            cable.dirty = true;
         }
         for (Cable cable : houseCables) {
             cable.getLog().clear();
-            cable.invalid = true;
+            cable.dirty = true;
         }
         transformer.getLog().clear();
         for (Cable cable : transformer.getCables()) {
             cable.getLog().clear();
-            cable.invalid = true;
+            cable.dirty = true;
         }
         this.getLog().clear();
-        this.invalid = true;
+        this.dirty = true;
     }
 
     // NESTED ENUMS

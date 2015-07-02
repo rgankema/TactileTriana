@@ -18,7 +18,9 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.data.WeatherData;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.UncontrollableLoad;
 
 /**
- *
+ * The basis for classes that represent the Simulation. It constructs a small
+ * energy grid and has methods to simulate a tick in the simulation.
+ * 
  * @author Richard
  */
 public abstract class SimulationBase extends LoggingEntityBase {
@@ -114,9 +116,8 @@ public abstract class SimulationBase extends LoggingEntityBase {
     }
 
     /**
-     * The root of the network.
      *
-     * @return
+     * @return the Transformer which is the root of the network.
      */
     public Transformer getTransformer() {
         return transformer;
@@ -176,6 +177,10 @@ public abstract class SimulationBase extends LoggingEntityBase {
      */
     protected abstract void incrementTime();
 
+    /**
+     * Prepares for a new Forward-Backward sweep by setting voltages to 230
+     * and currents to 0 across the network.
+     */
     protected final void prepareForwardBackwardSweep() {
         transformer.prepareForwardBackwardSweep();
         
@@ -185,6 +190,10 @@ public abstract class SimulationBase extends LoggingEntityBase {
         }
     }
 
+    /**
+     * Performs the Forward-Backward sweep algorithm until it has converged with
+     * a maximum error of 0.0001.
+     */
     protected final void doForwardBackwardSweep() {
         // Run the ForwardBackwardSweep Load-flow calculation until converged or the iteration limit is reached
         for (int i = 0; i < 20; i++) {
@@ -202,6 +211,10 @@ public abstract class SimulationBase extends LoggingEntityBase {
         }
     }
 
+    /**
+     * Finishes the Forward-Backward sweep by actually saving the values calculated
+     * by the last call of {@link doForwardBackwardSweep doForwardBackwardSweep}.
+     */
     protected final void finishForwardBackwardSweep() {
         transformer.finishForwardBackwardSweep();
     }

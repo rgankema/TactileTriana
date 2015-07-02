@@ -94,21 +94,21 @@ public class ChartVM {
 
     // PUBLIC METHODS
     public final void updateSeries() {
-        if (actual != null && actual.invalid) {
+        if (actual != null && actual.dirty) {
             synchronized (actual) {
                 actualSeriesData.clear();
                 actualSeriesData.addAll(actual.getLog());
                 if (!actual.getLog().isEmpty()) {
                     xAxisLowerBound.set(actual.getLog().get(actual.getLog().size() - 1).getXValue() - 6 * 60);
                 }
-                actual.invalid = false;
+                actual.dirty = false;
             }
         }
-        if (future != null && future.invalid) {
+        if (future != null && future.dirty) {
             synchronized (future) {
                 futureSeriesData.clear();
                 futureSeriesData.addAll(future.getLog());
-                future.invalid = false;
+                future.dirty = false;
             }
         }
     }
