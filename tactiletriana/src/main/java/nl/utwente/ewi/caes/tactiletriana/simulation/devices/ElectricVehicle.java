@@ -39,10 +39,11 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
         setModel(model);
 
         //set the leave time somewhere between 5:30am - 8:30am
-        
-        setLeaveTime(Math.random() * 3 + 5.5);
+        setLeaveTime(5.5);
+        setReturnTime(16);
+        //setLeaveTime(Math.random() * 3 + 5.5);
         //set the return time somewhere between 4:00pm and 8:00pm
-        setReturnTime(Math.random() * 4 + 16);
+        //setReturnTime(Math.random() * 4 + 16);
         //Initial desired charge is 100%
         setDesiredCharge(getCapacity());
 
@@ -57,7 +58,7 @@ public class ElectricVehicle extends BufferTimeShiftableBase {
      * @param simulation The simulation object of the current simulation.
      */
     public ElectricVehicle(Simulation simulation) {
-        this(simulation, Model.values()[(int) (Model.values().length * Math.random())]);
+        this(simulation, Model.FORD_C_MAX);
     }
 
     // PROPERTIES

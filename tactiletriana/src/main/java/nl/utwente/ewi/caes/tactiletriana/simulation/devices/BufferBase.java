@@ -134,11 +134,19 @@ public abstract class BufferBase extends DeviceBase {
             super.set(value);
         }
     };
+    /**
+     * The state of charge in Wh. Ensures that it's never below 0 and never higher than {@link capacity}.
+     * @return state of charge in Wh
+     */
 
     public DoubleProperty stateOfChargeProperty() {
         return stateOfCharge;
     }
 
+    /**
+     * The state of charge in Wh. Ensures that it's never below 0 and never higher than {@link capacity}.
+     * @return state of charge in Wh
+     */
     public final double getStateOfCharge() {
         return stateOfChargeProperty().get();
     }
