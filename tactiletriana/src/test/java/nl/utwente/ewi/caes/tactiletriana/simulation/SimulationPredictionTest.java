@@ -33,14 +33,14 @@ public class SimulationPredictionTest {
         pred = new SimulationPrediction(sim);
     }
     
-
+    @Ignore
     @Test
     public void EmptySimulationTest() throws InterruptedException{
         initializeSimulation();
         checkPredictionCorrect();
     }
     
-
+    @Ignore
     @Test
     public void SolarPanelTest() throws InterruptedException{
         initializeSimulation();
@@ -53,7 +53,7 @@ public class SimulationPredictionTest {
         checkPredictionCorrect();
     }
     
-
+    @Ignore
     @Test
     public void Buffer_SingleBuffer() throws InterruptedException {
         initializeSimulation();
@@ -61,7 +61,7 @@ public class SimulationPredictionTest {
         sim.houses[0].getDevices().add(b);
         checkPredictionCorrect();
     }
-
+    @Ignore
     @Test
     public void Buffer_SingleBuffer_ChangeParam() throws InterruptedException {
         initializeSimulation();
@@ -73,7 +73,7 @@ public class SimulationPredictionTest {
         checkPredictionCorrect();
     }
 
-
+    @Ignore
     @Test
     public void ElectricVehicle_SingleVehicle() throws InterruptedException{
         initializeSimulation();
@@ -82,7 +82,7 @@ public class SimulationPredictionTest {
         checkPredictionCorrect();
     }
     
-
+    @Ignore
     @Test
     public void ElectricVehicle_SingleVehicle_ChangeModel() throws InterruptedException{
         initializeSimulation();
@@ -94,7 +94,7 @@ public class SimulationPredictionTest {
         checkPredictionCorrect();
     }
     
-
+    @Ignore
     @Test
     public void ElectricVehicle_TwoVehicles_DifferentHouses() throws InterruptedException{
         initializeSimulation();
@@ -111,7 +111,7 @@ public class SimulationPredictionTest {
         checkPredictionCorrect();
     }
     
-
+    @Ignore
     @Test
     public void ElectricVehicle_TreeVehicles_FuseBlown() throws InterruptedException{
         initializeSimulation();
@@ -141,7 +141,7 @@ public class SimulationPredictionTest {
         checkPredictionCorrect();
     }
     
-
+    @Ignore
     @Test
     public void ElectricVehicleTest_Full() throws InterruptedException{
         initializeSimulation();
