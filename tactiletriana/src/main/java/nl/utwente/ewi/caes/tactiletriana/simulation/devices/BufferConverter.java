@@ -87,7 +87,7 @@ public class BufferConverter extends DeviceBase {
         @Override
         public void set(double value) {
             super.set(value);
-            setDirty(true);
+            setParametersChanged(true);
         }
     };
 
@@ -110,7 +110,7 @@ public class BufferConverter extends DeviceBase {
         @Override
         public void set(double value) {
             super.set(value); 
-            setDirty(true);
+            setParametersChanged(true);
         }
     };
     

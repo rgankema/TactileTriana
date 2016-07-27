@@ -23,14 +23,8 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.devices.TimeShiftableBase;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.UncontrollableLoad;
 
 /**
-<<<<<<< HEAD
  * Simulates time steps in the network. Has methods for starting and pausing the
  * simulation, and can be given a time scenario to follow.
- * 
- * @author Richard
-=======
- * The Simulation, this class has a Transformator, Nodes, Cables and Houses connected via a tree starting at the Transformator.
->>>>>>> origin/develop
  */
 public class Simulation extends SimulationBase {
 

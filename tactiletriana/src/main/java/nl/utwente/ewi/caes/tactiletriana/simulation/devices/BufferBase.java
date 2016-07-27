@@ -76,7 +76,7 @@ public abstract class BufferBase extends DeviceBase {
                 value = 0;
             }
             super.set(value);
-            setDirty(true);
+            setParametersChanged(true);
         }
     };
 
@@ -105,7 +105,7 @@ public abstract class BufferBase extends DeviceBase {
                 value = 0;
             }
             super.set(value);
-            setDirty(true);
+            setParametersChanged(true);
         }
     };
 

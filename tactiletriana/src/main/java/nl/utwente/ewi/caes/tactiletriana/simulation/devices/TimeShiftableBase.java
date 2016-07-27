@@ -78,7 +78,7 @@ public abstract class TimeShiftableBase extends DeviceBase {
         @Override
         public void set(double[] value) {
             super.set(value);
-            setDirty(true);
+            setParametersChanged(true);
         }
     };
 
@@ -110,7 +110,7 @@ public abstract class TimeShiftableBase extends DeviceBase {
         @Override
         public void set(int value) {
             super.set(value);
-            setDirty(true);
+            setParametersChanged(true);
         }
     };
 
@@ -133,7 +133,7 @@ public abstract class TimeShiftableBase extends DeviceBase {
         @Override
         public void set(int value) {
             super.set(value);
-            setDirty(true);
+            setParametersChanged(true);
         }
     };
 

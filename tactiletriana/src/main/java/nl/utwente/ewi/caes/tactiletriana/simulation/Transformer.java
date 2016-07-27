@@ -7,8 +7,6 @@ package nl.utwente.ewi.caes.tactiletriana.simulation;
 
 /**
  * A special kind of Node whose voltage is always 230.
- * 
- * @author Richard
  */
 public class Transformer extends Node {
 

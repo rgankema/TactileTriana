@@ -71,7 +71,7 @@ public class SolarPanel extends DeviceBase {
             }
 
             super.set(value);
-            setDirty(true);
+            setParametersChanged(true);
         }
     };
 
@@ -102,7 +102,7 @@ public class SolarPanel extends DeviceBase {
                 // When elevation changes profile becomes invalid
                 abstractProfile = null;
                 super.set(value);
-                setDirty(true);
+                setParametersChanged(true);
             }
         }
     };
@@ -135,7 +135,7 @@ public class SolarPanel extends DeviceBase {
                 // When orientation changes the profile becomes invalid
                 abstractProfile = null;
                 super.set(value);
-                setDirty(true);
+                setParametersChanged(true);
             }
         }
     };
@@ -165,7 +165,7 @@ public class SolarPanel extends DeviceBase {
                     throw new IllegalArgumentException("Efficiency may not be higher than 100%");
                 }
                 super.set(value);
-                setDirty(true);
+                setParametersChanged(true);
             }
         }
     };

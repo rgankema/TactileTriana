@@ -177,17 +177,12 @@ public class House extends LoggingEntityBase {
     }
 
     /**
-<<<<<<< HEAD
      * Calls tick for all its devices, and updates its consumption afterwards.
      * If this is higher than the maximum consumption, its fuse will blow. If
      * parameter connected is false, all devices in this house will update its
      * state accordingly.
      * 
      * @param connected whether the House is connected to the grid
-=======
-     * Calculates the currentConsumption for this House and calls the tick() on all its devices.
-     * @param connected is there a cable broken in the tree before this house?
->>>>>>> origin/develop
      */
     public void tick(boolean connected) {
         if (isFuseBlown()) {

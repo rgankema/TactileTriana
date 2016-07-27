@@ -52,7 +52,7 @@ public abstract class BufferTimeShiftableBase extends BufferBase {
         @Override
         public void set(boolean value) {
             super.set(value);
-            setDirty(true);
+            setParametersChanged(true);
         }
     };
 
@@ -76,7 +76,7 @@ public abstract class BufferTimeShiftableBase extends BufferBase {
         @Override
         public void set(double value) {
             super.set(value);
-            setDirty(true);
+            setParametersChanged(true);
         }
     };
 
@@ -99,7 +99,7 @@ public abstract class BufferTimeShiftableBase extends BufferBase {
         @Override
         public void set(double value) {
             super.set(value);
-            setDirty(true);
+            setParametersChanged(true);
         }
     };
 
@@ -128,7 +128,7 @@ public abstract class BufferTimeShiftableBase extends BufferBase {
                 value = 0;
             }
             super.set(value);
-            setDirty(true);
+            setParametersChanged(true);
         }
     };
 

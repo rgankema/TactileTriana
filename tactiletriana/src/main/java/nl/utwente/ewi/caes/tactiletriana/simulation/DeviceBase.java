@@ -166,18 +166,19 @@ public abstract class DeviceBase extends LoggingEntityBase {
     /**
      * Whether parameters have changed for this device
      */
-    private final BooleanProperty dirty = new SimpleBooleanProperty(false);
+    private final BooleanProperty parametersChanged = new SimpleBooleanProperty(false);
 
-    public BooleanProperty dirtyProperty() {
-        return dirty;
+    public BooleanProperty parametersChangedProperty() {
+        
+        return parametersChanged;
     }
     
-    public final boolean isDirty() {
-        return dirtyProperty().get();
+    public final boolean isParametersChanged() {
+        return parametersChangedProperty().get();
     }
     
-    public final void setDirty(boolean dirty) {
-        dirtyProperty().set(dirty);
+    public final void setParametersChanged(boolean changed) {
+        parametersChangedProperty().set(changed);
     }
     
     /**

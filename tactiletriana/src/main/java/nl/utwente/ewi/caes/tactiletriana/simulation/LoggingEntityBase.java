@@ -22,16 +22,10 @@ public abstract class LoggingEntityBase {
     private final UnitOfMeasurement unitOfMeasurement;
     private final List<Data<Integer, Float>> log;
 
-<<<<<<< HEAD
-    public boolean dirty = false;
-=======
-    
     /**
-     * TODO: Richard wat doet dit?
+     * Flag indicating if any new values have been logged.
      */
-    public boolean invalid = false;
->>>>>>> origin/develop
-
+    public boolean dirty = false;
     
     /**
      * 

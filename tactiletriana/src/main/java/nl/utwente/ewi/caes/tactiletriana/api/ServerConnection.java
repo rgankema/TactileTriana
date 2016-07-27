@@ -719,7 +719,7 @@ public class ServerConnection implements Runnable, IController {
         //Check if the the device parameters have changed
         boolean parametersHaveChanged = false;
         for (DeviceBase device : sim.getDevices()) {
-            if(device.isDirty()) {
+            if(device.isParametersChanged()) {
                 parametersHaveChanged = true;
                 break;
             }

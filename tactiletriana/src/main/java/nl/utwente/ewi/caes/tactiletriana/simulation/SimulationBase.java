@@ -18,13 +18,9 @@ import nl.utwente.ewi.caes.tactiletriana.simulation.data.WeatherData;
 import nl.utwente.ewi.caes.tactiletriana.simulation.devices.UncontrollableLoad;
 
 /**
-<<<<<<< HEAD
- * The basis for classes that represent the Simulation. It constructs a small
+ * The basis for classes that represent a simulation. It constructs a small
  * energy grid and has methods to simulate a tick in the simulation.
  * 
-=======
- * Superclass of both the Simulation and the SimulationPrediction.
->>>>>>> origin/develop
  * @author Richard
  */
 public abstract class SimulationBase extends LoggingEntityBase {

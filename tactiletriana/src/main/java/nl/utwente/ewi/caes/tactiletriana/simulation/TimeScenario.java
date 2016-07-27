@@ -12,13 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
-<<<<<<< HEAD
  * Represents a time scenario for a simulation.
- * 
- * @author Richard
-=======
- * TimeScenario which the Simulation can follow
->>>>>>> origin/develop
  */
 public final class TimeScenario {
 
